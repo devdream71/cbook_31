@@ -73,7 +73,7 @@ class DonutChartViewRoundState extends State<DonutChartViewRound>
           color: colors[i],
           value: shownValue,
           title: shownValue >= currentValue
-              ? "${widget.labels[i]}\n${widget.values[i].toInt()}৳"
+               ? ""  //${widget.labels[i]}\n${widget.values[i].toInt()}৳
               : "",
           radius: 39,
           titleStyle: const TextStyle(
@@ -93,7 +93,7 @@ class DonutChartViewRoundState extends State<DonutChartViewRound>
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(6.0),
+      padding: const EdgeInsets.all(0.0),
       child: Column(
         children: [
           Row(
@@ -151,63 +151,66 @@ class DonutChartViewRoundState extends State<DonutChartViewRound>
               ),
             ],
           ),
-          Row(
-            children: [
-              Container(
-                height: 15,
-                width: 15,
-                color: Colors.green,
-              ),
-              const SizedBox(
-                width: 2,
-              ),
+         
+          // Row(
+          //   children: [
+          //     Container(
+          //       height: 15,
+          //       width: 15,
+          //       color: Colors.green,
+          //     ),
+          //     const SizedBox(
+          //       width: 2,
+          //     ),
 
-              /// 
-              const Text(
-                'Received',
-                style: TextStyle(color: Colors.black, fontSize: 12),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Container(
-                height: 15,
-                width: 15,
-                color: Colors.orange,
-              ),
-              const SizedBox(
-                width: 2,
-              ),
-              const Text('Payment',
-                  style: TextStyle(color: Colors.black, fontSize: 12)),
-              const SizedBox(
-                width: 8,
-              ),
-              Container(
-                height: 15,
-                width: 15,
-                color: AppColors.purple2,
-              ),
-              const SizedBox(
-                width: 2,
-              ),
-              const Text('Income',
-                  style: TextStyle(color: Colors.black, fontSize: 12)),
-              const SizedBox(
-                width: 8,
-              ),
-              Container(
-                height: 15,
-                width: 15,
-                color: Colors.purple,
-              ),
-              const SizedBox(
-                width: 2,
-              ),
-              const Text('Expense',
-                  style: TextStyle(color: Colors.black, fontSize: 12)),
-            ],
-          )
+          //     /// 
+          //     const Text(
+          //       'Received',
+          //       style: TextStyle(color: Colors.black, fontSize: 12),
+          //     ),
+          //     const SizedBox(
+          //       width: 8,
+          //     ),
+          //     Container(
+          //       height: 15,
+          //       width: 15,
+          //       color: Colors.orange,
+          //     ),
+          //     const SizedBox(
+          //       width: 2,
+          //     ),
+          //     const Text('Payment',
+          //         style: TextStyle(color: Colors.black, fontSize: 12)),
+          //     const SizedBox(
+          //       width: 8,
+          //     ),
+          //     Container(
+          //       height: 15,
+          //       width: 15,
+          //       color: AppColors.purple2,
+          //     ),
+          //     const SizedBox(
+          //       width: 2,
+          //     ),
+          //     const Text('Income',
+          //         style: TextStyle(color: Colors.black, fontSize: 12)),
+          //     const SizedBox(
+          //       width: 8,
+          //     ),
+          //     Container(
+          //       height: 15,
+          //       width: 15,
+          //       color: Colors.purple,
+          //     ),
+          //     const SizedBox(
+          //       width: 2,
+          //     ),
+          //     const Text('Expense',
+          //         style: TextStyle(color: Colors.black, fontSize: 12)),
+          //   ],
+          // )
+      
+      
         ],
       ),
     );

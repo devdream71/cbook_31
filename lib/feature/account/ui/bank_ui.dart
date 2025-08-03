@@ -2,7 +2,7 @@ import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/adjust_bank.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/provider/bank_adjust_provider.dart';
-import 'package:cbook_dt/feature/account/ui/adjust_cash/provider/adjust_cash_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -122,14 +122,14 @@ class _BankState extends State<Bank> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Text(
-                                //   item.billNumber ?? '',
-                                //   style: GoogleFonts.lato(
-                                //     fontWeight: FontWeight.bold,
-                                //     fontSize: 16,
-                                //     color: Colors.black87,
-                                //   ),
-                                // ),
+                                Text(
+                                  item.billNumber ?? '',
+                                  style: GoogleFonts.lato(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
                                 Text(
                                   item.date ?? '',

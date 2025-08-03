@@ -77,7 +77,11 @@ class PaymentVoucherProvider with ChangeNotifier {
           // Remove the last element and check if it's total_payment
           final lastItem = data.last;
           if (lastItem is Map<String, dynamic> && lastItem.containsKey('total_payment')) {
-            _totalPayment = double.tryParse(lastItem['total_payment'].toString()) ?? 0.0;
+            //_totalPayment = double.tryParse(lastItem['total_payment'].toString()) ?? 0.0;
+           
+           final paymentString = lastItem['total_payment'].toString().replaceAll(',', '');
+_totalPayment = double.tryParse(paymentString) ?? 0.0;
+           
             data.removeLast(); // remove total_payment from list
           } else {
             _totalPayment = 0.0;

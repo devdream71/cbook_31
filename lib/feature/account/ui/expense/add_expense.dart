@@ -70,77 +70,7 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
     });
   }
 
-  // Updated fetchAndSetBillNumber with more debugging:
-  // Future<void> fetchAndSetBillNumber() async {
-  //   debugPrint('fetchAndSetBillNumber called');
-
-  //   final url = Uri.parse(
-  //     'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=voucher&type=indirect_expense&code=EX&bill_number=100&with_nick_name=1',
-  //   );
-
-  //   debugPrint('API URL: $url');
-
-  //   try {
-  //     debugPrint('Making API call...');
-  //     final response = await http.get(url);
-  //     debugPrint('API Response Status: ${response.statusCode}');
-  //     debugPrint('API Response Body: ${response.body}');
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       debugPrint('Parsed data: $data');
-
-  //       if (data['success'] == true && data['data'] != null) {
-  //         String billFromApi = data['data'].toString(); // Ensure it's a string
-  //         debugPrint('Bill from API: $billFromApi');
-
-  //         //String newBill = _incrementBillNumber(billFromApi);
-
-  //         String newBill = billFromApi;
-
-  //         debugPrint('New bill after increment: $newBill');
-
-  //         // Update the controller and trigger UI rebuild
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = newBill;
-  //             print('Bill controller updated to: ${billController.text}');
-  //           });
-  //         }
-  //       } else {
-  //         debugPrint('API success false or data null');
-  //         // Handle API error
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = "EX-100"; // Default fallback
-  //             debugPrint('Set fallback bill: ${billController.text}');
-  //           });
-  //         }
-  //       }
-  //     } else {
-  //       debugPrint('Failed to fetch bill number: ${response.statusCode}');
-  //       // Set fallback bill number
-  //       if (mounted) {
-  //         setState(() {
-  //           billController.text = "EX-100";
-  //           debugPrint(
-  //               'Set fallback bill due to status code: ${billController.text}');
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error fetching bill number: $e');
-  //     // Set fallback bill number
-  //     if (mounted) {
-  //       setState(() {
-  //         billController.text = "EX-100";
-  //         debugPrint(
-  //             'Set fallback bill due to exception: ${billController.text}');
-  //       });
-  //     }
-  //   }
-  // }
-
+  
 
   ///updated bill nunber json respoonse
   Future<void> fetchAndSetBillNumber() async {

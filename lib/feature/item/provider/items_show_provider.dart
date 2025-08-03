@@ -93,6 +93,75 @@ class AddItemProvider extends ChangeNotifier {
   }
 
   ////item fetch all
+
+   // Method to calculate total stock value
+  Map<String, double> calculateTotals() {
+  double totalQtySum = 0.0;
+  double averageRateSum = 0.0;
+
+  for (var item in _items) {
+    double totalQty = _parseToDouble(item.totalQty);
+    double averageRate = _parseToDouble(item.avarageRate);
+
+    totalQtySum += totalQty;
+    averageRateSum += averageRate;
+
+    debugPrint("Item: ${item.name}, Qty: $totalQty, Rate: $averageRate");
+  }
+
+  debugPrint("Total Qty Sum: $totalQtySum");
+  debugPrint("Average Rate Sum: $averageRateSum");
+
+  return {
+    'qty': totalQtySum,
+    'rate': averageRateSum,
+  };
+}
+  // Helper method to safely parse dynamic values to double
+  double _parseToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value) ?? 0.0;
+    }
+    
+    return 0.0;
+  }
+
+  // Method to get formatted stock value as string
+  String getFormattedTotals() {
+  final totals = calculateTotals();
+  String formattedQty = _formatCurrency(totals['qty'] ?? 0.0);
+  String formattedRate = _formatCurrency(totals['rate'] ?? 0.0);
+
+  return "Qty: $formattedQty | Rate: $formattedRate";
+}
+
+  // Helper method to format currency
+  String _formatCurrency(double amount) {
+    // Convert to string with 2 decimal places
+    String amountStr = amount.toStringAsFixed(2);
+    
+    // Add commas for thousands separator
+    final parts = amountStr.split('.');
+    String wholePart = parts[0];
+    String decimalPart = parts.length > 1 ? parts[1] : '00';
+    
+    // Add commas to whole part
+    String formatted = '';
+    for (int i = 0; i < wholePart.length; i++) {
+      if (i > 0 && (wholePart.length - i) % 3 == 0) {
+        formatted += ',';
+      }
+      formatted += wholePart[i];
+    }
+    
+    return '$formatted.$decimalPart';
+  }
+
+  // Update your existing fetchItems method to notify listeners after calculation
   Future<void> fetchItems() async {
     _isLoading = true;
     notifyListeners();
@@ -111,6 +180,10 @@ class AddItemProvider extends ChangeNotifier {
               .toList();
           // By default show all
           _filteredItems = List.from(_items);
+          
+          // Calculate and log total stock value after fetching items
+          //double totalStockValue = calculateTotalStockValue();
+          //debugPrint("Updated Total Stock Value: $totalStockValue");
         } else {
           debugPrint("Invalid data format");
         }
@@ -124,6 +197,7 @@ class AddItemProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
 
   
   /// unit show.

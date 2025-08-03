@@ -121,7 +121,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
     debugPrint('fetchAndSetBillNumber called');
 
     final url = Uri.parse(
-      'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=voucher&type=receive-in&code=REC&bill_number=100&with_nick_name=1',
+      'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=voucher&type=receipt&code=REC&bill_number=100&with_nick_name=1',
     );
 
     debugPrint('API URL: $url');
@@ -137,7 +137,8 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
         debugPrint('Parsed data: $data');
 
         if (data['success'] == true && data['data'] != null) {
-          String billFromApi = data['data'].toString(); // Ensure it's a string
+          // String billFromApi = data['data'].toString(); // Ensure it's a string
+           String billFromApi = data['data']['bill_number'].toString();
           debugPrint('Bill from API: $billFromApi');
 
           //String newBill = _incrementBillNumber(billFromApi);

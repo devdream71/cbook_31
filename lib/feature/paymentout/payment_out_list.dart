@@ -1,6 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/paymentout/create_payment_out_item.dart';
-import 'package:cbook_dt/feature/paymentout/payment_details.dart';
 import 'package:cbook_dt/feature/paymentout/payment_out_edit.dart';
 import 'package:cbook_dt/feature/paymentout/provider/payment_out_provider.dart';
 import 'package:flutter/material.dart';
@@ -97,17 +96,17 @@ class _PaymentOutListState extends State<PaymentOutList> {
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
           ),
         ),
-        provider.vouchers.isEmpty
-            ? const Text('No Payment Vouchers Found.', style: TextStyle(color: Colors.black),)
-            : ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: provider.vouchers.length,
-                itemBuilder: (context, index) {
-                  final voucher = provider.vouchers[index];
-                  // existing card UI
-                },
-              )
+        // provider.vouchers.isEmpty
+        //     ? const Text('No Payment Vouchers Found.', style: TextStyle(color: Colors.black),)
+        //     : ListView.builder(
+        //         shrinkWrap: true,
+        //         physics: const NeverScrollableScrollPhysics(),
+        //         itemCount: provider.vouchers.length,
+        //         itemBuilder: (context, index) {
+        //           final voucher = provider.vouchers[index];
+        //           // existing card UI
+        //         },
+        //       )
       ],
     );
   },

@@ -9,6 +9,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
+
+
+
+
+
 class PurchaseListApi extends StatefulWidget {
   const PurchaseListApi({super.key});
 
@@ -45,9 +50,48 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
     }
   }
 
+  // Method to filter purchases by date range
+  List<dynamic> filterPurchasesByDateRange(List<dynamic> purchases) {
+    return purchases.where((purchase) {
+      try {
+        DateTime purchaseDate = DateTime.parse(purchase.pruchaseDate);
+        // Remove time component for date comparison
+        DateTime purchaseDateOnly = DateTime(purchaseDate.year, purchaseDate.month, purchaseDate.day);
+        DateTime startDateOnly = DateTime(selectedStartDate.year, selectedStartDate.month, selectedStartDate.day);
+        DateTime endDateOnly = DateTime(selectedEndDate.year, selectedEndDate.month, selectedEndDate.day);
+        
+        return purchaseDateOnly.isAtSameMomentAs(startDateOnly) || 
+               purchaseDateOnly.isAtSameMomentAs(endDateOnly) ||
+               (purchaseDateOnly.isAfter(startDateOnly) && purchaseDateOnly.isBefore(endDateOnly));
+      } catch (e) {
+        return false; // Skip invalid dates
+      }
+    }).toList();
+  }
+
+  // Method to calculate summary for filtered purchases
+  Map<String, double> calculateFilteredSummary(List<dynamic> filteredPurchases) {
+    double totalPurchase = 0.0;
+    double totalPayment = 0.0;
+    double totalDue = 0.0;
+
+    for (var purchase in filteredPurchases) {
+      totalPurchase += double.tryParse(purchase.grossTotal.toString()) ?? 0.0;
+      totalPayment += double.tryParse(purchase.payment.toString()) ?? 0.0;
+      totalDue += double.tryParse(purchase.due.toString()) ?? 0.0;
+    }
+
+    return {
+      'totalPurchase': totalPurchase,
+      'totalPayment': totalPayment,
+      'totalDue': totalDue,
+    };
+  }
+
   TextEditingController _searchController = TextEditingController();
   TextEditingController searchController = TextEditingController();
   bool isSearching = false;
+ 
 
   @override
   void initState() {
@@ -252,7 +296,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 2 ),
+                            const SizedBox(width: 2),
                             Text("-",
                                 style: GoogleFonts.notoSansPhagsPa(
                                     fontSize: 14, color: Colors.black)),
@@ -268,7 +312,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                   });
                                 }),
                                 child: Container(
-                                  height: 30 ,
+                                  height: 30,
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   decoration: BoxDecoration(
@@ -296,76 +340,80 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                           ],
                         ),
 
-                        ///bill qty
-                        const Padding(
-                          padding: EdgeInsets.only(left: 4.0),
-                          child: Text(
-                            "Bill Qty: 5",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold),
-                          ),
+                        ///bill qty - now shows filtered count
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: Consumer<PurchaseProvider>(
+                              builder: (context, provider, child) {
+                            if (provider.purchaseData?.data == null) {
+                              return const Text(
+                                "Bill Qty: 0",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold),
+                              );
+                            }
+                            
+                            final filteredPurchases = filterPurchasesByDateRange(provider.purchaseData!.data!);
+                            final purchaseCount = filteredPurchases.length;
+
+                            return Text(
+                              "Bill Qty: $purchaseCount",
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold),
+                            );
+                          }),
                         ),
                       ],
                     ),
 
-                    //amount, due
-                    // const Column(
-                    //   mainAxisAlignment: MainAxisAlignment.start,
-                    //   crossAxisAlignment: CrossAxisAlignment.end,
-                    //   children: [
-                    //     Text(
-                    //       "Amount: 12,50,36,589.00",
-                    //       style: TextStyle(color: Colors.black, fontSize: 12),
-                    //     ),
-                    //     Text(
-                    //       "Due: 10,85,99,782.00",
-                    //       style: TextStyle(color: Colors.black, fontSize: 12),
-                    //     )
-                    //   ],
-                    // )
-                     
-                     Consumer<PurchaseProvider>(
-  builder: (context, provider, child) {
-    final summary = provider.summary;
+                    ///purchase, payment, due - now shows filtered summary
+                    Consumer<PurchaseProvider>(
+                      builder: (context, provider, child) {
+                        if (provider.purchaseData?.data == null) {
+                          return const SizedBox();
+                        }
 
-    if (summary == null) {
-      return const SizedBox(); // or show loading text
-    }
+                        final filteredPurchases = filterPurchasesByDateRange(provider.purchaseData!.data!);
+                        final summary = calculateFilteredSummary(filteredPurchases);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Total Purchase: ৳${summary.totalPurchase}",
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black),
-        ),
-        Text(
-          "Total Payment: ৳${summary.totalPayment}",
-          style: const TextStyle(fontSize: 12, color: Colors.black),
-        ),
-        Text(
-          "Total Due: ৳${summary.totalDue}",
-          style: const TextStyle(fontSize: 12, color: Colors.black),
-        ),
-      ],
-    );
-  },
-),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              "Total Purchase: ৳${summary['totalPurchase']?.toStringAsFixed(2) ?? '0.00'}",
+                              style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black),
+                            ),
+                            Text(
+                              "Total Payment: ৳${summary['totalPayment']?.toStringAsFixed(2) ?? '0.00'}",
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.black),
+                            ),
+                            Text(
+                              "Total Due: ৳${summary['totalDue']?.toStringAsFixed(2) ?? '0.00'}",
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.black),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
             ),
 
             const SizedBox(
-              height: 1,
+              height: 2,
             ),
 
-            const SizedBox(
-              height: 1,
-            ),
-
+            // Purchase list with date filtering
             Expanded(
               child: Consumer<PurchaseProvider>(
                 builder: (context, provider, child) {
@@ -384,19 +432,32 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                 fontWeight: FontWeight.bold)));
                   }
 
+                  // Filter purchases based on selected date range
+                  List<dynamic> filteredPurchases = filterPurchasesByDateRange(provider.purchaseData!.data!);
+
+                  if (filteredPurchases.isEmpty) {
+                    return const Center(
+                      child: Text("No purchases found for selected date range",
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold)),
+                    );
+                  }
+
                   return ListView.builder(
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 0.0, vertical: 1),
-                    itemCount: provider.purchaseData!.data!.length,
+                    itemCount: filteredPurchases.length, // Use filtered purchases count
                     itemBuilder: (context, index) {
-                      final purchase = provider.purchaseData!.data![index];
+                      final purchase = filteredPurchases[index]; // Use filtered purchases
+
+                      final billCount = filteredPurchases.length;
+                      debugPrint('filtered purchase count => $billCount');
+
                       bool isEnabled = purchase.disabled == 'enable';
 
                       final purchaseId =
                           purchase.purchaseDetails!.first.purchaseId.toString();
-
-                      //final transactionMethod = purchase.transectionMethod;
 
                       final transactionMethod =
                           purchase.transactionMethod ?? '';
@@ -476,7 +537,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                                 horizontal: 6),
                                           ),
 
-                                          //cash or customer name, amount
+                                          //cash or supplier name, amount
                                           Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -541,8 +602,6 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                                     "Due: ${purchase.due} TK", // Show due amount here
                                                     style: const TextStyle(
                                                       fontSize: 12,
-                                                      // fontWeight:
-                                                      //     FontWeight.w500,
                                                       color: Colors.black,
                                                     ),
                                                   )
@@ -570,21 +629,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
     );
   }
 
-  /// Helper method to build formatted rows
-  Widget _buildRow(String label, String value, {Color color = Colors.black}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-          Text(value, style: TextStyle(fontSize: 14, color: color)),
-        ],
-      ),
-    );
-  }
+
 
   Future<dynamic> editDeleteDiolog(
     BuildContext context,
@@ -749,3 +794,579 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
     );
   }
 }
+
+
+// class PurchaseListApi extends StatefulWidget {
+//   const PurchaseListApi({super.key});
+
+//   @override
+//   State<PurchaseListApi> createState() => _PurchaseListApiState();
+// }
+
+// class _PurchaseListApiState extends State<PurchaseListApi> {
+
+//   Future<void> _selectDate(BuildContext context, DateTime initialDate,
+//       Function(DateTime) onDateSelected) async {
+//     final DateTime? picked = await showDatePicker(
+//       context: context,
+//       initialDate: initialDate,
+//       firstDate: DateTime(2000),
+//       lastDate: DateTime(2101),
+//     );
+//     if (picked != null) {
+//       onDateSelected(picked);
+//     }
+//   }
+
+//   DateTime selectedStartDate =
+//       DateTime(DateTime.now().year, DateTime.now().month, 1);
+
+//   DateTime selectedEndDate = DateTime.now();
+
+//   String formatDate(String? rawDate) {
+//     if (rawDate == null || rawDate.isEmpty) return 'N/A';
+//     try {
+//       DateTime date = DateTime.parse(rawDate);
+//       return DateFormat('dd/MM/yyyy').format(date);
+//     } catch (e) {
+//       return 'Invalid date';
+//     }
+//   }
+
+//   TextEditingController _searchController = TextEditingController();
+//   TextEditingController searchController = TextEditingController();
+//   bool isSearching = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Fetch the data when the screen is initialized
+//     Future.delayed(Duration.zero, () {
+//       Provider.of<PurchaseProvider>(context, listen: false).fetchPurchases();
+
+//       // final purchaseProvider =
+//       //     Provider.of<PurchaseProvider>(context, listen: false);
+//       // purchaseProvider.fetchItems();
+
+//       _searchController.addListener(() {
+//         Provider.of<PurchaseProvider>(context, listen: false)
+//             .filterPurchases(_searchController.text);
+//       });
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final colorScheme = Theme.of(context).colorScheme;
+//     return Scaffold(
+//       ///search, in app bar,
+//       backgroundColor: AppColors.sfWhite,
+//       appBar: AppBar(
+//         title: isSearching
+//             ? Column(
+//                 children: [
+//                   const SizedBox(
+//                     height: 10,
+//                   ),
+//                   SizedBox(
+//                     height: 35,
+//                     child: TextField(
+//                       controller: searchController,
+//                       autofocus: true,
+//                       cursorHeight: 15,
+//                       style: const TextStyle(color: Colors.white, fontSize: 16),
+//                       decoration: InputDecoration(
+//                         hintText: ' ',
+//                         hintStyle: const TextStyle(color: Colors.black54),
+//                         enabledBorder: OutlineInputBorder(
+//                           borderSide: const BorderSide(color: Colors.white),
+//                           borderRadius: BorderRadius.circular(4),
+//                         ),
+//                         focusedBorder: OutlineInputBorder(
+//                           borderSide:
+//                               const BorderSide(color: Colors.white, width: 2),
+//                           borderRadius: BorderRadius.circular(4),
+//                         ),
+//                         contentPadding: const EdgeInsets.symmetric(
+//                             horizontal: 8, vertical: 0),
+//                         isDense: true,
+//                       ),
+//                       onChanged: (value) {
+//                         Provider.of<PurchaseProvider>(context, listen: false)
+//                             .filterPurchases(value);
+//                         // Your filter logic
+//                       },
+//                     ),
+//                   ),
+//                 ],
+//               )
+//             : const Text(
+//                 'Purchase List',
+//                 style: TextStyle(color: Colors.yellow, fontSize: 16),
+//               ),
+//         leading: const BackButton(color: Colors.white),
+//         backgroundColor: colorScheme.primary,
+//         actions: [
+//           // Search or Close Icon with circular background
+//           Padding(
+//             padding: const EdgeInsets.only(right: 8.0),
+//             child: GestureDetector(
+//               onTap: () {
+//                 setState(() {
+//                   isSearching = !isSearching;
+//                   if (!isSearching) {
+//                     searchController.clear();
+//                   }
+//                 });
+//               },
+//               child: Container(
+//                 height: 30,
+//                 width: 30,
+//                 decoration: BoxDecoration(
+//                   color: isSearching ? Colors.red : Colors.green,
+//                   shape: BoxShape.circle,
+//                   border: isSearching
+//                       ? null
+//                       : Border.all(color: Colors.white, width: 2),
+//                 ),
+//                 padding: const EdgeInsets.all(6),
+//                 child: InkWell(
+//                   onTap: () {
+//                     setState(() {
+//                       isSearching = !isSearching;
+//                       if (!isSearching) {
+//                         searchController.clear();
+//                         Provider.of<PurchaseProvider>(context, listen: false)
+//                             .filterPurchases(searchController.text);
+//                       }
+//                     });
+//                   },
+//                   child: Icon(
+//                     isSearching ? Icons.close : Icons.search,
+//                     color: Colors.white,
+//                     size: 16,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ),
+
+//           // Bill Button
+//           InkWell(
+//             onTap: () {
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) => const PurchaseView(),
+//                 ),
+//               );
+//             },
+//             child: const Padding(
+//               padding: EdgeInsets.only(right: 8.0),
+//               child: Row(
+//                 children: [
+//                   CircleAvatar(
+//                     radius: 10,
+//                     backgroundColor: Colors.white,
+//                     child: Icon(
+//                       Icons.add,
+//                       size: 20,
+//                       color: Colors.green,
+//                     ),
+//                   ),
+//                   SizedBox(width: 3),
+//                   Text(
+//                     'Purchase',
+//                     style: TextStyle(color: Colors.yellow, fontSize: 16),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+//         child: Column(
+//           children: [
+//             ///amount, due, date, bill, qty
+//             Container(
+//               color: const Color(0xffdddefa),
+//               child: Padding(
+//                 padding:
+//                     const EdgeInsets.symmetric(horizontal: 4.0, vertical: 3),
+//                 child: Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                   children: [
+//                     ////date, current date, bill qty
+//                     Column(
+//                       mainAxisAlignment: MainAxisAlignment.start,
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Row(
+//                           children: [
+//                             ///month start date
+//                             SizedBox(
+//                               width: MediaQuery.of(context).size.width * 0.25,
+//                               child: GestureDetector(
+//                                 onTap: () => _selectDate(
+//                                     context, selectedStartDate, (date) {
+//                                   setState(() {
+//                                     selectedStartDate = date;
+//                                   });
+//                                 }),
+//                                 child: Container(
+//                                   height: 30,
+//                                   padding:
+//                                       const EdgeInsets.symmetric(horizontal: 8),
+//                                   decoration: BoxDecoration(
+//                                     border:
+//                                         Border.all(color: Colors.transparent),
+//                                     borderRadius: BorderRadius.circular(4),
+//                                   ),
+//                                   child: Row(
+//                                     mainAxisAlignment:
+//                                         MainAxisAlignment.spaceBetween,
+//                                     children: [
+//                                       Text(
+//                                         "${selectedStartDate.day}/${selectedStartDate.month}/${selectedStartDate.year}",
+//                                         style: GoogleFonts.notoSansPhagsPa(
+//                                             fontSize: 12, color: Colors.black),
+//                                       ),
+//                                       const Icon(Icons.calendar_today,
+//                                           size: 14),
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                             const SizedBox(width: 2),
+//                             Text("-",
+//                                 style: GoogleFonts.notoSansPhagsPa(
+//                                     fontSize: 14, color: Colors.black)),
+//                             const SizedBox(width: 8),
+//                             // current date Picker
+//                             SizedBox(
+//                               width: MediaQuery.of(context).size.width * 0.25,
+//                               child: GestureDetector(
+//                                 onTap: () => _selectDate(
+//                                     context, selectedEndDate, (date) {
+//                                   setState(() {
+//                                     selectedEndDate = date;
+//                                   });
+//                                 }),
+//                                 child: Container(
+//                                   height: 30,
+//                                   padding:
+//                                       const EdgeInsets.symmetric(horizontal: 8),
+//                                   decoration: BoxDecoration(
+//                                     border:
+//                                         Border.all(color: Colors.grey.shade300),
+//                                     borderRadius: BorderRadius.circular(4),
+//                                   ),
+//                                   child: Row(
+//                                     mainAxisAlignment:
+//                                         MainAxisAlignment.spaceBetween,
+//                                     children: [
+//                                       Text(
+//                                         "${selectedEndDate.day}/${selectedEndDate.month}/${selectedEndDate.year}",
+//                                         style: GoogleFonts.notoSansPhagsPa(
+//                                             fontSize: 12, color: Colors.black),
+//                                       ),
+//                                       const Icon(Icons.calendar_today,
+//                                           size: 14),
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                             const SizedBox(width: 8),
+//                           ],
+//                         ),
+
+//                         ///bill qty
+//                         Padding(
+//                           padding: const EdgeInsets.only(left: 4.0),
+//                           child: Consumer<PurchaseProvider>(
+//                               builder: (context, provider, child) {
+//                             return Text(
+//                               "Bill Qty: ${provider.purchaseData?.data?.length ?? 0}",
+//                               style: const TextStyle(
+//                                   color: Colors.black,
+//                                   fontSize: 12,
+//                                   fontWeight: FontWeight.bold),
+//                             );
+//                           }),
+//                         ),
+//                       ],
+//                     ),
+
+//                     Consumer<PurchaseProvider>(
+//                       builder: (context, provider, child) {
+//                         final summary = provider.summary;
+
+//                         if (summary == null) {
+//                           return const SizedBox(); // or show loading text
+//                         }
+
+//                         return Column(
+//                           crossAxisAlignment: CrossAxisAlignment.end,
+//                           mainAxisAlignment: MainAxisAlignment.end,
+//                           children: [
+//                             Text(
+//                               "Total Purchase: ৳${summary.totalPurchase}",
+//                               style: const TextStyle(
+//                                   fontSize: 12,
+//                                   color: Colors.black),
+//                             ),
+//                             Text(
+//                               "Total Payment: ৳${summary.totalPayment}",
+//                               style: const TextStyle(
+//                                   fontSize: 12, color: Colors.black),
+//                             ),
+//                             Text(
+//                               "Total Due: ৳${summary.totalDue}",
+//                               style: const TextStyle(
+//                                   fontSize: 12, color: Colors.black),
+//                             ),
+//                           ],
+//                         );
+//                       },
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+
+//             const SizedBox(
+//               height: 2,
+//             ),
+
+//             Expanded(
+//               child: Consumer<PurchaseProvider>(
+//                 builder: (context, provider, child) {
+//                   if (provider.isLoading) {
+//                     return const Center(child: CircularProgressIndicator());
+//                   }
+
+//                   if (provider.purchaseData == null ||
+//                       provider.purchaseData!.data == null ||
+//                       provider.purchaseData!.data!.isEmpty) {
+//                     final invoiceCount = provider.purchaseData!.data!.length;
+
+//                     return const Center(
+//                         child: Text('No Purchase data available',
+//                             style: TextStyle(
+//                                 fontSize: 18,
+//                                 color: Colors.black,
+//                                 fontWeight: FontWeight.bold)));
+//                   }
+
+//                   return ListView.builder(
+//                     shrinkWrap: true,
+//                     padding: const EdgeInsets.symmetric(
+//                         horizontal: 0.0, vertical: 1),
+//                     itemCount: provider.purchaseData!.data!.length,
+//                     itemBuilder: (context, index) {
+//                       final purchase = provider.purchaseData!.data![index];
+
+//                       final billCount = provider.purchaseData!.data!.length;
+
+//                       debugPrint(' bill count => $billCount');
+
+//                       bool isEnabled = purchase.disabled == 'enable';
+
+//                       final purchaseId =
+//                           purchase.purchaseDetails!.first.purchaseId.toString();
+
+//                       //final transactionMethod = purchase.transectionMethod;
+
+//                       final transactionMethod =
+//                           purchase.transactionMethod ?? '';
+
+//                       debugPrint('transactionMethod ==>${transactionMethod}');
+
+//                       final paymentStatus = purchase.paymentStatus ?? 0;
+
+//                       return InkWell(
+//                         onLongPress: () {
+//                           editDeleteDiolog(context, purchaseId,
+//                               transactionMethod, paymentStatus);
+//                         },
+//                         onTap: () {
+//                           Navigator.push(
+//                             context,
+//                             MaterialPageRoute(
+//                               builder: (context) =>
+//                                   PurchaseDetailsPage(purchase: purchase),
+//                             ),
+//                           );
+//                         },
+//                         child: Card(
+//                           shadowColor: const Color.fromARGB(255, 12, 9, 199),
+//                           shape: RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(
+//                               6.0,
+//                             ),
+//                             // side: BorderSide(color: Color(0xffdddefa))
+//                           ),
+//                           elevation: 1,
+//                           margin: const EdgeInsets.all(2),
+//                           child: Padding(
+//                             padding: const EdgeInsets.symmetric(
+//                                 horizontal: 8, vertical: 8),
+//                             child: Row(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 /// Left side: Supplier info
+//                                 Expanded(
+//                                   child: Column(
+//                                     crossAxisAlignment:
+//                                         CrossAxisAlignment.start,
+//                                     children: [
+//                                       Row(
+//                                         children: [
+//                                           //date, invoice number
+//                                           SizedBox(
+//                                             width: 90,
+//                                             child: Column(
+//                                               crossAxisAlignment:
+//                                                   CrossAxisAlignment.start,
+//                                               children: [
+//                                                 Text(
+//                                                   formatDate(
+//                                                       purchase.pruchaseDate),
+//                                                   style: const TextStyle(
+//                                                       fontSize: 14,
+//                                                       color: Colors.black),
+//                                                 ),
+//                                                 Text('${purchase.billNumber}',
+//                                                     style: const TextStyle(
+//                                                         fontSize: 14,
+//                                                         color: Colors.black,
+//                                                         fontWeight:
+//                                                             FontWeight.bold)),
+//                                               ],
+//                                             ),
+//                                           ),
+
+//                                           //divider
+//                                           Container(
+//                                             height: 30,
+//                                             width: 2,
+//                                             color: Colors.green.shade200,
+//                                             margin: const EdgeInsets.symmetric(
+//                                                 horizontal: 6),
+//                                           ),
+
+//                                           //cash or customer name, amount
+//                                           Column(
+//                                             crossAxisAlignment:
+//                                                 CrossAxisAlignment.start,
+//                                             children: [
+//                                               Text(
+//                                                 (purchase.supplier == 'N/A')
+//                                                     ? 'Cash'
+//                                                     : purchase.supplier!,
+//                                                 style: const TextStyle(
+//                                                     fontSize: 14,
+//                                                     color: Colors.black),
+//                                               ),
+//                                               Text(
+//                                                   '৳ ${purchase.grossTotal ?? 0}',
+//                                                   style: const TextStyle(
+//                                                       fontSize: 14,
+//                                                       color: Colors.black)),
+//                                             ],
+//                                           )
+//                                         ],
+//                                       ),
+//                                     ],
+//                                   ),
+//                                 ),
+
+//                                 /// End Right side:, paid, unpaid, due amount, edit, delete
+//                                 Column(
+//                                   crossAxisAlignment: CrossAxisAlignment.end,
+//                                   children: [
+//                                     //=>paid, unpaid, due amount , //=> edit  and update button
+//                                     Row(
+//                                       mainAxisSize: MainAxisSize.min,
+//                                       mainAxisAlignment:
+//                                           MainAxisAlignment.spaceAround,
+//                                       children: [
+//                                         Column(
+//                                           crossAxisAlignment:
+//                                               CrossAxisAlignment.end,
+//                                           children: [
+//                                             Text(
+//                                               purchase.paymentStatus == 2
+//                                                   ? 'Paid'
+//                                                   : purchase.paymentStatus == 1
+//                                                       ? 'Partial'
+//                                                       : 'Unpaid',
+//                                               style: TextStyle(
+//                                                 fontWeight: FontWeight.bold,
+//                                                 fontSize: 14,
+//                                                 color: purchase.paymentStatus ==
+//                                                         2
+//                                                     ? Colors.green
+//                                                     : purchase.paymentStatus ==
+//                                                             1
+//                                                         ? Colors.orange
+//                                                         : Colors.red,
+//                                               ),
+//                                             ),
+//                                             purchase.transactionMethod!
+//                                                         .toLowerCase() ==
+//                                                     'customer'
+//                                                 ? Text(
+//                                                     "Due: ${purchase.due} TK", // Show due amount here
+//                                                     style: const TextStyle(
+//                                                       fontSize: 12,
+//                                                       // fontWeight:
+//                                                       //     FontWeight.w500,
+//                                                       color: Colors.black,
+//                                                     ),
+//                                                   )
+//                                                 : const SizedBox.shrink(),
+//                                           ],
+//                                         ),
+//                                         const SizedBox(width: 8),
+//                                       ],
+//                                     ),
+//                                   ],
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+  /// Helper method to build formatted rows
+  // Widget _buildRow(String label, String value, {Color color = Colors.black}) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 2.0),
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Text(label,
+  //             style:
+  //                 const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+  //         Text(value, style: TextStyle(fontSize: 14, color: color)),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+

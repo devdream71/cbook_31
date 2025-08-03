@@ -28,7 +28,6 @@ class _PartyState extends State<Party> {
     Future.microtask(() =>
         Provider.of<SupplierProvider>(context, listen: false).fetchSuppliers());
 
-    
     ///customer
     Future.microtask(() =>
         Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr());
@@ -40,7 +39,18 @@ class _PartyState extends State<Party> {
     ///customer ///supplier
     Future.microtask(() async {
       await provider.fetchCustomerTransaction();
+    });
+
+    Future.microtask(() async {
       await provider.fetchSupplierTransaction();
+    });
+
+    Future.microtask(() async {
+      await provider.fetchCustomerCountTransaction();
+    });
+
+    Future.microtask(() async {
+      await provider.fetchTotalSupplierCount();
     });
   }
 
@@ -58,7 +68,6 @@ class _PartyState extends State<Party> {
         appBar: AppBar(
           backgroundColor: colorScheme.primary,
           centerTitle: true,
-
           title: Row(
             children: [
               // If searching: Show search field (left side)
@@ -191,55 +200,59 @@ class _PartyState extends State<Party> {
                   // Left (Customer)
                   Row(
                     children: [
-                     
                       const SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ///customer.
                           Consumer<DashboardReportProvider>(
                             builder: (context, provider, _) {
-                              if (provider.isLoading) {
-                                return const Center(child: SizedBox());
-                              } else if (provider.error != null) {
-                                return Text("Error: ${provider.error}");
-                              } else {
-                                return Column(
-                                  children: [
-                                    const Text(
-                                      'Customer',
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 12),
-                                    ),
-                                    Text(
-                                      '৳ ${provider.customerTransaction ?? 0}',
-                                      style: const TextStyle(
-                                          color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                );
+                              final isLoadingTransaction =
+                                  provider.isLoadingCustomerTransaction;
+                              final isLoadingCount =
+                                  provider.isLoadingCustomerCount;
 
-                                // ReusableBox(
-                                //   icon: Icons.monetization_on,
-                                //   label: "Customer",
-                                //   value:
-                                //       "৳ ${provider.customerTransaction ?? 0}",
-                                //   borderColor:
-                                //       Theme.of(context).colorScheme.primary,
-                                //   textColor: Colors.black,
-                                //   iconColor:
-                                //       Theme.of(context).colorScheme.primary,
-                                // );
+                              final errorTransaction =
+                                  provider.errorCustomerTransaction;
+                              final errorCount = provider.errorCustomerCount;
+
+                              if (isLoadingTransaction || isLoadingCount) {
+                                return const Text("Loading...");
                               }
+
+                              if (errorTransaction != null ||
+                                  errorCount != null) {
+                                return Text(
+                                    "Error: ${errorTransaction ?? errorCount}");
+                              }
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                    Text(
+                                    'Customer (${provider.customerTransactionCountTotal ?? 0})',
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 12,
+                                        fontWeight: FontWeight.bold
+                                        ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '৳ ${provider.customerTransaction ?? 0}',
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                       
+                                    ],
+                                  ),
+                                ],
+                              );
                             },
                           ),
-
-                          // Text("Customer: 560",
-                          //     style:
-                          //         TextStyle(color: Colors.black, fontSize: 12)),
-                          // Text("10,01,55,320",
-                          //     style: TextStyle(
-                          //         color: Color(0xff278d46), fontSize: 12)),
                         ],
                       ),
                     ],
@@ -257,53 +270,40 @@ class _PartyState extends State<Party> {
                   // Right (Supplier)
                   Row(
                     children: [
-                      // Icon(Icons.person, color: Colors.blue),
-                      // SizedBox(width: 8),
                       Padding(
                         padding: const EdgeInsets.only(right: 4.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             // Text("Supplier: 102",
-                            //     style: TextStyle(
-                            //         color: Colors.black, fontSize: 12)),
-                            // Text("10,01,55,320",
-                            //     style:
-                            //         TextStyle(color: Colors.red, fontSize: 12)),
-
                             ///supplier
                             Consumer<DashboardReportProvider>(
-                              builder: (context, provider, _) {  
+                              builder: (context, provider, _) {
                                 if (provider.isLoading) {
                                   return const Center(child: SizedBox());
                                 } else if (provider.error != null) {
                                   return Text("Error: ${provider.error}");
                                 } else {
                                   return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      const Text(
-                                        'Supplier',
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 12),
+                                        Text(
+                                        'Supplier  (${provider.totalSupplierCount ?? 0})',
+                                        style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold
+                                            ),
                                       ),
                                       Text(
-                                        '৳ ${provider.supplierTransaction ?? 0}',
+                                        '৳ ${provider.supplierTransaction ?? 0}  ',
                                         style: const TextStyle(
-                                            color: Colors.black, fontSize: 12,  fontWeight: FontWeight.bold),
+                                            color: Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ],
                                   );
-
-                                  // ReusableBox(
-                                  //   icon: Icons.pie_chart,
-                                  //   label: "Supplier",
-                                  //   value:
-                                  //       "৳ ${provider.supplierTransaction ?? 0}",
-                                  //   borderColor: Colors.black,
-                                  //   textColor: Colors.black,
-                                  //   iconColor:
-                                  //       Theme.of(context).colorScheme.primary,
-                                  // );
                                 }
                               },
                             ),
@@ -404,11 +404,7 @@ class _PartyState extends State<Party> {
                                       ),
                                     ],
                                   ),
-                                  child:
-
-                                    
-
-                                      ClipRRect(
+                                  child: ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
                                     child: Image.network(
                                       'https://commercebook.site/${customers.avatar ?? ''}',

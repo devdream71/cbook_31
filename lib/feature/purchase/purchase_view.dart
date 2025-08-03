@@ -159,7 +159,8 @@ Future<void> fetchAndSetBillNumber() async {
       debugPrint('Parsed data: $data');
 
       if (data['success'] == true && data['data'] != null) {
-        String billFromApi = data['data'].toString(); // Ensure it's a string
+        // String billFromApi = data['data'].toString(); // Ensure it's a string
+         String billFromApi = data['data']['bill_number'].toString();
         debugPrint('Bill from API: $billFromApi');
         
         //String newBill = _incrementBillNumber(billFromApi);
@@ -207,48 +208,7 @@ Future<void> fetchAndSetBillNumber() async {
   }
 }
 
-// Your increment function looks correct, but here's a slightly improved version:
-// String _incrementBillNumber(String bill) {
-//   try {
-//     print('_incrementBillNumber called with: $bill');
-    
-//     // Handle format like "PUR-101"
-//     final parts = bill.trim().split('-');
-//     print('Split parts: $parts');
-    
-//     if (parts.length == 2) {
-//       final prefix = parts[0].trim(); // "PUR"
-//       final numberPart = parts[1].trim();
-//       final currentNumber = int.tryParse(numberPart) ?? 100;
-//       final nextNumber = currentNumber + 1;
-//       final result = '$prefix-$nextNumber';
-      
-//       print('Successfully incremented: $bill -> $result');
-//       return result;
-//     }
-    
-//     // Fallback: if format is unexpected, try to find and increment any number
-//     print('Trying fallback regex method...');
-//     final regex = RegExp(r'(\D*)(\d+)(.*)');
-//     final match = regex.firstMatch(bill);
-//     if (match != null) {
-//       final prefix = match.group(1) ?? '';
-//       final currentNumber = int.tryParse(match.group(2) ?? '100') ?? 100;
-//       final suffix = match.group(3) ?? '';
-//       final nextNumber = currentNumber + 1;
-//       final result = '$prefix$nextNumber$suffix';
-      
-//       print('Fallback incremented: $bill -> $result');
-//       return result;
-//     }
-//   } catch (e) {
-//     print('Error in _incrementBillNumber: $e');
-//   }
-  
-//   // Ultimate fallback
-//   print('Using ultimate fallback: PUR-102');
-//   return 'PUR-102';
-// }
+
 
   @override
   Widget build(BuildContext context) {

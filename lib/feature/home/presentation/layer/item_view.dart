@@ -27,32 +27,23 @@ class ItemView extends StatefulWidget {
 }
 
 class _ItemViewState extends State<ItemView> {
+  int itemCount = 0;
+
   @override
   void initState() {
     super.initState();
 
     _initData();
-
-    // Future.microtask(() {
-
-    //   final provider = context.read<AddItemProvider>();
-
-    //   provider.fetchItems().then((_) {
-    //     for (var item in provider.items) {
-    //       provider.fetchStockQuantity(item.id.toString()); // Fetch stock data
-    //     }
-    //   });
-
-    //   provider.fetchUnits(); // Fetch unit names
-    //   provider.fetchUnits();
-    // });
   }
 
   void _initData() async {
-
     final provider = context.read<AddItemProvider>();
-    
+
     await provider.fetchItems();
+
+    setState(() {
+      itemCount = provider.items.length;
+    });
 
     if (!mounted) return; // Widget might have been disposed
 
@@ -261,19 +252,21 @@ class _ItemViewState extends State<ItemView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Left (Customer)
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.handshake, color: Colors.blue),
-                      SizedBox(width: 8),
+                      const Icon(Icons.handshake, color: Colors.blue),
+                      const SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Total Item",
+                          const Text("Total Item",
                               style:
                                   TextStyle(color: Colors.black, fontSize: 12)),
-                          Text("50,000",
+                          Text(itemCount.toString(),
                               style: const TextStyle(
-                                  color: Color(0xff278d46), fontSize: 12)),
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ],
@@ -283,25 +276,52 @@ class _ItemViewState extends State<ItemView> {
                   SizedBox(
                     height: 35,
                     width: 35,
-                    //color: Colors.green.shade800,
-                    //margin: const EdgeInsets.symmetric(horizontal: 12),
                     child: Image.asset('assets/image/product.png'),
                   ),
 
                   // Right (Supplier)
-                  const Row(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Icon(Icons.person, color: Colors.blue),
-                      SizedBox(width: 8),
+                      //const Icon(Icons.person, color: Colors.blue),
+                      const SizedBox(width: 8),
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text("Stock Value",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 12)),
-                          Text("10,01,55,320",
-                              style:
-                                  TextStyle(color: Colors.red, fontSize: 12)),
+                          // Right (Stock Value - Now Dynamic)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              //const Icon(Icons.person, color: Colors.blue),
+                              const SizedBox(width: 8),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const Text("Stock Value",
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 12)),
+                                  Consumer<AddItemProvider>(
+                                    builder: (context, provider, child) {
+                                      return Text(
+                                        provider.getFormattedTotals(),
+                                        style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                          // Text("10,01,55,320",
+                          //     style:
+                          //         TextStyle(color: Colors.red, fontSize: 12)),
                         ],
                       ),
                     ],
@@ -343,10 +363,13 @@ class _ItemViewState extends State<ItemView> {
                             debugPrint("Item from provider: ${item.name}");
                             debugPrint("Item from provider: ${item.id}");
 
+                            final itemCount = itemProvider.items.length;
+
                             final itemId = item.id;
 
                             final unitName = itemProvider
                                 .getUnitSymbol(item.unitId?.toString());
+
                             final secondaryUnitName =
                                 item.secondaryUnitId != null &&
                                         item.secondaryUnitId != 0

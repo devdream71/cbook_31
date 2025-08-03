@@ -37,6 +37,7 @@ class SalesView extends StatefulWidget {
 }
 
 class SalesViewState extends State<SalesView> {
+
   // TextEditingController for managing the text field content
 
   @override
@@ -108,13 +109,12 @@ class _LayoutState extends State<_Layout> {
             );
 
       Future.microtask(() async { 
-
          await fetchAndSetBillNumber(); 
-
-
       });         
 
     customerController = TextEditingController();
+
+
   }
 
 
@@ -138,7 +138,9 @@ class _LayoutState extends State<_Layout> {
       debugPrint('Parsed data: $data');
 
       if (data['success'] == true && data['data'] != null) {
-        String billFromApi = data['data'].toString(); // Ensure it's a string
+       // String billFromApi = data['data'].toString(); // Ensure it's a string
+        
+         String billFromApi = data['data']['bill_number'].toString();
         debugPrint('Bill from API: $billFromApi');
         
         //String newBill = _incrementBillNumber(billFromApi);

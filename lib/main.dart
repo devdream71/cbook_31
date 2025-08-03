@@ -156,7 +156,7 @@ class _MyAppState extends State<MyApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final profileProvider =
           Provider.of<ProfileProvider>(context, listen: false);
-      profileProvider.fetchProfileFromPrefs(); // Load once
+      profileProvider.fetchProfileFromPrefs(); //Load once
     });
   }
 

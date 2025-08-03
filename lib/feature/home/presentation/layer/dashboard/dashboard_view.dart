@@ -205,147 +205,146 @@ class LayoutState extends State<Layout> {
                   height: 8,
                 ),
 
-                Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          hPad5,
-
-                          ///customer.
-                          Consumer<DashboardReportProvider>(
-                            builder: (context, provider, _) {
-                              if (provider.isLoading) {
-                                return const Center(child: SizedBox());
-                              } else if (provider.error != null) {
-                                return Text("Error: ${provider.error}");
-                              } else {
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const Party()));
-                                  },
-                                  child: _buildSummaryCard(
-                                    title: "Customer",
-                                    amount:
-                                        '${provider.customerTransaction ?? 0}',
-
-                                    ///
-                                    icon: Icons.person_rounded,
-                                    color: Colors.green.shade100,
-                                    iconColor: Colors.green.shade800,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-
-                          hPad5,
-
-                          ///supplier
-                          Consumer<DashboardReportProvider>(
-                            builder: (context, provider, _) {
-                              if (provider.isLoading) {
-                                return const Center(child: SizedBox());
-                              } else if (provider.error != null) {
-                                return Text("Error: ${provider.error}");
-                              } else {
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => const Party()));
-                                  },
-                                  child: _buildSummaryCard(
-                                    title: "Supplier",
-                                    amount:
-                                        '${provider.supplierTransaction ?? 0}',
-                                    icon: Icons.handshake_rounded,
-                                    color: Colors.red.shade100,
-                                    iconColor: Colors.red.shade800,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-
-                          hPad5,
-
-                          ///cash in hand
-                          Consumer<DashboardReportProvider>(
-                            builder: (context, provider, _) {
-                              if (provider.isLoading) {
-                                return const Center(child: SizedBox());
-                              } else if (provider.error != null) {
-                                return Text("Error: ${provider.error}");
-                              } else {
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => CashInHand()));
-                                  },
-                                  child: _buildSummaryCard(
-                                    title: "Cash",
-                                    amount: "${provider.cashInHand ?? 0}",
-                                    icon: Icons.attach_money_rounded,
-                                    color: Colors.blue.shade100,
-                                    iconColor: Colors.blue.shade800,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-
-                          hPad5,
-
-                          ///bank
-                          Consumer<DashboardReportProvider>(
-                            builder: (context, provider, _) {
-                              if (provider.isLoading) {
-                                return const Center(child: SizedBox());
-                              } else if (provider.error != null) {
-                                return Text("Error: ${provider.error}");
-                              } else {
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => const Bank()));
-                                  },
-                                  child: _buildSummaryCard(
-                                    title: "Bank",
-                                    amount: '${provider.bankBalance ?? 0}',
-                                    icon: Icons.account_balance_rounded,
-                                    color: Colors.orange.shade100,
-                                    iconColor: Colors.orange.shade800,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-
-                          hPad5,
-                        ],
+                    hPad5,
+                
+                    ///customer.
+                    Expanded(
+                      child: Consumer<DashboardReportProvider>(
+                        builder: (context, provider, _) {
+                          if (provider.isLoading) {
+                            return const Center(child: SizedBox());
+                          } else if (provider.error != null) {
+                            return Text("Error: ${provider.error}");
+                          } else {
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Party()));
+                              },
+                              child: _buildSummaryCard(
+                                title: "Customer",
+                                amount:
+                                    '${provider.customerTransaction ?? 0}',
+                      
+                                ///
+                                //icon: Icons.person_rounded,
+                                color: Colors.green.shade100,
+                                iconColor: Colors.green.shade800,
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ),
-                    const SizedBox(
-                      height: 8,
+                
+                    hPad5,
+                
+                    ///supplier
+                    Expanded(
+                      child: Consumer<DashboardReportProvider>(
+                        builder: (context, provider, _) {
+                          if (provider.isLoading) {
+                            return const Center(child: SizedBox());
+                          } else if (provider.error != null) {
+                            return Text("Error: ${provider.error}");
+                          } else {
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const Party()));
+                              },
+                              child: _buildSummaryCard(
+                                title: "Supplier",
+                                amount:
+                                    '${provider.supplierTransaction ?? 0}',
+                                //icon: Icons.handshake_rounded,
+                                color: Colors.red.shade100,
+                                iconColor: Colors.red.shade800,
+                              ),
+                            );
+                          }
+                        },
+                      ),
                     ),
+                
+                    hPad5,
+                
+                    ///cash in hand
+                    Expanded(
+                      child: Consumer<DashboardReportProvider>(
+                        builder: (context, provider, _) {
+                          if (provider.isLoading) {
+                            return const Center(child: SizedBox());
+                          } else if (provider.error != null) {
+                            return Text("Error: ${provider.error}");
+                          } else {
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => CashInHand()));
+                              },
+                              child: _buildSummaryCard(
+                                title: "Cash",
+                                amount: "${provider.cashInHand ?? 0}",
+                                //icon: Icons.attach_money_rounded,
+                                color: Colors.blue.shade100,
+                                iconColor: Colors.blue.shade800,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                
+                    hPad5,
+                
+                    ///bank
+                    Expanded(
+                      child: Consumer<DashboardReportProvider>(
+                        builder: (context, provider, _) {
+                          if (provider.isLoading) {
+                            return const Center(child: SizedBox());
+                          } else if (provider.error != null) {
+                            return Text("Error: ${provider.error}");
+                          } else {
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const Bank()));
+                              },
+                              child: _buildSummaryCard(
+                                title: "Bank",
+                                amount: '${provider.bankBalance ?? 0}',
+                                //icon: Icons.account_balance_rounded,
+                                color: Colors.orange.shade100,
+                                iconColor: Colors.orange.shade800,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                
+                    hPad5,
                   ],
                 ),
-
                 const SizedBox(
-                  height: 6,
+                  height: 8,
                 ),
+
+               
 
                 Text(
                   "Transaction History - Last 30 days",
@@ -360,9 +359,7 @@ class LayoutState extends State<Layout> {
 
                 //const SalesLast30DaysChart(),
 
-                const SizedBox(
-                  height: 6,
-                ),
+                
 
                 Text(
                   "Transaction summary",
@@ -416,16 +413,16 @@ class LayoutState extends State<Layout> {
                         'Expense'
                       ];
                       final legendLabels = [
-                        '৳${summary.received}',
-                        '৳${summary.payment}',
-                        '৳${summary.income}',
-                        '৳${summary.expense}',
+                        '৳ ${summary.received}',
+                        '৳ ${summary.payment}',
+                        '৳ ${summary.income}',
+                        '৳ ${summary.expense}',
                       ];
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 16),
+                          //const SizedBox(height: 16),
                           DonutChartViewRound(
                             values: values,
                             labels: labels,
@@ -459,7 +456,7 @@ class LayoutState extends State<Layout> {
 Widget _buildSummaryCard({
   required String title,
   required dynamic amount,
-  required IconData icon,
+  //required IconData icon,
   required Color color,
   required Color iconColor,
 }) {
@@ -468,7 +465,7 @@ Widget _buildSummaryCard({
     padding: const EdgeInsets.all(4),
     decoration: BoxDecoration(
       color: color,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(5),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withOpacity(0.05),
@@ -494,23 +491,22 @@ Widget _buildSummaryCard({
             ),
             const SizedBox(height: 4),
             Text(
-              '৳$amount',
+              '৳ $amount',
               style: TextStyle(
                 fontSize: 12,
                 color: iconColor,
-                fontWeight: FontWeight.bold,
+                
               ),
             ),
           ],
         ),
-        Icon(icon, size: 28, color: iconColor),
+        //Icon(icon, size: 28, color: iconColor),
       ],
     ),
   );
 }
 
 ///bottom sheet content.
-
 Widget _buildBottomSheetContent(BuildContext context) {
   return SafeArea(
     child: SizedBox(
