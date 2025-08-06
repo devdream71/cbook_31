@@ -186,7 +186,7 @@ class SalesController extends ChangeNotifier {
   void calculateTotalCash() {
     double subtotal = double.tryParse(addAmount()) ?? 0.0;
     double discount = double.tryParse(discountController.text) ?? 0.0;
-    double total = subtotal - discount + taxAmount;
+     
 
     notifyListeners(); // 👈 Important
   }

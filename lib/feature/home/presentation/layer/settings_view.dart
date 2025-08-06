@@ -28,11 +28,6 @@ class SettingsView extends StatelessWidget {
         destination: CompanySettings(), //SalesFormSetting
       ),
       const FormSettingMeta(
-        name: 'My Profile',
-        iconPath: 'assets/image/profile.svg',
-        destination: ProfileView(), //SalesFormSetting
-      ),
-      const FormSettingMeta(
         name: 'General Setting',
         iconPath: 'assets/image/setting_four.svg',
         destination: GeneralSettings(), //SalesFormSetting
@@ -66,6 +61,11 @@ class SettingsView extends StatelessWidget {
         name: 'Bill Settings',
         iconPath: 'assets/image/profile.svg',
         destination: BillSettingsView(), //SalesFormSetting
+      ),
+      const FormSettingMeta(
+        name: 'My Profile',
+        iconPath: 'assets/image/profile.svg',
+        destination: ProfileView(), //SalesFormSetting
       ),
     ];
 
@@ -112,7 +112,11 @@ class SettingsView extends StatelessWidget {
                 form.iconPath,
                 width: 20,
                 height: 20,
-                color: colorScheme.primary,
+                // color: colorScheme.primary,
+                colorFilter: ColorFilter.mode(
+                  colorScheme.primary,
+                  BlendMode.srcIn,
+                ),
               ),
               trailing: Icon(
                 Icons.arrow_forward_ios,

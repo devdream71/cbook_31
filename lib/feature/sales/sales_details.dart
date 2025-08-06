@@ -96,8 +96,7 @@ class _SalesDetailsState extends State<SalesDetails> {
                   final detail = widget.sale.purchaseDetails[index];
                   // Get item name from the provider
                   String itemName = saleProvider.getItemName(detail.itemId!);
-                  // Get item name and unit symbol
-                  //String itemName = saleProvider.getItemName(detail.itemId!);
+                   
                   String unitSymbol =
                       saleProvider.getUnitSymbol(detail.unitId!);
                   return Card(

@@ -1,8 +1,4 @@
 
-
-
-
-
 // API Model
 class VerificationResponse {
   final bool success;
@@ -35,18 +31,18 @@ class VerificationResponse {
 
 class UserData {
   int id;
-  String userType;
-  String name;
-  String email;
-  String emailVerifiedAt;
-  String phone;
+  dynamic userType;
+  dynamic name;
+  dynamic email;
+  dynamic emailVerifiedAt;
+  dynamic phone;
   dynamic countryId;
-  int createdId;
-  String verificationCode;
+  dynamic createdId;
+  dynamic verificationCode;
   dynamic avatar;
-  int status;
-  String createdAt;
-  String updatedAt;
+  dynamic status;
+  dynamic createdAt;
+  dynamic updatedAt;
 
   UserData({
     required this.id,

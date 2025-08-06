@@ -1,10 +1,11 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/account/ui/expense/add_expense.dart';
 import 'package:cbook_dt/feature/account/ui/expense/expence_edit.dart';
-import 'package:cbook_dt/feature/account/ui/expense/expense_view_details.dart';
 import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.dart';
 import 'package:cbook_dt/feature/paymentout/provider/payment_out_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Expanse extends StatefulWidget {
@@ -31,6 +32,37 @@ class _ExpanseState extends State<Expanse> {
 
     ///fetch acccount name.
     Provider.of<ExpenseProvider>(context, listen: false).fetchAccountNames();
+  }
+
+  Future<void> _selectDate(BuildContext context, DateTime initialDate,
+      Function(DateTime) onDateSelected) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      onDateSelected(picked);
+    }
+  }
+
+  ///start date.
+  DateTime selectedStartDate =
+      DateTime(DateTime.now().year, DateTime.now().month, 1);
+
+  ///end date.
+  DateTime selectedEndDate = DateTime.now();
+
+  ///formateDate
+  String _formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'N/A';
+    try {
+      final parsedDate = DateTime.parse(dateString);
+      return DateFormat('dd-MM-yyyy').format(parsedDate);
+    } catch (e) {
+      return 'Invalid Date';
+    }
   }
 
   @override
@@ -74,197 +106,275 @@ class _ExpanseState extends State<Expanse> {
         ],
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ///top date start , end and dropdown
-
-          Column(
+          Row(
             children: [
-              const SizedBox(
-                height: 5,
+              ///month start date
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.25,
+                child: GestureDetector(
+                  onTap: () => _selectDate(context, selectedStartDate, (date) {
+                    setState(() {
+                      selectedStartDate = date;
+                    });
+                  }),
+                  child: Container(
+                    height: 30,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "${selectedStartDate.day}/${selectedStartDate.month}/${selectedStartDate.year}",
+                          style: GoogleFonts.notoSansPhagsPa(
+                              fontSize: 12, color: Colors.black),
+                        ),
+                        const Icon(Icons.calendar_today, size: 14),
+                      ],
+                    ),
+                  ),
+                ),
               ),
+              const SizedBox(width: 2),
+              Text("-",
+                  style: GoogleFonts.notoSansPhagsPa(
+                      fontSize: 14, color: Colors.black)),
+              const SizedBox(width: 8),
+              // current date Picker
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.25,
+                child: GestureDetector(
+                  onTap: () => _selectDate(context, selectedEndDate, (date) {
+                    setState(() {
+                      selectedEndDate = date;
+                    });
+                  }),
+                  child: Container(
+                    height: 30,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      // border:
+                      //     Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "${selectedEndDate.day}/${selectedEndDate.month}/${selectedEndDate.year}",
+                          style: GoogleFonts.notoSansPhagsPa(
+                              fontSize: 12, color: Colors.black),
+                        ),
+                        const Icon(Icons.calendar_today, size: 14),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              //const SizedBox(width: 8),
+
+              const Spacer(),
+
               Consumer<ExpenseProvider>(
                 builder: (context, provider, child) {
                   return Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(0.0),
                     child: Text(
-                      'Total Expense: ৳ ${provider.totalExpense}',
+                      'T. Expense: ৳ ${provider.totalExpense}',
                       style: const TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                        //fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
                   );
                 },
               ),
-              Consumer<ExpenseProvider>(
-                builder: (context, provider, child) {
-                  if (provider.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+            ],
+          ),
+          Consumer<ExpenseProvider>(builder: (context, provider, child) {
+            final itemCount = provider.expenseList.length;
+            return Padding(
+              padding: const EdgeInsets.only(left: 6.0),
+              child: Text(
+                'Total Voucher: $itemCount',
+                style: const TextStyle(color: Colors.black, fontSize: 14),
+              ),
+            );
+          }),
+          const SizedBox(
+            height: 5,
+          ),
+          Consumer<ExpenseProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                  if (provider.expenseList.isEmpty) {
-                    return const Center(
-                        child: Text(
-                      'No expenses found.',
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
-                    ));
-                  }
+              if (provider.expenseList.isEmpty) {
+                return const Center(
+                    child: Text(
+                  'No expenses found.',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                ));
+              }
 
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: provider.expenseList.length,
-                    itemBuilder: (context, index) {
-                      final expense = provider.expenseList[index];
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: provider.expenseList.length,
+                itemBuilder: (context, index) {
+                  final expense = provider.expenseList[index];
 
-                      final expenseId = expense.id.toString();
+                  final expenseId = expense.id.toString();
 
-                      final accountName =
-                          provider.accountNameMap[expense.accountID ?? 0] ??
-                              'Account Not Found';
+                  final accountName =
+                      provider.accountNameMap[expense.accountID ?? 0] ??
+                          'Account Not Found';
 
-                      return InkWell(
-                        onLongPress: () {
-                          editDeleteDiolog(context, expenseId);
-                        },
-                        // onTap: () {
-                        //   ///navigation to expense deatils page
-                        //   Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //           builder: (context) =>
-                        //               const ExpanseDetails()));
-                        // },
-                        child: Card(
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius
-                                .zero, // ✅ Set corner radius to zero
-                          ),
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 1, horizontal: 4),
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  return InkWell(
+                    onLongPress: () {
+                      editDeleteDiolog(context, expenseId);
+                    },
+                    // onTap: () {
+                    //   ///navigation to expense deatils page
+                    //   Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (context) =>
+                    //               const ExpanseDetails()));
+                    // },
+                    child: Card(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.zero, // ✅ Set corner radius to zero
+                      ),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 1, horizontal: 4),
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                /// Voucher Number
+                                const Text(
+                                  "Paid Form",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+
+                                ///
+                                Text(
+                                  expense.receivedTo,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 2),
+
+                                /// Paid To
+                                // Text(
+                                //   expense.accountID == 1
+                                //       ? 'Cash'
+                                //       : expense.accountID == 11
+                                //           ? 'Cash A'
+                                //           : '${expense.accountID ?? 'Unknown'}', // fallback text
+                                //   style: const TextStyle(
+                                //     color: Colors.black,
+                                //     fontSize: 12,
+                                //   ),
+                                // ),
+
+                                // Text(
+                                //   expense.accountID == 1
+                                //       ? 'Cash'
+                                //       : expense.accountID == 11
+                                //           ? 'Cash A'
+                                //           : expense.accountID == 2
+                                //               ? 'Bank'
+                                //               : expense.accountID == 13
+                                //                   ? 'Bank A'
+                                //                   : '${expense.accountID ?? 'Unknown'}',
+                                //   style: const TextStyle(
+                                //     color: Colors.black,
+                                //     fontSize: 12,
+                                //   ),
+                                // ),
+
+                                ////======>
+                                // Text(
+                                //   expense.receivedTo.toLowerCase() ==
+                                //               'cash' ||
+                                //           expense.receivedTo
+                                //                   .toLowerCase() ==
+                                //               'bank'
+                                //       ? accountName
+                                //       : expense.accountID
+                                //           .toString(), // fallback
+                                //   style: const TextStyle(
+                                //     color: Colors.black,
+                                //     fontSize: 12,
+                                //   ),
+                                // ),
+
+                                const SizedBox(height: 2),
+                              ],
+                            ),
+                            Row(
                               children: [
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    /// Voucher Number
-                                    const Text(
-                                      "Paid Form",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-
-                                    ///
                                     Text(
-                                      expense.receivedTo,
+                                      _formatDate(expense.voucherDate),
+                                      //'${expense.voucherDate}',
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: Colors.black87,
                                       ),
                                     ),
-
-                                    const SizedBox(height: 2),
-
-                                    /// Paid To
-                                    // Text(
-                                    //   expense.accountID == 1
-                                    //       ? 'Cash'
-                                    //       : expense.accountID == 11
-                                    //           ? 'Cash A'
-                                    //           : '${expense.accountID ?? 'Unknown'}', // fallback text
-                                    //   style: const TextStyle(
-                                    //     color: Colors.black,
-                                    //     fontSize: 12,
-                                    //   ),
-                                    // ),
-
-                                    // Text(
-                                    //   expense.accountID == 1
-                                    //       ? 'Cash'
-                                    //       : expense.accountID == 11
-                                    //           ? 'Cash A'
-                                    //           : expense.accountID == 2
-                                    //               ? 'Bank'
-                                    //               : expense.accountID == 13
-                                    //                   ? 'Bank A'
-                                    //                   : '${expense.accountID ?? 'Unknown'}',
-                                    //   style: const TextStyle(
-                                    //     color: Colors.black,
-                                    //     fontSize: 12,
-                                    //   ),
-                                    // ),
-
-                                    ////======>
-                                    // Text(
-                                    //   expense.receivedTo.toLowerCase() ==
-                                    //               'cash' ||
-                                    //           expense.receivedTo
-                                    //                   .toLowerCase() ==
-                                    //               'bank'
-                                    //       ? accountName
-                                    //       : expense.accountID
-                                    //           .toString(), // fallback
-                                    //   style: const TextStyle(
-                                    //     color: Colors.black,
-                                    //     fontSize: 12,
-                                    //   ),
-                                    // ),
-
-                                    const SizedBox(height: 2),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          '${expense.voucherDate}',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${expense.voucherNumber}',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${expense.totalAmount} ৳',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ],
+                                    Text(
+                                      '${expense.voucherNumber}',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${expense.totalAmount} ৳',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ],
-                                )
+                                ),
                               ],
-                            ),
-                          ),
+                            )
+                          ],
                         ),
-                      );
-                    },
+                      ),
+                    ),
                   );
                 },
-              )
-            ],
+              );
+            },
           ),
         ],
       ),

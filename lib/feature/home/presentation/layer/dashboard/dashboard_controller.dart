@@ -30,7 +30,7 @@ class DashboardController extends ChangeNotifier {
   final List<ServiceBottmModel> buttonConfigurations = [
     // ServiceBottmModel('Sales', const SalesView()),
     //ServiceBottmModel('Purchase ', const PurchaseView()),
-    ServiceBottmModel('Sales', SalesScreen()),
+    ServiceBottmModel('Sales', const SalesScreen()),
     ServiceBottmModel('Purchase ', const PurchaseListApi()),
 
   ];

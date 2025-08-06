@@ -101,8 +101,7 @@ void main() async {
           ChangeNotifierProvider(create: (context) => LoginProvider()),
           ChangeNotifierProvider(create: (context) => ProfileProvider()),
           ChangeNotifierProvider(create: (context) => ItemProvider()),
-          ChangeNotifierProvider(
-              create: (context) => AddItemProvider()..fetchItems()),
+          ChangeNotifierProvider(create: (context) => AddItemProvider()..fetchItems()),
           ChangeNotifierProvider(create: (context) => ItemUpdateProvider()),
           ChangeNotifierProvider(create: (context) => UnitProvider()),
           ChangeNotifierProvider(create: (context) => SupplierProvider()),
@@ -117,8 +116,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => SalesReturnProvider()),
           ChangeNotifierProvider(create: (_) => CategoryProvider()),
           ChangeNotifierProvider(create: (_) => TaxProvider()..fetchTaxes()),
-          ChangeNotifierProvider(
-              create: (_) => SettingUserProvider()..fetchUsers()),
+          ChangeNotifierProvider(create: (_) => SettingUserProvider()..fetchUsers()),
           ChangeNotifierProvider(create: (_) => IncomeProvider()),
           ChangeNotifierProvider(create: (_) => ExpenseProvider()),
           ChangeNotifierProvider(create: (_) => PaymentVoucherProvider()),
@@ -128,11 +126,8 @@ void main() async {
           ChangeNotifierProvider(create: (_) => CashInHandProvider()),
           ChangeNotifierProvider(create: (_) => AdjustCashProvider()),
           ChangeNotifierProvider(create: (_) => BankAdjustProvider()),
-          ChangeNotifierProvider(
-              create: (_) => BillSettingsProvider()..fetchSettings()),
-          ChangeNotifierProvider(
-            create: (_) =>
-                DashboardReportProvider()..fetchCustomerTransaction(),
+          ChangeNotifierProvider(create: (_) => BillSettingsProvider()..fetchSettings()),
+          ChangeNotifierProvider(create: (_) =>DashboardReportProvider()..fetchCustomerTransaction(),
           ),
         ],
         child: const MyApp(),

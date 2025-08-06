@@ -4,6 +4,8 @@ import 'package:cbook_dt/feature/account/ui/income/income_details.dart';
 import 'package:cbook_dt/feature/account/ui/income/income_edit.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Income extends StatefulWidget {
@@ -23,235 +25,349 @@ class _IncomeState extends State<Income> {
     Provider.of<IncomeProvider>(context, listen: false).fetchAccountNames();
   }
 
+  Future<void> _selectDate(BuildContext context, DateTime initialDate,
+      Function(DateTime) onDateSelected) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      onDateSelected(picked);
+    }
+  }
+
+  ///start date.
+  DateTime selectedStartDate =
+      DateTime(DateTime.now().year, DateTime.now().month, 1);
+
+  ///end date.
+  DateTime selectedEndDate = DateTime.now();
+
+  String _formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'N/A';
+    try {
+      final parsedDate = DateTime.parse(dateString);
+      return DateFormat('dd-MM-yyyy').format(parsedDate);
+    } catch (e) {
+      return 'Invalid Date';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
+    final incomeProvider = Provider.of<IncomeProvider>(context, listen: false);
+
     return Scaffold(
-        backgroundColor: AppColors.sfWhite,
-        appBar: AppBar(
-          backgroundColor: colorScheme.primary,
-          centerTitle: true,
-          iconTheme: const IconThemeData(color: Colors.white),
-          automaticallyImplyLeading: true,
-          title: const Column(
-            children: [
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                'Income',
-                style: TextStyle(
-                    color: Colors.yellow,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                width: 5,
-              )
-            ],
-          ),
-          actions: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const IncomeCreate()));
-              },
-              child: CircleAvatar(
-                  radius: 12,
-                  backgroundColor: Colors.yellow,
-                  child: Icon(
-                    Icons.add,
-                    color: colorScheme.primary,
-                  )),
+      backgroundColor: AppColors.sfWhite,
+      appBar: AppBar(
+        backgroundColor: colorScheme.primary,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+        automaticallyImplyLeading: true,
+        title: const Column(
+          children: [
+            SizedBox(
+              width: 5,
             ),
+            Text(
+              'Income',
+              style: TextStyle(
+                  color: Colors.yellow,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              width: 5,
+            )
           ],
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ///top date start , end and dropdown
-            Column(
-              children: [
-                const SizedBox(
-                  height: 5,
-                ),
-                Consumer<IncomeProvider>(
-                  builder: (context, provider, _) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Total Income: ৳ ${provider.totalIncome}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+        actions: [
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const IncomeCreate()));
+            },
+            child: CircleAvatar(
+                radius: 12,
+                backgroundColor: Colors.yellow,
+                child: Icon(
+                  Icons.add,
+                  color: colorScheme.primary,
+                )),
+          ),
+        ],
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ///top date start , end and dropdown
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ///statre date and end date.
+              Row(
+                children: [
+                  ///month start date
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: GestureDetector(
+                      onTap: () =>
+                          _selectDate(context, selectedStartDate, (date) {
+                        setState(() {
+                          selectedStartDate = date;
+                        });
+                      }),
+                      child: Container(
+                        height: 30,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.transparent),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${selectedStartDate.day}/${selectedStartDate.month}/${selectedStartDate.year}",
+                              style: GoogleFonts.notoSansPhagsPa(
+                                  fontSize: 12, color: Colors.black),
+                            ),
+                            const Icon(Icons.calendar_today, size: 14),
+                          ],
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Text("-",
+                      style: GoogleFonts.notoSansPhagsPa(
+                          fontSize: 14, color: Colors.black)),
+                  const SizedBox(width: 8),
+                  // current date Picker
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: GestureDetector(
+                      onTap: () =>
+                          _selectDate(context, selectedEndDate, (date) {
+                        setState(() {
+                          selectedEndDate = date;
+                        });
+                      }),
+                      child: Container(
+                        height: 30,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          // border:
+                          //     Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${selectedEndDate.day}/${selectedEndDate.month}/${selectedEndDate.year}",
+                              style: GoogleFonts.notoSansPhagsPa(
+                                  fontSize: 12, color: Colors.black),
+                            ),
+                            const Icon(Icons.calendar_today, size: 14),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
 
-                Consumer<IncomeProvider>(
-                  builder: (context, provider, child) {
-                    if (provider.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                  const Spacer(),
 
-                    if (provider.incomeModel == null ||
-                        provider.incomeModel!.data.isEmpty) {
-                      return const Center(
-                          child: Text(
-                        'No Income Found',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ));
-                    }
+                  Consumer<IncomeProvider>(
+                    builder: (context, provider, _) {
+                      return Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text(
+                          'T. Income: ৳ ${provider.totalIncome}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            //fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
 
-                    final incomes = provider.incomeModel!.data;
+              Consumer<IncomeProvider>(
+                builder: (context, incomeProvider, child) {
+                  final itemCount = incomeProvider.incomeModel!.data.length;
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      'Total Voucher No: $itemCount',
+                      style: const TextStyle(color: Colors.black, fontSize: 14),
+                    ),
+                  );
+                },
+              ),
 
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: incomes.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 1), // 🔥 1px space
-                      itemBuilder: (context, index) {
-                        final income = incomes[index];
-                        final incomeId = income.id.toString();
+              const SizedBox(
+                height: 5,
+              ),
 
-                        final accountName =
-                            provider.accountNameMap[income.accountId ?? 0] ??
-                                'Account Not Found';
+              Consumer<IncomeProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 0.0, vertical: 0.0),
-                          child: InkWell(
-                            onLongPress: () {
-                              editDeleteDiolog(context, incomeId);
-                            },
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const IncomeDetails()),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xffe3e7fa),
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 4.0, vertical: 4.0),
-                                child: Row(
-                                  children: [
-                                    /// Left side
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          "Received To",
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          income.receivedTo.toLowerCase() ==
-                                                  'cash'
-                                              ? 'Cash In Hand'
-                                              : income.receivedTo
-                                                          .toLowerCase() ==
-                                                      'bank'
-                                                  ? 'Bank'
-                                                  : income.receivedTo,
-                                          style: const TextStyle(
+                  if (provider.incomeModel == null ||
+                      provider.incomeModel!.data.isEmpty) {
+                    return const Center(
+                        child: Text(
+                      'No Income Found',
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ));
+                  }
+
+                  final incomes = provider.incomeModel!.data;
+
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: incomes.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 1), // 🔥 1px space
+                    itemBuilder: (context, index) {
+                      final income = incomes[index];
+                      final incomeId = income.id.toString();
+
+                      final accountName =
+                          provider.accountNameMap[income.accountId ?? 0] ??
+                              'Account Not Found';
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0.0, vertical: 0.0),
+                        child: InkWell(
+                          onLongPress: () {
+                            editDeleteDiolog(context, incomeId);
+                          },
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const IncomeDetails()),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xffe3e7fa),
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 4.0, vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  /// Left side
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Received To",
+                                        style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 12,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        income.receivedTo.toLowerCase() ==
+                                                'cash'
+                                            ? 'Cash In Hand'
+                                            : income.receivedTo.toLowerCase() ==
+                                                    'bank'
+                                                ? 'Bank'
+                                                : income.receivedTo,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      Text(
+                                        income.receivedTo.toLowerCase() ==
+                                                    'cash' ||
+                                                income.receivedTo
+                                                        .toLowerCase() ==
+                                                    'bank'
+                                            ? accountName
+                                            : income.accountId
+                                                .toString(), // fallback
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const Spacer(),
+
+                                  /// Right side
+                                  Row(
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            _formatDate(income.voucherDate),
+                                            //income.voucherDate,
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 12),
                                           ),
-                                        ),
-
-                                        //income.receivedTo == 'bank' ?
-                                        // Text(
-                                        //   income.accountId.toString(),
-                                        //   style: const TextStyle(
-                                        //     color: Colors.black,
-                                        //     fontSize: 12,
-                                        //   ),
-                                        // ),
-
-                                        Text(
-                                          income.receivedTo.toLowerCase() ==
-                                                      'cash' ||
-                                                  income.receivedTo
-                                                          .toLowerCase() ==
-                                                      'bank'
-                                              ? accountName
-                                              : income.accountId
-                                                  .toString(), // fallback
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
+                                          Text(
+                                            income.voucherNumber,
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 12),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    const Spacer(),
-
-                                    /// Right side
-                                    Row(
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              income.voucherDate,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 12),
-                                            ),
-                                            Text(
-                                              income.voucherNumber,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 12),
-                                            ),
-                                            Text(
-                                              income.totalAmount.toString(),
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
+                                          Text(
+                                            income.totalAmount.toString(),
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                ],
                               ),
                             ),
                           ),
-                        );
-                      },
-                    );
-                  },
-                )
-              ],
-            ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              )
+            ],
+          ),
 
-            ///Bottom
-          ],
-        ));
+          ///Bottom
+        ],
+      ),
+    );
   }
 
   ///delete and edit show

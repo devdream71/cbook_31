@@ -4,6 +4,8 @@ import 'package:cbook_dt/feature/Received/provider/received_provider.dart';
 import 'package:cbook_dt/feature/Received/recevied_details.dart';
 import 'package:cbook_dt/feature/Received/recevied_edit.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 
@@ -15,17 +17,54 @@ class ReceivedList extends StatefulWidget {
 }
 
 class _ReceivedListState extends State<ReceivedList> {
+  
   @override
   void initState() {
     super.initState();
     Future.microtask(() =>
         Provider.of<ReceiveVoucherProvider>(context, listen: false)
             .fetchReceiveVouchers());
+
+    Future.microtask(() =>
+      Provider.of<ReceiveVoucherProvider>(context, listen: false)
+          .fetchReceiveVouchers(
+              startDate: selectedStartDate,
+              endDate: selectedEndDate));        
   }
 
   TextStyle ts = const TextStyle(color: Colors.black, fontSize: 12);
   TextStyle ts2 = const TextStyle(
       color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold);
+
+  Future<void> _selectDate(BuildContext context, DateTime initialDate,
+      Function(DateTime) onDateSelected) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      onDateSelected(picked);
+    }
+  }
+
+  ///start date.
+  DateTime selectedStartDate =
+      DateTime(DateTime.now().year, DateTime.now().month, 1);
+
+  ///end date.
+  DateTime selectedEndDate = DateTime.now();
+
+  String _formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'N/A';
+    try {
+      final parsedDate = DateTime.parse(dateString);
+      return DateFormat('dd-MM-yyyy').format(parsedDate);
+    } catch (e) {
+      return 'Invalid Date';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,33 +122,131 @@ class _ReceivedListState extends State<ReceivedList> {
               ///top date start , end and dropdown
 
               Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(
                     height: 5,
                   ),
+                  Row(
+                    children: [
+                      ///month start date
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: GestureDetector(
+                          // onTap: () =>
+                          //     _selectDate(context, selectedStartDate, (date) {
+                          //   setState(() {
+                          //     selectedStartDate = date;
+                          //   });
+                          // }),
+                           onTap: () => _selectDate(context, selectedStartDate, (date) {
+        setState(() => selectedStartDate = date);
+        Provider.of<ReceiveVoucherProvider>(context, listen: false)
+            .fetchReceiveVouchers(
+                startDate: selectedStartDate, endDate: selectedEndDate);
+      }),
+                          child: Container(
+                            height: 30,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.transparent),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${selectedStartDate.day}/${selectedStartDate.month}/${selectedStartDate.year}",
+                                  style: GoogleFonts.notoSansPhagsPa(
+                                      fontSize: 12, color: Colors.black),
+                                ),
+                                const Icon(Icons.calendar_today, size: 14),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      Text("-",
+                          style: GoogleFonts.notoSansPhagsPa(
+                              fontSize: 14, color: Colors.black)),
+                      const SizedBox(width: 8),
+                      // current date Picker
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: GestureDetector(
+                          // onTap: () =>
+                          //     _selectDate(context, selectedEndDate, (date) {
+                          //   setState(() {
+                          //     selectedEndDate = date;
+                          //   });
+                          // }),
+                           onTap: () => _selectDate(context, selectedEndDate, (date) {
+        setState(() => selectedEndDate = date);
+        Provider.of<ReceiveVoucherProvider>(context, listen: false)
+            .fetchReceiveVouchers(
+                startDate: selectedStartDate, endDate: selectedEndDate);
+      }),
+                          child: Container(
+                            height: 30,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              // border:
+                              //     Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${selectedEndDate.day}/${selectedEndDate.month}/${selectedEndDate.year}",
+                                  style: GoogleFonts.notoSansPhagsPa(
+                                      fontSize: 12, color: Colors.black),
+                                ),
+                                const Icon(Icons.calendar_today, size: 14),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
 
+                      const Spacer(),
 
+                      Consumer<ReceiveVoucherProvider>(
+                        builder: (context, provider, child) {
+                          if (provider.isLoading) {
+                            return const Center(child: Text(''));
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 0),
+                            child: Text(
+                              'T. Received: ৳${provider.totalReceived.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                // fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                   Consumer<ReceiveVoucherProvider>(
-  builder: (context, provider, child) {
-    if (provider.isLoading) {
-      return const Center(child: Text(''));
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Text(
-        'Total Received: ৳${provider.totalReceived.toStringAsFixed(2)}',
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-      ),
-    );
-  },
-),
-
-
+                      builder: (context, provider, child) {
+                    final voucherCount = provider.vouchers.length;
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        'Total Voucher: $voucherCount',
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                    );
+                  }),
                   Consumer<ReceiveVoucherProvider>(
                     builder: (context, provider, child) {
                       if (provider.isLoading) {
@@ -182,8 +319,8 @@ class _ReceivedListState extends State<ReceivedList> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                              voucher
-                                                                  .voucherDate,
+                                                              _formatDate(voucher
+                                                                  .voucherDate),
                                                               style:
                                                                   ts), // Date
                                                           Text(
@@ -276,7 +413,7 @@ class _ReceivedListState extends State<ReceivedList> {
               ///Bottom
             ],
           ),
-        ));
+        ),);
   }
 
   ///show edit and delete list from alart diolog

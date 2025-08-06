@@ -116,7 +116,7 @@ class _AdjustCashCreateState extends State<AdjustCashCreate> {
                               selectedAccount = selected.id.toString();
 
                               debugPrint(
-                                  "selectedCashName: $value, ID: ${selectedAccount}");
+                                  "selectedCashName: $value, ID: $selectedAccount");
                             });
                           },
                         ),

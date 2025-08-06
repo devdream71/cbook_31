@@ -74,10 +74,12 @@ class _AccountListPageState extends State<AccountListPage> {
         builder: (context, provider, _) {
           if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (provider.error != null) {
-            return Center(child: Text(provider.error!));
-          } else if (provider.accounts.isEmpty) {
-            return const Center(child: Text("No accounts found."));
+          } 
+          // else if (provider.error != null) {
+          //   return Center(child: Text(provider.error!, style: const TextStyle(color: Colors.black),));
+          // }
+           else if (provider.accounts.isEmpty) {
+            return const Center(child: Text("No accounts found.", style: TextStyle(color: Colors.black),));
           }
 
           return ListView.builder(

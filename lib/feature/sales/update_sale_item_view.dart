@@ -19,11 +19,11 @@ class UpdateSaleItemView extends StatefulWidget {
   final List<dynamic> itemList;
   final dynamic itemDiscoumtAmount;
   final dynamic itemDiscountPercentance;
-  final dynamic ItemtaxAmount;
-  final dynamic ItemtaxPercentance;
+  final dynamic itemtaxAmount;
+  final dynamic itemtaxPercentance;
 
   const UpdateSaleItemView({
-    Key? key,
+    super.key,
     required this.index,
     required this.itemDetail,
     required this.provider,
@@ -32,15 +32,15 @@ class UpdateSaleItemView extends StatefulWidget {
     required this.itemList,
     this.itemDiscountPercentance,
     this.itemDiscoumtAmount,
-    this.ItemtaxAmount,
-    this.ItemtaxPercentance,
-  }) : super(key: key);
+    this.itemtaxAmount,
+    this.itemtaxPercentance,
+  });
 
   @override
-  _UpdateSaleItemViewState createState() => _UpdateSaleItemViewState();
+  UpdateSaleItemViewState createState() => UpdateSaleItemViewState();
 }
 
-class _UpdateSaleItemViewState extends State<UpdateSaleItemView> {
+class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
   
   int? selectedItemId;
 
@@ -431,7 +431,7 @@ class _UpdateSaleItemViewState extends State<UpdateSaleItemView> {
                                           widget.provider.updateTaxPaecentId(
                                               '${selectedTaxId}_${widget.provider.selectedTaxPercent}');
 
-                                          print(
+                                          debugPrint(
                                               'tax_percent: "${controller.taxPercentValue}"');
 
                                           //controller.calculateSubtotal();

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cbook_dt/feature/home/model/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +40,7 @@ class ProfileProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         profile = ProfileResponse.fromJson(data).data;
-        debugPrint("Profile fetched successfully: ${profile!.name}");
+        //debugPrint("Profile fetched successfully: ${profile!.name}");
 
         // Save profile in SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();

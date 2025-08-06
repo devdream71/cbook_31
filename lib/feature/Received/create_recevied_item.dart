@@ -874,7 +874,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                     int accountId = selectedAccountId ?? 0;
                     int receivedFrom = customerId;
                     String percent = selectedDiscountType;
-                    double totalAmt = double.tryParse(totalAmount.text) ?? 0;
+                    //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
                     double paymentAmt =
                         double.tryParse(paymentAmount.text) ?? 0;
                     double discountAmt =

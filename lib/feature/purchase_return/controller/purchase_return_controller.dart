@@ -490,9 +490,9 @@ class PurchaseReturnController extends ChangeNotifier {
         final selectedUnitId = selectedUnitObj.id.toString();
         if (selectedUnitId == history.secondaryUnitID?.toString()) {
           unitIdWithName =
-              "${selectedUnitId}_${selectedUnitName}"; //_${history.unitQty}
+              "${selectedUnitId}_$selectedUnitName"; //_${history.unitQty}
         } else {
-          unitIdWithName = "${selectedUnitId}_${selectedUnitName}"; //_1
+          unitIdWithName = "${selectedUnitId}_$selectedUnitName"; //_1
         }
       } else {
         unitIdWithName = "0_Unknown_1"; // Fallback if no match
@@ -590,7 +590,7 @@ class PurchaseReturnController extends ChangeNotifier {
       required saleType}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      print("${billNo}");
+      debugPrint(billNo);
 
       final discount = discountController.text;
 

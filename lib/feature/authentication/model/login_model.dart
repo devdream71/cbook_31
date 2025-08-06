@@ -15,13 +15,13 @@ class LoginResponse {
 }
 
 class UserData {
-  final String email;
-  final String password;
+  final dynamic email;
+  final dynamic password;
   final String token;
   final int id;
-  final String name;
-  final String phone;
-  final String? avatar;
+  final dynamic name;
+  final dynamic phone;
+  final dynamic avatar;
 
   UserData({
     required this.email,

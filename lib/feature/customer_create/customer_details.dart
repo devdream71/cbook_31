@@ -261,7 +261,7 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
                                 ),
                                 const Text(
                                   "Receivable",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.green,

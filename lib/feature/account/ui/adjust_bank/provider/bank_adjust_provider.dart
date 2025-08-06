@@ -6,14 +6,12 @@ import 'package:cbook_dt/utils/date_time_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
- 
 
 class BankAdjustProvider with ChangeNotifier {
-
-   final TextEditingController accountNameController = TextEditingController();
+  final TextEditingController accountNameController = TextEditingController();
   final TextEditingController detailsController = TextEditingController();
 
-    DateTime _selectedDate = DateTime.now();
+  DateTime _selectedDate = DateTime.now();
 
   // String get formattedDate => DateTimeHelper.formatDate(_selectedDate);
 
@@ -27,8 +25,6 @@ class BankAdjustProvider with ChangeNotifier {
     }
   }
 
-
-
   List<BankAdjustAccount> _bankAccounts = [];
 
   List<BankAdjustAccount> get bankAccounts => _bankAccounts;
@@ -41,7 +37,8 @@ class BankAdjustProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = Uri.parse('https://commercebook.site/api/v1/accounts/bank-accounts');
+    final url =
+        Uri.parse('https://commercebook.site/api/v1/accounts/bank-accounts');
 
     try {
       final response = await http.get(url);
@@ -50,7 +47,8 @@ class BankAdjustProvider with ChangeNotifier {
         final data = json.decode(response.body);
 
         final List accountsJson = data['data'];
-        _bankAccounts = accountsJson.map((e) => BankAdjustAccount.fromJson(e)).toList();
+        _bankAccounts =
+            accountsJson.map((e) => BankAdjustAccount.fromJson(e)).toList();
       } else {
         _bankAccounts = [];
       }
@@ -62,8 +60,6 @@ class BankAdjustProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
-
-
 
   ///bank adjust added.
   // ✅ POST Adjust Bank
@@ -84,8 +80,7 @@ class BankAdjustProvider with ChangeNotifier {
         '&date=$date'
         '&details=$details');
 
-
-        debugPrint(' url $url');
+    debugPrint(' url $url');
 
     try {
       final response = await http.post(url);
@@ -102,39 +97,37 @@ class BankAdjustProvider with ChangeNotifier {
     }
   }
 
-
-
   ///delete bank
   Future<bool> deleteBankVoucher(int bankId) async {
-  final url =
-      Uri.parse('https://commercebook.site/api/v1/account/bank/remove/?id=$bankId');
+    final url = Uri.parse(
+        'https://commercebook.site/api/v1/account/bank/remove/?id=$bankId');
 
-  try {
-    final response = await http.post(url);
+    try {
+      final response = await http.post(url);
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['success'] == true) {
-        await fetchBankAccounts(); // Refresh list after delete
-        return true;
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          await fetchBankAccounts(); // Refresh list after delete
+          return true;
+        } else {
+          debugPrint("Delete failed: ${data['message']}");
+          return false;
+        }
       } else {
-        debugPrint("Delete failed: ${data['message']}");
+        debugPrint("Failed to delete: ${response.statusCode}");
         return false;
       }
-    } else {
-      debugPrint("Failed to delete: ${response.statusCode}");
+    } catch (e) {
+      debugPrint("Error deleting bank voucher: $e");
       return false;
     }
-  } catch (e) {
-    debugPrint("Error deleting bank voucher: $e");
-    return false;
   }
-}
 
+  ///accounht bank
 
-///accounht bank
-  
   BankAdjustmentResponse? bankAdjustmentModel;
+  double totalBankAmount = 0.0;
 
   Future<void> fetchBankAdjustments() async {
     _isLoading = true;
@@ -147,6 +140,20 @@ class BankAdjustProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         bankAdjustmentModel = BankAdjustmentResponse.fromJson(jsonData);
+
+        // Sum total bank amount
+        totalBankAmount = 0.0;
+        for (var item in bankAdjustmentModel?.data ?? []) {
+          double parsedAmount = 0.0;
+
+          if (item.amount is String) {
+            parsedAmount = double.tryParse(item.amount) ?? 0.0;
+          } else if (item.amount is num) {
+            parsedAmount = (item.amount as num).toDouble();
+          }
+
+          totalBankAmount += parsedAmount;
+        }
       }
     } catch (e) {
       debugPrint("BankAdjustmentProvider error: $e");
@@ -155,7 +162,4 @@ class BankAdjustProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
-
-
-
 }

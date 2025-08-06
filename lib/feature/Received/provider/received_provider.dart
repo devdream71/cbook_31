@@ -3,6 +3,7 @@ import 'package:cbook_dt/feature/Received/model/create_recived_voucher.dart';
 import 'package:cbook_dt/feature/Received/model/received_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class ReceiveVoucherProvider with ChangeNotifier {
   List<ReceiveVoucherModel> _vouchers = [];
@@ -11,11 +12,10 @@ class ReceiveVoucherProvider with ChangeNotifier {
   List<ReceiveVoucherModel> get vouchers => _vouchers;
 
    double _totalReceived = 0.0;
-   double get totalReceived => _totalReceived;
-
-  
+   double get totalReceived => _totalReceived;  
 
   ///recived voucher item show all
+
   // Future<void> fetchReceiveVouchers() async {
   //   isLoading = true;
   //   notifyListeners();
@@ -30,14 +30,27 @@ class ReceiveVoucherProvider with ChangeNotifier {
   //       final extractedData = json.decode(response.body);
   //       final List<dynamic> data = extractedData['data'];
 
+  //       // Check for total_received in last item
+  //       final lastItem = data.last;
+  //       if (lastItem is Map<String, dynamic> &&
+  //           lastItem.containsKey('total_received')) {
+  //         _totalReceived =
+  //             double.tryParse(lastItem['total_received'].toString()) ?? 0.0;
+  //         data.removeLast(); // Remove from list so it's not parsed as a voucher
+  //       } else {
+  //         _totalReceived = 0.0;
+  //       }
+
   //       _vouchers =
   //           data.map((item) => ReceiveVoucherModel.fromJson(item)).toList();
   //     } else {
   //       _vouchers = [];
+  //       _totalReceived = 0.0;
   //     }
   //   } catch (e) {
   //     debugPrint('Receive Voucher API Error: $e');
   //     _vouchers = [];
+  //     _totalReceived = 0.0;
   //   } finally {
   //     isLoading = false;
   //     notifyListeners();
@@ -45,46 +58,81 @@ class ReceiveVoucherProvider with ChangeNotifier {
   // }
 
 
-  Future<void> fetchReceiveVouchers() async {
-    isLoading = true;
-    notifyListeners();
 
+Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) async {
+  isLoading = true;
+  notifyListeners();
+
+  try {
     final url = Uri.parse('https://commercebook.site/api/v1/receive-vouchers');
+    final response = await http.get(url);
 
-    try {
-      final response = await http.get(url);
-      debugPrint('Receive Voucher API Response: ${response.body}');
+    if (response.statusCode == 200) {
+      final extractedData = json.decode(response.body);
 
-      if (response.statusCode == 200) {
-        final extractedData = json.decode(response.body);
-        final List<dynamic> data = extractedData['data'];
+      if (extractedData['success'] == true && extractedData['data'] != null) {
+        final List<dynamic> rawData = extractedData['data'];
 
-        // Check for total_received in last item
-        final lastItem = data.last;
+        /// handle total
+        final lastItem = rawData.last;
+        double totalReceived = 0.0;
+
         if (lastItem is Map<String, dynamic> &&
             lastItem.containsKey('total_received')) {
-          _totalReceived =
-              double.tryParse(lastItem['total_received'].toString()) ?? 0.0;
-          data.removeLast(); // Remove from list so it's not parsed as a voucher
-        } else {
-          _totalReceived = 0.0;
+          final receivedString = lastItem['total_received'].toString().replaceAll(',', '');
+          totalReceived = double.tryParse(receivedString) ?? 0.0;
+          rawData.removeLast();
         }
 
-        _vouchers =
-            data.map((item) => ReceiveVoucherModel.fromJson(item)).toList();
+        /// model conversion
+        List<ReceiveVoucherModel> allVouchers = rawData
+            .map((voucher) => ReceiveVoucherModel.fromJson(voucher))
+            .toList();
+
+        /// filter by date if needed
+        if (startDate != null && endDate != null) {
+          _vouchers = allVouchers.where((voucher) {
+            try {
+              final date = DateTime.parse(voucher.voucherDate ?? '');
+              return date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+                  date.isBefore(endDate.add(const Duration(days: 1)));
+            } catch (_) {
+              return false;
+            }
+          }).toList();
+        } else {
+          _vouchers = allVouchers;
+        }
+
+        _totalReceived = _vouchers.fold(0.0, (sum, v) => sum + v.totalAmount);
+          
+
       } else {
         _vouchers = [];
         _totalReceived = 0.0;
       }
-    } catch (e) {
-      debugPrint('Receive Voucher API Error: $e');
+    } else {
       _vouchers = [];
       _totalReceived = 0.0;
-    } finally {
-      isLoading = false;
-      notifyListeners();
     }
+  } catch (e) {
+    _vouchers = [];
+    _totalReceived = 0.0;
+  } finally {
+    isLoading = false;
+    notifyListeners();
   }
+}
+
+
+
+
+  
+
+
+
+  
+
 
   ///delete payment voucher
   Future<bool> deleteRecivedVoucher(String id) async {

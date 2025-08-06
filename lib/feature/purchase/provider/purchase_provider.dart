@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:cbook_dt/feature/purchase/model/purchase_create_model.dart';
 import 'package:cbook_dt/feature/transaction/model/purchase_tr_list_model.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+ 
 import 'package:http/http.dart' as http;
 
 class PurchaseProvider with ChangeNotifier {
@@ -93,8 +93,6 @@ class PurchaseProvider with ChangeNotifier {
 
   /// Store purchase API call
   
-
-
    PurchaseViewModel? _purchaseData;
    PurchaseViewModel? _filteredData;
   //bool _isLoading = false;

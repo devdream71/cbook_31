@@ -56,7 +56,7 @@ class _LayoutState extends State<_Layout> {
 
      // Initialize with loading text
   billController.text = "Loading...";
-  print('Bill controller initialized with: ${billController.text}');
+  debugPrint('Bill controller initialized with: ${billController.text}');
 
    
     Future.microtask(() async {
@@ -818,7 +818,7 @@ class _LayoutState extends State<_Layout> {
                                           ),
                                         );
 
-                                        Navigator.push(context, MaterialPageRoute(builder: (Context)=>HomeView()));
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const HomeView()));
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppColors.primaryColor,

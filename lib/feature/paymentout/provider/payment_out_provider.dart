@@ -20,91 +20,74 @@ class PaymentVoucherProvider with ChangeNotifier {
   double get totalPayment => _totalPayment;
 
   /////show payment voucher
-  // Future<void> fetchPaymentVouchers() async {
-  //   isLoading = true;
-  //   notifyListeners();
 
-  //   final url = Uri.parse('https://commercebook.site/api/v1/payment-vouchers');
 
-  //   try {
-  //     final response = await http.get(url);
-  //     debugPrint('API STATUS CODE: ${response.statusCode}');
-  //     debugPrint('API RESPONSE: ${response.body}');
+Future<void> fetchPaymentVouchers({DateTime? startDate, DateTime? endDate}) async {
+  isLoading = true;
+  notifyListeners();
 
-  //     if (response.statusCode == 200) {
-  //       final extractedData = json.decode(response.body);
-  //       if (extractedData['success'] == true && extractedData['data'] != null) {
-  //         final List<dynamic> data = extractedData['data'];
-  //         debugPrint('DATA LENGTH: ${data.length}');
-
-  //         _vouchers = data
-  //             .map((voucher) => PaymentVoucherModel.fromJson(voucher))
-  //             .toList();
-  //       } else {
-  //         debugPrint('Data key is null or API success false');
-  //         _vouchers = [];
-  //       }
-  //     } else {
-  //       debugPrint('HTTP ERROR');
-  //       _vouchers = [];
-  //     }
-  //   } catch (error) {
-  //     debugPrint('EXCEPTION: $error');
-  //     _vouchers = [];
-  //   } finally {
-  //     isLoading = false;
-  //     notifyListeners();
-  //   }
-  // }
-
-  Future<void> fetchPaymentVouchers() async {
-    isLoading = true;
-    notifyListeners();
-
+  try {
     final url = Uri.parse('https://commercebook.site/api/v1/payment-vouchers');
+    final response = await http.get(url);
 
-    try {
-      final response = await http.get(url);
-      debugPrint('API STATUS CODE: ${response.statusCode}');
-      debugPrint('API RESPONSE: ${response.body}');
+    if (response.statusCode == 200) {
+      final extractedData = json.decode(response.body);
 
-      if (response.statusCode == 200) {
-        final extractedData = json.decode(response.body);
+      if (extractedData['success'] == true && extractedData['data'] != null) {
+        final List<dynamic> rawData = extractedData['data'];
 
-        if (extractedData['success'] == true && extractedData['data'] != null) {
-          final List<dynamic> data = extractedData['data'];
+        // Get total payment from last item
+        final lastItem = rawData.last;
+        double totalAllPayment = 0.0;
 
-          // Remove the last element and check if it's total_payment
-          final lastItem = data.last;
-          if (lastItem is Map<String, dynamic> && lastItem.containsKey('total_payment')) {
-            //_totalPayment = double.tryParse(lastItem['total_payment'].toString()) ?? 0.0;
-           
-           final paymentString = lastItem['total_payment'].toString().replaceAll(',', '');
-_totalPayment = double.tryParse(paymentString) ?? 0.0;
-           
-            data.removeLast(); // remove total_payment from list
-          } else {
-            _totalPayment = 0.0;
-          }
-
-          _vouchers = data.map((voucher) => PaymentVoucherModel.fromJson(voucher)).toList();
-        } else {
-          _vouchers = [];
-          _totalPayment = 0.0;
+        if (lastItem is Map<String, dynamic> &&
+            lastItem.containsKey('total_payment')) {
+          final paymentString = lastItem['total_payment'].toString().replaceAll(',', '');
+          totalAllPayment = double.tryParse(paymentString) ?? 0.0;
+          rawData.removeLast();
         }
+
+        // Convert to model list
+        List<PaymentVoucherModel> allVouchers = rawData
+            .map((voucher) => PaymentVoucherModel.fromJson(voucher))
+            .toList();
+
+        // Filter based on passed dates
+        if (startDate != null && endDate != null) {
+          _vouchers = allVouchers.where((voucher) {
+            try {
+              final date = DateTime.parse(voucher.voucherDate ?? '');
+              return date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+                  date.isBefore(endDate.add(const Duration(days: 1)));
+            } catch (e) {
+              return false;
+            }
+          }).toList();
+        } else {
+          _vouchers = allVouchers;
+        }
+
+        // Total payment of only filtered vouchers
+        _totalPayment = _vouchers.fold(0.0, (sum, v) => sum + v.totalAmount);
       } else {
         _vouchers = [];
         _totalPayment = 0.0;
       }
-    } catch (error) {
-      debugPrint('EXCEPTION: $error');
+    } else {
       _vouchers = [];
       _totalPayment = 0.0;
-    } finally {
-      isLoading = false;
-      notifyListeners();
     }
+  } catch (e) {
+    _vouchers = [];
+    _totalPayment = 0.0;
+  } finally {
+    isLoading = false;
+    notifyListeners();
   }
+}
+
+
+
 
   //bill person api call.
   Future<void> fetchBillPersons() async {

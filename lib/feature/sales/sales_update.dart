@@ -1200,9 +1200,9 @@ class _salesUpdateScreenState extends State<salesUpdateScreen> {
                                                   provider.itemDiscountAmount,
                                               itemDiscountPercentance: provider
                                                   .itemDiscountPercentance,
-                                              ItemtaxAmount:
+                                              itemtaxAmount:
                                                   provider.itemTaxVatAmount,
-                                              ItemtaxPercentance: provider
+                                              itemtaxPercentance: provider
                                                   .itemTaxVatPercentance,
                                             ),
                                           ),

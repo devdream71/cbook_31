@@ -7,7 +7,6 @@ import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart'
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/invoice/invoice.dart';
-import 'package:cbook_dt/feature/invoice/invoice_a5.dart';
 import 'package:cbook_dt/feature/invoice/invoice_model.dart';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
@@ -99,7 +98,7 @@ class LayoutState extends State<Layout> {
 
     // Initialize with loading text
   billController.text = "Loading...";
-  print('Bill controller initialized with: ${billController.text}');
+  debugPrint('Bill controller initialized with: ${billController.text}');
 
 
     Future.microtask(() async {
@@ -1487,7 +1486,7 @@ Future<void> fetchAndSetBillNumber() async {
                                                     controller
                                                         .updateDiscountPercentageCash(
                                                             value);
-                                                    ;
+                                                    
                                                   },
                                                   decoration: InputDecoration(
                                                     hintText: "%",
@@ -3038,7 +3037,7 @@ Future<void> fetchAndSetBillNumber() async {
                                   // Fallback if no valid unit string was found
                                   if (finalUnitString.isEmpty) {
                                     finalUnitString =
-                                        "${selectedUnitObj.id}_${selectedUnit}"; // Default to 1 if no match //"${selectedUnitObj.id}_${selectedUnit}_1";
+                                        "${selectedUnitObj.id}_$selectedUnit"; // Default to 1 if no match //"${selectedUnitObj.id}_${selectedUnit}_1";
                                     controller.selectedUnitIdWithNameFunction(
                                         finalUnitString);
                                   }

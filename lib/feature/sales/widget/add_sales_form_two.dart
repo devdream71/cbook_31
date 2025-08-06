@@ -211,7 +211,7 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
     }
 
     _filteredCustomers = provider.customerResponse?.data
-            ?.where((customer) =>
+            .where((customer) =>
                 customer.name.toLowerCase().contains(value.toLowerCase()))
             .toList() ??
         [];

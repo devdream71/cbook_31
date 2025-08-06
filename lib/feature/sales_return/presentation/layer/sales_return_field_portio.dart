@@ -95,27 +95,24 @@ class FieldPortion extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          //color: Colors.pink,
-                          child: SizedBox(
-                              height: 30,
-                              child: Checkbox(
-                                value: controller.isDisocunt,
-                                onChanged: (bool? value) {
-                                  if (controller.isCash) {
-                                    // Allow checking, but prevent unchecking
-                                    if (value == true) {
-                                      controller.isDisocunt = true;
-                                      controller.notifyListeners();
-                                    }
-                                  } else {
-                                    // Allow normal toggling when not cash
-                                    controller.isDisocunt = value ?? false;
+                        SizedBox(
+                            height: 30,
+                            child: Checkbox(
+                              value: controller.isDisocunt,
+                              onChanged: (bool? value) {
+                                if (controller.isCash) {
+                                  // Allow checking, but prevent unchecking
+                                  if (value == true) {
+                                    controller.isDisocunt = true;
                                     controller.notifyListeners();
                                   }
-                                },
-                              )),
-                        ),
+                                } else {
+                                  // Allow normal toggling when not cash
+                                  controller.isDisocunt = value ?? false;
+                                  controller.notifyListeners();
+                                }
+                              },
+                            )),
                         const Text("",
                             style:
                                 TextStyle(color: Colors.green, fontSize: 12)),
@@ -224,17 +221,14 @@ class FieldPortion extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          //color: Colors.pink,
-                          child: SizedBox(
-                            height: 30,
-                            child: Checkbox(
-                              value: controller.isSubTotalCredit,
-                              onChanged: (bool? value) {
-                                controller.isSubTotalCredit = value ?? false;
-                                controller.notifyListeners();
-                              },
-                            ),
+                        SizedBox(
+                          height: 30,
+                          child: Checkbox(
+                            value: controller.isSubTotalCredit,
+                            onChanged: (bool? value) {
+                              controller.isSubTotalCredit = value ?? false;
+                              controller.notifyListeners();
+                            },
                           ),
                         ),
                         const Text("",

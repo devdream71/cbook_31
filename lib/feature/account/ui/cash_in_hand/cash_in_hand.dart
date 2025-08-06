@@ -25,6 +25,13 @@ class _CashInHandState extends State<CashInHand> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
+    // setState(() {
+    //   final cashInHandProvider =
+    //       Provider.of<CashInHandProvider>(context, listen: false);
+
+    //   final cashInHandSum = cashInHandProvider.amountSum;
+    // });
+
     return Scaffold(
         backgroundColor: AppColors.sfWhite,
         appBar: AppBar(
@@ -106,100 +113,118 @@ class _CashInHandState extends State<CashInHand> {
               ));
             }
 
-            return ListView.builder(
-              itemCount: dataList.length,
-              itemBuilder: (context, index) {
-                final item = dataList[index];
-
-                final cashID = dataList[index].id;
-
-                return InkWell(
-                  onLongPress: () {
-                    editDeleteDiolog(context, cashID!);
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(2)),
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Left Column: Sales Number and Date
-                          Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.billNumber ?? '',
-                                  style: GoogleFonts.lato(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  item.date ?? '',
-                                  style: GoogleFonts.lato(
-                                    fontSize: 12,
-                                    color: Colors.grey[700],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Middle Column: Bill Type and Account
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.billType ?? '',
-                                  style: GoogleFonts.lato(
-                                    fontSize: 14,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  item.account ?? '',
-                                  style: GoogleFonts.lato(
-                                    fontSize: 14,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Right side: Amount
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: Alignment.topRight,
-                              child: Text(
-                                "৳ ${item.amount ?? ''}",
-                                style: GoogleFonts.lato(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Text(
+                    "Total Amount: ৳ ${provider.amountSum.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                      fontSize: 14,
+                      //fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
-                );
-              },
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: dataList.length,
+                    itemBuilder: (context, index) {
+                      final item = dataList[index];
+                      final cashID = dataList[index].id;
+                      return InkWell(
+                        onLongPress: () {
+                          editDeleteDiolog(context, cashID!);
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(2)),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 2),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Left Column: Sales Number and Date
+                                Expanded(
+                                  flex: 2,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item.billNumber ?? '',
+                                        style: GoogleFonts.lato(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        item.date ?? '',
+                                        style: GoogleFonts.lato(
+                                          fontSize: 12,
+                                          color: Colors.grey[700],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Middle Column: Bill Type and Account
+                                Expanded(
+                                  flex: 3,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item.billType ?? '',
+                                        style: GoogleFonts.lato(
+                                          fontSize: 14,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        item.account ?? '',
+                                        style: GoogleFonts.lato(
+                                          fontSize: 14,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Right side: Amount
+                                Expanded(
+                                  flex: 1,
+                                  child: Align(
+                                    alignment: Alignment.topRight,
+                                    child: Text(
+                                      "৳ ${item.amount ?? ''}",
+                                      style: GoogleFonts.lato(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             );
           },
         ));
@@ -327,7 +352,7 @@ class _CashInHandState extends State<CashInHand> {
               bool success = await provider.deleteCashInHand(cashID);
 
               if (success) {
-                 // ✅ Re-fetch the latest list
+                // ✅ Re-fetch the latest list
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -336,8 +361,7 @@ class _CashInHandState extends State<CashInHand> {
                   ),
                 );
 
-                await provider
-                    .fetchCashInHandData();
+                await provider.fetchCashInHandData();
 
                 Navigator.of(context).pop();
               } else {
@@ -355,8 +379,6 @@ class _CashInHandState extends State<CashInHand> {
       ),
     );
   }
-
-
 }
 
 

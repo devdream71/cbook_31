@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
-import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.dart';
+ 
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
 import 'package:cbook_dt/feature/customer_create/model/payment_voicer_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
@@ -231,7 +231,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
     //final provider = Provider.of<IncomeProvider>(context);
     final provider = context.watch<IncomeProvider>();
     final colorScheme = Theme.of(context).colorScheme;
-    final providerExpense = Provider.of<ExpenseProvider>(context, listen: true);
+    //final providerExpense = Provider.of<ExpenseProvider>(context, listen: true);
 
     // List of forms with metadata
     return Scaffold(
@@ -960,7 +960,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                     int paymentTo = selectedAccountId ?? 0; // or payment to id
                     String percent =
                         selectedDiscountType; // "%", "percent", or "flat", adjust as needed
-                    double totalAmt = double.tryParse(totalAmount.text) ?? 0;
+                    //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
                     double paymentAmt =
                         double.tryParse(paymentAmount.text) ?? 0;
                     double discountAmt =

@@ -75,7 +75,7 @@ class _ItemListPageState extends State<ItemListPage> {
     return quantities.where((qty) => qty > 0).length;
   }
 
-  DateTime _selectedDate = DateTime.now();
+  final DateTime _selectedDate = DateTime.now();
 
   String get formattedDate => DateTimeHelper.formatDate(_selectedDate);
 
@@ -1450,75 +1450,72 @@ class _ItemListPageState extends State<ItemListPage> {
                             ),
 
                             ////discount percentan ande amount
-                            Container(
-                              //color: Colors.tealAccent,
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 0.0),
-                                          //discount %
-                                          child: SizedBox(
-                                            width: 150,
-                                            child: AddSalesFormfield(
-                                              labelText: "Discount (%)",
-                                              //label: " ", //Discount (%)
-                                              controller: controller
-                                                  .discountPercentance,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  controller.lastChanged =
-                                                      'percent';
-                                                  controller
-                                                      .calculateSubtotal();
-                                                });
-                                              },
-                                            ),
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 0.0),
+                                        //discount %
+                                        child: SizedBox(
+                                          width: 150,
+                                          child: AddSalesFormfield(
+                                            labelText: "Discount (%)",
+                                            //label: " ", //Discount (%)
+                                            controller: controller
+                                                .discountPercentance,
+                                            keyboardType:
+                                                TextInputType.number,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                controller.lastChanged =
+                                                    'percent';
+                                                controller
+                                                    .calculateSubtotal();
+                                              });
+                                            },
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      width: 2,
-                                    ),
-                                    Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 0.0),
-                                          //discount amount
-                                          child: SizedBox(
-                                            width: 150,
-                                            child: AddSalesFormfield(
-                                              //label: "", //Amount
-                                              labelText: "Amount",
-                                              controller:
-                                                  controller.discountAmount,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  controller.lastChanged =
-                                                      'amount';
-
-                                                  controller
-                                                      .calculateSubtotal();
-                                                });
-                                              },
-                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    width: 2,
+                                  ),
+                                  Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 0.0),
+                                        //discount amount
+                                        child: SizedBox(
+                                          width: 150,
+                                          child: AddSalesFormfield(
+                                            //label: "", //Amount
+                                            labelText: "Amount",
+                                            controller:
+                                                controller.discountAmount,
+                                            keyboardType:
+                                                TextInputType.number,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                controller.lastChanged =
+                                                    'amount';
+                            
+                                                controller
+                                                    .calculateSubtotal();
+                                              });
+                                            },
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ]),
-                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ]),
 
                             const SizedBox(
                               height: 6,

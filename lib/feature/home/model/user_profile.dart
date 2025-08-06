@@ -1,12 +1,12 @@
 class UserProfile {
   final int id;
-  final String userType;
-  final String name;
-  final String email;
-  final String? phone;
-  final String? avatar;
-  final String createdAt;
-  final String updatedAt;
+  final dynamic userType;
+  final dynamic name;
+  final dynamic email;
+  final dynamic phone;
+  final dynamic avatar;
+  final dynamic createdAt;
+  final dynamic updatedAt;
 
   UserProfile({
     required this.id,

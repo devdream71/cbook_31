@@ -243,7 +243,7 @@ class _ReceviedEditState extends State<ReceviedEdit> {
         Provider.of<CustomerProvider>(context, listen: false);
 
     //Wait for customers to load then set the selected one
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       if (customerProvider.customerResponse?.data != null) {
         final customer = customerProvider.findCustomerById(customerId);
 
@@ -282,10 +282,10 @@ class _ReceviedEditState extends State<ReceviedEdit> {
 
   @override
   Widget build(BuildContext context) {
-    print("recived voucer id ====${widget.receviedId}");
-    print("voucher number ====${voucherNumberController.text}");
-    print("total amount ====${totalAmount.text}");
-    print("discount amount ====${discountAmount.text}");
+    debugPrint("recived voucer id ====${widget.receviedId}");
+    debugPrint("voucher number ====${voucherNumberController.text}");
+    debugPrint("total amount ====${totalAmount.text}");
+    debugPrint("discount amount ====${discountAmount.text}");
 
     final controller = context.watch<SalesController>();
     final provider = Provider.of<IncomeProvider>(context);
@@ -636,9 +636,9 @@ class _ReceviedEditState extends State<ReceviedEdit> {
                                 final bool isExpanded =
                                     expandedIndexes.contains(index);
 
-                                final int salesId = invoice.id;
+                                //final int salesId = invoice.id;
 
-                                print("Tapped Invoice ID: ${invoice.id}");
+                                debugPrint("Tapped Invoice ID: ${invoice.id}");
 
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -855,7 +855,7 @@ class _ReceviedEditState extends State<ReceviedEdit> {
                       width: 76,
                       child: CustomDropdownTwo(
                         hint: '',
-                        items: ['%', '৳'],
+                        items: const ['%', '৳'],
                         width: double.infinity,
                         height: 30,
                         labelText: selectedDiscountType,
@@ -965,7 +965,7 @@ class _ReceviedEditState extends State<ReceviedEdit> {
                     int accountId = selectedAccountId ?? 0;
                     int receivedFrom = customerId;
                     String percent = selectedDiscountType;
-                    double totalAmt = double.tryParse(totalAmount.text) ?? 0;
+                    //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
                     double paymentAmt =
                         double.tryParse(paymentAmount.text) ?? 0;
                     double discountAmt =

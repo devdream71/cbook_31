@@ -16,8 +16,10 @@ class OtpScreenNewCompany extends StatefulWidget {
 }
 
 class OtpScreenNewCompanyState extends State<OtpScreenNewCompany> {
+
   final List<TextEditingController> _otpControllers =
       List.generate(6, (index) => TextEditingController());
+
   bool _isSubmitting = false;
 
   void _verifyOtp() async {
@@ -32,8 +34,11 @@ class OtpScreenNewCompanyState extends State<OtpScreenNewCompany> {
     }
 
     setState(() => _isSubmitting = true);
+
     final provider = Provider.of<VerificationProvider>(context, listen: false);
-    await provider.verifyOtp(widget.id, otp);
+
+    await provider.verifyOtp(widget.id, otp,);
+
     setState(() => _isSubmitting = false);
 
     if (provider.errorMessage?.isNotEmpty ?? false) {
@@ -51,9 +56,9 @@ class OtpScreenNewCompanyState extends State<OtpScreenNewCompany> {
           context,
           MaterialPageRoute(
             builder: (context) => UserRoll(
-              name: userData.name,
-              data: userData.createdAt,
-              roll: userData.userType,
+              name: userData.name ?? '' ,
+              data: userData.createdAt ?? '',
+              roll: userData.userType ?? '',
               email: userData.email,
             ),
           ),
@@ -61,6 +66,7 @@ class OtpScreenNewCompanyState extends State<OtpScreenNewCompany> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

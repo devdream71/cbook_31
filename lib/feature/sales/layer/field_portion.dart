@@ -309,28 +309,25 @@ class _FieldPortionState extends State<FieldPortion> {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          //color: Colors.pink,
-                          child: SizedBox(
-                              height: 30,
-                              child: Checkbox(
-                                value: controller.isReceived,
-                                onChanged: (bool? value) {
-                                  if (controller.isCash) {
-                                    // Allow checking, but prevent unchecking
-                                    if (value == true) {
-                                      controller.isReceived = true;
-                                      controller.notifyListeners();
-                                      debugPrint("cash recived. ${controller.isReceived}");
-                                    }
-                                  } else {
-                                    // Allow normal toggling when not cash
-                                    controller.isReceived = value ?? false;
+                        SizedBox(
+                            height: 30,
+                            child: Checkbox(
+                              value: controller.isReceived,
+                              onChanged: (bool? value) {
+                                if (controller.isCash) {
+                                  // Allow checking, but prevent unchecking
+                                  if (value == true) {
+                                    controller.isReceived = true;
                                     controller.notifyListeners();
+                                    debugPrint("cash recived. ${controller.isReceived}");
                                   }
-                                },
-                              )),
-                        ),
+                                } else {
+                                  // Allow normal toggling when not cash
+                                  controller.isReceived = value ?? false;
+                                  controller.notifyListeners();
+                                }
+                              },
+                            )),
                         const Text("",
                             style:
                                 TextStyle(color: Colors.green, fontSize: 12)),

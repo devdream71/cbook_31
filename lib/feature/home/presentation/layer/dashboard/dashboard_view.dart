@@ -295,8 +295,10 @@ class LayoutState extends State<Layout> {
                               },
                               child: _buildSummaryCard(
                                 title: "Cash",
-                                amount: "${provider.cashInHand ?? 0}",
+                                //amount: "${provider.cashInHand.toStringAsFixed(2) ?? 0}",
+                                
                                 //icon: Icons.attach_money_rounded,
+                                amount: double.tryParse(provider.cashInHand?.toString() ?? '')?.toStringAsFixed(2) ?? '0.00',
                                 color: Colors.blue.shade100,
                                 iconColor: Colors.blue.shade800,
                               ),
@@ -567,7 +569,7 @@ Widget _buildBottomSheetContent(BuildContext context) {
                   InkWell(
                       onTap: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => SalesScreen()));
+                            MaterialPageRoute(builder: (_) => const SalesScreen()));
 
                         // showFeatureNotAvailableDialog(context);
                       },

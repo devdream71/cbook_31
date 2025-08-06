@@ -331,7 +331,7 @@ class PurchaseUpdateProvider extends ChangeNotifier {
     final url =
         "https://commercebook.site/api/v1/purchase/update?id=${purchaseEditResponse.data!.purchaseDetails![0].purchaseId}&user_id=${prefs.getInt("user_id")}&customer_id=${purchaseEditResponse.data!.customerId}&bill_number=${billNumberController.text}&purchase_date=$formattedDate&details_notes=notes&gross_total=${getSubTotal()}&discount=${discountTotalController.text}&payment_out=${isCash ? 1 : 0}&payment_amount=${getGrossTotal()}&bill_person_id=$billPersonID";
 
-    debugPrint("url  ===> ${url}");
+    debugPrint("url  ===> $url");
 
     // Prepare request body
     final requestBody = {"purchase_items": purchaseUpdateList};
@@ -565,7 +565,8 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                           Consumer<PurchaseUpdateProvider>(
                                             builder:
                                                 (context, provider, child) {
-                                              return (provider.customerId != null  )
+                                              return (provider.customerId !=
+                                                      null)
                                                   ? Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -584,8 +585,9 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                                               height: 58,
                                                               width: 180,
                                                               child: provider.customerId ==
-                                                          null ||
-                                                      provider.customerId ==0 
+                                                                          null ||
+                                                                      provider.customerId ==
+                                                                          0
                                                                   ? InkWell(
                                                                       onTap:
                                                                           () {
@@ -1248,7 +1250,7 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                   ),
                                 ),
 
-                                SizedBox(
+                                const SizedBox(
                                   height: 8,
                                 ),
 
@@ -1411,8 +1413,6 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
 
                                   debugPrint(
                                       'bill number ${billController.text}');
-
-                                  
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.blue,

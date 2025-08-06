@@ -68,13 +68,17 @@ class UserCeate extends StatelessWidget {
       ),
       body: userSettingProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : userSettingProvider.hasError
-              ? const Center(
-                  child: Text(
-                  "Something went wrong.",
-                  style: TextStyle(color: Colors.black),
-                ))
-              : userSettingProvider.users.isEmpty
+          : 
+          
+          // userSettingProvider.hasError
+          //     ? const Center(
+          //         child: Text(
+          //         "Something went wrong.",
+          //         style: TextStyle(color: Colors.black),
+          //       ))
+          //     : 
+              
+              userSettingProvider.users.isEmpty
                   ? const Center(
                       child: Text(
                       "No user found.",

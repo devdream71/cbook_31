@@ -92,13 +92,13 @@ class Data {
     if (json['purchase_details'] != null) {
       purchaseDetails = <PurchaseDetails>[];
       json['purchase_details'].forEach((v) {
-        purchaseDetails!.add(new PurchaseDetails.fromJson(v));
+        purchaseDetails!.add(PurchaseDetails.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['user_id'] = userId;
     data['supplier_name'] = supplier;
     data['bill_number'] = billNumber;
@@ -180,7 +180,7 @@ class PurchaseDetails {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['purchase_id'] = purchaseId;
     //data['purchase_details_id'] = this.purchaseDetailsId;

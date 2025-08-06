@@ -71,6 +71,9 @@ class UnitListViewState extends State<UnitListView> {
           Expanded(
             child: Consumer<UnitDTProvider>(
               builder: (context, provider, child) {
+                if(provider.units.isEmpty) {
+                  return const Center(child:   Text('No Data Fount', style: TextStyle(color:Colors.black),));
+                }
                 if (provider.isLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -81,7 +84,9 @@ class UnitListViewState extends State<UnitListView> {
                   itemBuilder: (context, index) {
                     final unit = provider.units[index];
 
-                    final unitId = provider.units[index].id;
+                    
+                    //final unitId = provider.units[index].id;
+                    
                     return InkWell(
                       onLongPress: () {
                         _openUnitEditDeleteDialog(unit);

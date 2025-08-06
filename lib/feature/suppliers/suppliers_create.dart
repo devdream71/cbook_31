@@ -142,7 +142,8 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
   Widget build(BuildContext context) {
     final supplierProvider = Provider.of<SupplierProvider>(context);
 
-    final textTheme = Theme.of(context).textTheme;
+    //final textTheme = Theme.of(context).textTheme;
+    
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(

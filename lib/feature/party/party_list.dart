@@ -5,7 +5,6 @@ import 'package:cbook_dt/feature/customer_create/model/customer_create.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/dashboard_report/provider/dashbord_report_provider.dart';
-import 'package:cbook_dt/feature/home/presentation/widget/reusable_box.dart';
 import 'package:cbook_dt/feature/party/party_intro_page.dart';
 import 'package:cbook_dt/feature/suppliers/provider/suppliers_list.dart';
 import 'package:flutter/material.dart';
@@ -460,30 +459,26 @@ class _PartyState extends State<Party> {
 
                                       Row(
                                         children: [
-                                          Container(
-                                            width:
-                                                190, // 🔧 adjust width as needed
-                                            child: Text(
-                                              (customers.proprietorName !=
-                                                          null &&
-                                                      customers.proprietorName!
-                                                          .trim()
-                                                          .isNotEmpty)
-                                                  ? customers.phone ??
-                                                      'No Phone'
-                                                  : (customers.address ??
-                                                          'No Address')
-                                                      .replaceAll('\n', ' ')
-                                                      .replaceAll('\r', ''),
-                                              style:
-                                                  GoogleFonts.notoSansPhagsPa(
-                                                fontSize: 10,
-                                                color: Colors.grey[800],
-                                              ),
-                                              softWrap: true,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
+                                          Text(
+                                            (customers.proprietorName !=
+                                                        null &&
+                                                    customers.proprietorName!
+                                                        .trim()
+                                                        .isNotEmpty)
+                                                ? customers.phone ??
+                                                    'No Phone'
+                                                : (customers.address ??
+                                                        'No Address')
+                                                    .replaceAll('\n', ' ')
+                                                    .replaceAll('\r', ''),
+                                            style:
+                                                GoogleFonts.notoSansPhagsPa(
+                                              fontSize: 10,
+                                              color: Colors.grey[800],
                                             ),
+                                            softWrap: true,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
                                       ),

@@ -1,9 +1,10 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
-import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:cbook_dt/feature/sales_return/presentation/sales_return_view.dart';
 import 'package:cbook_dt/feature/sales_return/provider/sale_return_provider.dart';
 import 'package:cbook_dt/feature/sales_return/sales_return_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class SalesReturnScreen extends StatefulWidget {
@@ -23,6 +24,36 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
   }
 
   final TextEditingController _searchController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context, DateTime initialDate,
+      Function(DateTime) onDateSelected) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      onDateSelected(picked);
+    }
+  }
+
+  ///start date.
+  DateTime selectedStartDate =
+      DateTime(DateTime.now().year, DateTime.now().month, 1);
+
+  ///end date.
+  DateTime selectedEndDate = DateTime.now();
+
+  String _formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'N/A';
+    try {
+      final parsedDate = DateTime.parse(dateString);
+      return DateFormat('dd-MM-yyyy').format(parsedDate);
+    } catch (e) {
+      return 'Invalid Date';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,23 +102,108 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
         ],
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Consumer<SalesReturnProvider>(
-            builder: (context, provider, child) {
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Text(
-                  'Total Sales Return: ৳${provider.totalReturn.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+          Row(
+            children: [
+              ///month start date
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.25,
+                child: GestureDetector(
+                  onTap: () => _selectDate(context, selectedStartDate, (date) {
+                    setState(() {
+                      selectedStartDate = date;
+                    });
+                  }),
+                  child: Container(
+                    height: 30,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "${selectedStartDate.day}/${selectedStartDate.month}/${selectedStartDate.year}",
+                          style: GoogleFonts.notoSansPhagsPa(
+                              fontSize: 12, color: Colors.black),
+                        ),
+                        const Icon(Icons.calendar_today, size: 14),
+                      ],
+                    ),
                   ),
                 ),
-              );
-            },
+              ),
+              const SizedBox(width: 2),
+              Text("-",
+                  style: GoogleFonts.notoSansPhagsPa(
+                      fontSize: 14, color: Colors.black)),
+              const SizedBox(width: 8),
+              // current date Picker
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.25,
+                child: GestureDetector(
+                  onTap: () => _selectDate(context, selectedEndDate, (date) {
+                    setState(() {
+                      selectedEndDate = date;
+                    });
+                  }),
+                  child: Container(
+                    height: 30,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      // border:
+                      //     Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "${selectedEndDate.day}/${selectedEndDate.month}/${selectedEndDate.year}",
+                          style: GoogleFonts.notoSansPhagsPa(
+                              fontSize: 12, color: Colors.black),
+                        ),
+                        const Icon(Icons.calendar_today, size: 14),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const Spacer(),
+
+              Consumer<SalesReturnProvider>(
+                builder: (context, provider, child) {
+                  return Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    child: Text(
+                      'T. S. Return: ৳${provider.totalReturn.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        //fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
+          Consumer<SalesReturnProvider>(builder: (context, provider, child) {
+            final itemCount = provider.salesReturns.length;
+            return Padding(
+              padding: const EdgeInsets.only(left: 10.0),
+              child: Text(
+                'Total Bill: ${itemCount.toString()}',
+                style: const TextStyle(color: Colors.black, fontSize: 14),
+              ),
+            );
+          }),
           Expanded(
             child: provider.isLoading
                 ? Consumer<SalesReturnProvider>(
@@ -144,9 +260,11 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              item.purchaseDate != null
-                                                  ? item.purchaseDate!
-                                                  : 'No Date',
+                                              _formatDate(item.purchaseDate),
+
+                                              // item.purchaseDate != null
+                                              //     ? item.purchaseDate!
+                                              //     : 'No Date',
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 12,

@@ -70,6 +70,65 @@ class IncomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
+   
+   String totalIncome = '0.00';
+ 
+
+
+  ///income list. all
+  Future<void> fetchIncomeList() async {
+    isLoading = true;
+    notifyListeners();
+
+    const url = 'https://commercebook.site/api/v1/income/list';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        incomeModel = IncomeListModel.fromJson(data);
+        totalIncome = incomeModel?.totalIncome ?? '0.00';
+         
+
+        
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   ///recived form
   Future<void> fetchReceiptFromList() async {
     debugPrint('=== Starting fetchReceiptFromList ===');
@@ -114,6 +173,9 @@ class IncomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  
+  
+  
   /// fetch account
   Future<void> fetchAccounts(String type) async {
     debugPrint('=== Starting fetchAccounts for type: $type ===');
@@ -179,42 +241,19 @@ class IncomeProvider with ChangeNotifier {
 
 
     
-  String totalIncome = '0.00';
-
-
-  ///income list. all
-  Future<void> fetchIncomeList() async {
-    isLoading = true;
-    //notifyListeners();
-
-    const url = 'https://commercebook.site/api/v1/income/list';
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        incomeModel = IncomeListModel.fromJson(data);
-        totalIncome = incomeModel?.totalIncome ?? '0.00';
-      }
-    } catch (e) {
-      debugPrint('Error: $e');
-    }
-
-    isLoading = false;
-    notifyListeners();
-  }
+  
 
    
    ///acount type list bas on recived to , cash or bank
    Map<int, String> _accountNameMap = {};
 
-Map<int, String> get accountNameMap => _accountNameMap;
+   Map<int, String> get accountNameMap => _accountNameMap;
 
 /// Fetch accounts for both bank and cash once (or based on demand)
 Future<void> fetchAccountNames() async {
   try {
-    final bankUrl = 'https://commercebook.site/api/v1/receive/form/account?type=bank';
-    final cashUrl = 'https://commercebook.site/api/v1/receive/form/account?type=cash';
+    const bankUrl = 'https://commercebook.site/api/v1/receive/form/account?type=bank';
+    const cashUrl = 'https://commercebook.site/api/v1/receive/form/account?type=cash';
 
     final bankResponse = await http.post(Uri.parse(bankUrl));
     final cashResponse = await http.post(Uri.parse(cashUrl));

@@ -3,6 +3,8 @@ import 'package:cbook_dt/feature/paymentout/create_payment_out_item.dart';
 import 'package:cbook_dt/feature/paymentout/payment_out_edit.dart';
 import 'package:cbook_dt/feature/paymentout/provider/payment_out_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 
@@ -20,255 +22,376 @@ class _PaymentOutListState extends State<PaymentOutList> {
     Future.microtask(() =>
         Provider.of<PaymentVoucherProvider>(context, listen: false)
             .fetchPaymentVouchers());
+
+    Future.microtask(() {
+      Provider.of<PaymentVoucherProvider>(context, listen: false)
+          .fetchPaymentVouchers(
+              startDate: selectedStartDate, endDate: selectedEndDate);
+    });
+  }
+
+  String _formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'N/A';
+    try {
+      final parsedDate = DateTime.parse(dateString);
+      return DateFormat('dd-MM-yyyy').format(parsedDate);
+    } catch (e) {
+      return 'Invalid Date';
+    }
   }
 
   TextStyle ts = const TextStyle(color: Colors.black, fontSize: 12);
   TextStyle ts2 = const TextStyle(
       color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold);
 
+  Future<void> _selectDate(BuildContext context, DateTime initialDate,
+      Function(DateTime) onDateSelected) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      onDateSelected(picked);
+    }
+  }
+
+  ///start date.
+  DateTime selectedStartDate =
+      DateTime(DateTime.now().year, DateTime.now().month, 1);
+
+  ///end date.
+  DateTime selectedEndDate = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     // Default to current date
-    String? selectedDropdownValue;
+    //String? selectedDropdownValue;
 
     return Scaffold(
-        backgroundColor: AppColors.sfWhite,
-        appBar: AppBar(
-          backgroundColor: colorScheme.primary,
-          centerTitle: true,
-          iconTheme: const IconThemeData(color: Colors.white),
-          automaticallyImplyLeading: true,
-          title: const Column(
-            children: [
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                'Payment out',
-                style: TextStyle(
-                    color: Colors.yellow,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                width: 5,
-              )
-            ],
-          ),
-          actions: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const PaymentOutCreateItem()));
-              },
-              child: CircleAvatar(
-                  radius: 12,
-                  backgroundColor: Colors.yellow,
-                  child: Icon(
-                    Icons.add,
-                    color: colorScheme.primary,
-                  )),
+      backgroundColor: AppColors.sfWhite,
+      appBar: AppBar(
+        backgroundColor: colorScheme.primary,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+        automaticallyImplyLeading: true,
+        title: const Column(
+          children: [
+            SizedBox(
+              width: 5,
             ),
+            Text(
+              'Payment out',
+              style: TextStyle(
+                  color: Colors.yellow,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              width: 5,
+            )
           ],
         ),
-        body: Column(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-
-                  Consumer<PaymentVoucherProvider>(
-  builder: (context, provider, child) {
-    if (provider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Text(
-            'Total Payment: ৳${provider.totalPayment.toStringAsFixed(2)}',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+        actions: [
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const PaymentOutCreateItem()));
+            },
+            child: CircleAvatar(
+                radius: 12,
+                backgroundColor: Colors.yellow,
+                child: Icon(
+                  Icons.add,
+                  color: colorScheme.primary,
+                )),
           ),
-        ),
-        // provider.vouchers.isEmpty
-        //     ? const Text('No Payment Vouchers Found.', style: TextStyle(color: Colors.black),)
-        //     : ListView.builder(
-        //         shrinkWrap: true,
-        //         physics: const NeverScrollableScrollPhysics(),
-        //         itemCount: provider.vouchers.length,
-        //         itemBuilder: (context, index) {
-        //           final voucher = provider.vouchers[index];
-        //           // existing card UI
-        //         },
-        //       )
-      ],
-    );
-  },
-),
+        ],
+      ),
+      body: Column(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    ///month start date
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      child: GestureDetector(
+                        onTap: () =>
+                            _selectDate(context, selectedStartDate, (date) {
+                          setState(() {
+                            selectedStartDate = date;
+                          });
+                          Provider.of<PaymentVoucherProvider>(context,
+                                  listen: false)
+                              .fetchPaymentVouchers(
+                                  startDate: selectedStartDate,
+                                  endDate: selectedEndDate);
+                        }),
+                        child: Container(
+                          height: 30,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.transparent),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "${selectedStartDate.day}/${selectedStartDate.month}/${selectedStartDate.year}",
+                                style: GoogleFonts.notoSansPhagsPa(
+                                    fontSize: 12, color: Colors.black),
+                              ),
+                              const Icon(Icons.calendar_today, size: 14),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    Text("-",
+                        style: GoogleFonts.notoSansPhagsPa(
+                            fontSize: 14, color: Colors.black)),
+                    const SizedBox(width: 8),
+                    // current date Picker
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      child: GestureDetector(
+                        onTap: () =>
+                            _selectDate(context, selectedEndDate, (date) {
+                          setState(() {
+                            selectedEndDate = date;
+                          });
+                          Provider.of<PaymentVoucherProvider>(context,
+                                  listen: false)
+                              .fetchPaymentVouchers(
+                                  startDate: selectedStartDate,
+                                  endDate: selectedEndDate);
+                        }),
+                        child: Container(
+                          height: 30,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          decoration: BoxDecoration(
+                            // border:
+                            //     Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "${selectedEndDate.day}/${selectedEndDate.month}/${selectedEndDate.year}",
+                                style: GoogleFonts.notoSansPhagsPa(
+                                    fontSize: 12, color: Colors.black),
+                              ),
+                              const Icon(Icons.calendar_today, size: 14),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
 
+                    const Spacer(),
 
-                   
-                  Consumer<PaymentVoucherProvider>(
+                    ///total payment.
+                    Consumer<PaymentVoucherProvider>(
                       builder: (context, provider, child) {
-                    if (provider.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                        if (provider.isLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
 
-                    if (provider.vouchers.isEmpty) {
-                      return Center(
+                        return Padding(
+                          padding: const EdgeInsets.all(2.0),
                           child: Text(
-                        'No Payment Vouchers Found.',
-                        style: ts2,
-                      ));
-                    }
+                            'T. Payment: ৳${provider.totalPayment.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.black),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
 
-                    return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: provider.vouchers.length,
-                        itemBuilder: (context, index) {
-                          final voucher = provider.vouchers[index];
+                Consumer<PaymentVoucherProvider>(
+                    builder: (context, provider, child) {
+                  final itemCount = provider.vouchers.length;
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      "Total Voucher: ${itemCount.toString()}",
+                      style: const TextStyle(color: Colors.black, fontSize: 14),
+                    ),
+                  );
+                }),
 
-                          final voucherId = voucher.id.toString();
+                ////payment out list.
+                Consumer<PaymentVoucherProvider>(
+                    builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 2, vertical: 0),
-                            child: InkWell(
-                              onLongPress: () {
-                                editDeleteDiolog(context, voucherId);
-                              },
-                              onTap: () {
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             const PaymentDetails()));
-                              },
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(0)),
-                                elevation: 1,
-                                margin: const EdgeInsets.only(bottom: 2),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6.0, vertical: 6.0),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                SizedBox(
-                                                  width: 80,
-                                                  child: Row(
-                                                    children: [
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          ///voucher date.
-                                                          Text(
-                                                              voucher
-                                                                  .voucherDate,
-                                                              style: ts),
+                  if (provider.vouchers.isEmpty) {
+                    return Center(
+                        child: Text(
+                      'No Payment Vouchers Found.',
+                      style: ts2,
+                    ));
+                  }
 
-                                                          ///voucher number
-                                                          Text(
-                                                            voucher.voucherNumber
-                                                                        .length >
-                                                                    12
-                                                                ? "${voucher.voucherNumber.substring(0, 10)}..."
-                                                                : voucher
-                                                                    .voucherNumber,
-                                                            style: ts,
-                                                          ),
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: provider.vouchers.length,
+                      itemBuilder: (context, index) {
+                        final voucher = provider.vouchers[index];
 
-                                                          const SizedBox(
-                                                              height: 5),
+                        final voucherId = voucher.id.toString();
 
-                                                          ///voucher amount.
-                                                          Text(
-                                                              voucher
-                                                                  .totalAmount
-                                                                  .toStringAsFixed(
-                                                                      2),
-                                                              style: ts2),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 2, vertical: 0),
+                          child: InkWell(
+                            onLongPress: () {
+                              editDeleteDiolog(context, voucherId);
+                            },
+                            onTap: () {
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) =>
+                              //             const PaymentDetails()));
+                            },
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0)),
+                              elevation: 1,
+                              margin: const EdgeInsets.only(bottom: 2),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6.0, vertical: 6.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SizedBox(
+                                                width: 80,
+                                                child: Row(
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        ///voucher date.
+                                                        Text(
+                                                          _formatDate(voucher
+                                                              .voucherDate),
+                                                          style: ts,
+                                                        ),
+
+                                                        ///voucher number
+                                                        Text(
+                                                          voucher.voucherNumber
+                                                                      .length >
+                                                                  12
+                                                              ? "${voucher.voucherNumber.substring(0, 10)}..."
+                                                              : voucher
+                                                                  .voucherNumber,
+                                                          style: ts,
+                                                        ),
+
+                                                        const SizedBox(
+                                                            height: 5),
+
+                                                        ///voucher amount.
+                                                        Text(
+                                                            voucher.totalAmount
+                                                                .toStringAsFixed(
+                                                                    2),
+                                                            style: ts2),
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
-                                                const SizedBox(width: 5),
-                                                Container(
-                                                  height: 55,
-                                                  width: 2,
-                                                  color: Colors.green.shade200,
-                                                  margin: const EdgeInsets
-                                                      .symmetric(horizontal: 6),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Container(
+                                                height: 55,
+                                                width: 2,
+                                                color: Colors.green.shade200,
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 6),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text('Payment From',
+                                                        style: ts2),
+                                                    Text('Cash In Hand',
+                                                        style: ts),
+                                                    Text('Cash', style: ts),
+                                                  ],
                                                 ),
-                                                const SizedBox(width: 5),
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text('Payment From',
-                                                          style: ts2),
-                                                      Text('Cash In Hand',
-                                                          style: ts),
-                                                      Text('Cash', style: ts),
-                                                    ],
-                                                  ),
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    Text('Payment To',
+                                                        style: ts2),
+                                                    Text(voucher.customer,
+                                                        style: ts),
+                                                    Text('N/A',
+                                                        style:
+                                                            ts), // Add phone if available
+                                                  ],
                                                 ),
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.end,
-                                                    children: [
-                                                      Text('Payment To',
-                                                          style: ts2),
-                                                      Text(voucher.customer,
-                                                          style: ts),
-                                                      Text('N/A',
-                                                          style:
-                                                              ts), // Add phone if available
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          );
-                        });
-                  }),
-                ],
-              ),
+                          ),
+                        );
+                      });
+                }),
+              ],
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   Future<dynamic> editDeleteDiolog(BuildContext context, String voucherId) {
@@ -337,6 +460,7 @@ class _PaymentOutListState extends State<PaymentOutList> {
     );
   }
 
+  ///show delete diolog
   void _showDeleteDialog(BuildContext context, String voucherId) {
     final colorScheme = Theme.of(context).colorScheme;
     showDialog(
@@ -393,6 +517,7 @@ class _PaymentOutListState extends State<PaymentOutList> {
     );
   }
 
+  ///close button icon
   InkWell closeButtonIcon(BuildContext context, ColorScheme colorScheme) {
     return InkWell(
       onTap: () {

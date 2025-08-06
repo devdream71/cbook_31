@@ -28,10 +28,10 @@ class BillSettingsProvider with ChangeNotifier {
             .map((setting) => BillSettingModel.fromJson(setting))
             .toList();
       } else {
-        print('Failed to load settings: ${response.statusCode}');
+        debugPrint('Failed to load settings: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching settings: $e');
+      debugPrint('Error fetching settings: $e');
     }
 
     _isLoading = false;

@@ -81,9 +81,9 @@ class ExpenseProvider with ChangeNotifier {
   /// Fetch accounts for both bank and cash once (or based on demand)
   Future<void> fetchAccountNames() async {
     try {
-      final bankUrl =
+      const bankUrl =
           'https://commercebook.site/api/v1/receive/form/account?type=bank';
-      final cashUrl =
+      const cashUrl =
           'https://commercebook.site/api/v1/receive/form/account?type=cash';
 
       final bankResponse = await http.post(Uri.parse(bankUrl));

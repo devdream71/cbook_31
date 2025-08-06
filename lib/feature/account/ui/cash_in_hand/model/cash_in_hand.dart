@@ -23,7 +23,7 @@ class CashInHandData {
   final String? billType;
   final String? billNumber;
   final String? account;
-  final String? amount;
+  final dynamic amount;
 
   CashInHandData({
     this.id,

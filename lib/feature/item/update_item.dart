@@ -142,7 +142,7 @@ class _UpdateItemState extends State<UpdateItem> {
   }
 
   // List to store TextEditingController for each row
-  List<Map<String, TextEditingController>> _textControllers = [];
+  final List<Map<String, TextEditingController>> _textControllers = [];
 
   void _addRow() {
     setState(() {

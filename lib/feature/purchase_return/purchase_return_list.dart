@@ -2,8 +2,8 @@ import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/purchase_return/presentation/purchase_return_view.dart';
 import 'package:cbook_dt/feature/purchase_return/provider/purchase_return_provider.dart';
 import 'package:cbook_dt/feature/purchase_return/purchase_return_details.dart';
-import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +35,26 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
   }
 
   final TextEditingController _searchController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context, DateTime initialDate,
+      Function(DateTime) onDateSelected) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      onDateSelected(picked);
+    }
+  }
+
+  ///start date.
+  DateTime selectedStartDate =
+      DateTime(DateTime.now().year, DateTime.now().month, 1);
+
+  ///end date.
+  DateTime selectedEndDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -87,25 +107,109 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                ///month start date
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  child: GestureDetector(
+                    onTap: () =>
+                        _selectDate(context, selectedStartDate, (date) {
+                      setState(() {
+                        selectedStartDate = date;
+                      });
+                    }),
+                    child: Container(
+                      height: 30,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "${selectedStartDate.day}/${selectedStartDate.month}/${selectedStartDate.year}",
+                            style: GoogleFonts.notoSansPhagsPa(
+                                fontSize: 12, color: Colors.black),
+                          ),
+                          const Icon(Icons.calendar_today, size: 14),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 2),
+                Text("-",
+                    style: GoogleFonts.notoSansPhagsPa(
+                        fontSize: 14, color: Colors.black)),
+                const SizedBox(width: 8),
+                // current date Picker
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  child: GestureDetector(
+                    onTap: () => _selectDate(context, selectedEndDate, (date) {
+                      setState(() {
+                        selectedEndDate = date;
+                      });
+                    }),
+                    child: Container(
+                      height: 30,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        // border:
+                        //     Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "${selectedEndDate.day}/${selectedEndDate.month}/${selectedEndDate.year}",
+                            style: GoogleFonts.notoSansPhagsPa(
+                                fontSize: 12, color: Colors.black),
+                          ),
+                          const Icon(Icons.calendar_today, size: 14),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
 
+                const Spacer(),
+
+                Consumer<PurchaseReturnProvider>(
+                  builder: (context, provider, child) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 0, vertical: 0),
+                      child: Text(
+                        'T. P. Return: ৳${provider.totalReturn.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          //fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
             Consumer<PurchaseReturnProvider>(
-  builder: (context, provider, child) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Text(
-        'Total Purchase Return: ৳${provider.totalReturn.toStringAsFixed(2)}',
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-      ),
-    );
-  },
-),
-
-
+                builder: (context, provider, child) {
+              final itemCount = provider.purchaseReturns.length;
+              return Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  'Bill Count: $itemCount',
+                  style: const TextStyle(color: Colors.black, fontSize: 14),
+                ),
+              );
+            }),
             Expanded(
               child: Consumer<PurchaseReturnProvider>(
                 builder: (context, provider, child) {
@@ -168,7 +272,7 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        item.purchaseDate,
+                                        formatDate(item.purchaseDate),
                                         style: const TextStyle(
                                             fontSize: 14, color: Colors.black),
                                       ),
@@ -214,7 +318,7 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                                   ],
                                 ),
 
-                                Spacer(),
+                                const Spacer(),
 
                                 //unpaid
                                 Column(

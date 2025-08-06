@@ -5,6 +5,7 @@ import 'package:cbook_dt/feature/authentication/provider/login_provider.dart';
 import 'package:cbook_dt/feature/home/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -14,6 +15,32 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
+  int? userID;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserIdAndFetchProfile();
+  }
+
+  Future<void> _loadUserIdAndFetchProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('user_id');
+
+    if (userId != null) {
+      setState(() {
+        userID = userId;
+      });
+
+      // Call fetchProfile after userId is loaded
+      Provider.of<ProfileProvider>(context, listen: false)
+          .fetchProfile(userID!);
+    } else {
+      // Handle null userId
+      debugPrint('User ID not found in SharedPreferences');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -33,64 +60,78 @@ class _ProfileViewState extends State<ProfileView> {
         ),
         automaticallyImplyLeading: true,
       ),
-      body: Consumer<ProfileProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (provider.profile != null) {
-            final user = provider.profile!;
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Column(
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                foregroundColor: AppColors.sfWhite,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                )),
+            child: const Text(
+              'Complete Profile',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Consumer<ProfileProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (provider.profile != null) {
+                final user = provider.profile!;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 55,
-                        backgroundColor: Colors.white,
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: user.avatar != null
-                              ? NetworkImage(user.avatar!)
-                              : const AssetImage(
-                                      'assets/image/cbook_logo.png') //assets\image\cbook_logo.png
-                                  as ImageProvider,
-                        ),
+                      const SizedBox(
+                        height: 8,
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        user.name,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                      Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 55,
+                            backgroundColor: Colors.white,
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: user.avatar != null
+                                  ? NetworkImage(user.avatar!)
+                                  : const AssetImage(
+                                          'assets/image/cbook_logo.png') //assets\image\cbook_logo.png
+                                      as ImageProvider,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          // Text(
+                          //   user.name,
+                          //   style: const TextStyle(
+                          //     fontSize: 12,
+                          //     fontWeight: FontWeight.bold,
+                          //     color: Colors.black,
+                          //   ),
+                          // ),
+                          const SizedBox(height: 6),
+                          Text(
+                            user.email,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        user.email,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
-                  // User Details
-                  Column(
-                    children: [
+                      // User Details
                       _buildInfoCard(Icons.phone, "Phone",
                           user.phone ?? "No phone number"),
-                      _buildInfoCard(Icons.badge, "User Type",
-                          user.userType.toUpperCase()),
+                      // _buildInfoCard(Icons.badge, "User Type",
+                      //     user.userType.toUpperCase()),
                       //_buildInfoCard(Icons.verified, "Verification Code", user.varificationCode),
-                      _buildInfoCard(Icons.access_time, "Created At",
-                          user.createdAt.split("T")[0]),
-                  
+                      // _buildInfoCard(Icons.access_time, "Created At",
+                      //     user.createdAt.split("T")[0]),
+
                       GestureDetector(
                         onTap: () {
                           deleteAccount();
@@ -98,49 +139,49 @@ class _ProfileViewState extends State<ProfileView> {
                         child: _buildInfoCard(
                             Icons.delete, "Delete", "Delete your account"),
                       ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                  // Logout Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
+                      // Logout Button
+                      Padding(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                            horizontal: 20, vertical: 10),
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () async {
+                            logoutAccount(context);
+                          },
+                          icon: const Icon(Icons.logout, color: Colors.white),
+                          label: const Text(
+                            "Log Out",
+                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          ),
                         ),
                       ),
-                      onPressed: () async {
-                        logoutAccount(context);
-                      },
-                      icon: const Icon(Icons.logout, color: Colors.white),
-                      label: const Text(
-                        "Log Out",
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ),
-                    ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            );
-          } else {
-            return Center(
-              child: Text(
-                provider.errorMessage.isNotEmpty
-                    ? provider.errorMessage
-                    : "No profile data found",
-                style: const TextStyle(fontSize: 14, color: Colors.red),
-              ),
-            );
-          }
-        },
+                );
+              } else {
+                return Center(
+                  child: Text(
+                    provider.errorMessage.isNotEmpty
+                        ? provider.errorMessage
+                        : "No profile data found",
+                    style: const TextStyle(fontSize: 14, color: Colors.red),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
     );
   }
