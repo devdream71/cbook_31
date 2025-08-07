@@ -72,7 +72,6 @@ class PurchaseReturnDetailsPageState extends State<PurchaseReturnDetailsPage> {
     calculateTotalPrice(); // 🔁 Triggers price update
   }
 
- 
   void calculateTotalPrice() {
     var controller =
         Provider.of<PurchaseReturnController>(context, listen: false);
@@ -215,8 +214,6 @@ class PurchaseReturnDetailsPageState extends State<PurchaseReturnDetailsPage> {
                     final unitPriceController =
                         _unitPriceControllers[history.purchaseDetailsId]!;
 
-                    
-
                     /// ✅ Prepare allowed units (primary + optional secondary)
                     List<String> allowedUnits = [];
 
@@ -277,20 +274,30 @@ class PurchaseReturnDetailsPageState extends State<PurchaseReturnDetailsPage> {
                                         fontSize: 13,
                                       ),
                                     ),
+
                                     Text(
-                                      "Rate: ${history.rate}",
+                                      "Rate: ${history.rate.toString().split('=').last.trim().split(' ').first}",
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 13,
                                       ),
                                     ),
+
+                                    // Text(
+                                    //   "Bill Qty: ${history.billQty}",
+                                    //   style: const TextStyle(
+                                    //     color: Colors.black,
+                                    //     fontSize: 13,
+                                    //   ),
+                                    // ),
                                     Text(
-                                      "Bill Qty: ${history.billQty}",
+                                      "Bill Qty: ${int.parse(history.billQty.split('=').first.trim().split('.').first)}",
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 13,
                                       ),
                                     ),
+
                                     Text(
                                       "Out Qty: ${history.outQty}",
                                       style: const TextStyle(
@@ -324,18 +331,19 @@ class PurchaseReturnDetailsPageState extends State<PurchaseReturnDetailsPage> {
                                     ),
 
                                     ///unit price.
-                                    SizedBox(
-                                      width: 150,
-                                      height: 30,
-                                      child: AddSalesFormfield(
-                                        labelText: 'Unit Price',
-                                        controller: unitPriceController,
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          debugPrint("top most $value");
-                                        },
-                                      ),
-                                    ),
+                                    // SizedBox(
+                                    //   width: 150,
+                                    //   height: 30,
+                                    //   child: AddSalesFormfield(
+                                    //     readOnly: true,
+                                    //     labelText: 'Unit Price',
+                                    //     controller: unitPriceController,
+                                    //     keyboardType: TextInputType.number,
+                                    //     onChanged: (value) {
+                                    //       debugPrint("top most $value");
+                                    //     },
+                                    //   ),
+                                    // ),
 
                                     const SizedBox(height: 6),
 
@@ -557,7 +565,6 @@ class PurchaseReturnDetailsPageState extends State<PurchaseReturnDetailsPage> {
                     Text("PC: ${controller.getAllQty()}",
                         style: const TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold)),
-                    
                     Text(
                       "Total Price: ${totalPrice.toStringAsFixed(2)}",
                       style: const TextStyle(

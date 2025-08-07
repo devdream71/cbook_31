@@ -552,7 +552,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
 
                                 final int salesId = invoice.id;
 
-                                print("Tapped Invoice ID: ${invoice.id}");
+                                debugPrint("Tapped Invoice ID: ${invoice.id}");
 
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(

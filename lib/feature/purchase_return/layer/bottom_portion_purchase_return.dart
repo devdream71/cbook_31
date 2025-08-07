@@ -11,10 +11,12 @@ class BottomPortionPurchaseReturn extends StatelessWidget {
   final String saleType;
   final String? customerId;
   final List<InvoiceItem> invoiceItems;
+  final String billNumber;
   const BottomPortionPurchaseReturn({
     super.key,
     required this.saleType,
     this.customerId,
+    required this.billNumber,
     required this.invoiceItems,
   });
 
@@ -151,7 +153,7 @@ class BottomPortionPurchaseReturn extends StatelessWidget {
             ////===
             InkWell(
               onTap: () async {
-                if (controller.billNoController.text.trim().isEmpty) {
+                if (billNumber.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Bill number cannot be empty'),
@@ -170,7 +172,7 @@ class BottomPortionPurchaseReturn extends StatelessWidget {
                       : controller.totalAmount2();
 
                   if (controller.demoPurchaseReturnModelList.isEmpty ||
-                      controller.billNoController.text.isEmpty) {
+                      billNumber.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text(
                         'No item is added or no bill number.',
@@ -184,7 +186,7 @@ class BottomPortionPurchaseReturn extends StatelessWidget {
                         customerId: customerId ?? "cash",
                         saleType: saleType,
                         discount: discount,
-                        billNo: controller.billNoController.text,
+                        billNo: billNumber,
                         total: total);
 
                     if (isSuccess.isNotEmpty) {

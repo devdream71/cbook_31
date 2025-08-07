@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/dashboard_report/model/bank_trans.dart';
-import 'package:cbook_dt/feature/dashboard_report/model/customer_trans.dart';
-import 'package:cbook_dt/feature/dashboard_report/model/customer_transaction_count.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/sales_report_model_home.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/supplier_trans.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/total_supplier_count_model.dart';

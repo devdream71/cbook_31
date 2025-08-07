@@ -10,15 +10,15 @@ class CustomerUpdate extends StatefulWidget {
   final CustomerData customer;
 
   const CustomerUpdate({
-    Key? key,
+    super.key,
     required this.customer,
-  }) : super(key: key);
+  });
 
   @override
-  _CustomerUpdateState createState() => _CustomerUpdateState();
+  CustomerUpdateState createState() => CustomerUpdateState();
 }
 
-class _CustomerUpdateState extends State<CustomerUpdate> {
+class CustomerUpdateState extends State<CustomerUpdate> {
   late TextEditingController nameController;
   late TextEditingController proprietorController;
   late TextEditingController emailController;

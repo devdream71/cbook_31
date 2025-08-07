@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cbook_dt/feature/account/ui/adjust_cash/model/adjust_cash.dart';
-import 'package:cbook_dt/feature/account/ui/adjust_cash/model/bank_adjustment_model.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_cash/model/create_adjust_cash_model.dart';
 import 'package:cbook_dt/utils/date_time_helper.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +75,7 @@ class AdjustCashProvider with ChangeNotifier {
       'https://commercebook.site/api/v1/account/cash/adjustment/store?adjust_cash=$adjustCashType&account_id=$accountId&amount=$amount&date=$date&details=$details&user_id=$userId';
    
 
-   debugPrint(" url ==> ${url}");
+   debugPrint(" url ==> $url");
   try {
     final response = await http.post(Uri.parse(url));
     if (response.statusCode == 200) {

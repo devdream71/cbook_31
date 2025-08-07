@@ -1,7 +1,6 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/provider/bank_adjust_provider.dart';
-import 'package:cbook_dt/feature/account/ui/adjust_cash/provider/adjust_cash_provider.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -76,7 +75,7 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
                                 null; // reset account selection
 
                             debugPrint(
-                                "selectedAccountType  ${selectedAdjustCash}");
+                                "selectedAccountType  $selectedAdjustCash");
                           });
                         },
                       ),

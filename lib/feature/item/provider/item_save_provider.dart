@@ -79,11 +79,11 @@ class ItemProvider with ChangeNotifier {
   // Print all rows (You asked for this)
   void printAllQtyPrice() {
     for (int i = 0; i < _qtyPriceList.length; i++) {
-      print(
+      debugPrint(
           'Row $i: Qty = ${_qtyPriceList[i]['qty']}, Price = ${_qtyPriceList[i]['price']}');
     }
 
-    print(jsonEncode(_qtyPriceList));
+    debugPrint(jsonEncode(_qtyPriceList));
   }
 
   ////=======No need demo

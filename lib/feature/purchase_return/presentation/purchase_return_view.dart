@@ -49,6 +49,7 @@ class _Layout extends StatefulWidget {
 }
 
 class _LayoutState extends State<_Layout> {
+
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -1283,6 +1284,7 @@ class _LayoutState extends State<_Layout> {
                           customerId: controller.isCash
                               ? "cash"
                               : selectedCustomerId ?? "cash",
+                          billNumber:  billController.text,   
                         )
 
                         //bottom button portion

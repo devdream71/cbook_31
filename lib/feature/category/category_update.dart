@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cbook_dt/feature/category/provider/category_provider.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
-import 'package:cbook_dt/common/custome_dropdown_two.dart';
 
 class UpdateCategory extends StatefulWidget {
   final int categoryId;
 
-  const UpdateCategory({Key? key, required this.categoryId}) : super(key: key);
+  const UpdateCategory({super.key, required this.categoryId});
 
   @override
   State<UpdateCategory> createState() => _UpdateCategoryState();
@@ -64,7 +63,7 @@ class _UpdateCategoryState extends State<UpdateCategory> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => ItemCategoryView()),
+        MaterialPageRoute(builder: (_) => const ItemCategoryView()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

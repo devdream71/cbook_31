@@ -219,7 +219,7 @@ class _ReceviedEditState extends State<ReceviedEdit> {
           Provider.of<PaymentVoucherProvider>(context, listen: false);
 
       // You might need to wait for bill persons to load first
-      Future.delayed(Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         if (provider.billPersons.isNotEmpty) {
           try {
             final billPerson = provider.billPersons.firstWhere(

@@ -70,10 +70,7 @@ class IncomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-   
-   String totalIncome = '0.00';
- 
-
+  String totalIncome = '0.00';
 
   ///income list. all
   Future<void> fetchIncomeList() async {
@@ -88,8 +85,6 @@ class IncomeProvider with ChangeNotifier {
         final data = json.decode(response.body);
         incomeModel = IncomeListModel.fromJson(data);
         totalIncome = incomeModel?.totalIncome ?? '0.00';
-         
-
         
       }
     } catch (e) {
@@ -99,13 +94,6 @@ class IncomeProvider with ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
-
-
-  
-
-
-
-
 
 
 

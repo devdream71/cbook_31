@@ -279,7 +279,7 @@ class CategoryProvider extends ChangeNotifier {
       String? userId = prefs.getInt('user_id')?.toString();
 
       if (userId == null || userId.isEmpty) {
-        print("Error: User ID is null or not found");
+        debugPrint("Error: User ID is null or not found");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("User ID not found. Please log in.")),
         );

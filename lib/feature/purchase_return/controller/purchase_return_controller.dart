@@ -598,9 +598,9 @@ class PurchaseReturnController extends ChangeNotifier {
       String userId = prefs.getInt('user_id')?.toString() ?? '0';
 
       final url =
-          "https://commercebook.site/api/v1/purchase/return/store?user_id=$userId&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}&bill_number=${billNoController.value.text}&return_date=$formattedDate&details_notes=notes&gross_total=${isCash ? addAmount2() : addAmount()}&discount=$discount&payment_out=${isCash ? 1 : 0}&payment_amount=${isCash ? totalAmount() : totalAmount2()}";
+          "https://commercebook.site/api/v1/purchase/return/store?user_id=$userId&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}&bill_number=$billNo&return_date=$formattedDate&details_notes=notes&gross_total=${isCash ? addAmount2() : addAmount()}&discount=$discount&payment_out=${isCash ? 1 : 0}&payment_amount=${isCash ? totalAmount() : totalAmount2()}";
 
-      debugPrint(url);
+      debugPrint('url ====> $url');
       
       final requestBody = jsonEncode({
         "purchase_items": List<Map<String, dynamic>>.from(
@@ -608,7 +608,15 @@ class PurchaseReturnController extends ChangeNotifier {
             ///purchase_items  //old ==> pruchase_items
             purchaseReturnItemModel.map((e) => e.toJson()))
       });
-      debugPrint(requestBody);
+
+
+      debugPrint('request body $requestBody');
+
+
+       debugPrint("====Stop=====");
+
+       debugPrint("====Stop=====");
+
       final response = await http.post(
         Uri.parse(url),
         headers: {

@@ -1670,172 +1670,166 @@ class _LayoutState extends State<_Layout> {
                         ),
 
                         ///Stock available display
-                        Container(
-                          child: Consumer<AddItemProvider>(
-                            builder: (context, stockProvider, child) {
-                              final stock = stockProvider.stockData;
-
-                              if (stock != null && !controller.hasCustomPrice) {
-                                controller.mrpController.text =
-                                    stock.price.toString();
-                              }
-
-                              return stock != null
-                                  ? Padding(
-                                      padding: const EdgeInsets.only(top: 0.0),
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          "   Stock Available: ${stock.unitStocks} ",
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
+                        Consumer<AddItemProvider>(
+                          builder: (context, stockProvider, child) {
+                            final stock = stockProvider.stockData;
+                        
+                            if (stock != null && !controller.hasCustomPrice) {
+                              controller.mrpController.text =
+                                  stock.price.toString();
+                            }
+                        
+                            return stock != null
+                                ? Padding(
+                                    padding: const EdgeInsets.only(top: 0.0),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        "   Stock Available: ${stock.unitStocks} ",
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
                                         ),
                                       ),
-                                    )
-                                  : const SizedBox();
-                            },
-                          ),
+                                    ),
+                                  )
+                                : const SizedBox();
+                          },
                         ),
 
                         ///Qty and Unit.
-                        Container(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              /// Qty field
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: [
-                                  
-
-                                    Container(
-                                      child: AddSalesFormfield(
-                                        label: "",
-                                        labelText: "Item Qty",
-                                        controller: controller.qtyController,
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            controller.calculateSubtotal();
-
-                                            // 🔥 SOLUTION 2: Directly update selectedUnitIdWithName with quantity
-                                            if (controller
-                                                .selectedUnit!.isNotEmpty) {
-                                              final selectedUnitObj =
-                                                  unitProvider.units.firstWhere(
-                                                (unit) =>
-                                                    unit.name ==
-                                                    controller.selectedUnit,
-                                                orElse: () => Unit(
-                                                    id: 0,
-                                                    name: "Unknown",
-                                                    symbol: "",
-                                                    status: 0),
-                                              );
-
-                                              final qtyText = controller
-                                                  .qtyController.text
-                                                  .trim();
-                                              final qty = qtyText.isNotEmpty
-                                                  ? qtyText
-                                                  : "1";
-
-                                              controller
-                                                  .selectedUnitIdWithNameFunction(
-                                                      "${selectedUnitObj.id}_${selectedUnitObj.name}_$qty");
-
-                                              debugPrint(
-                                                  "✅ Updated unit_id after qty change: ${controller.selectedUnitIdWithName}");
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              const SizedBox(width: 8),
-
-                              /// Unit Dropdown
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            /// Qty field
+                            Expanded(
+                              flex: 1,
+                              child: Column(
                                 children: [
-                                  const SizedBox(height: 20),
-                                  SizedBox(
-                                    width: 150,
-                                    child:
-
-                                        
-                                        CustomDropdownTwo(
-                                      labelText: "Unit",
-                                      hint: '',
-                                      items: unitIdsList,
-                                      width: 150,
-                                      height: 30,
-                                      selectedItem: unitIdsList.isNotEmpty
-                                          ? unitIdsList.first
-                                          : null,
-                                      onChanged: (selectedUnit) {
-                                        debugPrint(
-                                            "Selected Unit: $selectedUnit");
-
-                                        controller.selectedUnit = selectedUnit;
-
-                                        final selectedUnitObj =
-                                            unitProvider.units.firstWhere(
-                                          (unit) => unit.name == selectedUnit,
-                                          orElse: () => Unit(
-                                              id: 0,
-                                              name: "Unknown",
-                                              symbol: "",
-                                              status: 0),
-                                        );
-
-                                        final qtyText = controller
-                                            .qtyController.text
-                                            .trim();
-                                        final qty =
-                                            qtyText.isNotEmpty ? qtyText : "1";
-
-                                        controller.selectedUnitIdWithNameFunction(
-                                            "${selectedUnitObj.id}_${selectedUnitObj.name}_$qty");
-
-                                        debugPrint(
-                                            "🆔 Unit ID: ${selectedUnitObj.id}_${selectedUnitObj.name}");
-
-                                        // ✅ Price update logic
-                                        if (selectedUnit ==
-                                            controller.secondaryUnitName) {
-                                          double newPrice =
-                                              controller.salePrice /
-                                                  controller.unitQty;
-                                          controller.mrpController.text =
-                                              newPrice.toStringAsFixed(2);
-                                        } else if (selectedUnit ==
-                                            controller.primaryUnitName) {
-                                          controller.mrpController.text =
-                                              controller.salePrice
-                                                  .toStringAsFixed(2);
+                                
+                        
+                                  AddSalesFormfield(
+                                    label: "",
+                                    labelText: "Item Qty",
+                                    controller: controller.qtyController,
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        controller.calculateSubtotal();
+                                                          
+                                        // 🔥 SOLUTION 2: Directly update selectedUnitIdWithName with quantity
+                                        if (controller
+                                            .selectedUnit!.isNotEmpty) {
+                                          final selectedUnitObj =
+                                              unitProvider.units.firstWhere(
+                                            (unit) =>
+                                                unit.name ==
+                                                controller.selectedUnit,
+                                            orElse: () => Unit(
+                                                id: 0,
+                                                name: "Unknown",
+                                                symbol: "",
+                                                status: 0),
+                                          );
+                                                          
+                                          final qtyText = controller
+                                              .qtyController.text
+                                              .trim();
+                                          final qty = qtyText.isNotEmpty
+                                              ? qtyText
+                                              : "1";
+                                                          
+                                          controller
+                                              .selectedUnitIdWithNameFunction(
+                                                  "${selectedUnitObj.id}_${selectedUnitObj.name}_$qty");
+                                                          
+                                          debugPrint(
+                                              "✅ Updated unit_id after qty change: ${controller.selectedUnitIdWithName}");
                                         }
-
-                                        setState(() {
-                                          controller.hasCustomPrice = true;
-                                          controller.calculateSubtotal();
-                                        });
-                                      },
-                                    ),
+                                      });
+                                    },
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                        
+                            const SizedBox(width: 8),
+                        
+                            /// Unit Dropdown
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 20),
+                                SizedBox(
+                                  width: 150,
+                                  child:
+                        
+                                      
+                                      CustomDropdownTwo(
+                                    labelText: "Unit",
+                                    hint: '',
+                                    items: unitIdsList,
+                                    width: 150,
+                                    height: 30,
+                                    selectedItem: unitIdsList.isNotEmpty
+                                        ? unitIdsList.first
+                                        : null,
+                                    onChanged: (selectedUnit) {
+                                      debugPrint(
+                                          "Selected Unit: $selectedUnit");
+                        
+                                      controller.selectedUnit = selectedUnit;
+                        
+                                      final selectedUnitObj =
+                                          unitProvider.units.firstWhere(
+                                        (unit) => unit.name == selectedUnit,
+                                        orElse: () => Unit(
+                                            id: 0,
+                                            name: "Unknown",
+                                            symbol: "",
+                                            status: 0),
+                                      );
+                        
+                                      final qtyText = controller
+                                          .qtyController.text
+                                          .trim();
+                                      final qty =
+                                          qtyText.isNotEmpty ? qtyText : "1";
+                        
+                                      controller.selectedUnitIdWithNameFunction(
+                                          "${selectedUnitObj.id}_${selectedUnitObj.name}_$qty");
+                        
+                                      debugPrint(
+                                          "🆔 Unit ID: ${selectedUnitObj.id}_${selectedUnitObj.name}");
+                        
+                                      // ✅ Price update logic
+                                      if (selectedUnit ==
+                                          controller.secondaryUnitName) {
+                                        double newPrice =
+                                            controller.salePrice /
+                                                controller.unitQty;
+                                        controller.mrpController.text =
+                                            newPrice.toStringAsFixed(2);
+                                      } else if (selectedUnit ==
+                                          controller.primaryUnitName) {
+                                        controller.mrpController.text =
+                                            controller.salePrice
+                                                .toStringAsFixed(2);
+                                      }
+                        
+                                      setState(() {
+                                        controller.hasCustomPrice = true;
+                                        controller.calculateSubtotal();
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
 
                         Container(
@@ -2213,7 +2207,7 @@ class _LayoutState extends State<_Layout> {
                                 ));
                               } else {
                                 setState(() {
-                                  print(
+                                  debugPrint(
                                       'cash or credit =====>${controller.isCash}');
 
                                   controller.isCash
@@ -2576,7 +2570,7 @@ class _LayoutState extends State<_Layout> {
                                         height: 30,
                                         selectedItem: selectedItem.unit,
                                         onChanged: (selectedUnit) {
-                                          print("Selected Unit: $selectedUnit");
+                                          debugPrint("Selected Unit: $selectedUnit");
 
                                           controller.selectedUnit =
                                               selectedUnit;
@@ -2848,7 +2842,7 @@ class _LayoutState extends State<_Layout> {
                                               controller.updateTaxPaecentId(
                                                   '${selectedTaxId}_${controller.selectedTaxPercent}');
 
-                                              print(
+                                              debugPrint(
                                                   'tax_percent: "${controller.taxPercentValue}"');
 
                                               //controller.calculateSubtotal();
@@ -2914,7 +2908,7 @@ class _LayoutState extends State<_Layout> {
                             ));
                           } else {
                             setState(() {
-                              print(
+                              debugPrint(
                                   'cash or credit =====>${controller.isCash}');
 
                               controller.isCash

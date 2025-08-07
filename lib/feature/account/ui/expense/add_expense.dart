@@ -74,26 +74,26 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
 
   ///updated bill nunber json respoonse
   Future<void> fetchAndSetBillNumber() async {
-  print('fetchAndSetBillNumber called');
+  debugPrint('fetchAndSetBillNumber called');
 
   final url = Uri.parse(
     'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=voucher&type=indirect_expense&code=EX&bill_number=100&with_nick_name=1',
   );
 
   try {
-    print('Making API call...');
+    debugPrint('Making API call...');
     final response = await http.get(url);
-    print('API Response Status: ${response.statusCode}');
-    print('API Response Body: ${response.body}');
+    debugPrint('API Response Status: ${response.statusCode}');
+    debugPrint('API Response Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('Parsed data: $data');
+      debugPrint('Parsed data: $data');
 
       if (data['success'] == true && data['data'] != null) {
         final billFromApi = data['data']['bill_number']?.toString().trim() ?? "";
 
-        print('Bill from API: $billFromApi');
+        debugPrint('Bill from API: $billFromApi');
 
         // Optional: extract only number from "EX-100"
         final billOnlyNumber =  billFromApi;
@@ -101,19 +101,19 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
         if (mounted) {
           setState(() {
             billController.text = billOnlyNumber;
-            print('Bill controller updated to: ${billController.text}');
+            debugPrint('Bill controller updated to: ${billController.text}');
           });
         }
       } else {
-        print('API success false or data missing');
+        debugPrint('API success false or data missing');
         _setFallback();
       }
     } else {
-      print('Failed to fetch bill number: ${response.statusCode}');
+      debugPrint('Failed to fetch bill number: ${response.statusCode}');
       _setFallback();
     }
   } catch (e) {
-    print('Error fetching bill number: $e');
+    debugPrint('Error fetching bill number: $e');
     _setFallback();
   }
 }
@@ -122,7 +122,7 @@ void _setFallback() {
   if (mounted) {
     setState(() {
       billController.text = "100"; // or any default you want
-      print('Fallback bill set: ${billController.text}');
+      debugPrint('Fallback bill set: ${billController.text}');
     });
   }
 }

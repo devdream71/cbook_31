@@ -395,7 +395,7 @@ class _IncomeEditState extends State<IncomeEdit> {
                                     billDate = formattedDate;
                                   });
 
-                                  print(
+                                  debugPrint(
                                       'Selected date: $formattedDate'); // ✅ Debug print
                                 }
                               },

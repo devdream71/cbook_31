@@ -4,6 +4,7 @@ import 'package:cbook_dt/feature/home/presentation/layer/profile_view.dart';
 import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/feature/settings/ui/bill_invoice_print.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/bill_person_list.dart';
+import 'package:cbook_dt/feature/settings/ui/company_information/company_infromation.dart';
 import 'package:cbook_dt/feature/settings/ui/company_settings.dart';
 import 'package:cbook_dt/feature/settings/ui/general_settings.dart';
 import 'package:cbook_dt/feature/settings/ui/module_settings.dart';
@@ -66,6 +67,12 @@ class SettingsView extends StatelessWidget {
         name: 'My Profile',
         iconPath: 'assets/image/profile.svg',
         destination: ProfileView(), //SalesFormSetting
+      ),
+
+      const FormSettingMeta(
+        name: 'Company Information',
+        iconPath: 'assets/image/profile.svg',
+        destination: CompanyInfromation(), //SalesFormSetting
       ),
     ];
 

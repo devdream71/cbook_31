@@ -50,14 +50,13 @@ class PurchaseViewState extends State<PurchaseView> {
 }
 
 class Layout extends StatefulWidget {
-  const Layout();
+  const Layout({super.key});
 
   @override
   State<Layout> createState() => LayoutState();
 }
 
 class LayoutState extends State<Layout> {
-
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -91,15 +90,13 @@ class LayoutState extends State<Layout> {
   int? selectedBillPersonId;
   BillPersonModel? selectedBillPersonData;
 
-
   @override
   void initState() {
     super.initState();
 
     // Initialize with loading text
-  billController.text = "Loading...";
-  debugPrint('Bill controller initialized with: ${billController.text}');
-
+    billController.text = "Loading...";
+    debugPrint('Bill controller initialized with: ${billController.text}');
 
     Future.microtask(() async {
       ///fetch customer.
@@ -129,85 +126,84 @@ class LayoutState extends State<Layout> {
 
       // await fetchAndSetBillNumber();
 
-       print('About to fetch bill number...');
-    await fetchAndSetBillNumber();
-    print('Bill number fetch completed. Current value: ${billController.text}');
-
+      debugPrint('About to fetch bill number...');
+      await fetchAndSetBillNumber();
+      debugPrint(
+          'Bill number fetch completed. Current value: ${billController.text}');
     });
   }
 
-
   // Updated fetchAndSetBillNumber with more debugging:
-Future<void> fetchAndSetBillNumber() async {
-  debugPrint('fetchAndSetBillNumber called');
-  
-  final url = Uri.parse(
-    'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=purchase&type=purchase&code=PUR&bill_number=100&with_nick_name=1',
-  );
+  Future<void> fetchAndSetBillNumber() async {
+    debugPrint('fetchAndSetBillNumber called');
 
-  debugPrint('API URL: $url');
+    final url = Uri.parse(
+      'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=purchase&type=purchase&code=PUR&bill_number=100&with_nick_name=1',
+    );
 
-  try {
-    debugPrint('Making API call...');
-    final response = await http.get(url);
-    debugPrint('API Response Status: ${response.statusCode}');
-    debugPrint('API Response Body: ${response.body}');
+    debugPrint('API URL: $url');
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      debugPrint('Parsed data: $data');
+    try {
+      debugPrint('Making API call...');
+      final response = await http.get(url);
+      debugPrint('API Response Status: ${response.statusCode}');
+      debugPrint('API Response Body: ${response.body}');
 
-      if (data['success'] == true && data['data'] != null) {
-        // String billFromApi = data['data'].toString(); // Ensure it's a string
-         String billFromApi = data['data']['bill_number'].toString();
-        debugPrint('Bill from API: $billFromApi');
-        
-        //String newBill = _incrementBillNumber(billFromApi);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        debugPrint('Parsed data: $data');
 
-        String newBill = billFromApi;
+        if (data['success'] == true && data['data'] != null) {
+          // String billFromApi = data['data'].toString(); // Ensure it's a string
+          String billFromApi = data['data']['bill_number'].toString();
+          debugPrint('Bill from API: $billFromApi');
 
-        debugPrint('New bill after increment: $newBill');
-        
-        // Update the controller and trigger UI rebuild
-        if (mounted) {
-          setState(() {
-            billController.text = newBill;
-            debugPrint('Bill controller updated to: ${billController.text}');
-          });
+          //String newBill = _incrementBillNumber(billFromApi);
+
+          String newBill = billFromApi;
+
+          debugPrint('New bill after increment: $newBill');
+
+          // Update the controller and trigger UI rebuild
+          if (mounted) {
+            setState(() {
+              billController.text = newBill;
+              debugPrint('Bill controller updated to: ${billController.text}');
+            });
+          }
+        } else {
+          debugPrint('API success false or data null');
+          // Handle API error
+          if (mounted) {
+            setState(() {
+              billController.text = "PUR-102"; // Default fallback
+              debugPrint('Set fallback bill: ${billController.text}');
+            });
+          }
         }
       } else {
-        debugPrint('API success false or data null');
-        // Handle API error
+        debugPrint('Failed to fetch bill number: ${response.statusCode}');
+        // Set fallback bill number
         if (mounted) {
           setState(() {
-            billController.text = "PUR-102"; // Default fallback
-            debugPrint('Set fallback bill: ${billController.text}');
+            billController.text = "PUR-102";
+            debugPrint(
+                'Set fallback bill due to status code: ${billController.text}');
           });
         }
       }
-    } else {
-      debugPrint('Failed to fetch bill number: ${response.statusCode}');
+    } catch (e) {
+      debugPrint('Error fetching bill number: $e');
       // Set fallback bill number
       if (mounted) {
         setState(() {
           billController.text = "PUR-102";
-          debugPrint('Set fallback bill due to status code: ${billController.text}');
+          debugPrint(
+              'Set fallback bill due to exception: ${billController.text}');
         });
       }
     }
-  } catch (e) {
-    debugPrint('Error fetching bill number: $e');
-    // Set fallback bill number
-    if (mounted) {
-      setState(() {
-        billController.text = "PUR-102";
-        debugPrint('Set fallback bill due to exception: ${billController.text}');
-      });
-    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -555,8 +551,6 @@ Future<void> fetchAndSetBillNumber() async {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     // Bill No Field,, it should be auto. fill.
-                                     
-                                   
 
                                     SizedBox(
                                       height: 30,
@@ -1398,6 +1392,7 @@ Future<void> fetchAndSetBillNumber() async {
                                 Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
+                                  //cash...
                                   // 1st Row: Amount //cash purchase
                                   controller.isCash && controller.isAmount
                                       ? Padding(
@@ -1473,6 +1468,8 @@ Future<void> fetchAndSetBillNumber() async {
                                                 ),
                                               ),
                                               hPad2,
+
+                                              ///discount %.
                                               SizedBox(
                                                 height: 30,
                                                 width: 75,
@@ -1486,7 +1483,6 @@ Future<void> fetchAndSetBillNumber() async {
                                                     controller
                                                         .updateDiscountPercentageCash(
                                                             value);
-                                                    
                                                   },
                                                   decoration: InputDecoration(
                                                     hintText: "%",
@@ -1513,7 +1509,8 @@ Future<void> fetchAndSetBillNumber() async {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.end,
                                             children: [
-                                              const Text("Amount",
+                                              const Text(
+                                                  "Discount After Amount",
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.black)),
@@ -1522,6 +1519,7 @@ Future<void> fetchAndSetBillNumber() async {
                                                 height: 30,
                                                 width: 150,
                                                 child: AddSalesFormfield(
+                                                  readOnly: true,
                                                   onChanged: (value) {
                                                     Provider.of(context)<
                                                         PurchaseController>();
@@ -1631,6 +1629,7 @@ Future<void> fetchAndSetBillNumber() async {
                                                 height: 30,
                                                 width: 153,
                                                 child: AddSalesFormfield(
+                                                  readOnly: true,
                                                   controller:
                                                       TextEditingController(
                                                           text: controller
@@ -1684,6 +1683,7 @@ Future<void> fetchAndSetBillNumber() async {
                                                 height: 30,
                                                 width: 75,
                                                 child: AddSalesFormfield(
+                                                  labelText: "%",
                                                   onChanged: (value) {
                                                     controller
                                                         .updateDiscountPercentageCredit(
@@ -1717,6 +1717,7 @@ Future<void> fetchAndSetBillNumber() async {
                                                 height: 30,
                                                 width: 150,
                                                 child: AddSalesFormfield(
+                                                  readOnly: true,
                                                   onChanged: (value) {
                                                     Provider.of(context)<
                                                         PurchaseController>();
@@ -1750,6 +1751,8 @@ Future<void> fetchAndSetBillNumber() async {
                                                     onChanged: (bool? value) {
                                                       controller
                                                           .updateOnlineMoney();
+                                                          
+                                                          
                                                     },
                                                   ),
                                                 ),
@@ -1779,13 +1782,13 @@ Future<void> fetchAndSetBillNumber() async {
                                                     keyboardType:
                                                         TextInputType.number,
                                                     onChanged: (value) {
-                                                      if (!controller
-                                                          .isOnlineMoneyChecked) {
-                                                        controller
-                                                                .receivedAmountController
-                                                                .text =
-                                                            value; // ✅ Allow manual input
-                                                      }
+                                                      // if (!controller .isOnlineMoneyChecked) {
+                                                      //   controller .receivedAmountController .text = value; // ✅ Allow manual input
+                                                      // }
+
+                                                       if (!controller.isOnlineMoneyChecked) {
+    controller.updateManualPayment(value); // ✅ new method
+  }
                                                     },
                                                   ),
                                                 ),
@@ -1960,6 +1963,9 @@ Future<void> fetchAndSetBillNumber() async {
                             debugPrint(
                                 "note  =========>>>>====> ${controller.noteController.text}");
 
+                            // 👉 Check: if sales type is credit but no customer selected
+                            
+
                             if (controller.purchaseItem.isEmpty ||
                                 billController.text.isEmpty) {
                               ScaffoldMessenger.of(context)
@@ -1969,6 +1975,19 @@ Future<void> fetchAndSetBillNumber() async {
                                 ),
                                 backgroundColor: Colors.red,
                               ));
+
+                              ///check cotomer id have.
+                              if (!controller.isCash &&
+                                selectedCustomer == null) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text(
+                                    'Please select a customer for credit sales.'),
+                                backgroundColor: Colors.red,
+                              ));
+                              return;
+                            }
+
                             } else {
                               bool isSuccess = await controller.storePurchase(
                                 context,
@@ -2006,6 +2025,15 @@ Future<void> fetchAndSetBillNumber() async {
                                   ),
                                 );
 
+                                controller.addAmount() == '';
+                                controller.discountAmountController.text == '';
+                                controller.discountController.text = "0.00";
+                                controller.discountAmountController.clear();
+                                controller.totalAmount == '';
+                                controller.purchaseItem = [];
+                                controller.itemsCredit = [];
+                                controller.itemsCash = [];
+
                                 Navigator.pushReplacement(
                                   // ignore: use_build_context_synchronously
                                   context,
@@ -2013,6 +2041,8 @@ Future<void> fetchAndSetBillNumber() async {
                                       builder: (_) => const HomeView()),
                                 );
                               } else {
+                                if (!mounted) return;
+
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     backgroundColor: Colors.red,

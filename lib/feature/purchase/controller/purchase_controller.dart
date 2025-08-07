@@ -191,21 +191,51 @@ class PurchaseController extends ChangeNotifier {
 
 
 
-  void updateOnlineMoney() {
-    isOnlineMoneyChecked = !isOnlineMoneyChecked;
+  ///credit payment check or uncheck,
+  // void updateOnlineMoney() {
+  //   isOnlineMoneyChecked = !isOnlineMoneyChecked;
 
-    // Set value: 0=unpaid;1=partial;2=paid
-    onlinePaymentValue = isOnlineMoneyChecked ? 2 : 1;
+  //   // Set value: 0=unpaid;1=partial;2=paid
+  //   ///updated logic.
+  //   //cash 1, customer with full or parsical payment 1, customer with no payment 0
+  //   onlinePaymentValue = isOnlineMoneyChecked ? 1 : 0;
 
-    if (isOnlineMoneyChecked) {
-      receivedAmountController.text = totalAmount2;
-    } else {
-      receivedAmountController.clear();
-    }
+  //   if (isOnlineMoneyChecked) {
+  //     receivedAmountController.text = totalAmount2;
+  //   } else {
+  //     receivedAmountController.clear();
+  //   }
 
-    notifyListeners();
+  //   notifyListeners();
+  // }
+
+  //credit payment check or uncheck, //working.
+   void updateOnlineMoney() {
+  isOnlineMoneyChecked = !isOnlineMoneyChecked;
+
+  if (isOnlineMoneyChecked) {
+    receivedAmountController.text = totalAmount2;
   }
 
+  final received = double.tryParse(receivedAmountController.text) ?? 0.0;
+  onlinePaymentValue = received > 0 ? 1 : 0;
+
+  notifyListeners();
+}
+
+
+void updateManualPayment(String value) {
+  receivedAmountController.text = value;
+
+  final received = double.tryParse(value) ?? 0.0;
+  onlinePaymentValue = received > 0 ? 1 : 0;
+
+  notifyListeners();
+}
+
+  
+  
+  
   void updateCash() {
     isCash = !isCash;
     isReceived =
@@ -447,12 +477,11 @@ class PurchaseController extends ChangeNotifier {
     discountController.clear();
     noteController.clear();
     purchaseItem.clear();
-
     // Reset any other state if needed
-
     isCash = true; // or false based on your default
     notifyListeners();
   }
+
 
   /// Store purchase API call
   Future<bool> storePurchase(
@@ -474,17 +503,7 @@ class PurchaseController extends ChangeNotifier {
       debugPrint("bill $billNo");
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      // Check if bill_number exists, if not, set an initial value
-      // if (!prefs.containsKey("bill_number")) {
-      //   await prefs.setInt("bill_number", 521444); // Set default bill number
-      // }
-
-      // Get the last bill number and increment it
-      //int lastBillNumber = prefs.getInt("bill_number") ?? 521444;
-      //int newBillNumber = lastBillNumber + 1;
-
-      // Save the updated bill number
-      //await prefs.setInt("bill_number", newBillNumber);
+  
 
       debugPrint('$noteController');
 
@@ -523,7 +542,7 @@ class PurchaseController extends ChangeNotifier {
       //"https://commercebook.site/api/v1/purchase/store?user_id=${prefs.getString("id")}&customer_id=${purchaseCreditOrCash ? "cash" : selectedCustomerId}&bill_number=${newBillNumber}&pruchase_date=${billDate}&details_notes=notes&gross_total=${calculateSubTotal()}&discount=0&payment_out=${purchaseCreditOrCash ? 1 : 0}&payment_amount=${purchaseCreditOrCash ? calculateSubTotal() : paymentController.value.text}";
 
       final url =
-          "https://commercebook.site/api/v1/purchase/store?user_id=${prefs.getInt("user_id").toString()}&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}&bill_number=$billNo&purchase_date=$encodedDate&details_notes=$note&gross_total=${isCash ? addAmount2() : addAmount()}&discount=$discount&payment_out=${isCash ? 1 : onlinePaymentValue}&payment_amount=${isCash ? totalAmount : paymnetAmount}&bill_person_id=$billPersonId";
+          "https://commercebook.site/api/v1/purchase/store?user_id=${prefs.getInt("user_id").toString()}&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}&bill_number=$billNo&purchase_date=$encodedDate&details_notes=$note&gross_total=${isCash ? totalAmount : totalAmount2}&discount=$discount&payment_out=${isCash ? 1 : onlinePaymentValue}&payment_amount=${isCash ? totalAmount : paymnetAmount}&bill_person_id=$billPersonId";
 
       debugPrint("API URL: $url");
 

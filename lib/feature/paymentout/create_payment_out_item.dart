@@ -941,7 +941,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                     String receivedToValue =
                         getReceivedToValue(selectedReceivedTo!);
 
-                    print("Send to API: $receivedToValue");
+                    debugPrint("Send to API: $receivedToValue");
 
                     int userId = int.parse(userIdStr);
                     int customerId = selectedCustomer?.id ??

@@ -17,33 +17,7 @@ class PurchaseReturnProvider with ChangeNotifier {
   double get totalReturn => _totalReturn;
 
   ///purchase return list show.
-  // Future<void> fetchPurchaseReturns() async {
-  //   const url = "https://commercebook.site/api/v1/purchase/return";
-
-  //   try {
-  //     _isLoading = true;
-  //     _errorMessage = '';
-  //     notifyListeners();
-
-  //     final response = await http.get(Uri.parse(url));
-
-  //     if (response.statusCode == 200) {
-  //       final data = PurchaseReturnResponse.fromJson(response.body);
-  //       _purchaseReturns = data.data;
-
-  //       await _fetchItemNames();
-  //     } else {
-  //       _errorMessage = "Failed to load data: ${response.statusCode}";
-  //       debugPrint("API Error: ${response.statusCode} - ${response.body}");
-  //     }
-  //   } catch (e) {
-  //     _errorMessage = "Something went wrong: $e";
-  //     debugPrint("Exception: $e");
-  //   } finally {
-  //     _isLoading = false;
-  //     notifyListeners();
-  //   }
-  // }
+   
 
 
   Future<void> fetchPurchaseReturns() async {
@@ -59,7 +33,16 @@ class PurchaseReturnProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final result = PurchaseReturnResponse.fromJson(response.body);
         _purchaseReturns = result.data;
+
         _totalReturn = result.totalReturn;
+
+        debugPrint("Total Return from API: ${result.totalReturn}");
+        
+        debugPrint("Parsed purchase return list: $_purchaseReturns");
+
+        debugPrint("purchase return list $purchaseReturns");
+
+
       } else {
         _errorMessage = "Failed to load data: ${response.statusCode}";
       }
@@ -118,6 +101,9 @@ class PurchaseReturnProvider with ChangeNotifier {
   String getItemName(int itemId) {
     return _itemsMap[itemId] ?? "Unknown Item";
   }
+
+
+  
   
 
   ///fetch item name.

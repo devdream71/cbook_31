@@ -824,7 +824,7 @@ class _ItemViewState extends State<ItemView> {
                     InkWell(
                         onTap: () {
                           Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => SalesScreen()));
+                              MaterialPageRoute(builder: (_) => const SalesScreen()));
 
                           // showFeatureNotAvailableDialog(context);
                         },

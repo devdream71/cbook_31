@@ -258,7 +258,7 @@ class _AddItemState extends State<AddItem> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            ItemCategoryView()),
+                                            const ItemCategoryView()),
                                   );
                                 },
                                 child: Container(
@@ -864,14 +864,14 @@ class _AddItemState extends State<AddItem> {
                                     ],
                                   ),
                                   if (_isDefaultPriceChecked)
-                                    Padding(
+                                    const Padding(
                                       padding:
-                                          const EdgeInsets.only(left: 50.0),
+                                            EdgeInsets.only(left: 50.0),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          const SizedBox(height: 5),
+                                            SizedBox(height: 5),
                                           SupplierCustomerPriceTwoPage(), // your price fields
                                         ],
                                       ),
@@ -906,8 +906,8 @@ class _AddItemState extends State<AddItem> {
                                 ],
                               ),
                               if (_isPriceCategory) // Show price fields only if checkbox ticked
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 50.0),
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 50.0),
                                   child: SupplierCustomerPricePage(),
                                 ),
                             ],

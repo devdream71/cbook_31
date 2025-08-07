@@ -11,7 +11,6 @@ import 'package:cbook_dt/feature/paymentout/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/sales/controller/sales_controller.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,26 +72,26 @@ class _IncomeCreateState extends State<IncomeCreate> {
 
   ///updated bill nunber json respoonse
   Future<void> fetchAndSetBillNumber() async {
-  print('fetchAndSetBillNumber called');
+  debugPrint('fetchAndSetBillNumber called');
 
   final url = Uri.parse(
     'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=voucher&type=indirect_income&code=IN&bill_number=100&with_nick_name=1',
   );
 
   try {
-    print('Making API call...');
+    debugPrint('Making API call...');
     final response = await http.get(url);
-    print('API Response Status: ${response.statusCode}');
-    print('API Response Body: ${response.body}');
+    debugPrint('API Response Status: ${response.statusCode}');
+    debugPrint('API Response Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('Parsed data: $data');
+      debugPrint('Parsed data: $data');
 
       if (data['success'] == true && data['data'] != null) {
         final billFromApi = data['data']['bill_number']?.toString().trim() ?? "";
 
-        print('Bill from API: $billFromApi');
+        debugPrint('Bill from API: $billFromApi');
 
         // Optional: extract only number from "IN-102"
         final billOnlyNumber =  billFromApi;
@@ -100,19 +99,19 @@ class _IncomeCreateState extends State<IncomeCreate> {
         if (mounted) {
           setState(() {
             billController.text = billOnlyNumber;
-            print('Bill controller updated to: ${billController.text}');
+            debugPrint('Bill controller updated to: ${billController.text}');
           });
         }
       } else {
-        print('API success false or data missing');
+        debugPrint('API success false or data missing');
         _setFallback();
       }
     } else {
-      print('Failed to fetch bill number: ${response.statusCode}');
+      debugPrint('Failed to fetch bill number: ${response.statusCode}');
       _setFallback();
     }
   } catch (e) {
-    print('Error fetching bill number: $e');
+    debugPrint('Error fetching bill number: $e');
     _setFallback();
   }
 }
@@ -121,7 +120,7 @@ void _setFallback() {
   if (mounted) {
     setState(() {
       billController.text = "101"; // or any default you want
-      print('Fallback bill set: ${billController.text}');
+      debugPrint('Fallback bill set: ${billController.text}');
     });
   }
 }
@@ -665,7 +664,7 @@ void _setFallback() {
                       debugPrint('Total Amount: $totalAmount');
                       debugPrint('Notes: $notes');
                       debugPrint('Status: $status');
-                      debugPrint(" bill  person ${billPersonID}");
+                      debugPrint(" bill  person $billPersonID");
                       debugPrint(
                           "📅 Selected Bill Date: ${controller.formattedDate2}");
                       debugPrint(

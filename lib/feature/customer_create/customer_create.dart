@@ -157,7 +157,7 @@ class _CustomerCreateState extends State<CustomerCreate> {
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text("Create Customer",
             style: TextStyle(
                 color: Colors.yellow,

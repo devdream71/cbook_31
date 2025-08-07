@@ -84,72 +84,75 @@ class _BillPersonListState extends State<BillPersonList> {
         ),
         automaticallyImplyLeading: true,
       ),
-      body: Column(children: [
-        Consumer<BillPersonProvider>(
-          builder: (context, provider, child) {
-            if (provider.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (provider.errorMessage.isNotEmpty) {
-              return Center(child: Text(provider.errorMessage));
-            }
-
-            if (provider.billPersons.isEmpty) {
-              return Center(
-                  child: Text(
-                'No Bill Persons Found',
-                style: ts,
-              ));
-            }
-
-            return ListView.separated(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero, // 🔥 Zero padding
-              itemCount: provider.billPersons.length,
-              separatorBuilder: (context, index) =>
-                  const SizedBox(height: 1), // 🔥 Zero space between items
-              itemBuilder: (context, index) {
-                final person = provider.billPersons[index];
-
-                final billPersonId = provider.billPersons[index].id;
-
-                return InkWell(
-                  onLongPress: () {
-                    editDeleteDiolog(context, billPersonId.toString());
-                  },
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 241, 240, 240), // Optional: background color
-                    ),
-                    child: ListTile(
-                      dense: true, // 🔥 Makes the tile more compact
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 0), // 🔥 Minimal padding inside ListTile
-                      leading: person.avatar != null
-                          ? Image.network(
-                              'https://commercebook.site/${person.avatar}',
-                              width: 40,
-                              height: 40,
-                              fit: BoxFit.cover)
-                          : const Icon(Icons.person),
-                      title: Text(person.name, style: ts2),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(person.phone, style: ts2),
-                          Text(person.email ?? 'N/A', style: ts2),
-                        ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(children: [
+          Consumer<BillPersonProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+        
+              if (provider.errorMessage.isNotEmpty) {
+                return Center(child: Text(provider.errorMessage));
+              }
+        
+              if (provider.billPersons.isEmpty) {
+                return Center(
+                    child: Text(
+                  'No Bill Persons Found',
+                  style: ts,
+                ));
+              }
+        
+              return ListView.separated(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero, // 🔥 Zero padding
+                itemCount: provider.billPersons.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 1), // 🔥 Zero space between items
+                itemBuilder: (context, index) {
+                  final person = provider.billPersons[index];
+        
+                  final billPersonId = provider.billPersons[index].id;
+        
+                  return InkWell(
+                    onLongPress: () {
+                      editDeleteDiolog(context, billPersonId.toString());
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 241, 240, 240), // Optional: background color
+                      ),
+                      child: ListTile(
+                        dense: true, // 🔥 Makes the tile more compact
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 0), // 🔥 Minimal padding inside ListTile
+                        leading: person.avatar != null
+                            ? Image.network(
+                                'https://commercebook.site/${person.avatar}',
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover)
+                            : const Icon(Icons.person),
+                        title: Text(person.name, style: ts2),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(person.phone, style: ts2),
+                            Text(person.email ?? 'N/A', style: ts2),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ]),
+                  );
+                },
+              );
+            },
+          ),
+        ]),
+      ),
     );
   }
 

@@ -12,7 +12,7 @@ class PurchaseSetting extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "Purchase Settings",
           style: TextStyle(color: Colors.yellow, fontSize: 16),

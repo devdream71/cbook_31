@@ -725,7 +725,7 @@ class SalesController extends ChangeNotifier {
           "${selectedTaxId ?? '0'}_${(selectedTaxPercent ?? 0).toStringAsFixed(0)}";
 
       debugPrint("payment out  true or false-  $paymentOut"); 
-      debugPrint("payment Amount -  ${paymentAmount}");
+      debugPrint("payment Amount -  $paymentAmount");
 
       final url = "https://commercebook.site/api/v1/sales/store"
           "?user_id=${prefs.getInt("user_id").toString()}"

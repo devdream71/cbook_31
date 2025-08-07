@@ -258,7 +258,7 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                                     labelText: 'Account',
                                     selectedItem: selectedAccount,
                                     onChanged: (value) {
-                                      print('=== Account Selected: $value ===');
+                                      debugPrint('=== Account Selected: $value ===');
                                       setState(() {
                                         selectedAccount = value;
                                       });
@@ -729,7 +729,7 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                     debugPrint('Sending Data:');
                     debugPrint('User ID: $userId');
                     debugPrint('Expense No: $invoiceNo');
-                    print("Selected date: $billDate");
+                    debugPrint("Selected date: $billDate");
                     debugPrint('Paid To: $paidTo');
                     debugPrint('Account: $account');
                     debugPrint('Total Amount: $totalAmount');

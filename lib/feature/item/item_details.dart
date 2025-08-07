@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/close_button_icon.dart';
 import 'package:cbook_dt/common/item_details_pop_up.dart';
@@ -198,7 +197,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(6)),
                             child: Padding(
-                              padding: EdgeInsets.only(left: 2.0),
+                              padding: const EdgeInsets.only(left: 2.0),
                               child: Column(
                                 children: [
                                   const ItemDetailsPopUpTwo(
