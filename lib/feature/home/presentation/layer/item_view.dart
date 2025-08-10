@@ -462,18 +462,18 @@ class _ItemViewState extends State<ItemView> {
                                                       ),
                                                     ),
                                                   ),
-                                                  Text(
-                                                    secondaryUnitName != null
-                                                        ? '1 $unitName ${item.unitQty} $secondaryUnitName'
-                                                        : unitName,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: GoogleFonts
-                                                        .notoSansPhagsPa(
-                                                      fontSize: 12,
-                                                      color: Colors.blue,
-                                                    ),
-                                                  ),
+                                                  // Text(
+                                                  //   secondaryUnitName != null
+                                                  //       ? '1 $unitName ${item.unitQty} $secondaryUnitName'
+                                                  //       : unitName,
+                                                  //   overflow:
+                                                  //       TextOverflow.ellipsis,
+                                                  //   style: GoogleFonts
+                                                  //       .notoSansPhagsPa(
+                                                  //     fontSize: 12,
+                                                  //     color: Colors.blue,
+                                                  //   ),
+                                                  // ),
                                                   item.openingStock == null
                                                       ? Text(
                                                           'Stock: 0 $unitName',
@@ -823,8 +823,10 @@ class _ItemViewState extends State<ItemView> {
                     //// Sales/Bill/\nInvoice
                     InkWell(
                         onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => const SalesScreen()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const SalesScreen()));
 
                           // showFeatureNotAvailableDialog(context);
                         },

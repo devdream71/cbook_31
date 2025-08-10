@@ -459,26 +459,29 @@ class _PartyState extends State<Party> {
 
                                       Row(
                                         children: [
-                                          Text(
-                                            (customers.proprietorName !=
-                                                        null &&
-                                                    customers.proprietorName!
-                                                        .trim()
-                                                        .isNotEmpty)
-                                                ? customers.phone ??
-                                                    'No Phone'
-                                                : (customers.address ??
-                                                        'No Address')
-                                                    .replaceAll('\n', ' ')
-                                                    .replaceAll('\r', ''),
-                                            style:
-                                                GoogleFonts.notoSansPhagsPa(
-                                              fontSize: 10,
-                                              color: Colors.grey[800],
+                                          SizedBox(
+                                            width: 170,
+                                            child: Text(
+                                              (customers.proprietorName !=
+                                                          null &&
+                                                      customers.proprietorName!
+                                                          .trim()
+                                                          .isNotEmpty)
+                                                  ? customers.phone ??
+                                                      'No Phone'
+                                                  : (customers.address ??
+                                                          'No Address')
+                                                      .replaceAll('\n', ' ')
+                                                      .replaceAll('\r', ''),
+                                              style:
+                                                  GoogleFonts.notoSansPhagsPa(
+                                                fontSize: 10,
+                                                color: Colors.grey[800],
+                                              ),
+                                              softWrap: true,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                            softWrap: true,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
                                       ),

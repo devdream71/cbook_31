@@ -62,19 +62,19 @@ class _ProfileViewState extends State<ProfileView> {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-                foregroundColor: AppColors.sfWhite,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                )),
-            child: const Text(
-              'Complete Profile',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
+          // ElevatedButton(
+          //   onPressed: () {},
+          //   style: ElevatedButton.styleFrom(
+          //       backgroundColor: AppColors.primaryColor,
+          //       foregroundColor: AppColors.sfWhite,
+          //       shape: const RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.all(Radius.circular(8)),
+          //       )),
+          //   child: const Text(
+          //     'Complete Profile',
+          //     style: TextStyle(fontWeight: FontWeight.bold),
+          //   ),
+          // ),
           Consumer<ProfileProvider>(
             builder: (context, provider, child) {
               if (provider.isLoading) {
@@ -91,26 +91,20 @@ class _ProfileViewState extends State<ProfileView> {
                       Column(
                         children: [
                           CircleAvatar(
-                            radius: 55,
+                            radius: 15,
                             backgroundColor: Colors.white,
                             child: CircleAvatar(
-                              radius: 50,
-                              backgroundImage: user.avatar != null
-                                  ? NetworkImage(user.avatar!)
+                              radius: 15,
+                              backgroundImage: (user.avatar != null &&
+                                      user.avatar!.isNotEmpty)
+                                  ? NetworkImage(
+                                      "https://commercebook.site/${user.avatar}")
                                   : const AssetImage(
-                                          'assets/image/cbook_logo.png') //assets\image\cbook_logo.png
+                                          'assets/image/cbook_logo.png')
                                       as ImageProvider,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          // Text(
-                          //   user.name,
-                          //   style: const TextStyle(
-                          //     fontSize: 12,
-                          //     fontWeight: FontWeight.bold,
-                          //     color: Colors.black,
-                          //   ),
-                          // ),
+                          
                           const SizedBox(height: 6),
                           Text(
                             user.email,
@@ -121,16 +115,17 @@ class _ProfileViewState extends State<ProfileView> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 6),
+
+                      Text(
+                        user.nickName,
+                        style: const TextStyle(color: Colors.black),
+                      ),
 
                       // User Details
                       _buildInfoCard(Icons.phone, "Phone",
+
                           user.phone ?? "No phone number"),
-                      // _buildInfoCard(Icons.badge, "User Type",
-                      //     user.userType.toUpperCase()),
-                      //_buildInfoCard(Icons.verified, "Verification Code", user.varificationCode),
-                      // _buildInfoCard(Icons.access_time, "Created At",
-                      //     user.createdAt.split("T")[0]),
 
                       GestureDetector(
                         onTap: () {

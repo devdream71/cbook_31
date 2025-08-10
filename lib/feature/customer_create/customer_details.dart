@@ -140,6 +140,50 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: colorScheme.primary,
         centerTitle: true,
+        actions: [
+          //edit data
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: IconButton(
+              iconSize: 20, // match icon size
+              padding: EdgeInsets
+                  .zero, // remove inner padding :contentReference[oaicite:1]{index=1}
+              constraints:
+                  const BoxConstraints(), // override default 48×48 minimum :contentReference[oaicite:2]{index=2}
+              visualDensity: VisualDensity
+                  .compact, // further tighten around the icon :contentReference[oaicite:3]{index=3}
+              onPressed: () {
+                final c = widget.customer;
+                final customerData = CustomerData(
+                  id: c.id,
+                  userId: c.userId,
+                  name: c.name,
+                  proprietorName: c.proprietorName,
+                  email: "", // or pass real email if available
+                  phone: c.phone ?? "",
+                  address: c.address ?? "",
+                  openingBalance: c.due,
+                  status: 1,
+                  createdAt: "",
+                  updatedAt: "",
+                  type: c.type,
+                  level: null,
+                  levelType: null,
+                );
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CustomerUpdate(customer: customerData),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.edit_document, size: 20),
+            ),
+          )
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -212,53 +256,25 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
                             ),
 
                             ///edit, value, icon,
+                            ///
+                            ///
+
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                'https://commercebook.site/${widget.customer.avatar ?? ''}',
+                                fit: BoxFit.cover,
+                                height: 50,
+                                width: 50,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.person); // fallback
+                                },
+                              ),
+                            ),
+
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                //edit data
-                                SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: IconButton(
-                                    iconSize: 20, // match icon size
-                                    padding: EdgeInsets
-                                        .zero, // remove inner padding :contentReference[oaicite:1]{index=1}
-                                    constraints:
-                                        const BoxConstraints(), // override default 48×48 minimum :contentReference[oaicite:2]{index=2}
-                                    visualDensity: VisualDensity
-                                        .compact, // further tighten around the icon :contentReference[oaicite:3]{index=3}
-                                    onPressed: () {
-                                      final c = widget.customer;
-                                      final customerData = CustomerData(
-                                        id: c.id,
-                                        userId: c.userId,
-                                        name: c.name,
-                                        proprietorName: c.proprietorName,
-                                        email:
-                                            "", // or pass real email if available
-                                        phone: c.phone ?? "",
-                                        address: c.address ?? "",
-                                        openingBalance: c.due,
-                                        status: 1,
-                                        createdAt: "",
-                                        updatedAt: "",
-                                        type: c.type,
-                                        level: null,
-                                        levelType: null,
-                                      );
-
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => CustomerUpdate(
-                                              customer: customerData),
-                                        ),
-                                      );
-                                    },
-                                    icon: const Icon(Icons.edit_document,
-                                        size: 20),
-                                  ),
-                                ),
                                 const Text(
                                   "Receivable",
                                   style: TextStyle(
@@ -268,68 +284,67 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
                                   ),
                                 ),
                                 Text(
-                                  "${customerDetails?["opening_balance"] ?? '0'}",
+                                  "${widget.customer.due}",
                                   style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
                                   ),
                                 ),
+                                // Row(
+                                //   mainAxisAlignment: MainAxisAlignment.end,
+                                //   crossAxisAlignment: CrossAxisAlignment.center,
+                                //   children: [
+                                //     GestureDetector(
+                                //       onTap: () {
+                                //         // handle SMS tap
 
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        // handle SMS tap
-
-                                        _openSms(
-                                            phone: '01759546853',
-                                            body: 'Hello from  cBook!');
-                                      },
-                                      child: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Image.asset(
-                                          'assets/image/communication.png',
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    GestureDetector(
-                                      onTap: () => openWhatsApp(
-                                        context: context,
-                                        phone: '01759546853',
-                                        message:
-                                            'Hello from cbook!', // optional
-                                      ),
-                                      child: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Image.asset(
-                                          'assets/image/whatsapp_color.png',
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    GestureDetector(
-                                      onTap: () {
-                                        // handle Report tap
-                                      },
-                                      child: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: Image.asset(
-                                          'assets/image/pdf.png',
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
+                                //         _openSms(
+                                //             phone: '01759546853',
+                                //             body: 'Hello from  cBook!');
+                                //       },
+                                //       child: SizedBox(
+                                //         width: 20,
+                                //         height: 20,
+                                //         child: Image.asset(
+                                //           'assets/image/communication.png',
+                                //           fit: BoxFit.contain,
+                                //         ),
+                                //       ),
+                                //     ),
+                                //     const SizedBox(width: 4),
+                                //     GestureDetector(
+                                //       onTap: () => openWhatsApp(
+                                //         context: context,
+                                //         phone: '01759546853',
+                                //         message:
+                                //             'Hello from cbook!', // optional
+                                //       ),
+                                //       child: SizedBox(
+                                //         width: 20,
+                                //         height: 20,
+                                //         child: Image.asset(
+                                //           'assets/image/whatsapp_color.png',
+                                //           fit: BoxFit.contain,
+                                //         ),
+                                //       ),
+                                //     ),
+                                //     const SizedBox(width: 4),
+                                //     GestureDetector(
+                                //       onTap: () {
+                                //         // handle Report tap
+                                //       },
+                                //       child: SizedBox(
+                                //         width: 20,
+                                //         height: 20,
+                                //         child: Image.asset(
+                                //           'assets/image/pdf.png',
+                                //           fit: BoxFit.contain,
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   ],
+                                // )
                               ],
                             ),
                           ],
@@ -371,11 +386,14 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
                                     final purchase = widget.purchases[index];
 
                                     return Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
                                       margin: const EdgeInsets.symmetric(
-                                          vertical: 6),
+                                          vertical: 2),
                                       child: ListTile(
                                         leading: CircleAvatar(
-                                          child: Text(purchase.id.toString()),
+                                          child: Text('${index + 1}'),
                                         ),
                                         title: Text(
                                           "Bill: ${purchase.billNumber}",

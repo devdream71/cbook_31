@@ -11,6 +11,7 @@ import 'package:cbook_dt/feature/account/ui/income/income_list.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/sales_report_model_home.dart';
 import 'package:cbook_dt/feature/dashboard_report/provider/dashbord_report_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/layer/dashboard/dashboard_controller.dart';
+import 'package:cbook_dt/feature/home/provider/profile_provider.dart';
 import 'package:cbook_dt/feature/party/party_list.dart';
 import 'package:cbook_dt/feature/paymentout/payment_out_list.dart';
 import 'package:cbook_dt/feature/purchase/purchase_list_api.dart';
@@ -23,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 class DashboardView extends StatefulWidget {
@@ -54,6 +56,7 @@ class Layout extends StatefulWidget {
 
 class LayoutState extends State<Layout> {
   List<double> salesValues = [];
+  int? userID;
 
   @override
   void initState() {
@@ -69,7 +72,26 @@ class LayoutState extends State<Layout> {
       await provider.fetchBankBalance();
       await provider.fetchVoucherSummary();
       await provider.fetchSalesLast30Days();
+      _loadUserIdAndFetchProfile();
     });
+  }
+
+  Future<void> _loadUserIdAndFetchProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('user_id');
+
+    if (userId != null) {
+      setState(() {
+        userID = userId;
+      });
+
+      // Call fetchProfile after userId is loaded
+      Provider.of<ProfileProvider>(context, listen: false)
+          .fetchProfile(userID!);
+    } else {
+      // Handle null userId
+      debugPrint('User ID not found in SharedPreferences');
+    }
   }
 
   @override
@@ -154,37 +176,115 @@ class LayoutState extends State<Layout> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Image.asset(
-                                  "assets/image/cbook_logo.png",
-                                  height: 40,
-                                  width: 40,
-                                ),
-                                const SizedBox(width: 12),
-                                const Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Commerce Book Ltd",
-                                      style: TextStyle(
-                                        fontFamily: 'Calibri',
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 20,
-                                      ),
+                            // Row(
+                            //   children: [
+                            //     Image.asset(
+                            //       "assets/image/cbook_logo.png",
+                            //       height: 40,
+                            //       width: 40,
+                            //     ),
+                            //     const SizedBox(width: 12),
+                            //     const Column(
+                            //       crossAxisAlignment: CrossAxisAlignment.start,
+                            //       children: [
+                            //         Text(
+                            //           "Commerce Book Ltd",
+                            //           style: TextStyle(
+                            //             fontFamily: 'Calibri',
+                            //             color: Colors.white,
+                            //             fontWeight: FontWeight.w700,
+                            //             fontSize: 20,
+                            //           ),
+                            //         ),
+                            //         Text(
+                            //           "Admin",
+                            //           style: TextStyle(
+                            //               fontFamily: 'Calibri',
+                            //               color: Colors.white,
+                            //               fontWeight: FontWeight.w800,
+                            //               fontSize: 12),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   ],
+                            // ),
+
+                            Consumer<ProfileProvider>(
+                              builder: (context, provider, child) {
+                                if (provider.isLoading) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                } else if (provider.profile != null) {
+                                  final user = provider.profile!;
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Row(
+                                      children: [
+                                        // CircleAvatar(
+                                        //   radius: 15,
+                                        //   backgroundColor: Colors.white,
+                                        //   child: CircleAvatar(
+                                        //     radius: 15,
+                                        //     backgroundImage: user.avatar != null
+                                        //         ? NetworkImage(user.avatar!)
+                                        //         : const AssetImage(
+                                        //                 'assets/image/cbook_logo.png') //assets\image\cbook_logo.png
+                                        //             as ImageProvider,
+                                        //   ),
+                                        // ),
+
+                                        CircleAvatar(
+                                          radius: 15,
+                                          backgroundColor: Colors.white,
+                                          child: CircleAvatar(
+                                            radius: 15,
+                                            backgroundImage: (user.avatar !=
+                                                        null &&
+                                                    user.avatar!.isNotEmpty)
+                                                ? NetworkImage(
+                                                    "https://commercebook.site/${user.avatar}")
+                                                : const AssetImage(
+                                                        'assets/image/cbook_logo.png')
+                                                    as ImageProvider,
+                                          ),
+                                        ),
+
+                                        const SizedBox(width: 4),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              user.companyName,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              user.name,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      "Admin",
-                                      style: TextStyle(
-                                          fontFamily: 'Calibri',
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 12),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: Text(
+                                      provider.errorMessage.isNotEmpty
+                                          ? provider.errorMessage
+                                          : "No profile data found",
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.red),
                                     ),
-                                  ],
-                                ),
-                              ],
+                                  );
+                                }
+                              },
                             ),
 
                             const Icon(
@@ -209,7 +309,7 @@ class LayoutState extends State<Layout> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     hPad5,
-                
+
                     ///customer.
                     Expanded(
                       child: Consumer<DashboardReportProvider>(
@@ -224,14 +324,12 @@ class LayoutState extends State<Layout> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const Party()));
+                                        builder: (context) => const Party()));
                               },
                               child: _buildSummaryCard(
                                 title: "Customer",
-                                amount:
-                                    '${provider.customerTransaction ?? 0}',
-                      
+                                amount: '${provider.customerTransaction ?? 0}',
+
                                 ///
                                 //icon: Icons.person_rounded,
                                 color: Colors.green.shade100,
@@ -242,9 +340,11 @@ class LayoutState extends State<Layout> {
                         },
                       ),
                     ),
-                
-                    hPad5,
-                
+
+                    const SizedBox(
+                      width: 0,
+                    ),
+
                     ///supplier
                     Expanded(
                       child: Consumer<DashboardReportProvider>(
@@ -263,8 +363,7 @@ class LayoutState extends State<Layout> {
                               },
                               child: _buildSummaryCard(
                                 title: "Supplier",
-                                amount:
-                                    '${provider.supplierTransaction ?? 0}',
+                                amount: '${provider.supplierTransaction ?? 0}',
                                 //icon: Icons.handshake_rounded,
                                 color: Colors.red.shade100,
                                 iconColor: Colors.red.shade800,
@@ -274,9 +373,11 @@ class LayoutState extends State<Layout> {
                         },
                       ),
                     ),
-                
-                    hPad5,
-                
+
+                    const SizedBox(
+                      width: 0,
+                    ),
+
                     ///cash in hand
                     Expanded(
                       child: Consumer<DashboardReportProvider>(
@@ -296,9 +397,13 @@ class LayoutState extends State<Layout> {
                               child: _buildSummaryCard(
                                 title: "Cash",
                                 //amount: "${provider.cashInHand.toStringAsFixed(2) ?? 0}",
-                                
+
                                 //icon: Icons.attach_money_rounded,
-                                amount: double.tryParse(provider.cashInHand?.toString() ?? '')?.toStringAsFixed(2) ?? '0.00',
+                                amount: double.tryParse(
+                                            provider.cashInHand?.toString() ??
+                                                '')
+                                        ?.toStringAsFixed(2) ??
+                                    '0.00',
                                 color: Colors.blue.shade100,
                                 iconColor: Colors.blue.shade800,
                               ),
@@ -307,9 +412,11 @@ class LayoutState extends State<Layout> {
                         },
                       ),
                     ),
-                
-                    hPad5,
-                
+
+                    const SizedBox(
+                      width: 0,
+                    ),
+
                     ///bank
                     Expanded(
                       child: Consumer<DashboardReportProvider>(
@@ -338,15 +445,13 @@ class LayoutState extends State<Layout> {
                         },
                       ),
                     ),
-                
+
                     hPad5,
                   ],
                 ),
                 const SizedBox(
                   height: 8,
                 ),
-
-               
 
                 Text(
                   "Transaction History - Last 30 days",
@@ -360,8 +465,6 @@ class LayoutState extends State<Layout> {
                 const CustomBarChart(),
 
                 //const SalesLast30DaysChart(),
-
-                
 
                 Text(
                   "Transaction summary",
@@ -497,7 +600,6 @@ Widget _buildSummaryCard({
               style: TextStyle(
                 fontSize: 12,
                 color: iconColor,
-                
               ),
             ),
           ],
@@ -568,8 +670,10 @@ Widget _buildBottomSheetContent(BuildContext context) {
                   //// Sales/Bill/\nInvoice
                   InkWell(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => const SalesScreen()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SalesScreen()));
 
                         // showFeatureNotAvailableDialog(context);
                       },

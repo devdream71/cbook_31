@@ -136,7 +136,7 @@ class AddItemProvider extends ChangeNotifier {
   String formattedQty = _formatCurrency(totals['qty'] ?? 0.0);
   String formattedRate = _formatCurrency(totals['rate'] ?? 0.0);
 
-  return "Qty: $formattedQty | Rate: $formattedRate";
+  return "Qty: $formattedQty | $formattedRate";
 }
 
   // Helper method to format currency
