@@ -13,11 +13,13 @@ class BottomPortion extends StatelessWidget {
   final String saleType;
   final String? customerId;
   final List<InvoiceItem> invoiceItems;
+  final String billNo;
   const BottomPortion({
     super.key,
     required this.saleType,
     this.customerId,
     required this.invoiceItems,
+   required this.billNo,
   });
 
   @override
@@ -368,7 +370,7 @@ class BottomPortion extends StatelessWidget {
                 debugPrint("amount =========>>>>====> $amount");
       
                 debugPrint(
-                    "amount =========>>>>====> ${controller.billController.text}");
+                    "amount =========>>>>====> $billNo");
       
                 int paymentOutValue = 0;
       
@@ -381,11 +383,10 @@ class BottomPortion extends StatelessWidget {
                   paymentOutValue = 0;
                 }
       
-                if (controller.saleItem.isEmpty ||
-                    controller.billController.text.isEmpty) {
+                if (controller.saleItem.isEmpty ) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text(
-                      'No Item added or no bill no',
+                      'No Item added',
                     ),
                     backgroundColor: Colors.red,
                   ));
@@ -398,7 +399,7 @@ class BottomPortion extends StatelessWidget {
                     customerId: controller.getCustomerId(context),
       
                     saleType: saleType,
-                    billNo: controller.billController.text,
+                    billNo: billNo,
                     total: total,
                     discount: controller.discountAmount.text,
                     discountPercent: controller.discountPercentance.text,

@@ -85,26 +85,7 @@ class _FieldPortionState extends State<FieldPortion> {
                     const Text("Discount",
                         style: TextStyle(fontSize: 12, color: Colors.black)),
                     const SizedBox(width: 5),
-                    SizedBox(
-                      height: 30,
-                      width: 80,
-                      child: AddSalesFormfield(
-                        keyboardType: TextInputType.number,
-                        labelText: "Discount",
-                        controller: controller.discountController,
-                        onChanged: (value) {
-                          //controller.updateDiscountCreditAmount(value);
-                          controller.updateDiscountCashAmount(value);
-                        },
-                        //style: const TextStyle(fontSize: 12, color: Colors.black),
-                        decoration: const InputDecoration(
-                          hintText: "৳",
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 3,
-                    ),
+
                     SizedBox(
                       height: 30,
                       width: 80,
@@ -123,6 +104,31 @@ class _FieldPortionState extends State<FieldPortion> {
                         ),
                       ),
                     ),
+
+                     const SizedBox(
+                      width: 3,
+                    ),
+                    
+
+
+                    SizedBox(
+                      height: 30,
+                      width: 80,
+                      child: AddSalesFormfield(
+                        keyboardType: TextInputType.number,
+                        labelText: "৳",
+                        controller: controller.discountController,
+                        onChanged: (value) {
+                          //controller.updateDiscountCreditAmount(value);
+                          controller.updateDiscountCashAmount(value);
+                        },
+                        //style: const TextStyle(fontSize: 12, color: Colors.black),
+                        decoration: const InputDecoration(
+                          hintText: "৳",
+                        ),
+                      ),
+                    ),
+                   
                   ],
                 ),
               )
@@ -406,25 +412,7 @@ class _FieldPortionState extends State<FieldPortion> {
                     const Text("Discount",
                         style: TextStyle(fontSize: 12, color: Colors.black)),
                     const SizedBox(width: 5),
-                    SizedBox(
-                      height: 30,
-                      width: 80,
-                      child: AddSalesFormfield(
-                        keyboardType: TextInputType.number,
-                        labelText: "Discount",
-                        controller: controller.discountController,
-                        onChanged: (value) {
-                          controller.updateDiscountCreditAmount(value);
-                        },
-                        //style: const TextStyle(fontSize: 12, color: Colors.black),
-                        decoration: const InputDecoration(
-                          hintText: "৳",
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 3,
-                    ),
+
                     SizedBox(
                       height: 30,
                       width: 80,
@@ -441,6 +429,30 @@ class _FieldPortionState extends State<FieldPortion> {
                         ),
                       ),
                     ),
+
+                    const SizedBox(
+                      width: 3,
+                    ),
+
+
+                    SizedBox(
+                      height: 30,
+                      width: 80,
+                      child: AddSalesFormfield(
+                        keyboardType: TextInputType.number,
+                        labelText: "৳",
+                        controller: controller.discountController,
+                        onChanged: (value) {
+                          controller.updateDiscountCreditAmount(value);
+                        },
+                        //style: const TextStyle(fontSize: 12, color: Colors.black),
+                        decoration: const InputDecoration(
+                          hintText: "৳",
+                        ),
+                      ),
+                    ),
+                    
+                    
                   ],
                 ),
               )

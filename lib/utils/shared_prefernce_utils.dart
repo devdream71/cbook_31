@@ -22,6 +22,8 @@ class SharedPrefsUtils {
     return prefs.getBool(key) ?? defaultValue;
   }
 
+  
+
   // Save a string value
   Future<void> setString(String key, String value) async {
     final prefs = await SharedPreferences.getInstance();

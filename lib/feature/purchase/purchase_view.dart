@@ -8,6 +8,7 @@ import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/invoice/invoice.dart';
 import 'package:cbook_dt/feature/invoice/invoice_model.dart';
+import 'package:cbook_dt/feature/item/model/items_show.dart';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
 import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
@@ -439,6 +440,8 @@ class LayoutState extends State<Layout> {
                                                                       (context) =>
                                                                           const SuppliersCreate()));
                                                         }),
+
+                                                        
                                                     Consumer<CustomerProvider>(
                                                       builder: (context,
                                                           customerProvider,
@@ -1445,29 +1448,6 @@ class LayoutState extends State<Layout> {
                                                       fontSize: 12,
                                                       color: Colors.black)),
                                               const SizedBox(width: 5),
-                                              SizedBox(
-                                                height: 30,
-                                                width: 75,
-                                                child: AddSalesFormfield(
-                                                  labelText: "৳",
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  controller: controller
-                                                      .discountController,
-                                                  onChanged: (value) {
-                                                    TextEditingController(
-                                                        text: controller
-                                                            .totalAmount);
-                                                    controller
-                                                        .discountController
-                                                        .text = value;
-                                                    controller
-                                                        .updateDiscountcash(
-                                                            value);
-                                                  },
-                                                ),
-                                              ),
-                                              hPad2,
 
                                               ///discount %.
                                               SizedBox(
@@ -1493,6 +1473,31 @@ class LayoutState extends State<Layout> {
                                                     // filled: true,
                                                     fillColor: Colors.white,
                                                   ),
+                                                ),
+                                              ),
+
+                                              hPad2,
+
+                                              SizedBox(
+                                                height: 30,
+                                                width: 75,
+                                                child: AddSalesFormfield(
+                                                  labelText: "৳",
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  controller: controller
+                                                      .discountController,
+                                                  onChanged: (value) {
+                                                    TextEditingController(
+                                                        text: controller
+                                                            .totalAmount);
+                                                    controller
+                                                        .discountController
+                                                        .text = value;
+                                                    controller
+                                                        .updateDiscountcash(
+                                                            value);
+                                                  },
                                                 ),
                                               ),
                                             ],
@@ -1656,6 +1661,25 @@ class LayoutState extends State<Layout> {
                                                       fontSize: 12,
                                                       color: Colors.black)),
                                               const SizedBox(width: 5),
+
+                                              ///
+                                              SizedBox(
+                                                height: 30,
+                                                width: 75,
+                                                child: AddSalesFormfield(
+                                                  labelText: "%",
+                                                  onChanged: (value) {
+                                                    controller
+                                                        .updateDiscountPercentageCredit(
+                                                            value);
+                                                  },
+                                                  controller: controller
+                                                      .discountAmountController,
+                                                ),
+                                              ),
+
+                                              hPad2,
+
                                               SizedBox(
                                                 height: 30,
                                                 width: 75,
@@ -1674,23 +1698,6 @@ class LayoutState extends State<Layout> {
                                                         .updateDiscountCredit(
                                                             value);
                                                   },
-                                                ),
-                                              ),
-                                              hPad2,
-
-                                              ///
-                                              SizedBox(
-                                                height: 30,
-                                                width: 75,
-                                                child: AddSalesFormfield(
-                                                  labelText: "%",
-                                                  onChanged: (value) {
-                                                    controller
-                                                        .updateDiscountPercentageCredit(
-                                                            value);
-                                                  },
-                                                  controller: controller
-                                                      .discountAmountController,
                                                 ),
                                               ),
                                             ],
@@ -1751,8 +1758,6 @@ class LayoutState extends State<Layout> {
                                                     onChanged: (bool? value) {
                                                       controller
                                                           .updateOnlineMoney();
-                                                          
-                                                          
                                                     },
                                                   ),
                                                 ),
@@ -1786,9 +1791,12 @@ class LayoutState extends State<Layout> {
                                                       //   controller .receivedAmountController .text = value; // ✅ Allow manual input
                                                       // }
 
-                                                       if (!controller.isOnlineMoneyChecked) {
-    controller.updateManualPayment(value); // ✅ new method
-  }
+                                                      if (!controller
+                                                          .isOnlineMoneyChecked) {
+                                                        controller
+                                                            .updateManualPayment(
+                                                                value); // ✅ new method
+                                                      }
                                                     },
                                                   ),
                                                 ),
@@ -1964,7 +1972,6 @@ class LayoutState extends State<Layout> {
                                 "note  =========>>>>====> ${controller.noteController.text}");
 
                             // 👉 Check: if sales type is credit but no customer selected
-                            
 
                             if (controller.purchaseItem.isEmpty ||
                                 billController.text.isEmpty) {
@@ -1978,16 +1985,15 @@ class LayoutState extends State<Layout> {
 
                               ///check cotomer id have.
                               if (!controller.isCash &&
-                                selectedCustomer == null) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                    'Please select a customer for credit sales.'),
-                                backgroundColor: Colors.red,
-                              ));
-                              return;
-                            }
-
+                                  selectedCustomer == null) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text(
+                                      'Please select a customer for credit sales.'),
+                                  backgroundColor: Colors.red,
+                                ));
+                                return;
+                              }
                             } else {
                               bool isSuccess = await controller.storePurchase(
                                 context,
@@ -2115,6 +2121,13 @@ class LayoutState extends State<Layout> {
     String? selectedCategoryId;
     String? selectedSubCategoryId;
 
+    // List<String> unitIdsList = [];
+
+    String? selectedItemName;
+    ItemsModel? selectedItemData;
+    int? selectedItemId;
+
+    // ✅ Your existing variables
     List<String> unitIdsList = [];
 
     showDialog(
@@ -2353,94 +2366,247 @@ class LayoutState extends State<Layout> {
                           ]),
 
                           ///new item working for base and secondary unit.
-                          ItemCustomDropDownTextField(
-                            controller: itemController,
-                            onItemSelected: (selectedItem) async {
-                              debugPrint(
-                                  "Selected Item: ${selectedItem.name} (ID: ${selectedItem.id})");
+                          // ItemCustomDropDownTextField(
+                          //   controller: itemController,
+                          //   onItemSelected: (selectedItem) async {
+                          //     debugPrint(
+                          //         "Selected Item: ${selectedItem.name} (ID: ${selectedItem.id})");
 
-                              unitIdsList.clear();
+                          //     unitIdsList.clear();
 
-                              // ✅ Set purchase price first
-                              controller.purchasePrice =
-                                  selectedItem.purchasePrice is int
-                                      ? (selectedItem.purchasePrice as int)
-                                          .toDouble()
-                                      : (selectedItem.purchasePrice ?? 0.0);
+                          //     // ✅ Set purchase price first
+                          //     controller.purchasePrice =
+                          //         selectedItem.purchasePrice is int
+                          //             ? (selectedItem.purchasePrice as int)
+                          //                 .toDouble()
+                          //             : (selectedItem.purchasePrice ?? 0.0);
 
-                              // ✅ Set unit quantity (default to 1 if null)
-                              controller.unitQty = selectedItem.unitQty ?? 1;
+                          //     // ✅ Set unit quantity (default to 1 if null)
+                          //     controller.unitQty = selectedItem.unitQty ?? 1;
 
-                              // ✅ Set the price initially to purchase price
-                              controller.mrpController.text =
-                                  controller.purchasePrice.toStringAsFixed(2);
+                          //     // ✅ Set the price initially to purchase price
+                          //     controller.mrpController.text =
+                          //         controller.purchasePrice.toStringAsFixed(2);
 
-                              setState(() {
-                                controller.seletedItemName = selectedItem.name;
-                                controller.selcetedItemId =
-                                    selectedItem.id.toString();
+                          //     setState(() {
+                          //       controller.seletedItemName = selectedItem.name;
+                          //       controller.selcetedItemId =
+                          //           selectedItem.id.toString();
 
-                                // fetch stock quantity
-                                if (controller.selcetedItemId != null) {
-                                  fetchStockQuantity.fetchStockQuantity(
-                                      controller.selcetedItemId!);
-                                }
-                              });
+                          //       // fetch stock quantity
+                          //       if (controller.selcetedItemId != null) {
+                          //         fetchStockQuantity.fetchStockQuantity(
+                          //             controller.selcetedItemId!);
+                          //       }
+                          //     });
 
-                              // Ensure unitProvider is loaded
-                              if (unitProvider.units.isEmpty) {
-                                await unitProvider.fetchUnits();
-                              }
+                          //     // Ensure unitProvider is loaded
+                          //     if (unitProvider.units.isEmpty) {
+                          //       await unitProvider.fetchUnits();
+                          //     }
 
-                              /// ⛔️ Clear units
-                              unitIdsList.clear();
+                          //     /// ⛔️ Clear units
+                          //     unitIdsList.clear();
 
-                              // ===> Primary unit
-                              if (selectedItem.unitId != null) {
-                                final unit = unitProvider.units.firstWhere(
-                                  (unit) =>
-                                      unit.id.toString() ==
-                                      selectedItem.unitId.toString(),
-                                  orElse: () => Unit(
-                                      id: 0,
-                                      name: 'Unknown',
-                                      symbol: '',
-                                      status: 0),
+                          //     // ===> Primary unit
+                          //     if (selectedItem.unitId != null) {
+                          //       final unit = unitProvider.units.firstWhere(
+                          //         (unit) =>
+                          //             unit.id.toString() ==
+                          //             selectedItem.unitId.toString(),
+                          //         orElse: () => Unit(
+                          //             id: 0,
+                          //             name: 'Unknown',
+                          //             symbol: '',
+                          //             status: 0),
+                          //       );
+                          //       if (unit.id != 0) {
+                          //         unitIdsList.add(unit.name);
+                          //         controller.primaryUnitName = unit.name;
+                          //         controller.selectedUnit = unit.name;
+
+                          //         controller.selectedUnitIdWithNameFunction(
+                          //             "${unit.id}_${unit.name}");
+                          //       }
+                          //     }
+
+                          //     // ===> Secondary unit
+                          //     if (selectedItem.secondaryUnitId != null) {
+                          //       final secondaryUnit =
+                          //           unitProvider.units.firstWhere(
+                          //         (unit) =>
+                          //             unit.id.toString() ==
+                          //             selectedItem.secondaryUnitId.toString(),
+                          //         orElse: () => Unit(
+                          //             id: 0,
+                          //             name: 'Unknown',
+                          //             symbol: '',
+                          //             status: 0),
+                          //       );
+                          //       if (secondaryUnit.id != 0) {
+                          //         unitIdsList.add(secondaryUnit.name);
+                          //         controller.secondaryUnitName =
+                          //             secondaryUnit.name;
+                          //       }
+                          //     }
+
+                          //     debugPrint("Units Available: $unitIdsList");
+                          //     debugPrint(
+                          //         "purchase price ===> ${controller.purchasePrice}");
+                          //   },
+                          // ),
+
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Consumer<AddItemProvider>(
+                              builder: (context, itemProvider, child) {
+                                return SizedBox(
+                                  height: 30,
+                                  width: double.infinity,
+                                  child: itemProvider.isLoading
+                                      ? const Center(
+                                          child: CircularProgressIndicator())
+                                      : CustomDropdownTwo(
+                                          enableSearch: true,
+                                          hint: 'Select Item',
+                                          items: itemProvider.items
+                                              .map((item) => item.name)
+                                              .toList(), // Convert ItemsModel to List<String>
+                                          width: double.infinity,
+                                          height: 30,
+                                          selectedItem:
+                                              selectedItemName, // Your global variable
+                                          onChanged: (value) async {
+                                            debugPrint(
+                                                '=== Item Selected: $value ===');
+
+                                            // Find the selected item from the provider
+                                            final selectedItem =
+                                                itemProvider.items.firstWhere(
+                                              (item) => item.name == value,
+                                            );
+
+                                            setState(() {
+                                              selectedItemName = value;
+                                              selectedItemData =
+                                                  selectedItem; // Save the whole object globally
+                                              selectedItemId = selectedItem.id;
+                                            });
+
+                                            debugPrint(
+                                                'Selected Item Details:');
+                                            debugPrint(
+                                                '- ID: ${selectedItem.id}');
+                                            debugPrint(
+                                                '- Name: ${selectedItem.name}');
+                                            debugPrint(
+                                                '- Purchase Price: ${selectedItem.purchasePrice}');
+
+                                            // Execute all your original logic here
+                                            unitIdsList.clear();
+
+                                            // ✅ Set purchase price first
+                                            controller
+                                                .purchasePrice = selectedItem
+                                                    .purchasePrice is int
+                                                ? (selectedItem.purchasePrice
+                                                        as int)
+                                                    .toDouble()
+                                                : (selectedItem.purchasePrice ??
+                                                    0.0);
+
+                                            // ✅ Set unit quantity (default to 1 if null)
+                                            controller.unitQty =
+                                                selectedItem.unitQty ?? 1;
+
+                                            // ✅ Set the price initially to purchase price
+                                            controller.mrpController.text =
+                                                controller.purchasePrice
+                                                    .toStringAsFixed(2);
+
+                                            setState(() {
+                                              controller.seletedItemName =
+                                                  selectedItem.name;
+                                              controller.selcetedItemId =
+                                                  selectedItem.id.toString();
+
+                                              // fetch stock quantity
+                                              if (controller.selcetedItemId !=
+                                                  null) {
+                                                fetchStockQuantity
+                                                    .fetchStockQuantity(
+                                                        controller
+                                                            .selcetedItemId!);
+                                              }
+                                            });
+
+                                            // Ensure unitProvider is loaded
+                                            if (unitProvider.units.isEmpty) {
+                                              await unitProvider.fetchUnits();
+                                            }
+
+                                            /// ⛔️ Clear units
+                                            unitIdsList.clear();
+
+                                            // ===> Primary unit
+                                            if (selectedItem.unitId != null) {
+                                              final unit =
+                                                  unitProvider.units.firstWhere(
+                                                (unit) =>
+                                                    unit.id.toString() ==
+                                                    selectedItem.unitId
+                                                        .toString(),
+                                                orElse: () => Unit(
+                                                  id: 0,
+                                                  name: 'Unknown',
+                                                  symbol: '',
+                                                  status: 0,
+                                                ),
+                                              );
+                                              if (unit.id != 0) {
+                                                unitIdsList.add(unit.name);
+                                                controller.primaryUnitName =
+                                                    unit.name;
+                                                controller.selectedUnit =
+                                                    unit.name;
+                                                controller
+                                                    .selectedUnitIdWithNameFunction(
+                                                        "${unit.id}_${unit.name}");
+                                              }
+                                            }
+
+                                            // ===> Secondary unit
+                                            if (selectedItem.secondaryUnitId !=
+                                                null) {
+                                              final secondaryUnit =
+                                                  unitProvider.units.firstWhere(
+                                                (unit) =>
+                                                    unit.id.toString() ==
+                                                    selectedItem.secondaryUnitId
+                                                        .toString(),
+                                                orElse: () => Unit(
+                                                  id: 0,
+                                                  name: 'Unknown',
+                                                  symbol: '',
+                                                  status: 0,
+                                                ),
+                                              );
+                                              if (secondaryUnit.id != 0) {
+                                                unitIdsList
+                                                    .add(secondaryUnit.name);
+                                                controller.secondaryUnitName =
+                                                    secondaryUnit.name;
+                                              }
+                                            }
+
+                                            debugPrint(
+                                                "Units Available: $unitIdsList");
+                                            debugPrint(
+                                                "purchase price ===> ${controller.purchasePrice}");
+                                          }),
                                 );
-                                if (unit.id != 0) {
-                                  unitIdsList.add(unit.name);
-                                  controller.primaryUnitName = unit.name;
-                                  controller.selectedUnit = unit.name;
-
-                                  controller.selectedUnitIdWithNameFunction(
-                                      "${unit.id}_${unit.name}");
-                                }
-                              }
-
-                              // ===> Secondary unit
-                              if (selectedItem.secondaryUnitId != null) {
-                                final secondaryUnit =
-                                    unitProvider.units.firstWhere(
-                                  (unit) =>
-                                      unit.id.toString() ==
-                                      selectedItem.secondaryUnitId.toString(),
-                                  orElse: () => Unit(
-                                      id: 0,
-                                      name: 'Unknown',
-                                      symbol: '',
-                                      status: 0),
-                                );
-                                if (secondaryUnit.id != 0) {
-                                  unitIdsList.add(secondaryUnit.name);
-                                  controller.secondaryUnitName =
-                                      secondaryUnit.name;
-                                }
-                              }
-
-                              debugPrint("Units Available: $unitIdsList");
-                              debugPrint(
-                                  "purchase price ===> ${controller.purchasePrice}");
-                            },
+                              },
+                            ),
                           ),
 
                           ///stock

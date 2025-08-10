@@ -86,9 +86,10 @@ class Data {
     detailsNotes = json['details_notes'];
     transactionMethod = json['transaction_method'];
     payment = json['payment'];
-    due = json['due'];
+    // due = json['due'];
+    due = double.parse((json['due'] ?? 0).toDouble().toStringAsFixed(2));
     paymentStatus = json['payment_status'];
-    
+
     if (json['purchase_details'] != null) {
       purchaseDetails = <PurchaseDetails>[];
       json['purchase_details'].forEach((v) {

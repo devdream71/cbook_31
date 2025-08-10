@@ -693,13 +693,13 @@ class SalesController extends ChangeNotifier {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      if (!prefs.containsKey("bill_number")) {
-        await prefs.setInt("bill_number", 521444);
-      }
+      // if (!prefs.containsKey("bill_number")) {
+      //   await prefs.setInt("bill_number", 521444);
+      // }
 
-      int lastBillNumber = prefs.getInt("bill_number") ?? 521444;
-      int newBillNumber = lastBillNumber + 1;
-      await prefs.setInt("bill_number", newBillNumber);
+      // int lastBillNumber = prefs.getInt("bill_number") ?? 521444;
+      // int newBillNumber = lastBillNumber + 1;
+      // await prefs.setInt("bill_number", newBillNumber);
 
       DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(date);
       String formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);

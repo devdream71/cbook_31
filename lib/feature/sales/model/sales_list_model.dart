@@ -24,11 +24,14 @@ class SalesResponse {
       if (last is Map<String, dynamic> && last.containsKey('total_sales')) {
         summary = SalesSummary.fromJson(last);
         // Remove last item from sales list
-        sales = rawData.sublist(0, rawData.length - 1)
+        sales = rawData
+            .sublist(0, rawData.length - 1)
             .map((e) => SaleItem.fromJson(e as Map<String, dynamic>))
             .toList();
       } else {
-        sales = rawData.map((e) => SaleItem.fromJson(e as Map<String, dynamic>)).toList();
+        sales = rawData
+            .map((e) => SaleItem.fromJson(e as Map<String, dynamic>))
+            .toList();
       }
     }
 
@@ -69,7 +72,7 @@ class SaleItem {
   final String billNumber;
   final String purchaseDate;
   final double discount;
-  final double? tax;  // Added tax field (nullable double)
+  final double? tax; // Added tax field (nullable double)
   final double grossTotal;
   final String? detailsNotes;
   final String disabled;
@@ -110,7 +113,7 @@ class SaleItem {
       detailsNotes: json['details_notes'],
       disabled: json['disabled'] ?? '',
       receipt: (json['receipt'] ?? 0).toDouble(),
-      due: (json['due'] ?? 0).toDouble(),
+      due: double.parse((json['due'] ?? 0).toDouble().toStringAsFixed(2)),
       paymentStatus: int.tryParse(json['payment_status'].toString()) ?? 0,
       purchaseDetails: (json['purchase_details'] as List)
           .map((e) => PurchaseDetail.fromJson(e))
@@ -138,9 +141,9 @@ class PurchaseDetail {
   final double taxAmount;
   final double taxPercentage;
   final String? description;
-  final String? deletedAt;      // Added nullable deletedAt
-  final String? createdAt;      // Added nullable createdAt
-  final String? updatedAt;      // Added nullable updatedAt
+  final String? deletedAt; // Added nullable deletedAt
+  final String? createdAt; // Added nullable createdAt
+  final String? updatedAt; // Added nullable updatedAt
 
   PurchaseDetail({
     required this.id,
@@ -181,9 +184,11 @@ class PurchaseDetail {
       subTotal: double.tryParse(json['sub_total'].toString()) ?? 0.0,
       salesQty: double.tryParse(json['sales_qty'].toString()) ?? 0.0,
       returnQty: double.tryParse(json['return_qty'].toString()) ?? 0.0,
-      discountAmount: double.tryParse(json['discount_amount'].toString()) ?? 0.0,
+      discountAmount:
+          double.tryParse(json['discount_amount'].toString()) ?? 0.0,
       discountPercentage:
-          double.tryParse(json['discount_percentage']?.toString() ?? '0') ?? 0.0,
+          double.tryParse(json['discount_percentage']?.toString() ?? '0') ??
+              0.0,
       taxAmount: double.tryParse(json['tax_amount']?.toString() ?? '0') ?? 0.0,
       taxPercentage:
           double.tryParse(json['tax_percent']?.toString() ?? '0') ?? 0.0,
@@ -194,7 +199,3 @@ class PurchaseDetail {
     );
   }
 }
- 
-
-
-

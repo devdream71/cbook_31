@@ -6,6 +6,7 @@ import 'package:cbook_dt/feature/customer_create/customer_create.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/invoice/invoice_model.dart';
+import 'package:cbook_dt/feature/item/model/items_show.dart';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
 import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
@@ -113,7 +114,6 @@ class _LayoutState extends State<_Layout> {
       });         
 
     customerController = TextEditingController();
-
 
   }
 
@@ -305,7 +305,7 @@ class _LayoutState extends State<_Layout> {
                                             InkWell(
                                               onTap: () {
                                                 controller.updateCash(context);
-
+              
                                                 Provider.of<CustomerProvider>(
                                                         context,
                                                         listen: false)
@@ -345,7 +345,7 @@ class _LayoutState extends State<_Layout> {
                                                 ),
                                               ),
                                             ),
-
+              
                                             ///bill to text
                                             const Text(
                                               "Bill To",
@@ -358,7 +358,7 @@ class _LayoutState extends State<_Layout> {
                                         ),
                                       ],
                                     ),
-
+              
                                     ///!.customer text
                                     const Text(
                                       "Customer",
@@ -375,12 +375,12 @@ class _LayoutState extends State<_Layout> {
                                           height: 58,
                                           width: 180,
                                           // Adjusted height for cursor visibility
-
+              
                                           ///!.cash name, phone, email, address. diolog.
                                           ///!. credit customer name dropdown.
                                           child: controller.isCash
                                               ?
-
+              
                                               ///cash, cash sale customer name, phone, email, address
                                               InkWell(
                                                   onTap: () {
@@ -436,7 +436,7 @@ class _LayoutState extends State<_Layout> {
                                                     ),
                                                   ))
                                               :
-
+              
                                               ///cutomer name show ---- credit.
                                               Column(
                                                   mainAxisAlignment:
@@ -463,7 +463,7 @@ class _LayoutState extends State<_Layout> {
                                                       },
                                                       //label: "Customer",
                                                     ),
-
+              
                                                     /// show bottom payable or recivedable.
                                                     Consumer<CustomerProvider>(
                                                       builder: (context,
@@ -474,7 +474,7 @@ class _LayoutState extends State<_Layout> {
                                                                     .customerResponse
                                                                     ?.data ??
                                                                 [];
-
+              
                                                         return Column(
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
@@ -486,11 +486,11 @@ class _LayoutState extends State<_Layout> {
                                                               const SizedBox(
                                                                   height:
                                                                       2), // Adjust height as needed
-
+              
                                                             // Otherwise, show the dropdown with customers
                                                             if (customerList
                                                                 .isNotEmpty)
-
+              
                                                               // Check if the selected customer is valid
                                                               if (customerProvider
                                                                           .selectedCustomer !=
@@ -577,7 +577,7 @@ class _LayoutState extends State<_Layout> {
                               const SizedBox(
                                 width: 10,
                               ),
-
+              
                               ///bill no, bill person, date
                               Expanded(
                                 child: Column(
@@ -593,8 +593,8 @@ class _LayoutState extends State<_Layout> {
                                     //     // Match cursor height to text size
                                     //   ),
                                     // ),
-
-
+              
+              
                                     SizedBox(
                                       height: 30,
                                       width: 130,
@@ -605,7 +605,7 @@ class _LayoutState extends State<_Layout> {
                                             true, // Prevent manual editing
                                       ),
                                     ),
-
+              
                                     ///bill date
                                     SizedBox(
                                       height: 30,
@@ -655,7 +655,7 @@ class _LayoutState extends State<_Layout> {
                                         ),
                                       ),
                                     ),
-
+              
                                     //bill person
                                     Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
@@ -694,7 +694,7 @@ class _LayoutState extends State<_Layout> {
                                                             selectedBillPersonData!
                                                                 .id;
                                                       });
-
+              
                                                       debugPrint(
                                                           'Selected Bill Person Details:');
                                                       debugPrint(
@@ -708,7 +708,7 @@ class _LayoutState extends State<_Layout> {
                                         },
                                       ),
                                     ),
-
+              
                                     const SizedBox(
                                       height: 8,
                                     ),
@@ -717,9 +717,9 @@ class _LayoutState extends State<_Layout> {
                               )
                             ],
                           ),
-
+              
                           vPad10,
-
+              
                           ///cash item list.
                           ///! add item and service section, and item show
                           controller.isCash
@@ -776,7 +776,7 @@ class _LayoutState extends State<_Layout> {
                                     )
                                   : const SizedBox.shrink()
                               :
-
+              
                               ///credit item list.
                               controller.itemsCredit.isEmpty
                                   ? InkWell(
@@ -830,9 +830,9 @@ class _LayoutState extends State<_Layout> {
                                       ),
                                     )
                                   : const SizedBox.shrink(),
-
+              
                           vPad20,
-
+              
                           /// cash product =====
                           controller.isCash
                               ? Expanded(
@@ -863,11 +863,11 @@ class _LayoutState extends State<_Layout> {
                                                             ///cash item list edit.
                                                             onTap: () {
                                                               //setState(() {});
-
+              
                                                               showCashItemDetailsDialog(
                                                                   context,
                                                                   item);
-
+              
                                                               //showSalesDialog(context, controller);
                                                               //setState(() {});
                                                             },
@@ -882,7 +882,7 @@ class _LayoutState extends State<_Layout> {
                                                                     BoxDecoration(
                                                                         color: const Color(
                                                                             0xfff4f6ff), //f4f6ff
-
+              
                                                                         ///f4f6ff, dddefa
                                                                         borderRadius:
                                                                             BorderRadius.circular(5)),
@@ -934,7 +934,7 @@ class _LayoutState extends State<_Layout> {
                                                                                     const SizedBox(
                                                                                       height: 4,
                                                                                     ),
-
+              
                                                                                     ///item name
                                                                                     Text(
                                                                                       item.itemName!,
@@ -945,7 +945,7 @@ class _LayoutState extends State<_Layout> {
                                                                                         fontSize: 13,
                                                                                       ),
                                                                                     ),
-
+              
                                                                                     ///cash mrp, qty, unit, total price.
                                                                                     Text(
                                                                                       "৳ ${item.mrp!} x ${item.quantity!} ${item.unit} = ${item.total}",
@@ -961,7 +961,7 @@ class _LayoutState extends State<_Layout> {
                                                                             ],
                                                                           ),
                                                                         ),
-
+              
                                                                         /// Right Side: Close Button
                                                                         InkWell(
                                                                           onTap:
@@ -1033,12 +1033,12 @@ class _LayoutState extends State<_Layout> {
                                                   );
                                                 }),
                                               ),
-
+              
                                         ///cash item empty then empty.
                                         controller.itemsCash.isEmpty
                                             ? const SizedBox()
                                             : vPad10,
-
+              
                                         ///
                                         controller.itemsCash.isNotEmpty
                                             ? InkWell(
@@ -1105,7 +1105,7 @@ class _LayoutState extends State<_Layout> {
                                   ),
                                 )
                               : const SizedBox.shrink(),
-
+              
                           //// credit ====>
                           controller.isCash == false
                               ? Expanded(
@@ -1142,7 +1142,7 @@ class _LayoutState extends State<_Layout> {
                                                                     BoxDecoration(
                                                                         color: const Color(
                                                                             0xfff4f6ff), //f4f6ff
-
+              
                                                                         ///f4f6ff, dddefa
                                                                         borderRadius:
                                                                             BorderRadius.circular(5)),
@@ -1199,7 +1199,7 @@ class _LayoutState extends State<_Layout> {
                                                                                         fontSize: 13,
                                                                                       ),
                                                                                     ),
-
+              
                                                                                     ///creadit mrp, quantity, unit, total amount.
                                                                                     Text(
                                                                                       "৳ ${item.mrp!} x ${item.quantity!} ${item.unit} = ${item.total}",
@@ -1215,7 +1215,7 @@ class _LayoutState extends State<_Layout> {
                                                                             ],
                                                                           ),
                                                                         ),
-
+              
                                                                         /// credit item remove, Right Side: Close Button
                                                                         InkWell(
                                                                           onTap:
@@ -1279,7 +1279,7 @@ class _LayoutState extends State<_Layout> {
                                                               ),
                                                             ),
                                                           ),
-
+              
                                                          
                                                         )
                                                       ],
@@ -1287,12 +1287,12 @@ class _LayoutState extends State<_Layout> {
                                                   );
                                                 }),
                                               ),
-
+              
                                         ///item credit
                                         controller.itemsCredit.isEmpty
                                             ? const SizedBox()
                                             : vPad10,
-
+              
                                         //item credit. Add items & service
                                         controller.itemsCredit.isNotEmpty
                                             ? InkWell(
@@ -1359,7 +1359,7 @@ class _LayoutState extends State<_Layout> {
                                   ),
                                 )
                               : const SizedBox.shrink(),
-
+              
                           ///note ====>
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1415,7 +1415,7 @@ class _LayoutState extends State<_Layout> {
                                 ),
                             ],
                           ),
-
+              
                           ///bottom button portion
                           ///amount, discount, tax vat, adjust total, received
                           const FieldPortion(),
@@ -1424,7 +1424,7 @@ class _LayoutState extends State<_Layout> {
                     ),
                   ),
                   vPad20,
-
+              
                   ///bottom portion
                   ///new view, view a4, view a5, save and view.
                   BottomPortion(
@@ -1433,6 +1433,7 @@ class _LayoutState extends State<_Layout> {
                     customerId: controller.isCash
                         ? "Cash"
                         : selectedCustomerId ?? "Cash",
+                    billNo: billController.text,    
                   ),
                 ],
               ),
@@ -1442,6 +1443,7 @@ class _LayoutState extends State<_Layout> {
       ),
     );
   }
+  
 
   ///===>>>sales item picked.
   ////show sales diolog.
@@ -1466,6 +1468,10 @@ class _LayoutState extends State<_Layout> {
 
     String? selectedTaxName;
     String? selectedTaxId;
+
+     String? selectedItemName;
+    ItemsModel? selectedItemData;
+    int? selectedItemId;
 
     showDialog(
       context: context,
@@ -1577,97 +1583,231 @@ class _LayoutState extends State<_Layout> {
                         const SizedBox(height: 8),
 
                         ///Item search dropdown === working.
+                        ///
+                        ///
+                        
+
+                        
 
                         // Updated Item selection dropdown
-                        ItemCustomDropDownTextField(
-                          controller: itemController,
-                          onItemSelected: (selectedItem) async {
-                            debugPrint(
-                                "Selected Item: ${selectedItem.name} (ID: ${selectedItem.id})");
+                        // ItemCustomDropDownTextField(
+                        //   controller: itemController,
+                        //   onItemSelected: (selectedItem) async {
+                        //     debugPrint(
+                        //         "Selected Item: ${selectedItem.name} (ID: ${selectedItem.id})");
 
-                            unitIdsList.clear();
+                        //     unitIdsList.clear();
 
-                            // ✅ Set purchase price first
-                            controller.salePrice = selectedItem.salesPrice
-                                    is int
-                                ? (selectedItem.salesPrice as int).toDouble()
-                                : (selectedItem.salesPrice ?? 0.0);
+                        //     // ✅ Set purchase price first
+                        //     controller.salePrice = selectedItem.salesPrice
+                        //             is int
+                        //         ? (selectedItem.salesPrice as int).toDouble()
+                        //         : (selectedItem.salesPrice ?? 0.0);
 
-                            // ✅ Set unit quantity (default to 1 if null)
-                            controller.unitQty = selectedItem.unitQty ?? 1;
+                        //     // ✅ Set unit quantity (default to 1 if null)
+                        //     controller.unitQty = selectedItem.unitQty ?? 1;
 
-                            // ✅ Set the price initially to purchase price
-                            controller.mrpController.text =
-                                controller.salePrice.toStringAsFixed(2);
+                        //     // ✅ Set the price initially to purchase price
+                        //     controller.mrpController.text =
+                        //         controller.salePrice.toStringAsFixed(2);
 
-                            setState(() {
-                              controller.seletedItemName = selectedItem.name;
-                              controller.selcetedItemId =
-                                  selectedItem.id.toString();
+                        //     setState(() {
+                        //       controller.seletedItemName = selectedItem.name;
+                        //       controller.selcetedItemId =
+                        //           selectedItem.id.toString();
 
-                              // fetch stock quantity
-                              if (controller.selcetedItemId != null) {
-                                fetchStockQuantity.fetchStockQuantity(
-                                    controller.selcetedItemId!);
-                              }
-                            });
+                        //       // fetch stock quantity
+                        //       if (controller.selcetedItemId != null) {
+                        //         fetchStockQuantity.fetchStockQuantity(
+                        //             controller.selcetedItemId!);
+                        //       }
+                        //     });
 
-                            // Ensure unitProvider is loaded
-                            if (unitProvider.units.isEmpty) {
-                              await unitProvider.fetchUnits();
-                            }
+                        //     // Ensure unitProvider is loaded
+                        //     if (unitProvider.units.isEmpty) {
+                        //       await unitProvider.fetchUnits();
+                        //     }
 
-                            /// ⛔️ Clear units
-                            unitIdsList.clear();
+                        //     /// ⛔️ Clear units
+                        //     unitIdsList.clear();
 
-                            // ===> Primary unit
-                            if (selectedItem.unitId != null) {
-                              final unit = unitProvider.units.firstWhere(
-                                (unit) =>
-                                    unit.id.toString() ==
-                                    selectedItem.unitId.toString(),
-                                orElse: () => Unit(
-                                    id: 0,
-                                    name: 'Unknown',
-                                    symbol: '',
-                                    status: 0),
-                              );
-                              if (unit.id != 0) {
-                                unitIdsList.add(unit.name);
-                                controller.primaryUnitName = unit.name;
-                                controller.selectedUnit = unit.name;
+                        //     // ===> Primary unit
+                        //     if (selectedItem.unitId != null) {
+                        //       final unit = unitProvider.units.firstWhere(
+                        //         (unit) =>
+                        //             unit.id.toString() ==
+                        //             selectedItem.unitId.toString(),
+                        //         orElse: () => Unit(
+                        //             id: 0,
+                        //             name: 'Unknown',
+                        //             symbol: '',
+                        //             status: 0),
+                        //       );
+                        //       if (unit.id != 0) {
+                        //         unitIdsList.add(unit.name);
+                        //         controller.primaryUnitName = unit.name;
+                        //         controller.selectedUnit = unit.name;
 
-                                // 🔥 SOLUTION 1: Set with default quantity "1" initially
-                                controller.selectedUnitIdWithNameFunction(
-                                    "${unit.id}_${unit.name}_1");
-                              }
-                            }
+                        //         // 🔥 SOLUTION 1: Set with default quantity "1" initially
+                        //         controller.selectedUnitIdWithNameFunction(
+                        //             "${unit.id}_${unit.name}_1");
+                        //       }
+                        //     }
 
-                            // ===> Secondary unit
-                            if (selectedItem.secondaryUnitId != null) {
-                              final secondaryUnit =
-                                  unitProvider.units.firstWhere(
-                                (unit) =>
-                                    unit.id.toString() ==
-                                    selectedItem.secondaryUnitId.toString(),
-                                orElse: () => Unit(
-                                    id: 0,
-                                    name: 'Unknown',
-                                    symbol: '',
-                                    status: 0),
-                              );
-                              if (secondaryUnit.id != 0) {
-                                unitIdsList.add(secondaryUnit.name);
-                                controller.secondaryUnitName =
-                                    secondaryUnit.name;
-                              }
-                            }
+                        //     // ===> Secondary unit
+                        //     if (selectedItem.secondaryUnitId != null) {
+                        //       final secondaryUnit =
+                        //           unitProvider.units.firstWhere(
+                        //         (unit) =>
+                        //             unit.id.toString() ==
+                        //             selectedItem.secondaryUnitId.toString(),
+                        //         orElse: () => Unit(
+                        //             id: 0,
+                        //             name: 'Unknown',
+                        //             symbol: '',
+                        //             status: 0),
+                        //       );
+                        //       if (secondaryUnit.id != 0) {
+                        //         unitIdsList.add(secondaryUnit.name);
+                        //         controller.secondaryUnitName =
+                        //             secondaryUnit.name;
+                        //       }
+                        //     }
 
-                            debugPrint("Units Available: $unitIdsList");
-                            debugPrint(
-                                "purchase price ===> ${controller.salePrice}");
-                          },
-                        ),
+                        //     debugPrint("Units Available: $unitIdsList");
+                        //     debugPrint(
+                        //         "purchase price ===> ${controller.salePrice}");
+                        //   },
+                        // ),
+                         
+                         
+                         
+                         ////new sales item dropdown.
+                         Padding(
+  padding: const EdgeInsets.only(top: 8.0),
+  child: Consumer<AddItemProvider>(
+    builder: (context, itemProvider, child) {
+      return SizedBox(
+        height: 30,
+        width: double.infinity,
+        child: itemProvider.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : CustomDropdownTwo(
+                enableSearch: true,
+                hint: 'Select Item',
+                items: itemProvider.items
+                    .map((item) => item.name)
+                    .toList(), // List<String>
+                width: double.infinity,
+                height: 30,
+                selectedItem: selectedItemName, // Global/state variable
+                onChanged: (value) async {
+                  debugPrint('=== Item Selected: $value ===');
+
+                  // Find selected item from provider
+                  final selectedItem = itemProvider.items.firstWhere(
+                    (item) => item.name == value,
+                  );
+
+                  setState(() {
+                    selectedItemName = value;
+                    selectedItemData = selectedItem;
+                    selectedItemId = selectedItem.id;
+                  });
+
+                  unitIdsList.clear();
+
+                  // ✅ Set sales price first
+                  controller.salePrice =
+                      selectedItem.salesPrice is int
+                          ? (selectedItem.salesPrice as int).toDouble()
+                          : (selectedItem.salesPrice ?? 0.0);
+
+                  // ✅ Set unit quantity (default to 1 if null)
+                  controller.unitQty = selectedItem.unitQty ?? 1;
+
+                  // ✅ Set price initially to sales price
+                  controller.mrpController.text =
+                      controller.salePrice.toStringAsFixed(2);
+
+                  setState(() {
+                    controller.seletedItemName = selectedItem.name;
+                    controller.selcetedItemId =
+                        selectedItem.id.toString();
+
+                    // fetch stock quantity
+                    if (controller.selcetedItemId != null) {
+                      fetchStockQuantity.fetchStockQuantity(
+                          controller.selcetedItemId!);
+                    }
+                  });
+
+                  // Ensure unitProvider is loaded
+                  if (unitProvider.units.isEmpty) {
+                    await unitProvider.fetchUnits();
+                  }
+
+                  /// ⛔️ Clear units
+                  unitIdsList.clear();
+
+                  // ===> Primary unit
+                  if (selectedItem.unitId != null) {
+                    final unit = unitProvider.units.firstWhere(
+                      (unit) =>
+                          unit.id.toString() ==
+                          selectedItem.unitId.toString(),
+                      orElse: () => Unit(
+                        id: 0,
+                        name: 'Unknown',
+                        symbol: '',
+                        status: 0,
+                      ),
+                    );
+                    if (unit.id != 0) {
+                      unitIdsList.add(unit.name);
+                      controller.primaryUnitName = unit.name;
+                      controller.selectedUnit = unit.name;
+
+                      // Set with default quantity "1"
+                      controller.selectedUnitIdWithNameFunction(
+                          "${unit.id}_${unit.name}_1");
+                    }
+                  }
+
+                  // ===> Secondary unit
+                  if (selectedItem.secondaryUnitId != null) {
+                    final secondaryUnit =
+                        unitProvider.units.firstWhere(
+                      (unit) =>
+                          unit.id.toString() ==
+                          selectedItem.secondaryUnitId.toString(),
+                      orElse: () => Unit(
+                        id: 0,
+                        name: 'Unknown',
+                        symbol: '',
+                        status: 0,
+                      ),
+                    );
+                    if (secondaryUnit.id != 0) {
+                      unitIdsList.add(secondaryUnit.name);
+                      controller.secondaryUnitName =
+                          secondaryUnit.name;
+                    }
+                  }
+
+                  debugPrint("Units Available: $unitIdsList");
+                  debugPrint(
+                      "sales price ===> ${controller.salePrice}");
+                },
+              ),
+      );
+    },
+  ),
+),
+
+
+
+
 
                         ///Stock available display
                         Consumer<AddItemProvider>(
