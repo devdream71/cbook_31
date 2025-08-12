@@ -254,6 +254,7 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                         ),
                         Expanded(
                           child: CustomTextField(
+                            keyboardType: TextInputType.number,
                             hint: "Enter your phone number",
                             colorScheme: colorScheme,
                             controller: _phoneController,

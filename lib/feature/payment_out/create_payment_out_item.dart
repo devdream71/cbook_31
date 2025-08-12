@@ -235,6 +235,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
     // List of forms with metadata
     return Scaffold(
       backgroundColor: AppColors.sfWhite,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         centerTitle: true,
@@ -243,7 +244,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
         title: const Column(
           children: [
             Text(
-              'Payment out Create dfgds',
+              'Payment out Create',
               style: TextStyle(
                   color: Colors.yellow,
                   fontSize: 16,

@@ -89,6 +89,7 @@ class PurchaseReturnController extends ChangeNotifier {
 
   ///
   List<PurchaseStoreModel> purchaseReturnItemModel = [];
+
   List<ItemModel> demoPurchaseReturnModelList = [];
 
   List<TextEditingController> reductionQtyList = [];
@@ -369,6 +370,7 @@ class PurchaseReturnController extends ChangeNotifier {
 
   //////===> credit ===>
   ///add item credit.
+  
   addCreditItem() {
     debugPrint(
         "credit Add Item Clicked $selectedCategory $selectedSubCategory $seletedItemName ${codeController.text} ${mrpController.text} ${qtyController.text} ${amountController.text}");
@@ -642,4 +644,6 @@ class PurchaseReturnController extends ChangeNotifier {
       return e.toString();
     }
   }
+
+
 }

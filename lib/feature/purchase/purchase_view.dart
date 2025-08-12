@@ -1412,6 +1412,7 @@ class LayoutState extends State<Layout> {
                                                 height: 30,
                                                 width: 153,
                                                 child: AddSalesFormfield(
+                                                  readOnly: true,
                                                   controller:
                                                       TextEditingController(
                                                           text: controller
@@ -1480,6 +1481,7 @@ class LayoutState extends State<Layout> {
                                                 height: 30,
                                                 width: 75,
                                                 child: AddSalesFormfield(
+                                                  
                                                   labelText: "৳",
                                                   keyboardType:
                                                       TextInputType.number,
@@ -1522,6 +1524,7 @@ class LayoutState extends State<Layout> {
                                                 height: 30,
                                                 width: 150,
                                                 child: AddSalesFormfield(
+                                                  keyboardType: TextInputType.number,
                                                   readOnly: true,
                                                   onChanged: (value) {
                                                     Provider.of(context)<
@@ -1665,6 +1668,7 @@ class LayoutState extends State<Layout> {
                                                 height: 30,
                                                 width: 75,
                                                 child: AddSalesFormfield(
+                                                  keyboardType: TextInputType.number,
                                                   labelText: "%",
                                                   onChanged: (value) {
                                                     controller
@@ -1682,6 +1686,7 @@ class LayoutState extends State<Layout> {
                                                 height: 30,
                                                 width: 75,
                                                 child: AddSalesFormfield(
+                                                  keyboardType: TextInputType.number,
                                                   labelText: "৳",
                                                   controller: controller
                                                       .discountController,
@@ -2020,16 +2025,20 @@ class LayoutState extends State<Layout> {
                                   backgroundColor: Colors.red,
                                 ),
                               );
-                            } else if (!controller.isCash &&
-                                selectedCustomer == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Please select a customer for credit purchase.'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            } else {
+                            } 
+                            
+                            // else if (!controller.isCash &&
+                            //     selectedCustomer == null) {
+                            //   ScaffoldMessenger.of(context).showSnackBar(
+                            //     const SnackBar(
+                            //       content: Text(
+                            //           'Please select a customer for credit purchase.'),
+                            //       backgroundColor: Colors.red,
+                            //     ),
+                            //   );
+                            //} 
+                            
+                            else {
                               bool isSuccess = await controller.storePurchase(
                                 context,
                                 date: date,
@@ -2122,8 +2131,8 @@ class LayoutState extends State<Layout> {
       BuildContext context, PurchaseController controller) async {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    final categoryProvider =
-        Provider.of<ItemCategoryProvider>(context, listen: false);
+    // final categoryProvider =
+    //     Provider.of<ItemCategoryProvider>(context, listen: false);
 
     final unitProvider = Provider.of<UnitProvider>(context, listen: false);
 
@@ -2250,151 +2259,7 @@ class LayoutState extends State<Layout> {
                               children: [
                                 /////===> category
 
-                                ////====>category working.
-                                // Column(
-                                //   mainAxisAlignment: MainAxisAlignment.start,
-                                //   crossAxisAlignment:
-                                //       CrossAxisAlignment.start,
-                                //   children: [
-                                //     const Text(
-                                //       "Category",
-                                //       style: TextStyle(
-                                //           color: Colors.black, fontSize: 14),
-                                //     ),
-                                //     SizedBox(
-                                //       height: 30,
-                                //       width: 150,
-                                //       child: CustomDropdownTwo(
-                                //         hint: '', //Category
-                                //         items: categoryProvider.categories
-                                //             .map((category) => category.name)
-                                //             .toList(),
-                                //         width: double.infinity,
-                                //         height: 30,
-                                //         onChanged: (value) async {
-                                //           final selectedCategory =
-                                //               categoryProvider.categories
-                                //                   .firstWhere((cat) =>
-                                //                       cat.name == value);
-                                //           setState(() {
-                                //             selectedCategoryId =
-                                //                 selectedCategory.id
-                                //                     .toString();
-                                //             selectedSubCategoryId = null;
-                                //           });
-
-                                //           debugPrint(
-                                //               "selected category id $selectedCategoryId");
-
-                                //           await categoryProvider
-                                //               .fetchSubCategories(
-                                //                   selectedCategory.id);
-                                //           setState(() {});
-                                //         },
-                                //         selectedItem:
-                                //             selectedCategoryId != null
-                                //                 ? categoryProvider.categories
-                                //                     .firstWhere(
-                                //                       (cat) =>
-                                //                           cat.id.toString() ==
-                                //                           selectedCategoryId,
-                                //                       orElse: () =>
-                                //                           categoryProvider
-                                //                               .categories
-                                //                               .first,
-                                //                     )
-                                //                     .name
-                                //                 : null,
-                                //       ),
-                                //     ),
-                                //   ],
-                                // ),
-
                                 SizedBox(width: 10),
-
-                                /////===>sub category working.
-                                // Column(
-                                //   mainAxisAlignment: MainAxisAlignment.start,
-                                //   crossAxisAlignment:
-                                //       CrossAxisAlignment.start,
-                                //   children: [
-                                //     categoryProvider.isSubCategoryLoading
-                                //         ? const SizedBox()
-                                //         : categoryProvider
-                                //                 .subCategories.isNotEmpty
-                                //             ? Column(
-                                //                 mainAxisAlignment:
-                                //                     MainAxisAlignment.start,
-                                //                 crossAxisAlignment:
-                                //                     CrossAxisAlignment.start,
-                                //                 children: [
-                                //                   const Text(
-                                //                     "Sub category", //Sub category
-                                //                     style: TextStyle(
-                                //                         color: Colors.black,
-                                //                         fontSize: 14),
-                                //                   ),
-                                //                   CustomDropdownTwo(
-                                //                     hint:
-                                //                         '', //Sel Sub Category
-                                //                     items: categoryProvider
-                                //                         .subCategories
-                                //                         .map((subCategory) =>
-                                //                             subCategory.name)
-                                //                         .toList(),
-                                //                     width: 150,
-                                //                     height: 30,
-                                //                     onChanged: (value) {
-                                //                       final selectedSubCategory =
-                                //                           categoryProvider
-                                //                               .subCategories
-                                //                               .firstWhere(
-                                //                                   (subCat) =>
-                                //                                       subCat
-                                //                                           .name ==
-                                //                                       value);
-                                //                       setState(() {
-                                //                         selectedSubCategoryId =
-                                //                             selectedSubCategory
-                                //                                 .id
-                                //                                 .toString();
-                                //                       });
-
-                                //                       debugPrint(
-                                //                           "selected sub category id $selectedSubCategoryId");
-                                //                     },
-                                //                     selectedItem:
-                                //                         selectedSubCategoryId !=
-                                //                                 null
-                                //                             ? categoryProvider
-                                //                                 .subCategories
-                                //                                 .firstWhere(
-                                //                                   (sub) =>
-                                //                                       sub.id
-                                //                                           .toString() ==
-                                //                                       selectedSubCategoryId,
-                                //                                   orElse: () =>
-                                //                                       categoryProvider
-                                //                                           .subCategories
-                                //                                           .first,
-                                //                                 )
-                                //                                 .name
-                                //                             : null,
-                                //                   ),
-                                //                 ],
-                                //               )
-                                //             : const Align(
-                                //                 alignment: Alignment.topLeft,
-                                //                 child: Text(
-                                //                   "", // "No subcategories available"
-
-                                //                   style: TextStyle(
-                                //                       color: Colors.black,
-                                //                       fontSize: 12),
-                                //                 ),
-                                //               ),
-                                //   ],
-                                // ),
                               ],
                             ),
 
@@ -2402,96 +2267,161 @@ class LayoutState extends State<Layout> {
                           ]),
 
                           ///new item working for base and secondary unit.
-                          // ItemCustomDropDownTextField(
-                          //   controller: itemController,
-                          //   onItemSelected: (selectedItem) async {
-                          //     debugPrint(
-                          //         "Selected Item: ${selectedItem.name} (ID: ${selectedItem.id})");
 
-                          //     unitIdsList.clear();
+                          // Padding(
+                          //   padding: const EdgeInsets.only(top: 8.0),
+                          //   child: Consumer<AddItemProvider>(
+                          //     builder: (context, itemProvider, child) {
+                          //       return SizedBox(
+                          //         height: 30,
+                          //         width: double.infinity,
+                          //         child: itemProvider.isLoading
+                          //             ? const Center(
+                          //                 child: CircularProgressIndicator())
+                          //             : CustomDropdownTwo(
+                          //                 enableSearch: true,
+                          //                 hint: 'Select Item',
+                          //                 items: itemProvider.items
+                          //                     .map((item) => item.name)
+                          //                     .toList(), // Convert ItemsModel to List<String>
+                          //                 width: double.infinity,
+                          //                 height: 30,
+                          //                 selectedItem:
+                          //                     selectedItemName, // Your global variable
+                          //                 onChanged: (value) async {
+                          //                   debugPrint(
+                          //                       '=== Item Selected: $value ===');
 
-                          //     // ✅ Set purchase price first
-                          //     controller.purchasePrice =
-                          //         selectedItem.purchasePrice is int
-                          //             ? (selectedItem.purchasePrice as int)
-                          //                 .toDouble()
-                          //             : (selectedItem.purchasePrice ?? 0.0);
+                          //                   // Find the selected item from the provider
+                          //                   final selectedItem =
+                          //                       itemProvider.items.firstWhere(
+                          //                     (item) => item.name == value,
+                          //                   );
 
-                          //     // ✅ Set unit quantity (default to 1 if null)
-                          //     controller.unitQty = selectedItem.unitQty ?? 1;
+                          //                   setState(() {
+                          //                     selectedItemName = value;
+                          //                     selectedItemData =
+                          //                         selectedItem; // Save the whole object globally
+                          //                     selectedItemId = selectedItem.id;
+                          //                   });
 
-                          //     // ✅ Set the price initially to purchase price
-                          //     controller.mrpController.text =
-                          //         controller.purchasePrice.toStringAsFixed(2);
+                          //                   debugPrint(
+                          //                       'Selected Item Details:');
+                          //                   debugPrint(
+                          //                       '- ID: ${selectedItem.id}');
+                          //                   debugPrint(
+                          //                       '- Name: ${selectedItem.name}');
+                          //                   debugPrint(
+                          //                       '- Purchase Price: ${selectedItem.purchasePrice}');
 
-                          //     setState(() {
-                          //       controller.seletedItemName = selectedItem.name;
-                          //       controller.selcetedItemId =
-                          //           selectedItem.id.toString();
+                          //                   // Execute all your original logic here
+                          //                   unitIdsList.clear();
 
-                          //       // fetch stock quantity
-                          //       if (controller.selcetedItemId != null) {
-                          //         fetchStockQuantity.fetchStockQuantity(
-                          //             controller.selcetedItemId!);
-                          //       }
-                          //     });
+                          //                   // ✅ Set purchase price first
+                          //                   controller
+                          //                       .purchasePrice = selectedItem
+                          //                           .purchasePrice is int
+                          //                       ? (selectedItem.purchasePrice
+                          //                               as int)
+                          //                           .toDouble()
+                          //                       : (selectedItem.purchasePrice ??
+                          //                           0.0);
 
-                          //     // Ensure unitProvider is loaded
-                          //     if (unitProvider.units.isEmpty) {
-                          //       await unitProvider.fetchUnits();
-                          //     }
+                          //                   // ✅ Set unit quantity (default to 1 if null)
+                          //                   controller.unitQty =
+                          //                       selectedItem.unitQty ?? 1;
 
-                          //     /// ⛔️ Clear units
-                          //     unitIdsList.clear();
+                          //                   // ✅ Set the price initially to purchase price
+                          //                   controller.mrpController.text =
+                          //                       controller.purchasePrice
+                          //                           .toStringAsFixed(2);
 
-                          //     // ===> Primary unit
-                          //     if (selectedItem.unitId != null) {
-                          //       final unit = unitProvider.units.firstWhere(
-                          //         (unit) =>
-                          //             unit.id.toString() ==
-                          //             selectedItem.unitId.toString(),
-                          //         orElse: () => Unit(
-                          //             id: 0,
-                          //             name: 'Unknown',
-                          //             symbol: '',
-                          //             status: 0),
+                          //                   setState(() {
+                          //                     controller.seletedItemName =
+                          //                         selectedItem.name;
+                          //                     controller.selcetedItemId =
+                          //                         selectedItem.id.toString();
+
+                          //                     // fetch stock quantity
+                          //                     if (controller.selcetedItemId !=
+                          //                         null) {
+                          //                       fetchStockQuantity
+                          //                           .fetchStockQuantity(
+                          //                               controller
+                          //                                   .selcetedItemId!);
+                          //                     }
+                          //                   });
+
+                          //                   // Ensure unitProvider is loaded
+                          //                   if (unitProvider.units.isEmpty) {
+                          //                     await unitProvider.fetchUnits();
+                          //                   }
+
+                          //                   /// ⛔️ Clear units
+                          //                   unitIdsList.clear();
+
+                          //                   // ===> Primary unit
+                          //                   if (selectedItem.unitId != null) {
+                          //                     final unit =
+                          //                         unitProvider.units.firstWhere(
+                          //                       (unit) =>
+                          //                           unit.id.toString() ==
+                          //                           selectedItem.unitId
+                          //                               .toString(),
+                          //                       orElse: () => Unit(
+                          //                         id: 0,
+                          //                         name: 'Unknown',
+                          //                         symbol: '',
+                          //                         status: 0,
+                          //                       ),
+                          //                     );
+                          //                     if (unit.id != 0) {
+                          //                       unitIdsList.add(unit.name);
+                          //                       controller.primaryUnitName =
+                          //                           unit.name;
+                          //                       controller.selectedUnit =
+                          //                           unit.name;
+                          //                       controller
+                          //                           .selectedUnitIdWithNameFunction(
+                          //                               "${unit.id}_${unit.name}");
+                          //                     }
+                          //                   }
+
+                          //                   // ===> Secondary unit
+                          //                   if (selectedItem.secondaryUnitId !=
+                          //                       null) {
+                          //                     final secondaryUnit =
+                          //                         unitProvider.units.firstWhere(
+                          //                       (unit) =>
+                          //                           unit.id.toString() ==
+                          //                           selectedItem.secondaryUnitId
+                          //                               .toString(),
+                          //                       orElse: () => Unit(
+                          //                         id: 0,
+                          //                         name: 'Unknown',
+                          //                         symbol: '',
+                          //                         status: 0,
+                          //                       ),
+                          //                     );
+                          //                     if (secondaryUnit.id != 0) {
+                          //                       unitIdsList
+                          //                           .add(secondaryUnit.name);
+                          //                       controller.secondaryUnitName =
+                          //                           secondaryUnit.name;
+                          //                     }
+                          //                   }
+
+                          //                   debugPrint(
+                          //                       "Units Available: $unitIdsList");
+                          //                   debugPrint(
+                          //                       "purchase price ===> ${controller.purchasePrice}");
+                          //                 }),
                           //       );
-                          //       if (unit.id != 0) {
-                          //         unitIdsList.add(unit.name);
-                          //         controller.primaryUnitName = unit.name;
-                          //         controller.selectedUnit = unit.name;
-
-                          //         controller.selectedUnitIdWithNameFunction(
-                          //             "${unit.id}_${unit.name}");
-                          //       }
-                          //     }
-
-                          //     // ===> Secondary unit
-                          //     if (selectedItem.secondaryUnitId != null) {
-                          //       final secondaryUnit =
-                          //           unitProvider.units.firstWhere(
-                          //         (unit) =>
-                          //             unit.id.toString() ==
-                          //             selectedItem.secondaryUnitId.toString(),
-                          //         orElse: () => Unit(
-                          //             id: 0,
-                          //             name: 'Unknown',
-                          //             symbol: '',
-                          //             status: 0),
-                          //       );
-                          //       if (secondaryUnit.id != 0) {
-                          //         unitIdsList.add(secondaryUnit.name);
-                          //         controller.secondaryUnitName =
-                          //             secondaryUnit.name;
-                          //       }
-                          //     }
-
-                          //     debugPrint("Units Available: $unitIdsList");
-                          //     debugPrint(
-                          //         "purchase price ===> ${controller.purchasePrice}");
-                          //   },
+                          //     },
+                          //   ),
                           // ),
 
+                          ///new item selected. for unit show in one click.
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Consumer<AddItemProvider>(
@@ -2507,11 +2437,10 @@ class LayoutState extends State<Layout> {
                                           hint: 'Select Item',
                                           items: itemProvider.items
                                               .map((item) => item.name)
-                                              .toList(), // Convert ItemsModel to List<String>
+                                              .toList(),
                                           width: double.infinity,
                                           height: 30,
-                                          selectedItem:
-                                              selectedItemName, // Your global variable
+                                          selectedItem: selectedItemName,
                                           onChanged: (value) async {
                                             debugPrint(
                                                 '=== Item Selected: $value ===');
@@ -2522,11 +2451,38 @@ class LayoutState extends State<Layout> {
                                               (item) => item.name == value,
                                             );
 
+                                            // ✅ CRITICAL: Update state FIRST before any async operations
                                             setState(() {
                                               selectedItemName = value;
-                                              selectedItemData =
-                                                  selectedItem; // Save the whole object globally
+                                              selectedItemData = selectedItem;
                                               selectedItemId = selectedItem.id;
+
+                                              // ✅ Clear units immediately and update controller state
+                                              unitIdsList.clear();
+
+                                              // Set controller properties immediately
+                                              controller.seletedItemName =
+                                                  selectedItem.name;
+                                              controller.selcetedItemId =
+                                                  selectedItem.id.toString();
+
+                                              controller.purchasePrice =
+                                                  selectedItem.purchasePrice
+                                                          is int
+                                                      ? (selectedItem
+                                                                  .purchasePrice
+                                                              as int)
+                                                          .toDouble()
+                                                      : (selectedItem
+                                                              .purchasePrice ??
+                                                          0.0);
+
+                                              controller.unitQty =
+                                                  selectedItem.unitQty ?? 1;
+
+                                              controller.mrpController.text =
+                                                  controller.purchasePrice
+                                                      .toStringAsFixed(2);
                                             });
 
                                             debugPrint(
@@ -2538,102 +2494,78 @@ class LayoutState extends State<Layout> {
                                             debugPrint(
                                                 '- Purchase Price: ${selectedItem.purchasePrice}');
 
-                                            // Execute all your original logic here
-                                            unitIdsList.clear();
+                                            // Fetch stock quantity
+                                            if (controller.selcetedItemId !=
+                                                null) {
+                                              fetchStockQuantity
+                                                  .fetchStockQuantity(controller
+                                                      .selcetedItemId!);
+                                            }
 
-                                            // ✅ Set purchase price first
-                                            controller
-                                                .purchasePrice = selectedItem
-                                                    .purchasePrice is int
-                                                ? (selectedItem.purchasePrice
-                                                        as int)
-                                                    .toDouble()
-                                                : (selectedItem.purchasePrice ??
-                                                    0.0);
-
-                                            // ✅ Set unit quantity (default to 1 if null)
-                                            controller.unitQty =
-                                                selectedItem.unitQty ?? 1;
-
-                                            // ✅ Set the price initially to purchase price
-                                            controller.mrpController.text =
-                                                controller.purchasePrice
-                                                    .toStringAsFixed(2);
-
-                                            setState(() {
-                                              controller.seletedItemName =
-                                                  selectedItem.name;
-                                              controller.selcetedItemId =
-                                                  selectedItem.id.toString();
-
-                                              // fetch stock quantity
-                                              if (controller.selcetedItemId !=
-                                                  null) {
-                                                fetchStockQuantity
-                                                    .fetchStockQuantity(
-                                                        controller
-                                                            .selcetedItemId!);
-                                              }
-                                            });
-
-                                            // Ensure unitProvider is loaded
+                                            // ✅ Ensure unitProvider is loaded
                                             if (unitProvider.units.isEmpty) {
                                               await unitProvider.fetchUnits();
                                             }
 
-                                            /// ⛔️ Clear units
-                                            unitIdsList.clear();
+                                            // ✅ Now populate units and update state again
+                                            setState(() {
+                                              // Clear units again (defensive programming)
+                                              unitIdsList.clear();
 
-                                            // ===> Primary unit
-                                            if (selectedItem.unitId != null) {
-                                              final unit =
-                                                  unitProvider.units.firstWhere(
-                                                (unit) =>
-                                                    unit.id.toString() ==
-                                                    selectedItem.unitId
-                                                        .toString(),
-                                                orElse: () => Unit(
-                                                  id: 0,
-                                                  name: 'Unknown',
-                                                  symbol: '',
-                                                  status: 0,
-                                                ),
-                                              );
-                                              if (unit.id != 0) {
-                                                unitIdsList.add(unit.name);
-                                                controller.primaryUnitName =
-                                                    unit.name;
-                                                controller.selectedUnit =
-                                                    unit.name;
-                                                controller
-                                                    .selectedUnitIdWithNameFunction(
-                                                        "${unit.id}_${unit.name}");
+                                              // ===> Primary unit
+                                              if (selectedItem.unitId != null) {
+                                                final unit = unitProvider.units
+                                                    .firstWhere(
+                                                  (unit) =>
+                                                      unit.id.toString() ==
+                                                      selectedItem.unitId
+                                                          .toString(),
+                                                  orElse: () => Unit(
+                                                    id: 0,
+                                                    name: 'Unknown',
+                                                    symbol: '',
+                                                    status: 0,
+                                                  ),
+                                                );
+                                                if (unit.id != 0) {
+                                                  unitIdsList.add(unit.name);
+                                                  controller.primaryUnitName =
+                                                      unit.name;
+                                                  controller.selectedUnit =
+                                                      unit.name;
+                                                  controller
+                                                      .selectedUnitIdWithNameFunction(
+                                                          "${unit.id}_${unit.name}");
+                                                }
                                               }
-                                            }
 
-                                            // ===> Secondary unit
-                                            if (selectedItem.secondaryUnitId !=
-                                                null) {
-                                              final secondaryUnit =
-                                                  unitProvider.units.firstWhere(
-                                                (unit) =>
-                                                    unit.id.toString() ==
-                                                    selectedItem.secondaryUnitId
-                                                        .toString(),
-                                                orElse: () => Unit(
-                                                  id: 0,
-                                                  name: 'Unknown',
-                                                  symbol: '',
-                                                  status: 0,
-                                                ),
-                                              );
-                                              if (secondaryUnit.id != 0) {
-                                                unitIdsList
-                                                    .add(secondaryUnit.name);
-                                                controller.secondaryUnitName =
-                                                    secondaryUnit.name;
+                                              // ===> Secondary unit
+                                              if (selectedItem
+                                                      .secondaryUnitId !=
+                                                  null) {
+                                                final secondaryUnit =
+                                                    unitProvider.units
+                                                        .firstWhere(
+                                                  (unit) =>
+                                                      unit.id.toString() ==
+                                                      selectedItem
+                                                          .secondaryUnitId
+                                                          .toString(),
+                                                  orElse: () => Unit(
+                                                    id: 0,
+                                                    name: 'Unknown',
+                                                    symbol: '',
+                                                    status: 0,
+                                                  ),
+                                                );
+                                                if (secondaryUnit.id != 0) {
+                                                  unitIdsList
+                                                      .add(secondaryUnit.name);
+                                                  controller.secondaryUnitName =
+                                                      secondaryUnit.name;
+                                                }
                                               }
-                                            }
+                                            });
 
                                             debugPrint(
                                                 "Units Available: $unitIdsList");
@@ -2667,6 +2599,64 @@ class LayoutState extends State<Layout> {
                               ),
 
                               /// new updated code working, for base and secondary unit.
+                              // Column(
+                              //   mainAxisAlignment: MainAxisAlignment.start,
+                              //   crossAxisAlignment: CrossAxisAlignment.start,
+                              //   children: [
+                              //     const SizedBox(height: 20),
+                              //     SizedBox(
+                              //       width: 150,
+                              //       child: CustomDropdownTwo(
+                              //         labelText: "Unit",
+                              //         hint: '',
+                              //         items: unitIdsList,
+                              //         width: 150,
+                              //         height: 30,
+                              //         selectedItem: unitIdsList.isNotEmpty
+                              //             ? unitIdsList.first
+                              //             : null,
+                              //         onChanged: (selectedUnit) {
+                              //           debugPrint(
+                              //               "Selected Unit: $selectedUnit");
+
+                              //           controller.selectedUnit = selectedUnit;
+
+                              //           final selectedUnitObj =
+                              //               unitProvider.units.firstWhere(
+                              //             (unit) => unit.name == selectedUnit,
+                              //             orElse: () => Unit(
+                              //                 id: 0,
+                              //                 name: "Unknown",
+                              //                 symbol: "",
+                              //                 status: 0),
+                              //           );
+
+                              //           controller.selectedUnitIdWithNameFunction(
+                              //               "${selectedUnitObj.id}_${selectedUnitObj.symbol}");
+
+                              //           debugPrint(
+                              //               "🆔 Unit ID: ${selectedUnitObj.id}_${selectedUnitObj.symbol}");
+
+                              //           // ✅ Price update logic
+                              //           if (selectedUnit ==
+                              //               controller.secondaryUnitName) {
+                              //             double newPrice =
+                              //                 controller.purchasePrice /
+                              //                     controller.unitQty;
+                              //             controller.mrpController.text =
+                              //                 newPrice.toStringAsFixed(2);
+                              //           } else if (selectedUnit ==
+                              //               controller.primaryUnitName) {
+                              //             controller.mrpController.text =
+                              //                 controller.purchasePrice
+                              //                     .toStringAsFixed(2);
+                              //           }
+                              //         },
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -2675,14 +2665,21 @@ class LayoutState extends State<Layout> {
                                   SizedBox(
                                     width: 150,
                                     child: CustomDropdownTwo(
+                                      key: ValueKey(
+                                          'unit_dropdown_${selectedItemId}_${unitIdsList.length}'), // ✅ Force rebuild when units change
                                       labelText: "Unit",
-                                      hint: '',
+                                      hint: 'Select Unit',
                                       items: unitIdsList,
                                       width: 150,
                                       height: 30,
-                                      selectedItem: unitIdsList.isNotEmpty
-                                          ? unitIdsList.first
-                                          : null,
+                                      selectedItem: unitIdsList.isNotEmpty &&
+                                              controller.selectedUnit != null &&
+                                              unitIdsList.contains(
+                                                  controller.selectedUnit)
+                                          ? controller.selectedUnit
+                                          : (unitIdsList.isNotEmpty
+                                              ? unitIdsList.first
+                                              : null), // ✅ Better selection logic
                                       onChanged: (selectedUnit) {
                                         debugPrint(
                                             "Selected Unit: $selectedUnit");
@@ -2705,20 +2702,47 @@ class LayoutState extends State<Layout> {
                                         debugPrint(
                                             "🆔 Unit ID: ${selectedUnitObj.id}_${selectedUnitObj.symbol}");
 
-                                        // ✅ Price update logic
-                                        if (selectedUnit ==
-                                            controller.secondaryUnitName) {
-                                          double newPrice =
-                                              controller.purchasePrice /
-                                                  controller.unitQty;
-                                          controller.mrpController.text =
-                                              newPrice.toStringAsFixed(2);
-                                        } else if (selectedUnit ==
-                                            controller.primaryUnitName) {
-                                          controller.mrpController.text =
-                                              controller.purchasePrice
-                                                  .toStringAsFixed(2);
-                                        }
+                                        // ✅ Price update logic with setState
+                                        // setState(() {
+                                        //   if (selectedUnit ==
+                                        //       controller.secondaryUnitName) {
+                                        //     double newPrice =
+                                        //         controller.purchasePrice /
+                                        //             controller.unitQty;
+                                        //     controller.mrpController.text =
+                                        //         newPrice.toStringAsFixed(2);
+                                        //   } else if (selectedUnit ==
+                                        //       controller.primaryUnitName) {
+                                        //     controller.mrpController.text =
+                                        //         controller.purchasePrice
+                                        //             .toStringAsFixed(2);
+                                        //   }
+                                        // });
+
+                                        // ✅ Price update logic with setState AND subtotal calculation
+  setState(() {
+    if (selectedUnit == controller.secondaryUnitName) {
+      double newPrice = controller.purchasePrice / controller.unitQty;
+      controller.mrpController.text = newPrice.toStringAsFixed(2);
+    } else if (selectedUnit == controller.primaryUnitName) {
+      controller.mrpController.text = controller.purchasePrice.toStringAsFixed(2);
+    }
+    
+    // ✅ CRITICAL: Calculate subtotal after price update
+    // This might be named differently in your controller
+    // Common method names: calculateSubtotal(), updateSubtotal(), dialogtotalController()
+    controller.dialogtotalController(); // or whatever your subtotal calculation method is called
+    
+    // If the above doesn't work, try these alternatives:
+    // controller.calculateSubtotal();
+    // controller.updateSubtotal();
+    // controller.calculateDialogTotal();
+    
+    // Or if you need to manually calculate:
+    // double qty = double.tryParse(controller.qtyController.text) ?? 0;
+    // double price = double.tryParse(controller.mrpController.text) ?? 0;
+    // controller.subtotalItemDiolog = qty * price;
+  });
                                       },
                                     ),
                                   ),

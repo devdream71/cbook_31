@@ -3,18 +3,21 @@ import 'package:cbook_dt/utils/custom_padding.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-
 import '../../../../common/otp_field.dart';
 
+
 class OtpScreenForgotPassword extends StatelessWidget {
-  const OtpScreenForgotPassword({super.key});
+  final String email;
+  const OtpScreenForgotPassword({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    TextEditingController otpController = TextEditingController();
+    // Separate controllers for each OTP box
+    final List<TextEditingController> otpControllers =
+        List.generate(4, (_) => TextEditingController());
 
     return Scaffold(
       backgroundColor: colorScheme.secondary,
@@ -36,39 +39,31 @@ class OtpScreenForgotPassword extends StatelessWidget {
                       Navigator.pop(context);
                     },
                   ),
-
-                  // To balance alignment
                 ],
               ),
-
               Lottie.asset(
                 'assets/animation/otp.json',
                 height: 150,
               ),
-
               vPad20,
-
-              // Email Verification Text
               Text(
-                "dreamtexh23@mail",
+                email,
                 style: textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: colorScheme.onSurface,
-                    fontSize: 12),
+                  fontWeight: FontWeight.w500,
+                  color: colorScheme.onSurface,
+                  fontSize: 12,
+                ),
               ),
               const SizedBox(height: 24),
-
-              // Instructions
               Text(
                 "Send 4-digit OTP to your mail from Commerce Book.",
                 textAlign: TextAlign.center,
                 style: textTheme.bodyMedium
                     ?.copyWith(color: colorScheme.onSurface, fontSize: 14),
               ),
-
               const SizedBox(height: 50),
 
-              // OTP Fields with Padding
+              // OTP Fields
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(4, (index) {
@@ -77,13 +72,13 @@ class OtpScreenForgotPassword extends StatelessWidget {
                     child: SizedBox(
                       width: 50,
                       child: OtpField(
-                        controller: otpController,
+                        controller: otpControllers[index],
                         index: index,
                         colorScheme: colorScheme,
                         onChanged: (value, node) {
-                          if (value.isNotEmpty) {
+                          if (value.isNotEmpty && index < 3) {
                             FocusScope.of(context).nextFocus();
-                          } else if (index > 0) {
+                          } else if (value.isEmpty && index > 0) {
                             FocusScope.of(context).previousFocus();
                           }
                         },
@@ -93,7 +88,6 @@ class OtpScreenForgotPassword extends StatelessWidget {
                 }),
               ),
 
-             
               const Spacer(),
 
               // Submit Button
@@ -103,23 +97,28 @@ class OtpScreenForgotPassword extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      if (otpController.text.trim().isEmpty) {
+                      String otp = otpControllers
+                          .map((controller) => controller.text.trim())
+                          .join();
+
+                      if (otp.length != 4) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           backgroundColor: Colors.red,
                           duration: const Duration(seconds: 1),
                           content: Text(
-                            'Please, enter OTP.',
-                            style: GoogleFonts.notoSansPhagsPa(   
-                                color: Colors.white),
+                            'Please, enter all 4 digits of OTP.',
+                            style: GoogleFonts.notoSansPhagsPa(
+                              color: Colors.white,
+                            ),
                           ),
                         ));
                       } else {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SetNewPassword()));
-
-                              
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (_) => const SetNewPassword(),
+                        //   ),
+                        // );
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -139,7 +138,6 @@ class OtpScreenForgotPassword extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
             ],
           ),
@@ -148,3 +146,6 @@ class OtpScreenForgotPassword extends StatelessWidget {
     );
   }
 }
+
+
+ 

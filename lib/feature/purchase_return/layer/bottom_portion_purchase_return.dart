@@ -171,14 +171,34 @@ class BottomPortionPurchaseReturn extends StatelessWidget {
                       ? controller.totalAmount()
                       : controller.totalAmount2();
 
+                  print(
+                      "demoPurchaseReturnModelList (${controller.demoPurchaseReturnModelList.length} items):");
+                  for (var item in controller.demoPurchaseReturnModelList) {
+                    print(item
+                        .toString()); // Make sure your model has a proper toString() method
+                  }
+
+                  debugPrint(
+                      ' cash / credit / item length. ${controller.itemsCashReuturn.length} ==== ${controller.itemsCreditReturn.length}  === ${controller.demoPurchaseReturnModelList.length}');
+
                   if (controller.demoPurchaseReturnModelList.isEmpty ||
                       billNumber.isEmpty) {
+                    debugPrint(
+                        ' cash / credit / item length. ${controller.itemsCashReuturn} ==== ${controller.itemsCreditReturn}  === ${controller.demoPurchaseReturnModelList}');
+
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text(
                         'No item is added or no bill number.',
                       ),
                       backgroundColor: Colors.red,
                     ));
+
+                    print(
+                        "demoPurchaseReturnModelList (${controller.demoPurchaseReturnModelList.length} items):");
+                    for (var item in controller.demoPurchaseReturnModelList) {
+                      print(item
+                          .toString()); // Make sure your model has a proper toString() method
+                    }
                   } else {
                     final isSuccess = await controller.storePurchaseReturn(
                         //date: date,
