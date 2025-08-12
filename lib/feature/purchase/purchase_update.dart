@@ -9,8 +9,8 @@ import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
 import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
 import 'package:cbook_dt/feature/item/provider/unit_provider.dart';
-import 'package:cbook_dt/feature/paymentout/model/bill_person_list.dart';
-import 'package:cbook_dt/feature/paymentout/provider/payment_out_provider.dart';
+import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
+import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/purchase/controller/purchase_controller.dart';
 import 'package:cbook_dt/feature/purchase/purchase_update_item.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
@@ -639,9 +639,9 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                                                           controller:
                                                                               controller.codeController,
                                                                           customerorSaleslist:
-                                                                              "Showing supplieer list",
+                                                                              "Supplieer list",
                                                                           customerOrSupplierButtonLavel:
-                                                                              "Add new supplier",
+                                                                              "Add new",
                                                                           onTap:
                                                                               () {
                                                                             Navigator.push(
@@ -652,46 +652,47 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                                                             );
                                                                           },
                                                                         ),
-                                                                        Consumer<
-                                                                            CustomerProvider>(
-                                                                          builder: (context,
-                                                                              customerProvider,
-                                                                              child) {
-                                                                            final customerList =
-                                                                                customerProvider.customerResponse?.data ?? [];
 
-                                                                            return Column(
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                if (customerList.isEmpty) const SizedBox(height: 2),
-                                                                                if (customerList.isNotEmpty && customerProvider.selectedCustomer != null && customerProvider.selectedCustomer!.id != -1)
-                                                                                  Row(
-                                                                                    children: [
-                                                                                      Text(
-                                                                                        "${customerProvider.selectedCustomer!.type == 'customer' ? 'Receivable' : 'Payable'}: ",
-                                                                                        style: TextStyle(
-                                                                                          fontSize: 10,
-                                                                                          fontWeight: FontWeight.bold,
-                                                                                          color: customerProvider.selectedCustomer!.type == 'customer' ? Colors.green : Colors.red,
-                                                                                        ),
-                                                                                      ),
-                                                                                      Padding(
-                                                                                        padding: const EdgeInsets.only(top: 2),
-                                                                                        child: Text(
-                                                                                          "৳ ${customerProvider.selectedCustomer!.due.toStringAsFixed(2)}",
-                                                                                          style: const TextStyle(
-                                                                                            fontSize: 10,
-                                                                                            fontWeight: FontWeight.bold,
-                                                                                            color: Colors.black,
-                                                                                          ),
-                                                                                        ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                              ],
-                                                                            );
-                                                                          },
-                                                                        ),
+                                                                        // Consumer<
+                                                                        //     CustomerProvider>(
+                                                                        //   builder: (context,
+                                                                        //       customerProvider,
+                                                                        //       child) {
+                                                                        //     final customerList =
+                                                                        //         customerProvider.customerResponse?.data ?? [];
+
+                                                                        //     return Column(
+                                                                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        //       children: [
+                                                                        //         if (customerList.isEmpty) const SizedBox(height: 2),
+                                                                        //         if (customerList.isNotEmpty && customerProvider.selectedCustomer != null && customerProvider.selectedCustomer!.id != -1)
+                                                                        //           Row(
+                                                                        //             children: [
+                                                                        //               Text(
+                                                                        //                 "${customerProvider.selectedCustomer!.type == 'customer' ? 'Receivable' : 'Payable'}: ",
+                                                                        //                 style: TextStyle(
+                                                                        //                   fontSize: 10,
+                                                                        //                   fontWeight: FontWeight.bold,
+                                                                        //                   color: customerProvider.selectedCustomer!.type == 'customer' ? Colors.green : Colors.red,
+                                                                        //                 ),
+                                                                        //               ),
+                                                                        //               Padding(
+                                                                        //                 padding: const EdgeInsets.only(top: 2),
+                                                                        //                 child: Text(
+                                                                        //                   "৳ ${customerProvider.selectedCustomer!.due.toStringAsFixed(2)}",
+                                                                        //                   style: const TextStyle(
+                                                                        //                     fontSize: 10,
+                                                                        //                     fontWeight: FontWeight.bold,
+                                                                        //                     color: Colors.black,
+                                                                        //                   ),
+                                                                        //                 ),
+                                                                        //               ),
+                                                                        //             ],
+                                                                        //           ),
+                                                                        //       ],
+                                                                        //     );
+                                                                        //   },
+                                                                        // ),
                                                                       ],
                                                                     ),
                                                             ),

@@ -5,10 +5,10 @@ import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
 import 'package:cbook_dt/feature/customer_create/model/payment_voicer_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
-import 'package:cbook_dt/feature/paymentout/model/bill_person_list.dart';
-import 'package:cbook_dt/feature/paymentout/model/create_payment_out.dart';
-import 'package:cbook_dt/feature/paymentout/payment_out_list.dart';
-import 'package:cbook_dt/feature/paymentout/provider/payment_out_provider.dart';
+import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
+import 'package:cbook_dt/feature/payment_out/model/create_payment_out_model.dart';
+import 'package:cbook_dt/feature/payment_out/payment_out_list.dart';
+import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/sales/controller/sales_controller.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
@@ -26,7 +26,25 @@ class PaymentOutCreateItem extends StatefulWidget {
 }
 
 class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
+  
   TextEditingController billController = TextEditingController();
+  TextEditingController discountPercentageController = TextEditingController();
+  Map<int, TextEditingController> receiptControllers = {};
+  TextEditingController billNoController = TextEditingController();
+  final TextEditingController totalAmount = TextEditingController();
+
+  
+  String billNo = '';
+  bool showNoteField = false;
+
+  TextEditingController discountAmount = TextEditingController();
+  TextEditingController paymentAmount = TextEditingController();
+
+  TextEditingController noteController = TextEditingController();
+
+  // ✅ Add these boolean flags to prevent infinite loops (add to your class variables)
+  bool _isUpdatingFromPercentage = false;
+  bool _isUpdatingFromAmount = false;
 
   String? selectedReceivedTo;
   String? selectedAccount;
@@ -34,19 +52,35 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
   //String? selectedReceivedTo;     // e.g. 'Cash in Hand'
   String? internalReceivedTo;
 
-  String getReceivedToValue(String label) {
-    if (label == 'Cash in Hand') return 'cash';
-    if (label == 'Bank') return 'bank';
-    return ''; // fallback if needed
-  }
-
   int? selectedAccountId;
+
+  String? selectedBillPerson;
+  int? selectedBillPersonId;
+  BillPersonModel? selectedBillPersonData;
+
+   //String? selectedDiscountType;
+
+  String selectedDiscountType = '%'; // default '%'
+  double dueAmount =
+      0;
 
   DateTime selectedStartDate = DateTime.now();
   // Default to current date
   DateTime selectedEndDate = DateTime.now();
   // Default to current date
   String? selectedDropdownValue;
+
+  Set<int> expandedIndexes = {};
+
+  
+
+  // You should assign this when customer selected or invoice loaded
+
+  String getReceivedToValue(String label) {
+    if (label == 'Cash in Hand') return 'cash';
+    if (label == 'Bank') return 'bank';
+    return ''; // fallback if needed
+  }
 
   Future<void> _selectDate(BuildContext context, DateTime initialDate,
       Function(DateTime) onDateSelected) async {
@@ -61,35 +95,30 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
     }
   }
 
-  Map<int, TextEditingController> receiptControllers = {};
-
-  String? selectedBillPerson;
-  int? selectedBillPersonId;
-  BillPersonModel?
-      selectedBillPersonData; // ✅ Store the selected object globally
+   // ✅ Store the selected object globally
 
   TextStyle ts = const TextStyle(color: Colors.black, fontSize: 12);
 
-  void prepareIncomeItems(IncomeProvider provider, String selectedAccountId) {
-    // Convert receiptItems to required JSON structure
-    final List<Map<String, dynamic>> incomeItems =
-        provider.receiptItems.map((item) {
-      return {
-        "account_id": selectedAccountId,
-        "narration": item.note,
-        "amount": item.amount.toString(),
-      };
-    }).toList();
+  // void prepareIncomeItems(IncomeProvider provider, String selectedAccountId) {
+  //   // Convert receiptItems to required JSON structure
+  //   final List<Map<String, dynamic>> incomeItems =
+  //       provider.receiptItems.map((item) {
+  //     return {
+  //       "account_id": selectedAccountId,
+  //       "narration": item.note,
+  //       "amount": item.amount.toString(),
+  //     };
+  //   }).toList();
 
-    final Map<String, dynamic> finalPayload = {
-      "income_items": incomeItems,
-    };
+  //   final Map<String, dynamic> finalPayload = {
+  //     "income_items": incomeItems,
+  //   };
 
-    // Print JSON string in console
-    debugPrint('Final JSON Payload: $finalPayload');
-  }
+  //   // Print JSON string in console
+  //   debugPrint('Final JSON Payload: $finalPayload');
+  // }
 
-  Set<int> expandedIndexes = {};
+  
 
   @override
   void initState() {
@@ -106,6 +135,13 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
    
   }
+
+  @override
+void dispose() {
+  discountPercentageController.dispose();
+  // ... other disposals
+  super.dispose();
+}
 
   
   ///updated bill nunber json respoonse
@@ -164,18 +200,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
     }
   }
 
-  TextEditingController billNoController = TextEditingController();
-  final TextEditingController totalAmount = TextEditingController();
-  String billNo = '';
-
-  TextEditingController discountAmount = TextEditingController();
-  TextEditingController paymentAmount = TextEditingController();
-
-  //String? selectedDiscountType;
-
-  String selectedDiscountType = '%'; // default '%'
-  double dueAmount =
-      0; // You should assign this when customer selected or invoice loaded
+  
 
   /// Calculate sum of all receipts input
   double get totalReceiptAmount {
@@ -187,43 +212,86 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
   }
 
   /// Called when discount or receipt amounts change
-  void _recalculatePayment() {
-    double due = totalReceiptAmount; // total receipt entered by user
+  // void _recalculatePayment() {
+  //   double due = totalReceiptAmount; // total receipt entered by user
 
-    final discountText = discountAmount.text.trim();
-    double discountValue = double.tryParse(discountText) ?? 0;
+  //   final discountText = discountAmount.text.trim();
+  //   double discountValue = double.tryParse(discountText) ?? 0;
 
-    if (due <= 0) {
-      paymentAmount.text = "0.00";
-      totalAmount.text = "0.00";
-      return;
-    }
+  //   if (due <= 0) {
+  //     paymentAmount.text = "0.00";
+  //     totalAmount.text = "0.00";
+  //     return;
+  //   }
 
-    // Clamp discount value
-    if (selectedDiscountType == '%') {
-      if (discountValue > 100) discountValue = 100;
-    } else {
-      if (discountValue > due) discountValue = due;
-    }
+  //   // Clamp discount value
+  //   if (selectedDiscountType == '%') {
+  //     if (discountValue > 100) discountValue = 100;
+  //   } else {
+  //     if (discountValue > due) discountValue = due;
+  //   }
 
-    double discountAmountCalculated = selectedDiscountType == '%'
-        ? (discountValue / 100) * due
-        : discountValue;
+  //   double discountAmountCalculated = selectedDiscountType == '%'
+  //       ? (discountValue / 100) * due
+  //       : discountValue;
 
-    double finalPayment = due - discountAmountCalculated;
+  //   double finalPayment = due - discountAmountCalculated;
 
-    if (finalPayment < 0) finalPayment = 0;
+  //   if (finalPayment < 0) finalPayment = 0;
 
-    setState(() {
-      totalAmount.text = due.toStringAsFixed(2); // show total before discount
-      paymentAmount.text = finalPayment.toStringAsFixed(2);
-    });
+  //   setState(() {
+  //     totalAmount.text = due.toStringAsFixed(2); // show total before discount
+  //     paymentAmount.text = finalPayment.toStringAsFixed(2);
+  //   });
 
-    debugPrint(
-      'Total Receipt: $due, Discount: $discountValue $selectedDiscountType, '
-      'Discount Amt: $discountAmountCalculated, Final Payment: $finalPayment',
-    );
+  //   debugPrint(
+  //     'Total Receipt: $due, Discount: $discountValue $selectedDiscountType, '
+  //     'Discount Amt: $discountAmountCalculated, Final Payment: $finalPayment',
+  //   );
+  // }
+  
+
+  // ✅ Updated _recalculatePayment method
+void _recalculatePayment() {
+  double due = totalReceiptAmount; // total receipt entered by user
+
+  final discountText = discountAmount.text.trim();
+  double discountValue = double.tryParse(discountText) ?? 0;
+
+  if (due <= 0) {
+    paymentAmount.text = "0.00";
+    totalAmount.text = "0.00";
+    // ✅ Clear percentage when total is 0
+    discountPercentageController.clear();
+    return;
   }
+
+  // Clamp discount value
+  if (selectedDiscountType == '%') {
+    if (discountValue > 100) discountValue = 100;
+  } else {
+    if (discountValue > due) discountValue = due;
+  }
+
+  double discountAmountCalculated = selectedDiscountType == '%'
+      ? (discountValue / 100) * due
+      : discountValue;
+
+  double finalPayment = due - discountAmountCalculated;
+
+  if (finalPayment < 0) finalPayment = 0;
+
+  setState(() {
+    totalAmount.text = due.toStringAsFixed(2); // show total before discount
+    paymentAmount.text = finalPayment.toStringAsFixed(2);
+  });
+
+  debugPrint(
+    'Total Receipt: $due, Discount: $discountValue $selectedDiscountType, '
+    'Discount Amt: $discountAmountCalculated, Final Payment: $finalPayment',
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -236,6 +304,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
     // List of forms with metadata
     return Scaffold(
       backgroundColor: AppColors.sfWhite,
+      
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         centerTitle: true,
@@ -243,19 +312,15 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
         automaticallyImplyLeading: true,
         title: const Column(
           children: [
-            SizedBox(
-              width: 5,
-            ),
+             
             Text(
-              'Payment out Create',
+              'Payment out Create dfgds',
               style: TextStyle(
                   color: Colors.yellow,
                   fontSize: 16,
                   fontWeight: FontWeight.bold),
             ),
-            SizedBox(
-              width: 5,
-            )
+             
           ],
         ),
       ),
@@ -270,6 +335,8 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
+                  ///payment form 
                   SizedBox(
                     height: 30,
                     width: 150,
@@ -283,24 +350,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                       onChanged: (value) async {
                         // debugPrint('=== Received To Selected: $value ===');
 
-                        // setState(() {
-                        //   selectedReceivedTo = value;
-                        //   selectedAccount = null; // reset account selection
-                        // });
-
-                        // if (value == 'Cash in Hand') {
-                        //   debugPrint('Fetching Cash accounts...');
-                        //   await provider.fetchAccounts('cash');
-                        // } else if (value == 'Bank') {
-                        //   debugPrint('Fetching Bank accounts...');
-                        //   await provider.fetchAccounts('bank');
-                        // }
-
-                        // debugPrint(
-                        //     'Fetched Account Names: ${provider.accountNames}');
-                        // debugPrint ("selectedReceivedTo ===> ${selectedReceivedTo}<======");
-                        //
-                        //
                         debugPrint('=== Received To Selected: $value ===');
 
                         setState(() {
@@ -558,6 +607,8 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
             color: Colors.grey,
             onTap: () {
               // Add your customer selection logic
+
+                
             },
           ),
 
@@ -575,32 +626,32 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                   if (customerList.isNotEmpty &&
                       selectedCustomer != null &&
                       selectedCustomer.id != -1) ...[
-                    Row(
-                      children: [
-                        Text(
-                          "${selectedCustomer.type == 'customer' ? 'Receivable' : 'Payable'}: ",
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: selectedCustomer.type == 'customer'
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2.0),
-                          child: Text(
-                            "৳ ${selectedCustomer.due.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
+                    // Row(
+                    //   children: [
+                    //     Text(
+                    //       "${selectedCustomer.type == 'customer' ? 'Receivable' : 'Payable'}: ",
+                    //       style: TextStyle(
+                    //         fontSize: 10,
+                    //         fontWeight: FontWeight.bold,
+                    //         color: selectedCustomer.type == 'customer'
+                    //             ? Colors.green
+                    //             : Colors.red,
+                    //       ),
+                    //     ),
+                    //     Padding(
+                    //       padding: const EdgeInsets.only(top: 2.0),
+                    //       child: Text(
+                    //         "৳ ${selectedCustomer.due.toStringAsFixed(2)}",
+                    //         style: const TextStyle(
+                    //           fontSize: 10,
+                    //           fontWeight: FontWeight.bold,
+                    //           color: Colors.black,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // const SizedBox(height: 8),
                     SizedBox(
                       height: 300,
                       child: customerProvider.paymentVouchers.isEmpty
@@ -621,6 +672,8 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                                     customerProvider.paymentVouchers[index];
                                 final bool isExpanded =
                                     expandedIndexes.contains(index);
+
+                                    debugPrint('paymeny out sales Id == ${invoice.id.toString()}');
 
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -797,6 +850,76 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
           const Spacer(),
 
+          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.note_add_outlined,
+                                  color: Colors.blueAccent,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    showNoteField = !showNoteField;
+                                  });
+                                },
+                              ),
+                              if (showNoteField)
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Container(
+                                      height: 40,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border(
+                                            top: BorderSide(
+                                                color: Colors.grey.shade400,
+                                                width: 1),
+                                            bottom: BorderSide(
+                                                color: Colors.grey.shade400,
+                                                width: 1),
+                                            left: BorderSide(
+                                                color: Colors.grey.shade400,
+                                                width: 1),
+                                            right: BorderSide(
+                                                color: Colors.grey.shade400,
+                                                width: 1)),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: Center(
+                                        child: TextField(
+                                          controller: noteController,
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 12,
+                                          ),
+                                          onChanged: (value) {
+                                            noteController.text =
+                                                value;
+                                          },
+                                          maxLines: 2,
+                                          cursorHeight: 12,
+                                          decoration: InputDecoration(
+                                            isDense: true,
+                                            border: InputBorder.none,
+                                            hintText: "Note",
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey.shade400,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+
           ///total amount
           Align(
             alignment: Alignment.centerRight,
@@ -827,48 +950,145 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                 const SizedBox(height: 4),
 
                 // Discount row with % dropdown and text field
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.end,
+                //   children: [
+                //     Text("Discount", style: ts),
+                //     const SizedBox(width: 10),
+                //     SizedBox(
+                //       height: 30,
+                //       width: 76,
+                //       child: CustomDropdownTwo(
+                //         hint: '',
+                //         items: const ['%', '৳'],
+                //         width: double.infinity,
+                //         height: 30,
+                //         labelText: selectedDiscountType,
+                //         selectedItem: selectedDiscountType,
+                //         onChanged: (value) {
+                //           setState(() {
+                //             selectedDiscountType = value ?? '%';
+                //             _recalculatePayment();
+                //           });
+                //           debugPrint(
+                //               'Discount type selected: $selectedDiscountType');
+                //         },
+                //       ),
+                //     ),
+                //     const SizedBox(width: 10),
+
+                //     ///discount amount
+                //     SizedBox(
+                //       height: 30,
+                //       width: 76,
+                //       child: AddSalesFormfield(
+                //         labelText: "Amount",
+                //         controller: discountAmount,
+                //         onChanged: (value) {
+                //           _recalculatePayment();
+                //         },
+                //       ),
+                //     ),
+                //   ],
+                // ),
+
+
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text("Discount", style: ts),
-                    const SizedBox(width: 10),
-                    SizedBox(
-                      height: 30,
-                      width: 76,
-                      child: CustomDropdownTwo(
-                        hint: '',
-                        items: const ['%', '৳'],
-                        width: double.infinity,
-                        height: 30,
-                        labelText: selectedDiscountType,
-                        selectedItem: selectedDiscountType,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedDiscountType = value ?? '%';
-                            _recalculatePayment();
-                          });
-                          debugPrint(
-                              'Discount type selected: $selectedDiscountType');
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 10),
+  mainAxisAlignment: MainAxisAlignment.end,
+  children: [
+    Text("Discount", style: ts),
+    const SizedBox(width: 10),
+    
+    // Percentage field
+    SizedBox(
+      height: 30,
+      width: 76,
+      child: AddSalesFormfield(
+        labelText: "%",
+        controller: discountPercentageController,
+        onChanged: (value) {
+          // ✅ Prevent infinite loops by checking if we're updating from amount field
+          if (_isUpdatingFromAmount) return;
+          
+          _isUpdatingFromPercentage = true;
+          
+          // Calculate amount based on percentage
+          if (value.isNotEmpty) {
+            double percentage = double.tryParse(value) ?? 0.0;
+            
+            // ✅ Clamp percentage to 0-100
+            if (percentage > 100) {
+              percentage = 100;
+              discountPercentageController.text = "100";
+            }
+            
+            double totalAmountValue = totalReceiptAmount; // ✅ Use your existing variable
+            double calculatedAmount = (totalAmountValue * percentage) / 100;
+            discountAmount.text = calculatedAmount.toStringAsFixed(2);
+            
+            // ✅ Update selectedDiscountType for your existing logic
+            selectedDiscountType = '%';
+          } else {
+            discountAmount.clear();
+          }
+          
+          _isUpdatingFromPercentage = false;
+          _recalculatePayment();
+        },
+      ),
+    ),
+    const SizedBox(width: 10),
 
-                    ///discount amount
-                    SizedBox(
-                      height: 30,
-                      width: 76,
-                      child: AddSalesFormfield(
-                        labelText: "Amount",
-                        controller: discountAmount,
-                        onChanged: (value) {
-                          _recalculatePayment();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+    // Amount field  
+    SizedBox(
+      height: 30,
+      width: 76,
+      child: AddSalesFormfield(
+        labelText: "Amount",
+        controller: discountAmount,
+        onChanged: (value) {
+          // ✅ Prevent infinite loops by checking if we're updating from percentage field
+          if (_isUpdatingFromPercentage) return;
+          
+          _isUpdatingFromAmount = true;
+          
+          // Calculate percentage based on amount
+          if (value.isNotEmpty) {
+            double amount = double.tryParse(value) ?? 0.0;
+            double totalAmountValue = totalReceiptAmount; // ✅ Use your existing variable
+            
+            if (totalAmountValue > 0) {
+              double calculatedPercentage = (amount * 100) / totalAmountValue;
+              
+              // ✅ Clamp percentage to 0-100
+              if (calculatedPercentage > 100) {
+                calculatedPercentage = 100;
+                amount = totalAmountValue; // Set amount to max (100%)
+                discountAmount.text = amount.toStringAsFixed(2);
+              }
+              
+              discountPercentageController.text = calculatedPercentage.toStringAsFixed(2);
+            }
+            
+            // ✅ Update selectedDiscountType for your existing logic  
+            selectedDiscountType = '৳';
+          } else {
+            discountPercentageController.clear();
+          }
+          
+          _isUpdatingFromAmount = false;
+          _recalculatePayment();
+        },
+      ),
+    ),
+  ],
+),
 
+
+
+
+                // Discount row with % field and amount field
+ 
                 const SizedBox(height: 10),
 
                 Row(
@@ -944,7 +1164,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                     debugPrint("Send to API: $receivedToValue");
 
                     int userId = int.parse(userIdStr);
-                    int customerId = selectedCustomer?.id ??
+                    //int customerId = selectedCustomer?.id ??
                         0; // from your selected customer object
                     int voucherPerson = selectedBillPersonData?.id ?? 0;
                     String voucherNumber = billController.text.trim();
@@ -957,9 +1177,11 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                     String paymentForm =
                         receivedToValue; // adapt this accordingly
                     int accountId = selectedAccountId ?? 0;
-                    int paymentTo = selectedAccountId ?? 0; // or payment to id
+                    int paymentTo = selectedCustomer!.id; //selectedAccountId ?? 0; // or payment to id
+                     
+                          
                     String percent =
-                        selectedDiscountType; // "%", "percent", or "flat", adjust as needed
+                        discountPercentageController.text; // "%", "percent", or "flat", adjust as needed
                     //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
                     double paymentAmt =
                         double.tryParse(paymentAmount.text) ?? 0;
@@ -1000,7 +1222,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
                     final request = PaymentVoucherRequest(
                       userId: userId,
-                      customerId: customerId,
+                      customerId: selectedCustomer.id,
                       voucherPerson: voucherPerson,
                       voucherNumber: voucherNumber,
                       voucherDate: voucherDate,

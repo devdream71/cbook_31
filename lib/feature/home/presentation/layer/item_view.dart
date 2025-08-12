@@ -7,7 +7,7 @@ import 'package:cbook_dt/feature/item/add_item.dart';
 import 'package:cbook_dt/feature/item/item_details.dart';
 import 'package:cbook_dt/feature/item/model/items_show.dart';
 import 'package:cbook_dt/feature/item/update_item.dart';
-import 'package:cbook_dt/feature/paymentout/payment_out_list.dart';
+import 'package:cbook_dt/feature/payment_out/payment_out_list.dart';
 import 'package:cbook_dt/feature/purchase/purchase_list_api.dart';
 import 'package:cbook_dt/feature/purchase_return/purchase_return_list.dart';
 import 'package:cbook_dt/feature/sales/sales_list.dart';

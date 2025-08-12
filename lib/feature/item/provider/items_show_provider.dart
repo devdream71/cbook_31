@@ -333,14 +333,16 @@ class AddItemProvider extends ChangeNotifier {
 
 ////=== purchase history
 
-  Future<void> fetchPurchaseHistory(String itemId) async {
+  Future<void> fetchPurchaseHistory(String itemId, dynamic selctedvalue) async {
     isHistoryLoading = true;
     purchaseHistory = [];
     // _isLoading = true;
     notifyListeners();
 
     final String url =
-        "https://commercebook.site/api/v1/item/purchase/history/$itemId";
+        //"https://commercebook.site/api/v1/item/purchase/history/$itemId";
+        "https://commercebook.site/api/v1/item/purchase/history?customer_id=$selctedvalue&item_id=$itemId";
+
 
     try {
       final response = await http.get(Uri.parse(url));

@@ -29,7 +29,7 @@ class PurchaseData {
   final int? customerId;
   final String? billNumber;
   final String? purchaseDate;
-  final int? discount;
+  final dynamic discount;
   final dynamic  grossTotal;
   final String? detailsNotes;
   final List<PurchaseDetail>? purchaseDetails;

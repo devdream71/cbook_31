@@ -13,7 +13,7 @@ import 'package:cbook_dt/feature/dashboard_report/provider/dashbord_report_provi
 import 'package:cbook_dt/feature/home/presentation/layer/dashboard/dashboard_controller.dart';
 import 'package:cbook_dt/feature/home/provider/profile_provider.dart';
 import 'package:cbook_dt/feature/party/party_list.dart';
-import 'package:cbook_dt/feature/paymentout/payment_out_list.dart';
+import 'package:cbook_dt/feature/payment_out/payment_out_list.dart';
 import 'package:cbook_dt/feature/purchase/purchase_list_api.dart';
 import 'package:cbook_dt/feature/purchase_return/purchase_return_list.dart';
 import 'package:cbook_dt/feature/sales/sales_list.dart';

@@ -190,6 +190,19 @@ class BottomPortionPurchaseReturn extends StatelessWidget {
                         total: total);
 
                     if (isSuccess.isNotEmpty) {
+                      // ✅ Clear text fields
+                      controller.discountController.clear();
+                      controller.discountAmountController.clear();
+                      controller.customerNameController
+                          .clear(); // Customer dropdown text
+
+                      // ✅ Clear lists
+                      controller.itemsCashReuturn.clear();
+                      controller.itemsCreditReturn.clear();
+                      controller.purchaseItemReturn.clear();
+                      controller.reductionQtyList.clear();
+                      controller.demoPurchaseReturnModelList.clear();
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -209,6 +222,7 @@ class BottomPortionPurchaseReturn extends StatelessWidget {
 
                       controller.reductionQtyList.clear();
                       controller.itemsCashReuturn.clear();
+                      controller.discountAmountController.clear();
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

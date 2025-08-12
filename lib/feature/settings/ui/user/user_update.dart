@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
-import 'package:cbook_dt/feature/paymentout/provider/payment_out_provider.dart';
+import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/provider/bill_provider.dart';
 import 'package:cbook_dt/feature/settings/ui/user/model/role_model.dart';

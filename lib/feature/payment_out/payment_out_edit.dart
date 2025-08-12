@@ -4,10 +4,10 @@ import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.da
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
 
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
-import 'package:cbook_dt/feature/paymentout/model/bill_person_list.dart';
-import 'package:cbook_dt/feature/paymentout/model/create_payment_out.dart';
-import 'package:cbook_dt/feature/paymentout/payment_out_list.dart';
-import 'package:cbook_dt/feature/paymentout/provider/payment_out_provider.dart';
+import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
+import 'package:cbook_dt/feature/payment_out/model/create_payment_out_model.dart';
+import 'package:cbook_dt/feature/payment_out/payment_out_list.dart';
+import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/sales/controller/sales_controller.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';

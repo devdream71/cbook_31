@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cbook_dt/feature/paymentout/model/bill_person_list.dart';
+import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/model/designation_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

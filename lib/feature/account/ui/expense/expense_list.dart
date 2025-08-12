@@ -2,7 +2,7 @@ import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/account/ui/expense/add_expense.dart';
 import 'package:cbook_dt/feature/account/ui/expense/expence_edit.dart';
 import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.dart';
-import 'package:cbook_dt/feature/paymentout/provider/payment_out_provider.dart';
+import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';

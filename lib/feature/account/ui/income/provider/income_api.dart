@@ -97,26 +97,6 @@ class IncomeProvider with ChangeNotifier {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   ///recived form
   Future<void> fetchReceiptFromList() async {
     debugPrint('=== Starting fetchReceiptFromList ===');
