@@ -113,10 +113,10 @@ class _PaymentOutListState extends State<PaymentOutList> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          SingleChildScrollView(
-            child: Column(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -200,9 +200,9 @@ class _PaymentOutListState extends State<PaymentOutList> {
                         ),
                       ),
                     ),
-
+            
                     const Spacer(),
-
+            
                     ///total payment.
                     Consumer<PaymentVoucherProvider>(
                       builder: (context, provider, child) {
@@ -210,7 +210,7 @@ class _PaymentOutListState extends State<PaymentOutList> {
                           return const Center(
                               child: CircularProgressIndicator());
                         }
-
+            
                         return Padding(
                           padding: const EdgeInsets.all(2.0),
                           child: Text(
@@ -223,7 +223,7 @@ class _PaymentOutListState extends State<PaymentOutList> {
                     ),
                   ],
                 ),
-
+            
                 Consumer<PaymentVoucherProvider>(
                     builder: (context, provider, child) {
                   final itemCount = provider.vouchers.length;
@@ -235,14 +235,14 @@ class _PaymentOutListState extends State<PaymentOutList> {
                     ),
                   );
                 }),
-
+            
                 ////payment out list.
                 Consumer<PaymentVoucherProvider>(
                     builder: (context, provider, child) {
                   if (provider.isLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
-
+            
                   if (provider.vouchers.isEmpty) {
                     return Center(
                         child: Text(
@@ -250,16 +250,16 @@ class _PaymentOutListState extends State<PaymentOutList> {
                       style: ts2,
                     ));
                   }
-
+            
                   return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: provider.vouchers.length,
                       itemBuilder: (context, index) {
                         final voucher = provider.vouchers[index];
-
+            
                         final voucherId = voucher.id.toString();
-
+            
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 2, vertical: 0),
@@ -309,7 +309,7 @@ class _PaymentOutListState extends State<PaymentOutList> {
                                                               .voucherDate),
                                                           style: ts,
                                                         ),
-
+            
                                                         ///voucher number
                                                         Text(
                                                           voucher.voucherNumber
@@ -320,10 +320,10 @@ class _PaymentOutListState extends State<PaymentOutList> {
                                                                   .voucherNumber,
                                                           style: ts,
                                                         ),
-
+            
                                                         const SizedBox(
                                                             height: 5),
-
+            
                                                         ///voucher amount.
                                                         Text(
                                                             voucher.totalAmount
@@ -388,8 +388,8 @@ class _PaymentOutListState extends State<PaymentOutList> {
                 }),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

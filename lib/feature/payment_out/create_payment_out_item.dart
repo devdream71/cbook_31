@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
- 
+
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
 import 'package:cbook_dt/feature/customer_create/model/payment_voicer_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
@@ -26,14 +26,14 @@ class PaymentOutCreateItem extends StatefulWidget {
 }
 
 class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
-  
   TextEditingController billController = TextEditingController();
   TextEditingController discountPercentageController = TextEditingController();
   Map<int, TextEditingController> receiptControllers = {};
   TextEditingController billNoController = TextEditingController();
   final TextEditingController totalAmount = TextEditingController();
 
-  
+  TextEditingController customerNameController = TextEditingController();
+
   String billNo = '';
   bool showNoteField = false;
 
@@ -58,11 +58,10 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
   int? selectedBillPersonId;
   BillPersonModel? selectedBillPersonData;
 
-   //String? selectedDiscountType;
+  //String? selectedDiscountType;
 
   String selectedDiscountType = '%'; // default '%'
-  double dueAmount =
-      0;
+  double dueAmount = 0;
 
   DateTime selectedStartDate = DateTime.now();
   // Default to current date
@@ -71,8 +70,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
   String? selectedDropdownValue;
 
   Set<int> expandedIndexes = {};
-
-  
 
   // You should assign this when customer selected or invoice loaded
 
@@ -95,30 +92,9 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
     }
   }
 
-   // ✅ Store the selected object globally
+  // ✅ Store the selected object globally
 
   TextStyle ts = const TextStyle(color: Colors.black, fontSize: 12);
-
-  // void prepareIncomeItems(IncomeProvider provider, String selectedAccountId) {
-  //   // Convert receiptItems to required JSON structure
-  //   final List<Map<String, dynamic>> incomeItems =
-  //       provider.receiptItems.map((item) {
-  //     return {
-  //       "account_id": selectedAccountId,
-  //       "narration": item.note,
-  //       "amount": item.amount.toString(),
-  //     };
-  //   }).toList();
-
-  //   final Map<String, dynamic> finalPayload = {
-  //     "income_items": incomeItems,
-  //   };
-
-  //   // Print JSON string in console
-  //   debugPrint('Final JSON Payload: $finalPayload');
-  // }
-
-  
 
   @override
   void initState() {
@@ -132,18 +108,15 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
       await fetchAndSetBillNumber();
     });
-
-   
   }
 
   @override
-void dispose() {
-  discountPercentageController.dispose();
-  // ... other disposals
-  super.dispose();
-}
+  void dispose() {
+    discountPercentageController.dispose();
+    // ... other disposals
+    super.dispose();
+  }
 
-  
   ///updated bill nunber json respoonse
   Future<void> fetchAndSetBillNumber() async {
     debugPrint('fetchAndSetBillNumber called');
@@ -200,8 +173,6 @@ void dispose() {
     }
   }
 
-  
-
   /// Calculate sum of all receipts input
   double get totalReceiptAmount {
     double total = 0;
@@ -212,86 +183,47 @@ void dispose() {
   }
 
   /// Called when discount or receipt amounts change
-  // void _recalculatePayment() {
-  //   double due = totalReceiptAmount; // total receipt entered by user
-
-  //   final discountText = discountAmount.text.trim();
-  //   double discountValue = double.tryParse(discountText) ?? 0;
-
-  //   if (due <= 0) {
-  //     paymentAmount.text = "0.00";
-  //     totalAmount.text = "0.00";
-  //     return;
-  //   }
-
-  //   // Clamp discount value
-  //   if (selectedDiscountType == '%') {
-  //     if (discountValue > 100) discountValue = 100;
-  //   } else {
-  //     if (discountValue > due) discountValue = due;
-  //   }
-
-  //   double discountAmountCalculated = selectedDiscountType == '%'
-  //       ? (discountValue / 100) * due
-  //       : discountValue;
-
-  //   double finalPayment = due - discountAmountCalculated;
-
-  //   if (finalPayment < 0) finalPayment = 0;
-
-  //   setState(() {
-  //     totalAmount.text = due.toStringAsFixed(2); // show total before discount
-  //     paymentAmount.text = finalPayment.toStringAsFixed(2);
-  //   });
-
-  //   debugPrint(
-  //     'Total Receipt: $due, Discount: $discountValue $selectedDiscountType, '
-  //     'Discount Amt: $discountAmountCalculated, Final Payment: $finalPayment',
-  //   );
-  // }
-  
 
   // ✅ Updated _recalculatePayment method
-void _recalculatePayment() {
-  double due = totalReceiptAmount; // total receipt entered by user
+  void _recalculatePayment() {
+    double due = totalReceiptAmount; // total receipt entered by user
 
-  final discountText = discountAmount.text.trim();
-  double discountValue = double.tryParse(discountText) ?? 0;
+    final discountText = discountAmount.text.trim();
+    double discountValue = double.tryParse(discountText) ?? 0;
 
-  if (due <= 0) {
-    paymentAmount.text = "0.00";
-    totalAmount.text = "0.00";
-    // ✅ Clear percentage when total is 0
-    discountPercentageController.clear();
-    return;
+    if (due <= 0) {
+      paymentAmount.text = "0.00";
+      totalAmount.text = "0.00";
+      // ✅ Clear percentage when total is 0
+      discountPercentageController.clear();
+      return;
+    }
+
+    // Clamp discount value
+    if (selectedDiscountType == '%') {
+      if (discountValue > 100) discountValue = 100;
+    } else {
+      if (discountValue > due) discountValue = due;
+    }
+
+    double discountAmountCalculated = selectedDiscountType == '%'
+        ? (discountValue / 100) * due
+        : discountValue;
+
+    double finalPayment = due - discountAmountCalculated;
+
+    if (finalPayment < 0) finalPayment = 0;
+
+    setState(() {
+      totalAmount.text = due.toStringAsFixed(2); // show total before discount
+      paymentAmount.text = finalPayment.toStringAsFixed(2);
+    });
+
+    debugPrint(
+      'Total Receipt: $due, Discount: $discountValue $selectedDiscountType, '
+      'Discount Amt: $discountAmountCalculated, Final Payment: $finalPayment',
+    );
   }
-
-  // Clamp discount value
-  if (selectedDiscountType == '%') {
-    if (discountValue > 100) discountValue = 100;
-  } else {
-    if (discountValue > due) discountValue = due;
-  }
-
-  double discountAmountCalculated = selectedDiscountType == '%'
-      ? (discountValue / 100) * due
-      : discountValue;
-
-  double finalPayment = due - discountAmountCalculated;
-
-  if (finalPayment < 0) finalPayment = 0;
-
-  setState(() {
-    totalAmount.text = due.toStringAsFixed(2); // show total before discount
-    paymentAmount.text = finalPayment.toStringAsFixed(2);
-  });
-
-  debugPrint(
-    'Total Receipt: $due, Discount: $discountValue $selectedDiscountType, '
-    'Discount Amt: $discountAmountCalculated, Final Payment: $finalPayment',
-  );
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -299,12 +231,10 @@ void _recalculatePayment() {
     //final provider = Provider.of<IncomeProvider>(context);
     final provider = context.watch<IncomeProvider>();
     final colorScheme = Theme.of(context).colorScheme;
-    //final providerExpense = Provider.of<ExpenseProvider>(context, listen: true);
 
     // List of forms with metadata
     return Scaffold(
       backgroundColor: AppColors.sfWhite,
-      
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         centerTitle: true,
@@ -312,7 +242,6 @@ void _recalculatePayment() {
         automaticallyImplyLeading: true,
         title: const Column(
           children: [
-             
             Text(
               'Payment out Create dfgds',
               style: TextStyle(
@@ -320,7 +249,6 @@ void _recalculatePayment() {
                   fontSize: 16,
                   fontWeight: FontWeight.bold),
             ),
-             
           ],
         ),
       ),
@@ -335,8 +263,7 @@ void _recalculatePayment() {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
-                  ///payment form 
+                  ///payment form
                   SizedBox(
                     height: 30,
                     width: 150,
@@ -479,18 +406,6 @@ void _recalculatePayment() {
                   ),
 
                   ///bill no, bill person
-                  // SizedBox(
-                  //   height: 30,
-                  //   width: 130,
-                  //   child: AddSalesFormfield(
-                  //     labelText: "Voucher NO",
-                  //     controller: billNoController,
-
-                  //     onChanged: (value) {
-                  //       billNo = value;
-                  //     }, // Match cursor height to text size
-                  //   ),
-                  // ),
 
                   SizedBox(
                     height: 30,
@@ -567,48 +482,16 @@ void _recalculatePayment() {
             ),
           ),
 
-          ///2 section
-          // InkWell(
-          //   onTap: () async {},
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       color: colorScheme.primary,
-          //       borderRadius: BorderRadius.circular(3),
-          //       boxShadow: [
-          //         BoxShadow(
-          //           color: Colors.black.withOpacity(0.2),
-          //           blurRadius: 5,
-          //           offset: const Offset(0, 3),
-          //         ),
-          //       ],
-          //     ),
-          //     child: const Padding(
-          //       padding: EdgeInsets.all(4.0),
-          //       child: Row(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         children: [
-          //           Text(
-          //             "Payment To",
-          //             style: TextStyle(color: Colors.white, fontSize: 14),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-
           const SizedBox(height: 6),
 
           /// Customer search field
           AddSalesFormfieldTwo(
-            controller: controller.customerNameController,
+            controller: customerNameController,
             customerorSaleslist: "Showing Customer list",
             customerOrSupplierButtonLavel: "",
             color: Colors.grey,
             onTap: () {
               // Add your customer selection logic
-
-                
             },
           ),
 
@@ -619,6 +502,11 @@ void _recalculatePayment() {
                   customerProvider.customerResponse?.data ?? [];
               final selectedCustomer = customerProvider.selectedCustomer;
 
+              ///voucher_items
+              ///sales_id
+              ///amount
+              ///from here get sales id and amount for the vouceher items
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -626,32 +514,6 @@ void _recalculatePayment() {
                   if (customerList.isNotEmpty &&
                       selectedCustomer != null &&
                       selectedCustomer.id != -1) ...[
-                    // Row(
-                    //   children: [
-                    //     Text(
-                    //       "${selectedCustomer.type == 'customer' ? 'Receivable' : 'Payable'}: ",
-                    //       style: TextStyle(
-                    //         fontSize: 10,
-                    //         fontWeight: FontWeight.bold,
-                    //         color: selectedCustomer.type == 'customer'
-                    //             ? Colors.green
-                    //             : Colors.red,
-                    //       ),
-                    //     ),
-                    //     Padding(
-                    //       padding: const EdgeInsets.only(top: 2.0),
-                    //       child: Text(
-                    //         "৳ ${selectedCustomer.due.toStringAsFixed(2)}",
-                    //         style: const TextStyle(
-                    //           fontSize: 10,
-                    //           fontWeight: FontWeight.bold,
-                    //           color: Colors.black,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // const SizedBox(height: 8),
                     SizedBox(
                       height: 300,
                       child: customerProvider.paymentVouchers.isEmpty
@@ -673,7 +535,8 @@ void _recalculatePayment() {
                                 final bool isExpanded =
                                     expandedIndexes.contains(index);
 
-                                    debugPrint('paymeny out sales Id == ${invoice.id.toString()}');
+                                debugPrint(
+                                    'paymeny out sales Id == ${invoice.id.toString()}');
 
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -851,74 +714,67 @@ void _recalculatePayment() {
           const Spacer(),
 
           Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.note_add_outlined,
-                                  color: Colors.blueAccent,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    showNoteField = !showNoteField;
-                                  });
-                                },
-                              ),
-                              if (showNoteField)
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0),
-                                    child: Container(
-                                      height: 40,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border(
-                                            top: BorderSide(
-                                                color: Colors.grey.shade400,
-                                                width: 1),
-                                            bottom: BorderSide(
-                                                color: Colors.grey.shade400,
-                                                width: 1),
-                                            left: BorderSide(
-                                                color: Colors.grey.shade400,
-                                                width: 1),
-                                            right: BorderSide(
-                                                color: Colors.grey.shade400,
-                                                width: 1)),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8),
-                                      child: Center(
-                                        child: TextField(
-                                          controller: noteController,
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                          ),
-                                          onChanged: (value) {
-                                            noteController.text =
-                                                value;
-                                          },
-                                          maxLines: 2,
-                                          cursorHeight: 12,
-                                          decoration: InputDecoration(
-                                            isDense: true,
-                                            border: InputBorder.none,
-                                            hintText: "Note",
-                                            hintStyle: TextStyle(
-                                              color: Colors.grey.shade400,
-                                              fontSize: 10,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.note_add_outlined,
+                  color: Colors.blueAccent,
+                ),
+                onPressed: () {
+                  setState(() {
+                    showNoteField = !showNoteField;
+                  });
+                },
+              ),
+              if (showNoteField)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Container(
+                      height: 40,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border(
+                            top: BorderSide(
+                                color: Colors.grey.shade400, width: 1),
+                            bottom: BorderSide(
+                                color: Colors.grey.shade400, width: 1),
+                            left: BorderSide(
+                                color: Colors.grey.shade400, width: 1),
+                            right: BorderSide(
+                                color: Colors.grey.shade400, width: 1)),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Center(
+                        child: TextField(
+                          controller: noteController,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
                           ),
+                          onChanged: (value) {
+                            noteController.text = value;
+                          },
+                          maxLines: 2,
+                          cursorHeight: 12,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            border: InputBorder.none,
+                            hintText: "Note",
+                            hintStyle: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
 
           ///total amount
           Align(
@@ -950,145 +806,107 @@ void _recalculatePayment() {
                 const SizedBox(height: 4),
 
                 // Discount row with % dropdown and text field
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.end,
-                //   children: [
-                //     Text("Discount", style: ts),
-                //     const SizedBox(width: 10),
-                //     SizedBox(
-                //       height: 30,
-                //       width: 76,
-                //       child: CustomDropdownTwo(
-                //         hint: '',
-                //         items: const ['%', '৳'],
-                //         width: double.infinity,
-                //         height: 30,
-                //         labelText: selectedDiscountType,
-                //         selectedItem: selectedDiscountType,
-                //         onChanged: (value) {
-                //           setState(() {
-                //             selectedDiscountType = value ?? '%';
-                //             _recalculatePayment();
-                //           });
-                //           debugPrint(
-                //               'Discount type selected: $selectedDiscountType');
-                //         },
-                //       ),
-                //     ),
-                //     const SizedBox(width: 10),
-
-                //     ///discount amount
-                //     SizedBox(
-                //       height: 30,
-                //       width: 76,
-                //       child: AddSalesFormfield(
-                //         labelText: "Amount",
-                //         controller: discountAmount,
-                //         onChanged: (value) {
-                //           _recalculatePayment();
-                //         },
-                //       ),
-                //     ),
-                //   ],
-                // ),
-
 
                 Row(
-  mainAxisAlignment: MainAxisAlignment.end,
-  children: [
-    Text("Discount", style: ts),
-    const SizedBox(width: 10),
-    
-    // Percentage field
-    SizedBox(
-      height: 30,
-      width: 76,
-      child: AddSalesFormfield(
-        labelText: "%",
-        controller: discountPercentageController,
-        onChanged: (value) {
-          // ✅ Prevent infinite loops by checking if we're updating from amount field
-          if (_isUpdatingFromAmount) return;
-          
-          _isUpdatingFromPercentage = true;
-          
-          // Calculate amount based on percentage
-          if (value.isNotEmpty) {
-            double percentage = double.tryParse(value) ?? 0.0;
-            
-            // ✅ Clamp percentage to 0-100
-            if (percentage > 100) {
-              percentage = 100;
-              discountPercentageController.text = "100";
-            }
-            
-            double totalAmountValue = totalReceiptAmount; // ✅ Use your existing variable
-            double calculatedAmount = (totalAmountValue * percentage) / 100;
-            discountAmount.text = calculatedAmount.toStringAsFixed(2);
-            
-            // ✅ Update selectedDiscountType for your existing logic
-            selectedDiscountType = '%';
-          } else {
-            discountAmount.clear();
-          }
-          
-          _isUpdatingFromPercentage = false;
-          _recalculatePayment();
-        },
-      ),
-    ),
-    const SizedBox(width: 10),
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("Discount", style: ts),
+                    const SizedBox(width: 10),
 
-    // Amount field  
-    SizedBox(
-      height: 30,
-      width: 76,
-      child: AddSalesFormfield(
-        labelText: "Amount",
-        controller: discountAmount,
-        onChanged: (value) {
-          // ✅ Prevent infinite loops by checking if we're updating from percentage field
-          if (_isUpdatingFromPercentage) return;
-          
-          _isUpdatingFromAmount = true;
-          
-          // Calculate percentage based on amount
-          if (value.isNotEmpty) {
-            double amount = double.tryParse(value) ?? 0.0;
-            double totalAmountValue = totalReceiptAmount; // ✅ Use your existing variable
-            
-            if (totalAmountValue > 0) {
-              double calculatedPercentage = (amount * 100) / totalAmountValue;
-              
-              // ✅ Clamp percentage to 0-100
-              if (calculatedPercentage > 100) {
-                calculatedPercentage = 100;
-                amount = totalAmountValue; // Set amount to max (100%)
-                discountAmount.text = amount.toStringAsFixed(2);
-              }
-              
-              discountPercentageController.text = calculatedPercentage.toStringAsFixed(2);
-            }
-            
-            // ✅ Update selectedDiscountType for your existing logic  
-            selectedDiscountType = '৳';
-          } else {
-            discountPercentageController.clear();
-          }
-          
-          _isUpdatingFromAmount = false;
-          _recalculatePayment();
-        },
-      ),
-    ),
-  ],
-),
+                    // Percentage field
+                    SizedBox(
+                      height: 30,
+                      width: 76,
+                      child: AddSalesFormfield(
+                        labelText: "%",
+                        controller: discountPercentageController,
+                        onChanged: (value) {
+                          // ✅ Prevent infinite loops by checking if we're updating from amount field
+                          if (_isUpdatingFromAmount) return;
 
+                          _isUpdatingFromPercentage = true;
 
+                          // Calculate amount based on percentage
+                          if (value.isNotEmpty) {
+                            double percentage = double.tryParse(value) ?? 0.0;
 
+                            // ✅ Clamp percentage to 0-100
+                            if (percentage > 100) {
+                              percentage = 100;
+                              discountPercentageController.text = "100";
+                            }
+
+                            double totalAmountValue =
+                                totalReceiptAmount; // ✅ Use your existing variable
+                            double calculatedAmount =
+                                (totalAmountValue * percentage) / 100;
+                            discountAmount.text =
+                                calculatedAmount.toStringAsFixed(2);
+
+                            // ✅ Update selectedDiscountType for your existing logic
+                            selectedDiscountType = '%';
+                          } else {
+                            discountAmount.clear();
+                          }
+
+                          _isUpdatingFromPercentage = false;
+                          _recalculatePayment();
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+
+                    // Amount field
+                    SizedBox(
+                      height: 30,
+                      width: 76,
+                      child: AddSalesFormfield(
+                        labelText: "Amount",
+                        controller: discountAmount,
+                        onChanged: (value) {
+                          // ✅ Prevent infinite loops by checking if we're updating from percentage field
+                          if (_isUpdatingFromPercentage) return;
+
+                          _isUpdatingFromAmount = true;
+
+                          // Calculate percentage based on amount
+                          if (value.isNotEmpty) {
+                            double amount = double.tryParse(value) ?? 0.0;
+                            double totalAmountValue =
+                                totalReceiptAmount; // ✅ Use your existing variable
+
+                            if (totalAmountValue > 0) {
+                              double calculatedPercentage =
+                                  (amount * 100) / totalAmountValue;
+
+                              // ✅ Clamp percentage to 0-100
+                              if (calculatedPercentage > 100) {
+                                calculatedPercentage = 100;
+                                amount =
+                                    totalAmountValue; // Set amount to max (100%)
+                                discountAmount.text = amount.toStringAsFixed(2);
+                              }
+
+                              discountPercentageController.text =
+                                  calculatedPercentage.toStringAsFixed(2);
+                            }
+
+                            // ✅ Update selectedDiscountType for your existing logic
+                            selectedDiscountType = '৳';
+                          } else {
+                            discountPercentageController.clear();
+                          }
+
+                          _isUpdatingFromAmount = false;
+                          _recalculatePayment();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
 
                 // Discount row with % field and amount field
- 
+
                 const SizedBox(height: 10),
 
                 Row(
@@ -1165,7 +983,7 @@ void _recalculatePayment() {
 
                     int userId = int.parse(userIdStr);
                     //int customerId = selectedCustomer?.id ??
-                        0; // from your selected customer object
+                    0; // from your selected customer object
                     int voucherPerson = selectedBillPersonData?.id ?? 0;
                     String voucherNumber = billController.text.trim();
                     String voucherDate =
@@ -1177,30 +995,28 @@ void _recalculatePayment() {
                     String paymentForm =
                         receivedToValue; // adapt this accordingly
                     int accountId = selectedAccountId ?? 0;
-                    int paymentTo = selectedCustomer!.id; //selectedAccountId ?? 0; // or payment to id
-                     
-                          
-                    String percent =
-                        discountPercentageController.text; // "%", "percent", or "flat", adjust as needed
+                    int paymentTo = selectedCustomer!
+                        .id; //selectedAccountId ?? 0; // or payment to id
+
+                    String percent = discountPercentageController
+                        .text; // "%", "percent", or "flat", adjust as needed
                     //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
                     double paymentAmt =
                         double.tryParse(paymentAmount.text) ?? 0;
                     double discountAmt =
                         double.tryParse(discountAmount.text) ?? 0;
-                    String notes = 'notes'; // from your input
+                    String notes = noteController.text; // from your input
 
-                    // List<VoucherItem> voucherItems = [
-                    //   VoucherItem(
-                    //       salesId: "57", amount: totalAmt.toStringAsFixed(2)),
-                    //   // you can dynamically add items here from your form
-                    // ];
+                    // Replace this section in your Save button onPressed method:
 
                     final customerProvider =
                         Provider.of<CustomerProvider>(context, listen: false);
+
                     List<VoucherItem> voucherItems = [];
 
+                    // ✅ FIXED: Use paymentVouchers instead of receivedVouchers
                     for (int i = 0;
-                        i < customerProvider.receivedVouchers.length;
+                        i < customerProvider.paymentVouchers.length;
                         i++) {
                       final PaymentVoucherCustomer invoice =
                           customerProvider.paymentVouchers[i];
@@ -1216,8 +1032,24 @@ void _recalculatePayment() {
                             salesId: invoice.id.toString(),
                             amount: amount.toStringAsFixed(2),
                           ));
+
+                          // ✅ Debug print to verify data
+                          debugPrint(
+                              'Adding Voucher Item → sales_id: ${invoice.id}, amount: ${amount.toStringAsFixed(2)}');
                         }
                       }
+                    }
+
+// ✅ Add validation before API call
+                    if (voucherItems.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                              "Please enter payment amounts for at least one invoice."),
+                          backgroundColor: Colors.orange,
+                        ),
+                      );
+                      return; // Don't proceed with API call
                     }
 
                     final request = PaymentVoucherRequest(
@@ -1243,11 +1075,25 @@ void _recalculatePayment() {
                     bool success = await provider.storePaymentVoucher(request);
 
                     if (success) {
+                      // ✅ Clear payment fields
+                      receiptControllers
+                          .clear(); // Clear all TextEditingControllers
+
+                      // ✅ Clear selected customer in provider
+                     customerProvider.clearSelectedCustomer();
+                      customerProvider.paymentVouchers
+                          .clear(); // Clear the voucher list
+
+                      // ✅ Notify listeners so UI updates
+                      customerProvider.notifyListeners();
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content:
-                                Text("Payment voucher saved successfully!")),
+                            backgroundColor: Colors.green,
+                            content: Text(
+                                "Successfully, Payment voucher saved successfully!")),
                       );
+
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -1256,7 +1102,8 @@ void _recalculatePayment() {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text("Failed to save payment voucher.")),
+                            backgroundColor: Colors.red,
+                            content: Text("Failed, to save payment voucher.")),
                       );
                     }
                   },

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
-import 'package:cbook_dt/common/item_dropdown_custom.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
@@ -441,7 +440,6 @@ class LayoutState extends State<Layout> {
                                                                           const SuppliersCreate()));
                                                         }),
 
-                                                        
                                                     // Consumer<CustomerProvider>(
                                                     //   builder: (context,
                                                     //       customerProvider,
@@ -478,39 +476,39 @@ class LayoutState extends State<Layout> {
                                                     //                   -1)
                                                     //             Row(
                                                     //               children: [
-                                                                    // Text(
-                                                                    //   "${customerProvider.selectedCustomer!.type == 'customer' ? 'Receivable' : 'Payable'}: ",
-                                                                    //   style:
-                                                                    //       TextStyle(
-                                                                    //     fontSize:
-                                                                    //         10,
-                                                                    //     fontWeight:
-                                                                    //         FontWeight.bold,
-                                                                    //     color: customerProvider.selectedCustomer!.type ==
-                                                                    //             'customer'
-                                                                    //         ? Colors.green
-                                                                    //         : Colors.red,
-                                                                    //   ),
-                                                                    // ),
-                                                                    // Padding(
-                                                                    //   padding: const EdgeInsets
-                                                                    //       .only(
-                                                                    //       top:
-                                                                    //           2.0),
-                                                                    //   child:
-                                                                    //       Text(
-                                                                    //     "৳ ${customerProvider.selectedCustomer!.due.toStringAsFixed(2)}",
-                                                                    //     style:
-                                                                    //         const TextStyle(
-                                                                    //       fontSize:
-                                                                    //           10,
-                                                                    //       fontWeight:
-                                                                    //           FontWeight.bold,
-                                                                    //       color:
-                                                                    //           Colors.black,
-                                                                    //     ),
-                                                                    //   ),
-                                                                    // ),
+                                                    // Text(
+                                                    //   "${customerProvider.selectedCustomer!.type == 'customer' ? 'Receivable' : 'Payable'}: ",
+                                                    //   style:
+                                                    //       TextStyle(
+                                                    //     fontSize:
+                                                    //         10,
+                                                    //     fontWeight:
+                                                    //         FontWeight.bold,
+                                                    //     color: customerProvider.selectedCustomer!.type ==
+                                                    //             'customer'
+                                                    //         ? Colors.green
+                                                    //         : Colors.red,
+                                                    //   ),
+                                                    // ),
+                                                    // Padding(
+                                                    //   padding: const EdgeInsets
+                                                    //       .only(
+                                                    //       top:
+                                                    //           2.0),
+                                                    //   child:
+                                                    //       Text(
+                                                    //     "৳ ${customerProvider.selectedCustomer!.due.toStringAsFixed(2)}",
+                                                    //     style:
+                                                    //         const TextStyle(
+                                                    //       fontSize:
+                                                    //           10,
+                                                    //       fontWeight:
+                                                    //           FontWeight.bold,
+                                                    //       color:
+                                                    //           Colors.black,
+                                                    //     ),
+                                                    //   ),
+                                                    // ),
                                                     //               ],
                                                     //             ),
                                                     //       ],
@@ -1314,7 +1312,7 @@ class LayoutState extends State<Layout> {
                           //FieldPortion(),
 
                           ////Note
-                          
+
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1384,8 +1382,6 @@ class LayoutState extends State<Layout> {
                                 ),
                             ],
                           ),
-
-                          
 
                           /// ===========>  amount , discount, total amount ====>
                           Padding(
@@ -1975,27 +1971,64 @@ class LayoutState extends State<Layout> {
 
                             // 👉 Check: if sales type is credit but no customer selected
 
-                            if (controller.purchaseItem.isEmpty ||
-                                billController.text.isEmpty) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  'No Item Added or no bill number.',
-                                ),
-                                backgroundColor: Colors.red,
-                              ));
+                            // if (controller.purchaseItem.isEmpty ) {
+                            //   ScaffoldMessenger.of(context)
+                            //       .showSnackBar(const SnackBar(
+                            //     content: Text(
+                            //       'No Item Added.',
+                            //     ),
+                            //     backgroundColor: Colors.red,
+                            //   ),);
 
-                              ///check cotomer id have.
-                              if (!controller.isCash &&
-                                  selectedCustomer == null) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                  content: Text(
-                                      'Please select a customer for credit sales.'),
+                            //   ///check cotomer id have.
+                            //   if (!controller.isCash &&
+                            //       selectedCustomer == null) {
+                            //     ScaffoldMessenger.of(context)
+                            //         .showSnackBar(const SnackBar(
+                            //       content: Text(
+                            //           'Please select a customer for credit sales.'),
+                            //       backgroundColor: Colors.red,
+                            //     ));
+                            //     return;
+                            //   }
+                            // } else {
+                            //   bool isSuccess = await controller.storePurchase(
+                            //     context,
+                            //     date: date,
+                            //     amount: amount,
+                            //     customerId: controller.isCash
+                            //         ? "cash"
+                            //         : Provider.of<CustomerProvider>(context,
+                            //                     listen: false)
+                            //                 .selectedCustomer
+                            //                 ?.id
+                            //                 .toString() ??
+                            //             "cash",
+                            //     saleType: controller.isCash ? "cash" : "credit",
+                            //     discount: discount,
+                            //     note: controller.noteController.text,
+                            //     billNo: billController.text,
+                            //     total: total,
+                            //     paymnetAmount: payment,
+                            //     billPersonId: selectedBillPersonData!.id,
+                            //   );
+
+                            if (controller.purchaseItem.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('No Item Added.'),
                                   backgroundColor: Colors.red,
-                                ));
-                                return;
-                              }
+                                ),
+                              );
+                            } else if (!controller.isCash &&
+                                selectedCustomer == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Please select a customer for credit purchase.'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
                             } else {
                               bool isSuccess = await controller.storePurchase(
                                 context,
@@ -2097,13 +2130,14 @@ class LayoutState extends State<Layout> {
     final fetchStockQuantity =
         Provider.of<AddItemProvider>(context, listen: false);
 
-    Future.microtask(() =>
-        Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr());
+    // Future.microtask(() =>
+    //     Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr());
 
-    final controller = Provider.of<PurchaseController>(context, listen: false);
-    controller.dialogtotalController();
+    // final controller = Provider.of<PurchaseController>(context, listen: false);
 
-    final TextEditingController itemController = TextEditingController();
+    // controller.dialogtotalController();
+
+    // final TextEditingController itemController = TextEditingController();
 
     showDialog(
       context: context,
