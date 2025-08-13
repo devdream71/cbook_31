@@ -27,6 +27,7 @@ class PurchaseData {
   final String? type;
   final int? userId;
   final int? customerId;
+   final int? billPersonId; 
   final String? billNumber;
   final String? purchaseDate;
   final dynamic discount;
@@ -38,6 +39,7 @@ class PurchaseData {
     this.type,
     this.userId,
     this.customerId,
+    this.billPersonId,
     this.billNumber,
     this.purchaseDate,
     this.discount,
@@ -51,6 +53,7 @@ class PurchaseData {
       type: map['type'] ?? '',
       userId: map['user_id'] ?? 0,
       customerId: map['customer_id'] ?? 0,
+      billPersonId: map['bill_person_id'] ?? 0, 
       billNumber: map['bill_number'] ?? '',
       purchaseDate: map['pruchase_date'] ?? '',
       discount: map['discount'] ?? 0,

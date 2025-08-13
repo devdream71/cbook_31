@@ -92,15 +92,31 @@ class PurchaseController extends ChangeNotifier {
   bool isCash = true;
   bool isReceived = true;
 
+  // double get subtotalItemDiolog => _subtotalItemDialog;
+
+  // ✅ Add setter for subtotalItemDiolog
   double get subtotalItemDiolog => _subtotalItemDialog;
-
-
-  void dialogtotalController() {
-    if (_isListenerAttached) return;
-    mrpController.addListener(_dialogSubtotal);
-    qtyController.addListener(_dialogSubtotal);
-    _isListenerAttached = true;
+  set subtotalItemDiolog(double value) {
+    _subtotalItemDialog = value;
+    notifyListeners();
   }
+
+
+  // void dialogtotalController() {
+  //   if (_isListenerAttached) return;
+  //   mrpController.addListener(_dialogSubtotal);
+  //   qtyController.addListener(_dialogSubtotal);
+  //   _isListenerAttached = true;
+  // }
+
+  // ✅ FIXED: Remove the problematic dialogtotalController method and replace with this
+  void dialogtotalController() {
+    final price = double.tryParse(mrpController.text) ?? 0.0;
+    final qty = double.tryParse(qtyController.text) ?? 0.0;
+    _subtotalItemDialog = price * qty;
+    notifyListeners();
+  }
+
 
   void _dialogSubtotal() {
     final price = double.tryParse(mrpController.text) ?? 0;
@@ -109,17 +125,65 @@ class PurchaseController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // void clearFields() {
+  //   mrpController.clear();
+  //   qtyController.clear();
+  //   _subtotalItemDialog = 0.0;
+  //   _isListenerAttached = false;
+  // }
+
+  // FIXED: Update clearFields method
   void clearFields() {
     mrpController.clear();
     qtyController.clear();
     _subtotalItemDialog = 0.0;
-    _isListenerAttached = false;
+    selectedUnit = null;
+    selectedUnitIdWithName = "";
+    
+    // Remove listeners if they exist
+    if (_isListenerAttached) {
+      mrpController.removeListener(_dialogSubtotal);
+      qtyController.removeListener(_dialogSubtotal);
+      _isListenerAttached = false;
+    }
+    
+    notifyListeners();
   }
+
+   // ✅ Add method to reset dialog state when item changes
+  void resetDialogState() {
+  mrpController.clear();
+  qtyController.clear();
+  _subtotalItemDialog = 0.0;
+  selectedUnit = null;
+  selectedUnitIdWithName = "";
+  // ✅ DON'T clear seletedItemName here - only clear it after adding item
+  // seletedItemName = null; // Remove this line
+  notifyListeners();
+}
+
+
+// Add this new method to clear everything after adding item:
+ void clearDialogAfterAdd() {
+  mrpController.clear();
+  qtyController.clear();
+  _subtotalItemDialog = 0.0;
+  selectedUnit = null;
+  selectedUnitIdWithName = "";
+  seletedItemName = null;
+  
+  // ✅ DON'T clear customer-related data here
+  // codeController.clear(); // This might be clearing customer field
+  
+  notifyListeners();
+}
 
   void updateUnitIds(List<String> units) {
     unitIdsList = units;
     notifyListeners();
   }
+
+  
 
 // Ensure discount input is controlled
 
@@ -587,39 +651,47 @@ void updateManualPayment(String value) {
     }
   }
 
-  addCreditItem() {
-    debugPrint(
-        "Add Item Clicked $selectedCategory $selectedSubCategory $seletedItemName ${codeController.text} ${mrpController.text} ${qtyController.text} ${amountController.text}");
+  
 
-    itemsCredit.add(ItemModel(
-      category: selectedCategory ?? "Category1",
-      subCategory: selectedSubCategory ?? "Sub Category1",
-      itemName: seletedItemName ?? "I",
-      unit: selectedUnit ?? "PC",
-      //discount: discountController.text,
-      itemCode: codeController.text,
-      mrp: mrpController.text,
-      quantity: qtyController.text,
-      total: amountController.text,
-    ));
-    purchaseItem.add(PurchaseItemModel(
-        itemId: selcetedItemId,
-        price: mrpController.value.text,
-        qty: qtyController.value.text,
-        subTotal: (double.parse(mrpController.value.text) *
-                double.parse(qtyController.value.text))
-            .toString(),
-        unitId: selectedUnitIdWithName));
+   // ✅ Update addCreditItem with same debugging:
+ addCreditItem() {
+  debugPrint("=== ADDING CREDIT ITEM ===");
+  debugPrint("seletedItemName: '$seletedItemName'");
 
-    codeController.clear();
-    mrpController.clear();
-    qtyController.clear();
-    amountController.clear();
-    unitController.clear();
-    priceController.clear();
+  double price = double.tryParse(mrpController.text) ?? 0.0;
+  double quantity = double.tryParse(qtyController.text) ?? 0.0;
+  double calculatedTotal = price * quantity;
 
-    notifyListeners();
-  }
+  String itemNameToAdd = seletedItemName ?? "Unknown Item";
+
+  itemsCredit.add(ItemModel(
+    category: selectedCategory ?? "Category1",
+    subCategory: selectedSubCategory ?? "Sub Category1",
+    itemName: itemNameToAdd,
+    unit: selectedUnit ?? "PC",
+    itemCode: codeController.text,
+    mrp: mrpController.text,
+    quantity: qtyController.text,
+    total: calculatedTotal.toStringAsFixed(2),
+  ));
+
+  purchaseItem.add(PurchaseItemModel(
+      itemId: selcetedItemId,
+      price: mrpController.text,
+      qty: qtyController.text,
+      subTotal: calculatedTotal.toString(),
+      unitId: selectedUnitIdWithName));
+
+  // ✅ Only clear item-related controllers, NOT customer field
+  // codeController.clear(); // Don't clear this as it might be the customer field
+  mrpController.clear();
+  qtyController.clear();
+  amountController.clear();
+  unitController.clear();
+  priceController.clear();
+
+  notifyListeners();
+}
 
   void removeCreditItem(int index) {
     // Remove the item from the itemsCash list
@@ -679,44 +751,48 @@ void updateManualPayment(String value) {
     notifyListeners();
   }
 
-  addCashItem() {
-    debugPrint(
-        "Add Item Clicked $selectedUnit $amountController $selectedCategory $selectedSubCategory $seletedItemName ${codeController.text} ${mrpController.text} ${qtyController.text} ${amountController.text}");
+ 
+   
+// ✅ MOST IMPORTANT: Update your addCashItem method with debugging:
+ addCashItem() {
+  debugPrint("=== ADDING CASH ITEM ===");
+  debugPrint("seletedItemName: '$seletedItemName'");
 
-    itemsCash.add(ItemModel(
-      category: selectedCategory ?? "Category1",
-      subCategory: selectedSubCategory ?? "Sub Category1",
-      itemName: seletedItemName ?? "Item1",
-      // unit: selectedUnit ??
-      //     (unitIdsList.isNotEmpty ? unitIdsList.first : "DC"), // ✅ fallback
-      unit: selectedUnit ?? "N/A",
-      itemCode: codeController.text,
-      mrp: mrpController.text,
-      quantity: qtyController.text,
-      total: amountController.text,
-      //discount: discountController.text,
-    ));
+  double price = double.tryParse(mrpController.text) ?? 0.0;
+  double quantity = double.tryParse(qtyController.text) ?? 0.0;
+  double calculatedTotal = price * quantity;
 
-    purchaseItem.add(PurchaseItemModel(
-      itemId: selcetedItemId,
-      price: mrpController.value.text,
-      qty: qtyController.value.text,
-      subTotal: (double.parse(mrpController.value.text) *
-              double.parse(qtyController.value.text))
-          .toString(),
-      unitId: selectedUnitIdWithName,
-    ));
+  String itemNameToAdd = seletedItemName ?? "Unknown Item";
 
-    // Clear controllers
-    codeController.clear();
-    mrpController.clear();
-    qtyController.clear();
-    amountController.clear();
-    unitController.clear();
-    priceController.clear();
+  itemsCash.add(ItemModel(
+    category: selectedCategory ?? "Category1",
+    subCategory: selectedSubCategory ?? "Sub Category1",
+    itemName: itemNameToAdd,
+    unit: selectedUnit ?? "N/A",
+    itemCode: codeController.text,
+    mrp: mrpController.text,
+    quantity: qtyController.text,
+    total: calculatedTotal.toStringAsFixed(2),
+  ));
 
-    notifyListeners();
-  }
+  purchaseItem.add(PurchaseItemModel(
+    itemId: selcetedItemId,
+    price: mrpController.text,
+    qty: qtyController.text,
+    subTotal: calculatedTotal.toString(),
+    unitId: selectedUnitIdWithName,
+  ));
+
+  // ✅ Only clear item-related controllers, NOT customer field
+  // codeController.clear(); // Don't clear this as it might be the customer field
+  mrpController.clear();
+  qtyController.clear();
+  amountController.clear();
+  unitController.clear();
+  priceController.clear();
+
+  notifyListeners();
+}
 
   // Remove Cash Item
 

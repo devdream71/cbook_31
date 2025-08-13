@@ -16,8 +16,8 @@ class BillPersonModel {
     this.email,
     required this.phone,
     this.designationId,
-    required this.avatar,
-    required this.date,
+     this.avatar,
+     this.date,
     required this.status,
   });
 

@@ -3,13 +3,13 @@ class ItemsModel {
   final int  ? userId;
   final String name;
   final String? unitId;
-  final int? unitQty;
+  final dynamic unitQty;
   final dynamic openingStock;
-  final int? secondaryUnitId;
+  final dynamic secondaryUnitId;
   final String? openingDate;
   final int? status;
   final String? image;
-  final int? secondaryUnitQty;
+  final dynamic secondaryUnitQty;
   final String? createdAt;
   final String? updatedAt;
   final dynamic salesPrice;
@@ -17,8 +17,8 @@ class ItemsModel {
   final dynamic mrp;
   final dynamic totalQty;
   final dynamic avarageRate;
-  final int? itemCategoryId;
-  final int? itemSubCategoryId;
+  final dynamic itemCategoryId;
+  final dynamic itemSubCategoryId;
 
   // NEW FIELDS
   final dynamic openingPrice;
@@ -31,8 +31,7 @@ class ItemsModel {
   final dynamic brokerPrice;
   final dynamic ecommercePrice;
   final dynamic outlinePrice;
-  final String? description;
-
+  final dynamic description;
   final List<PurchaseDetailModel>? purchaseDetails;
 
   ItemsModel({
@@ -118,24 +117,24 @@ class ItemsModel {
 
 class PurchaseDetailModel {
   final int id;
-  final int purchaseId;
-  final String? purchaseDetailsId;
+  final dynamic purchaseId;
+  final dynamic purchaseDetailsId;
   final String type;
   final String purchaseDate;
-  final int itemId;
-  final String qty;
-  final String rawQty;
-  final int unitId;
-  final String price;
-  final String? discountPercentage;
-  final String? discountAmount;
-  final int? taxId;
-  final String? taxPercent;
-  final String? taxAmount;
-  final String subTotal;
-  final String? salesQty;
-  final String? returnQty;
-  final String? description;
+  final dynamic itemId;
+  final dynamic qty;
+  final dynamic rawQty;
+  final dynamic unitId;
+  final dynamic price;
+  final dynamic discountPercentage;
+  final dynamic discountAmount;
+  final dynamic taxId;
+  final dynamic taxPercent;
+  final dynamic taxAmount;
+  final dynamic subTotal;
+  final dynamic salesQty;
+  final dynamic returnQty;
+  final dynamic description;
   final String? deletedAt;
   final String createdAt;
   final String updatedAt;
