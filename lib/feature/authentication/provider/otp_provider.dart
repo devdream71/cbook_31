@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/authentication/model/otp_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,7 +16,7 @@ class VerificationProvider with ChangeNotifier {
     notifyListeners();
 
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/verification/code?user_id=$userId&code=$code');
+        '${AppUrl.baseurl}verification/code?user_id=$userId&code=$code');
     try {
       final response = await http.post(url);
       final data = json.decode(response.body);

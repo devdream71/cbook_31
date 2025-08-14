@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class UnitProvider extends ChangeNotifier {
@@ -15,10 +17,17 @@ class UnitProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    const String apiUrl = 'https://commercebook.site/api/v1/units';
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+     final String apiUrl = '${AppUrl.baseurl}units';
 
     try {
-      final response = await http.get(Uri.parse(apiUrl));
+      final response = await http.get(Uri.parse(apiUrl), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);

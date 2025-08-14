@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/authentication/presentation/forgot_password/model/forget_password_response_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,7 +12,7 @@ class ForgotPasswordProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final url = Uri.parse("https://commercebook.site/api/v1/forgot/password?email=$email");
+    final url = Uri.parse("${AppUrl.baseurl}forgot/password?email=$email");
 
     try {
       final request = http.Request('POST', url);
@@ -45,7 +46,7 @@ class ForgotPasswordProvider with ChangeNotifier {
   required String confirmed,
 }) async {
   final url = Uri.parse(
-    'https://commercebook.site/api/v1/forgot/password/update'
+    '${AppUrl.baseurl}forgot/password/update'
     '?user_id=$userId&email=$email&password=$password&confirmed=$confirmed',
   );
 

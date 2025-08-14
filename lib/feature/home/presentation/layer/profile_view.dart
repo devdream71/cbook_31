@@ -62,19 +62,7 @@ class _ProfileViewState extends State<ProfileView> {
       ),
       body: Column(
         children: [
-          // ElevatedButton(
-          //   onPressed: () {},
-          //   style: ElevatedButton.styleFrom(
-          //       backgroundColor: AppColors.primaryColor,
-          //       foregroundColor: AppColors.sfWhite,
-          //       shape: const RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.all(Radius.circular(8)),
-          //       )),
-          //   child: const Text(
-          //     'Complete Profile',
-          //     style: TextStyle(fontWeight: FontWeight.bold),
-          //   ),
-          // ),
+          
           Consumer<ProfileProvider>(
             builder: (context, provider, child) {
               if (provider.isLoading) {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/item/model/item_deatils_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -22,10 +23,17 @@ class ItemProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final url = Uri.parse("https://commercebook.site/api/v1/item/edit/$id");
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+    final url = Uri.parse("${AppUrl.baseurl}item/edit/$id");
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         item = ItemDetailsModel.fromJson(jsonData['data']);
@@ -132,16 +140,20 @@ Future<void> saveItem(
   String? selectedPurchasePriceOption,
   String? selectedMrpPriceOption,
 }) async {
-  const String url = "https://commercebook.site/api/v1/item/store";
+    String url = "${AppUrl.baseurl}item/store";
 
   debugPrint('Selected Category ID: $selectedCategoryId');
   debugPrint('Selected Subcategory ID: $selectedSubCategoryId');
+
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
 
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userId = prefs.getInt('user_id')?.toString() ?? '1';
 
-    var request = http.MultipartRequest("POST", Uri.parse(url));
+    var request = http.MultipartRequest("POST", Uri.parse(url), );
 
     String formattedDate;
     try {
@@ -220,6 +232,7 @@ Future<void> saveItem(
       ));
     }
 
+    request.headers['Authorization'] = '$token';
     request.headers['Accept'] = 'application/json';
     request.headers['Content-Type'] = 'multipart/form-data';
 

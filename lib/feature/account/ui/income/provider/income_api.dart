@@ -10,8 +10,10 @@ import 'package:cbook_dt/feature/account/ui/income/model/income_item.dart';
 import 'package:cbook_dt/feature/account/ui/income/model/income_list_model.dart';
 import 'package:cbook_dt/feature/account/ui/income/model/recived_form_model.dart';
 import 'package:cbook_dt/feature/account/ui/income/model/recived_item.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class IncomeProvider with ChangeNotifier {
   IncomeListModel? incomeModel;
@@ -77,15 +79,20 @@ class IncomeProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    const url = 'https://commercebook.site/api/v1/income/list';
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    final url = '${AppUrl.baseurl}income/list';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url), headers: {
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         incomeModel = IncomeListModel.fromJson(data);
         totalIncome = incomeModel?.totalIncome ?? '0.00';
-        
       }
     } catch (e) {
       debugPrint('Error: $e');
@@ -95,8 +102,6 @@ class IncomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-
   ///recived form
   Future<void> fetchReceiptFromList() async {
     debugPrint('=== Starting fetchReceiptFromList ===');
@@ -104,10 +109,16 @@ class IncomeProvider with ChangeNotifier {
     isReceiptLoading = true;
     notifyListeners();
 
-    const url = 'https://commercebook.site/api/v1/income/receive/form/list';
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    final url = '${AppUrl.baseurl}income/receive/form/list';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url), headers: {
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       debugPrint('Response Status Code: ${response.statusCode}');
       debugPrint('Response Body: ${response.body}');
 
@@ -141,9 +152,6 @@ class IncomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  
-  
-  
   /// fetch account
   Future<void> fetchAccounts(String type) async {
     debugPrint('=== Starting fetchAccounts for type: $type ===');
@@ -151,13 +159,18 @@ class IncomeProvider with ChangeNotifier {
     isAccountLoading = true;
     notifyListeners();
 
-    final url =
-        'https://commercebook.site/api/v1/receive/form/account?type=$type';
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    final url = '${AppUrl.baseurl}receive/form/account?type=$type';
     debugPrint('API URL: $url');
 
     try {
       debugPrint('Making API request...');
-      final response = await http.post(Uri.parse(url));
+      final response = await http.post(Uri.parse(url), headers: {
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
 
       debugPrint('Response Status Code: ${response.statusCode}');
       debugPrint('Response Body: ${response.body}');
@@ -207,57 +220,69 @@ class IncomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  ///acount type list bas on recived to , cash or bank
+  Map<int, String> _accountNameMap = {};
 
-    
-  
+  Map<int, String> get accountNameMap => _accountNameMap;
 
-   
-   ///acount type list bas on recived to , cash or bank
-   Map<int, String> _accountNameMap = {};
+  /// Fetch accounts for both bank and cash once (or based on demand)
+  Future<void> fetchAccountNames() async {
+     
+         final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
 
-   Map<int, String> get accountNameMap => _accountNameMap;
 
-/// Fetch accounts for both bank and cash once (or based on demand)
-Future<void> fetchAccountNames() async {
-  try {
-    const bankUrl = 'https://commercebook.site/api/v1/receive/form/account?type=bank';
-    const cashUrl = 'https://commercebook.site/api/v1/receive/form/account?type=cash';
+    try {
+      final bankUrl = '${AppUrl.baseurl}receive/form/account?type=bank';
+      final cashUrl = '${AppUrl.baseurl}receive/form/account?type=cash';
 
-    final bankResponse = await http.post(Uri.parse(bankUrl));
-    final cashResponse = await http.post(Uri.parse(cashUrl));
+      final bankResponse = await http.post(Uri.parse(bankUrl), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
+      final cashResponse = await http.post(Uri.parse(cashUrl), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
-    if (bankResponse.statusCode == 200) {
-      final data = json.decode(bankResponse.body);
-      final accounts = List<AccountTypeNameModel>.from(data['data'].map((e) => AccountTypeNameModel.fromJson(e)));
-      for (var acc in accounts) {
-        _accountNameMap[acc.id] = acc.name;
+      if (bankResponse.statusCode == 200) {
+        final data = json.decode(bankResponse.body);
+        final accounts = List<AccountTypeNameModel>.from(
+            data['data'].map((e) => AccountTypeNameModel.fromJson(e)));
+        for (var acc in accounts) {
+          _accountNameMap[acc.id] = acc.name;
+        }
       }
+
+      if (cashResponse.statusCode == 200) {
+        final data = json.decode(cashResponse.body);
+        final accounts = List<AccountTypeNameModel>.from(
+            data['data'].map((e) => AccountTypeNameModel.fromJson(e)));
+        for (var acc in accounts) {
+          _accountNameMap[acc.id] = acc.name;
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching accounts: $e');
     }
 
-    if (cashResponse.statusCode == 200) {
-      final data = json.decode(cashResponse.body);
-      final accounts = List<AccountTypeNameModel>.from(data['data'].map((e) => AccountTypeNameModel.fromJson(e)));
-      for (var acc in accounts) {
-        _accountNameMap[acc.id] = acc.name;
-      }
-    }
-  } catch (e) {
-    debugPrint('Error fetching accounts: $e');
+    notifyListeners();
   }
-
-  notifyListeners();
-}
-
-
-
-
 
   ///delete income. ====>>>>>>><<<<<<
   Future<void> deleteIncome(String id) async {
-    final url = 'https://commercebook.site/api/v1/income/remove?id=$id';
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+    final url = '${AppUrl.baseurl}income/remove?id=$id';
 
     try {
-      final response = await http.post(Uri.parse(url));
+      final response = await http.post(Uri.parse(url), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       if (response.statusCode == 200) {
         incomeModel?.data
             .removeWhere((income) => income.id.toString() == id); // ✅ Correct
@@ -283,7 +308,7 @@ Future<void> fetchAccountNames() async {
     required List<IncomeItem> incomeItems,
     required String billPersonID,
   }) async {
-    final url = Uri.parse('https://commercebook.site/api/v1/income/store?'
+    final url = Uri.parse('${AppUrl.baseurl}income/store?'
         'user_id=$userId&invoice_no=$invoiceNo&date=$date&received_to=$receivedTo&account=$account&total_amount=$totalAmount&notes=$notes&status=$status&bill_person_id=$billPersonID');
 
     final body = IncomeStoreRequest(incomeItems: incomeItems).toJson();
@@ -291,11 +316,16 @@ Future<void> fetchAccountNames() async {
     debugPrint(url.toString());
     debugPrint(body.toString());
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": "Bearer $token",
         },
         body: jsonEncode(body),
       );
@@ -331,7 +361,7 @@ Future<void> fetchAccountNames() async {
     //required int status,
     required List<IncomeItem> incomeItems,
   }) async {
-    final url = Uri.parse('https://commercebook.site/api/v1/income/update?'
+    final url = Uri.parse('${AppUrl.baseurl}income/update?'
         'id=$incomeId&user_id=$userId&invoice_no=$invoiceNo&date=$date&received_to=$receivedTo&account=$account&total_amount=$totalAmount&notes=$notes');
 
     final body = IncomeStoreRequest(incomeItems: incomeItems).toJson();
@@ -340,11 +370,17 @@ Future<void> fetchAccountNames() async {
     debugPrint('URL: $url');
     debugPrint('Body: ${jsonEncode(body)}');
 
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": "Bearer $token",
+
         },
         body: jsonEncode(body),
       );
@@ -374,9 +410,17 @@ Future<void> fetchAccountNames() async {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http.get(
-        Uri.parse('https://commercebook.site/api/v1/income/edit/$id'),
+        Uri.parse('${AppUrl.baseurl}income/edit/$id'),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        }
       );
 
       if (response.statusCode == 200) {
@@ -414,9 +458,18 @@ Future<void> fetchAccountNames() async {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
-      final response = await http.get(Uri.parse(
-          'https://commercebook.site/api/v1/income/receive/form/list'));
+      final response = await http
+          .get(Uri.parse('${AppUrl.baseurl}income/receive/form/list'),
+          headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        }
+          );
 
       if (response.statusCode == 200) {
         final result = ReceiveFromModel.fromJson(json.decode(response.body));

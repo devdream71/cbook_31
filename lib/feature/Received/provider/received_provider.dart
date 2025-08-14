@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/Received/model/create_recived_voucher.dart';
 import 'package:cbook_dt/feature/Received/model/received_list_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; 
 
@@ -63,7 +64,7 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
   notifyListeners();
 
   try {
-    final url = Uri.parse('https://commercebook.site/api/v1/receive-vouchers');
+    final url = Uri.parse('${AppUrl.baseurl}receive-vouchers');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -136,7 +137,7 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
   ///delete payment voucher
   Future<bool> deleteRecivedVoucher(String id) async {
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/receive-vouchers/removes?id=$id');
+        '${AppUrl.baseurl}receive-vouchers/removes?id=$id');
     try {
       final response = await http.post(url);
       debugPrint('DELETE RESPONSE: ${response.body}');
@@ -198,7 +199,7 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
   ///get by id for update.
   Future<Map<String, dynamic>?> fetchReceiveVoucherById(String id) async {
     final url =
-        Uri.parse('https://commercebook.site/api/v1/receive-vouchers/edit/$id');
+        Uri.parse('${AppUrl.baseurl}receive-vouchers/edit/$id');
 
     try {
       final response = await http.get(url);

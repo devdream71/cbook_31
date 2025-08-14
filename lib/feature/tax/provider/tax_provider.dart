@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/tax/model/tax_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TaxProvider with ChangeNotifier {
   List<TaxModel> _taxList = [];
@@ -17,10 +19,17 @@ class TaxProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = Uri.parse('https://commercebook.site/api/v1/tax');
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+    final url = Uri.parse('${AppUrl.baseurl}tax');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List<dynamic> taxesJson = data['data'];
@@ -47,11 +56,18 @@ class TaxProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/tax/store?user_id=$userId&name=$name&percent=$percent&status=$status');
+        '${AppUrl.baseurl}tax/store?user_id=$userId&name=$name&percent=$percent&status=$status');
 
     try {
-      final response = await http.post(url);
+      final response = await http.post(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final newTax = TaxModel.fromJson(data['data']);
@@ -76,10 +92,17 @@ class TaxProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = Uri.parse('https://commercebook.site/api/v1/tax/remove/$id');
+    final url = Uri.parse('${AppUrl.baseurl}tax/remove/$id');
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
 
     try {
-      final response = await http.post(url); // or POST if your API requires it
+      final response = await http.post(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        }); // or POST if your API requires it
       if (response.statusCode == 200) {
         _taxList.removeWhere((tax) => tax.id == id);
         notifyListeners();
@@ -102,10 +125,18 @@ class TaxProvider with ChangeNotifier {
 
   ///get tex by id
   Future<TaxModel?> getTaxById(int id) async {
-    final url = Uri.parse('https://commercebook.site/api/v1/tax/edit/$id');
+    final url = Uri.parse('${AppUrl.baseurl}tax/edit/$id');
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return TaxModel(
@@ -142,13 +173,20 @@ class TaxProvider with ChangeNotifier {
     };
 
     final uri = Uri.https(
-      'commercebook.site',
-      '/api/v1/tax/update',
+      AppUrl.baseurl,
+      'tax/update',
       query,
     );
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
-      final response = await http.post(uri);
+      final response = await http.post(uri, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       debugPrint("📤 Request URL: $uri");
       debugPrint("📥 Status Code: ${response.statusCode}");

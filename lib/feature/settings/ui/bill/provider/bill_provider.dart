@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/model/designation_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BillPersonProvider with ChangeNotifier {
   List<BillPersonModel> _billPersons = [];
@@ -18,10 +20,25 @@ class BillPersonProvider with ChangeNotifier {
     errorMessage = '';
     notifyListeners();
 
-    final url = Uri.parse('https://commercebook.site/api/v1/bill/person/list');
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        errorMessage = 'No token found. Please login again.';
+        isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+    final url = Uri.parse('${AppUrl.baseurl}bill/person/list');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url,
+      headers: {
+         "Authorization": "Bearer $token",
+          "Accept": "application/json",
+      }
+      );
       debugPrint('API Response: ${response.body}');
 
       if (response.statusCode == 200) {

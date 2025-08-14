@@ -5,6 +5,7 @@ import 'package:cbook_dt/feature/purchase_return/model/purchase_return_item_deta
 import 'package:cbook_dt/feature/sales/model/stock_response.dart';
 import 'package:cbook_dt/feature/sales/model/stock_response_purchase.dart';
 import 'package:cbook_dt/feature/sales_return/model/sales_return_history_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -166,9 +167,16 @@ class AddItemProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    const url = "https://commercebook.site/api/v1/items";
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+      final url = "${AppUrl.baseurl}items";
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       debugPrint("API response: ${response.body}");
 
       if (response.statusCode == 200) {
@@ -202,9 +210,17 @@ class AddItemProvider extends ChangeNotifier {
   
   /// unit show.
   Future<void> fetchUnits() async {
-    const url = "https://commercebook.site/api/v1/units";
+     final url = "${AppUrl.baseurl}units";
+
+         final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -228,10 +244,17 @@ class AddItemProvider extends ChangeNotifier {
   ////delete item. ===== >
   Future<bool> deleteItem(int itemId) async {
     final String deleteUrl =
-        "https://commercebook.site/api/v1/item/remove?id=$itemId";
+        "${AppUrl.baseurl}item/remove?id=$itemId";
+
+            final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
 
     try {
-      final response = await http.post(Uri.parse(deleteUrl));
+      final response = await http.post(Uri.parse(deleteUrl), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       debugPrint("Delete response: ${response.body}");
 
       if (response.statusCode == 200) {
@@ -263,8 +286,12 @@ class AddItemProvider extends ChangeNotifier {
   ///==> fetch stock quantity
   Future<void> fetchStockQuantity(String itemId) async {
     // Check if customer ID is available
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     String baseUrl =
-        'https://commercebook.site/api/v1/sales/stock/item/quantity?item_id=$itemId';
+        '${AppUrl.baseurl}sales/stock/item/quantity?item_id=$itemId';
     if (_selectedCustomerId != null && _selectedCustomerId!.isNotEmpty) {
       baseUrl += '&customer_id=$_selectedCustomerId';
     }
@@ -275,7 +302,10 @@ class AddItemProvider extends ChangeNotifier {
     final url = Uri.parse(baseUrl);
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -302,11 +332,19 @@ class AddItemProvider extends ChangeNotifier {
 
   ///====> purchase stoke quantity
   Future<void> fetchPurchaseStockQuantity(String itemId) async {
+
+       final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/purchase/stock/item/quantity/$itemId');
+        '${AppUrl.baseurl}purchase/stock/item/quantity/$itemId');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -339,13 +377,20 @@ class AddItemProvider extends ChangeNotifier {
     // _isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final String url =
         //"https://commercebook.site/api/v1/item/purchase/history/$itemId";
-        "https://commercebook.site/api/v1/item/purchase/history?customer_id=$selctedvalue&item_id=$itemId";
+        "${AppUrl.baseurl}item/purchase/history?customer_id=$selctedvalue&item_id=$itemId";
 
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url, ), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        } );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -385,12 +430,19 @@ class AddItemProvider extends ChangeNotifier {
     String userId = prefs.getInt('user_id')?.toString() ?? '';
 
     ///customer id should be dynamic
+    ///
+    ///    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
 
     final String url =
-        "https://commercebook.site/api/v1/item/sales/history?customer_id=$selectedCustomerID&item_id=$itemId";
+        "${AppUrl.baseurl}item/sales/history?customer_id=$selectedCustomerID&item_id=$itemId";
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url, ), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);

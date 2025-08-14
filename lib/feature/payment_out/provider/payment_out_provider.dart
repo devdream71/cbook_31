@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
 import 'package:cbook_dt/feature/payment_out/model/create_payment_out_model.dart';
 import 'package:cbook_dt/feature/payment_out/model/payment_out_list_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PaymentVoucherProvider with ChangeNotifier {
   List<PaymentVoucherModel> _vouchers = [];
@@ -26,10 +28,17 @@ class PaymentVoucherProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final url =
-          Uri.parse('https://commercebook.site/api/v1/payment-vouchers');
-      final response = await http.get(url);
+          Uri.parse('${AppUrl.baseurl}payment-vouchers');
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final extractedData = json.decode(response.body);
@@ -94,10 +103,17 @@ class PaymentVoucherProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final url = Uri.parse('https://commercebook.site/api/v1/bill/person/list');
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+    final url = Uri.parse('${AppUrl.baseurl}bill/person/list');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       debugPrint('Bill Person API Response: ${response.body}');
 
       if (response.statusCode == 200) {
@@ -126,10 +142,18 @@ class PaymentVoucherProvider with ChangeNotifier {
 
   ///delete payment voucher
   Future<bool> deletePaymentVoucher(String id) async {
+   
+       final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/payment-vouchers/removes?id=$id');
+        '${AppUrl.baseurl}payment-vouchers/removes?id=$id');
     try {
-      final response = await http.post(url);
+      final response = await http.post(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       debugPrint('DELETE RESPONSE: ${response.body}');
 
       if (response.statusCode == 200) {
@@ -150,6 +174,10 @@ class PaymentVoucherProvider with ChangeNotifier {
   Future<bool> storePaymentVoucher(PaymentVoucherRequest request) async {
     isLoading = true;
     notifyListeners();
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
 
     try {
       final uri = Uri.https(
@@ -174,6 +202,7 @@ class PaymentVoucherProvider with ChangeNotifier {
         uri,
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": "Bearer $token",
         },
         body: bodyJson,
       );
@@ -210,11 +239,18 @@ class PaymentVoucherProvider with ChangeNotifier {
 
   ///payment get by id for update.
   Future<Map<String, dynamic>?> fetchReceiveVoucherById(String id) async {
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     final url =
-        Uri.parse('https://commercebook.site/api/v1/payment-vouchers/edit/$id');
+        Uri.parse('${AppUrl.baseurl}payment-vouchers/edit/$id');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       debugPrint('Edit Voucher Response: ${response.body}');
 
       if (response.statusCode == 200) {
@@ -239,6 +275,10 @@ class PaymentVoucherProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       // Create query parameters for the URL
       final queryParams = {
@@ -261,6 +301,7 @@ class PaymentVoucherProvider with ChangeNotifier {
         'commercebook.site',
         '/api/v1/payment-vouchers/update',
         queryParams,
+        
       );
 
       // Create body with voucher_items
@@ -282,7 +323,9 @@ class PaymentVoucherProvider with ChangeNotifier {
 
       final response = await http.post(
         uri,
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json',
+        "Authorization": "Bearer $token",
+        },
         body: bodyJson,
       );
 

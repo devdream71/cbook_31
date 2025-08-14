@@ -24,13 +24,7 @@ class _CashInHandState extends State<CashInHand> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
-    // setState(() {
-    //   final cashInHandProvider =
-    //       Provider.of<CashInHandProvider>(context, listen: false);
-
-    //   final cashInHandSum = cashInHandProvider.amountSum;
-    // });
+ 
 
     return Scaffold(
         backgroundColor: AppColors.sfWhite,
@@ -72,14 +66,7 @@ class _CashInHandState extends State<CashInHand> {
                     padding: EdgeInsets.only(right: 8.0),
                     child: Row(
                       children: [
-                        // CircleAvatar(
-                        //     radius: 10,
-                        //     backgroundColor: Colors.white,
-                        //     child: Icon(
-                        //       Icons.add,
-                        //       size: 20,
-                        //       color: Colors.green,
-                        //     )),
+                         
 
                         SizedBox(
                           width: 10,

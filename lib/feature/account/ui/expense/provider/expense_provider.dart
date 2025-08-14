@@ -5,8 +5,10 @@ import 'package:cbook_dt/feature/account/ui/expense/model/expense_item_list_popu
 import 'package:cbook_dt/feature/account/ui/expense/model/expense_paid_form_list.dart';
 import 'package:cbook_dt/feature/account/ui/expense/model/update_expense_model.dart';
 import 'package:cbook_dt/feature/account/ui/income/model/account_type_name_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ExpenseProvider with ChangeNotifier {
   List<PaidFormData> paidFormList = [];
@@ -50,9 +52,18 @@ class ExpenseProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http
-          .get(Uri.parse('https://commercebook.site/api/v1/expense/list'));
+          .get(Uri.parse('${AppUrl.baseurl}expense/list'),
+          headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        }
+          );
 
       if (response.statusCode == 200) {
         final result = ExpenseListModel.fromJson(json.decode(response.body));
@@ -80,14 +91,23 @@ class ExpenseProvider with ChangeNotifier {
 
   /// Fetch accounts for both bank and cash once (or based on demand)
   Future<void> fetchAccountNames() async {
-    try {
-      const bankUrl =
-          'https://commercebook.site/api/v1/receive/form/account?type=bank';
-      const cashUrl =
-          'https://commercebook.site/api/v1/receive/form/account?type=cash';
+  final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
 
-      final bankResponse = await http.post(Uri.parse(bankUrl));
-      final cashResponse = await http.post(Uri.parse(cashUrl));
+    try {
+      final bankUrl =
+          '${AppUrl.baseurl}receive/form/account?type=bank';
+      final cashUrl =
+          '${AppUrl.baseurl}receive/form/account?type=cash';
+
+      final bankResponse = await http.post(Uri.parse(bankUrl), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
+      final cashResponse = await http.post(Uri.parse(cashUrl, ), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (bankResponse.statusCode == 200) {
         final data = json.decode(bankResponse.body);
@@ -121,9 +141,16 @@ class ExpenseProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http
-          .get(Uri.parse('https://commercebook.site/api/v1/expense/edit/$id'));
+          .get(Uri.parse('${AppUrl.baseurl}expense/edit/$id'), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final result = json.decode(response.body);
@@ -153,10 +180,17 @@ class ExpenseProvider with ChangeNotifier {
 
   ///expense delete
   Future<void> deleteExpense(String id) async {
-    final url = 'https://commercebook.site/api/v1/expense/remove?id=$id';
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+    final url = '${AppUrl.baseurl}expense/remove?id=$id';
 
     try {
-      final response = await http.post(Uri.parse(url));
+      final response = await http.post(Uri.parse(url, ), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        } );
       if (response.statusCode == 200) {
         // ✅ Correct: remove from the list you are displaying
         expenseList.removeWhere((expense) => expense.id.toString() == id);
@@ -174,9 +208,16 @@ class ExpenseProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http.get(
-          Uri.parse('https://commercebook.site/api/v1/expense/paid/form/list'));
+          Uri.parse('${AppUrl.baseurl}expense/paid/form/list'), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final result = PaidFormModel.fromJson(json.decode(response.body));
@@ -205,7 +246,13 @@ class ExpenseProvider with ChangeNotifier {
     required String billPersonId,
     required List<ExpenseItemPopUp> expenseItems,
   }) async {
-    final url = Uri.parse('https://commercebook.site/api/v1/expense/store?'
+
+       final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+
+    final url = Uri.parse('${AppUrl.baseurl}expense/store?'
         'user_id=$userId&expence_no=$invoiceNo&date=$date&paid_to=$receivedTo&account=$account&total_amount=$totalAmount&notes=$notes&status=$status&bill_person_id=$billPersonId');
 
     final body = ExpenseStoreRequest(expenseItems: expenseItems).toJson();
@@ -221,6 +268,7 @@ class ExpenseProvider with ChangeNotifier {
         url,
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": "Bearer $token",
         },
         body: jsonEncode(body),
       );
@@ -254,8 +302,12 @@ class ExpenseProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/expense/update?id=$expenseId&user_id=$userId&expence_no=$invoiceNo&date=$date&paid_to=$paidTo&account=$account&total_amount=$totalAmount&notes=$notes&status=$status&bill_person_id=$billPersonId');
+        '${AppUrl.baseurl}expense/update?id=$expenseId&user_id=$userId&expence_no=$invoiceNo&date=$date&paid_to=$paidTo&account=$account&total_amount=$totalAmount&notes=$notes&status=$status&bill_person_id=$billPersonId');
 
     debugPrint("url ====> $url");
 
@@ -268,7 +320,10 @@ class ExpenseProvider with ChangeNotifier {
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json',
+        
+        "Authorization": "Bearer $token",
+        },
         body: body,
       );
 

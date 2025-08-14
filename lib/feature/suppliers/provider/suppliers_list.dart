@@ -3,6 +3,7 @@ import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/suppliers/model/suppliers_creat.dart';
 import 'package:cbook_dt/feature/suppliers/model/suppliers_list.dart';
 import 'package:cbook_dt/utils/date_time_helper.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -31,7 +32,7 @@ class SupplierProvider extends ChangeNotifier {
     errorMessage = "";
     notifyListeners(); // Notify listeners that data is being fetched
 
-    final url = Uri.parse('https://commercebook.site/api/v1/suppliers');
+    final url = Uri.parse('${AppUrl.baseurl}suppliers');
 
     try {
       final response = await http.get(url);
@@ -60,7 +61,7 @@ class SupplierProvider extends ChangeNotifier {
   /// **Delete Supplier**
   Future<void> deleteSupplier(int supplierId) async {
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/supplier/remove/$supplierId');
+        '${AppUrl.baseurl}supplier/remove/$supplierId');
 
     try {
       final response = await http.post(url);
@@ -109,7 +110,7 @@ class SupplierProvider extends ChangeNotifier {
     return;
   }
 
-  final url = Uri.parse('https://commercebook.site/api/v1/supplier/store');
+  final url = Uri.parse('${AppUrl.baseurl}supplier/store');
 
   try {
     var request = http.MultipartRequest('POST', url);
@@ -159,7 +160,7 @@ class SupplierProvider extends ChangeNotifier {
   /// **featch supplier by id**
   Future<SupplierData?> fetchSupplierById(int supplierId) async {
     final url =
-        Uri.parse('https://commercebook.site/api/v1/supplier/edit/$supplierId');
+        Uri.parse('${AppUrl.baseurl}supplier/edit/$supplierId');
     try {
       final response = await http.get(url);
       debugPrint("API Response: ${response.body}"); // 🔍 Debugging Step
@@ -212,7 +213,7 @@ class SupplierProvider extends ChangeNotifier {
     }
 
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/supplier/update?user_id=$userId&id=$id&name=$name&proprietor_name=$proprietorName&email=$email&phone=$phone&address=$address&status=$status');
+        '${AppUrl.baseurl}supplier/update?user_id=$userId&id=$id&name=$name&proprietor_name=$proprietorName&email=$email&phone=$phone&address=$address&status=$status');
     final response = await http.post(
       url,
       headers: {

@@ -1,7 +1,6 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/accounty_type_update.dart';
-import 'package:cbook_dt/feature/account/ui/account_type/model/account_type_model.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/provider/account_type_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -74,66 +73,85 @@ class _AccountListPageState extends State<AccountListPage> {
         builder: (context, provider, _) {
           if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
-          } 
+          }
           // else if (provider.error != null) {
           //   return Center(child: Text(provider.error!, style: const TextStyle(color: Colors.black),));
           // }
-           else if (provider.accounts.isEmpty) {
-            return const Center(child: Text("No accounts found.", style: TextStyle(color: Colors.black),));
+          else if (provider.accounts.isEmpty) {
+            return const Center(
+                child: Text(
+              "No accounts found.",
+              style: TextStyle(color: Colors.black),
+            ));
           }
 
-          return ListView.builder(
-            itemCount: provider.accounts.length,
-            itemBuilder: (context, index) {
-              final AccountTypeModel acc = provider.accounts[index];
+          return Consumer<AccountTypeProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (provider.error != null) {
+                return Center(child: Text(provider.error!));
+              }
+              if (provider.accounts.isEmpty) {
+                return const Center(child: Text("No accounts found"));
+              }
 
-              final accId = provider.accounts[index].id;
+              return ListView.builder(
+                itemCount: provider.accounts.length,
+                itemBuilder: (context, index) {
+                  final acc = provider.accounts[index];
+                  final accId = acc.id;
 
-              return InkWell(
-                onLongPress: () {
-                  editDeleteDiolog(context, accId);
-                },
-                child: Column(
-                  children: [
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      elevation: 1,
-                      margin: EdgeInsets
-                          .zero, // No extra margin; spacing handled below
-                      child: ListTile(
-                        title: Text(
-                          "Type: ${acc.accountType}",
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Row(
-                          children: [
-                            Text(
-                              "${acc.accountName},",
+                  return InkWell(
+                    onLongPress: () {
+                      editDeleteDiolog(context, accId);
+                    },
+                    child: Column(
+                      children: [
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          elevation: 1,
+                          margin: EdgeInsets
+                              .zero, // No extra margin; spacing handled below
+                          child: ListTile(
+                            title: Text(
+                              "Type: ${acc.accountType}",
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Row(
+                              children: [
+                                Text(
+                                  "${acc.accountName},",
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                SizedBox(
+                                  child: Text(
+                                    "   Date: ${acc.date}",
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            trailing: Text(
+                              "৳ ${acc.openingBalance ?? '0'}",
                               style: const TextStyle(fontSize: 14),
                             ),
-                            SizedBox(
-                              child: Text(
-                                "   Date: ${acc.date}",
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                        trailing: Text(
-                          "৳ ${acc.openingBalance ?? '0'}",
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ),
+                        const SizedBox(height: 4), // Spacing between cards
+                      ],
                     ),
-                    const SizedBox(height: 4), // Spacing between cards
-                  ],
-                ),
+                  );
+                },
               );
             },
           );
+
+        
         },
       ),
     );

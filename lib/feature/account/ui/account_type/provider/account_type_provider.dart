@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/account/ui/account_type/model/account_create_response_model.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/model/account_type_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountTypeProvider with ChangeNotifier {
   final TextEditingController accountNameController = TextEditingController();
@@ -16,18 +18,7 @@ class AccountTypeProvider with ChangeNotifier {
   final TextEditingController routingNumberController = TextEditingController();
   final TextEditingController bankLocationController = TextEditingController();
 
-  // DateTime _selectedDate = DateTime.now();
-
-  // String get formattedDate => DateTimeHelper.formatDate(_selectedDate);
-
-  // Future<void> pickDate(BuildContext context) async {
-  //   final pickedDate = await DateTimeHelper.pickDate(context, _selectedDate);
-  //   if (pickedDate != null && pickedDate != _selectedDate) {
-  //     _selectedDate = pickedDate;
-  //     notifyListeners();
-  //   }
-  // }
-  
+ 
 
   // Date
   DateTime _selectedDate = DateTime.now();
@@ -48,29 +39,52 @@ class AccountTypeProvider with ChangeNotifier {
     }
   }
 
-  List<AccountTypeModel> _accounts = [];
+  List<Account> _accounts = [];
   bool _isLoading = false;
   String? _error;
 
-  List<AccountTypeModel> get accounts => _accounts;
+  List<Account> get accounts => _accounts;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  ///fetch account
+  
+ 
+
   Future<void> fetchAccounts() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
-    final url = Uri.parse('https://commercebook.site/api/v1/account/list');
-
     try {
-      final response = await http.get(url);
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        _error = 'No token found. Please login again.';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      final url = Uri.parse("${AppUrl.baseurl}account/list");
+      final response = await http.get(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
+
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        final List data = jsonData['data'];
-        _accounts =
-            data.map((item) => AccountTypeModel.fromJson(item)).toList();
+        final jsonBody = json.decode(response.body);
+
+        if (jsonBody['success'] == true && jsonBody['data'] is List) {
+          _accounts = (jsonBody['data'] as List)
+              .map((item) => Account.fromJson(item))
+              .toList();
+        } else {
+          _accounts = [];
+        }
       } else {
         _error = 'Failed: ${response.statusCode}';
       }
@@ -82,15 +96,29 @@ class AccountTypeProvider with ChangeNotifier {
     notifyListeners();
   }
 
+
+
+
+
+
   ///delete acc type
   String errorMessage = '';
 
   Future<bool> deleteAccountById(int id) async {
     final url =
-        Uri.parse("https://commercebook.site/api/v1/account/remove/?id=$id");
+        Uri.parse("${AppUrl.baseurl}account/remove/?id=$id");
+
+            final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
 
     try {
-      final response = await http.post(url); // ✅ POST method
+      final response = await http.post(url,
+      headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        }
+      ); // ✅ POST method
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -146,6 +174,7 @@ class AccountTypeProvider with ChangeNotifier {
       'commercebook.site',
       '/api/v1/account/store',
       queryParameters,
+       
     );
 
     debugPrint('uri $uri');
@@ -176,10 +205,18 @@ class AccountTypeProvider with ChangeNotifier {
   ///acount edit
   /// ✅ Fetch Account by ID for Edit
   Future<void> fetchAccountById(int id) async {
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final url =
-          Uri.parse('https://commercebook.site/api/v1/account/edit/$id');
-      final response = await http.get(url);
+          Uri.parse('${AppUrl.baseurl}account/edit/$id');
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -217,8 +254,14 @@ class AccountTypeProvider with ChangeNotifier {
     required String userId, // who is updating
   }) async {
     try {
+
+          final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+
       final uri =
-          Uri.parse("https://commercebook.site/api/v1/account/update?id=$id"
+          Uri.parse("${AppUrl.baseurl}account/update?id=$id"
               "&user_id=$userId"
               "&account_name=${accountNameController.text.trim()}"
               "&account_type=$selectedAccountType"
@@ -229,7 +272,10 @@ class AccountTypeProvider with ChangeNotifier {
 
       debugPrint('🔄 Sending Update Request: ${uri.toString()}');
 
-      final response = await http.post(uri); // 🔄 API is GET type here
+      final response = await http.post(uri, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        }); // 🔄 API is GET type here
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);

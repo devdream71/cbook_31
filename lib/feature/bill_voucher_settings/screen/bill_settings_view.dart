@@ -8,12 +8,11 @@ class BillSettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        final colorScheme = Theme.of(context).colorScheme;
-
+    final colorScheme = Theme.of(context).colorScheme;
     final provider = Provider.of<BillSettingsProvider>(context);
 
     return Scaffold(
-     backgroundColor: AppColors.sfWhite,
+      backgroundColor: AppColors.sfWhite,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         centerTitle: true,
@@ -24,20 +23,26 @@ class BillSettingsView extends StatelessWidget {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         automaticallyImplyLeading: true,
-         
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: provider.settings.length,
-              itemBuilder: (context, index) {
-                final setting = provider.settings[index];
-                return ListTile(
-                  title: Text(setting.data),
-                  subtitle: Text(setting.value ?? 'N/A'),
-                );
-              },
-            ),
+          : provider.settings.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No data found',
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+                )
+              : ListView.builder(
+                  itemCount: provider.settings.length,
+                  itemBuilder: (context, index) {
+                    final setting = provider.settings[index];
+                    return ListTile(
+                      title: Text(setting.data),
+                      subtitle: Text(setting.value ?? 'N/A'),
+                    );
+                  },
+                ),
     );
   }
 }

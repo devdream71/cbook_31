@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/authentication/model/country_response_model.dart';
 import 'package:cbook_dt/feature/authentication/model/register_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService with ChangeNotifier {
   ///reg url
-  static const String baseUrl = "https://commercebook.site/api/v1/register";
+  static  String baseUrl = "${AppUrl.baseurl}register";
 
   ///coutry url
-  static const String countryUrl =
-      "https://commercebook.site/api/v1/country/list";
+  static   String countryUrl =
+      "${AppUrl.baseurl}country/list";
 
   bool _isLoading = false;
   String? _errorMessage;

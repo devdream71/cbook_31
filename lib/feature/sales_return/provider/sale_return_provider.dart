@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/sales_return/model/sale_return_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,7 +17,7 @@ class SalesReturnProvider extends ChangeNotifier {
   Future<void> fetchItems() async {
     try {
       final response =
-          await http.get(Uri.parse('https://commercebook.site/api/v1/items'));
+          await http.get(Uri.parse('${AppUrl.baseurl}items'));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
@@ -71,7 +72,7 @@ class SalesReturnProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    const String url = "https://commercebook.site/api/v1/sales/return";
+    String url = "${AppUrl.baseurl}sales/return";
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -93,7 +94,7 @@ class SalesReturnProvider extends ChangeNotifier {
   ///sales return delele.
   Future<void> deleteSalesReturn(int? id, BuildContext context) async {
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/sales/return/remove/?id=$id');
+        '${AppUrl.baseurl}sales/return/remove/?id=$id');
 
     try {
       final response = await http.post(url); // ⬅ POST method as per API

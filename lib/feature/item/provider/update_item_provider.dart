@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/item/model/update_item_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ItemUpdateProvider with ChangeNotifier {
   bool isLoading = false;
@@ -45,14 +47,21 @@ class ItemUpdateProvider with ChangeNotifier {
     errorMessage = "";
     notifyListeners(); // Notify UI to show loading indicator
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final url =
-        Uri.parse("https://commercebook.site/api/v1/item/edit/$id"); //old
+        Uri.parse("${AppUrl.baseurl}item/edit/$id"); //old
     //final url = Uri.parse("https://commercebook.site/api/v1/item/show/$id"); //new
 
     debugPrint("Fetching item details from: $url");
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       debugPrint("Response status: ${response.statusCode}");
       debugPrint("Response body: ${response.body}");
 
@@ -110,7 +119,11 @@ class ItemUpdateProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final url = Uri.parse("https://commercebook.site/api/v1/item/update");
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+    final url = Uri.parse("${AppUrl.baseurl}item/update");
 
     Map<String, dynamic> requestData = {
       "id": itemId,
@@ -154,6 +167,7 @@ class ItemUpdateProvider with ChangeNotifier {
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
+          "Authorization": "Bearer $token",
         },
         body: jsonEncode(requestData),
       );

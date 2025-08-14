@@ -16,6 +16,7 @@ import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart'
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/feature/tax/provider/tax_provider.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -122,7 +123,7 @@ class _LayoutState extends State<_Layout> {
   debugPrint('fetchAndSetBillNumber called');
   
   final url = Uri.parse(
-    'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=purchase&type=sales&code=SAL&bill_number=100&with_nick_name=1',
+    '${AppUrl.baseurl}app/setting/bill/number?voucher_type=purchase&type=sales&code=SAL&bill_number=100&with_nick_name=1',
   );
 
   debugPrint('API URL: $url');

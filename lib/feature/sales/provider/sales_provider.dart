@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/sales/model/sales_list_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class SalesProvider with ChangeNotifier {
@@ -31,9 +33,17 @@ class SalesProvider with ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http.get(
-        Uri.parse('https://commercebook.site/api/v1/sales/'),
+        Uri.parse('${AppUrl.baseurl}sales/'),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
       );
 
       debugPrint("API called. Status Code: ${response.statusCode}");
@@ -90,11 +100,19 @@ class SalesProvider with ChangeNotifier {
     _isDeleting = true; // ✅ Show loader
     notifyListeners();
 
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      
+
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/sales/remove?id=$purchaseId');
+        '${AppUrl.baseurl}sales/remove?id=$purchaseId');
 
     try {
-      final response = await http.delete(url);
+      final response = await http.delete(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -127,9 +145,18 @@ class SalesProvider with ChangeNotifier {
   
   ///item fetchItem 
   Future<void> fetchItems() async {
-    final url = Uri.parse('https://commercebook.site/api/v1/items');
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+
+    final url = Uri.parse('${AppUrl.baseurl}items');
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         List<dynamic> itemsList = data['data'];
@@ -164,9 +191,17 @@ class SalesProvider with ChangeNotifier {
 
   /// Fetch unit symbols
   Future<void> fetchUnits() async {
-    final url = Uri.parse('https://commercebook.site/api/v1/units');
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+    final url = Uri.parse('${AppUrl.baseurl}units');
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data["success"] == true) {

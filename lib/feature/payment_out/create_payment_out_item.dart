@@ -12,6 +12,7 @@ import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart'
 import 'package:cbook_dt/feature/sales/controller/sales_controller.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -122,7 +123,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
     debugPrint('fetchAndSetBillNumber called');
 
     final url = Uri.parse(
-      'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=voucher&type=payment&code=PAY&bill_number=100&with_nick_name=1',
+      '${AppUrl.baseurl}app/setting/bill/number?voucher_type=voucher&type=payment&code=PAY&bill_number=100&with_nick_name=1',
     );
 
     try {

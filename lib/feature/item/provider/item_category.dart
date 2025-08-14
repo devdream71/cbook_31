@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/item/model/item_category.dart';
 import 'package:cbook_dt/feature/item/model/item_sub_category.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ItemCategoryProvider extends ChangeNotifier {
 
@@ -22,10 +24,17 @@ class ItemCategoryProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    const String url = "https://commercebook.site/api/v1/item-categories";
+      String url = "${AppUrl.baseurl}item-categories";
+
+          final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -50,9 +59,17 @@ class ItemCategoryProvider extends ChangeNotifier {
   Future<void> fetchSubCategories(int categoryId) async {
     isSubCategoryLoading = true;
     notifyListeners();
+     
+         final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http.get(Uri.parse(
-          'https://commercebook.site/api/v1/item/get/subcategories/$categoryId'));
+          '${AppUrl.baseurl}item/get/subcategories/$categoryId'), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body)['data'];

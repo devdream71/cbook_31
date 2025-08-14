@@ -5,6 +5,7 @@ import 'package:cbook_dt/feature/category/model/edit_category_model.dart';
 import 'package:cbook_dt/feature/category/model/sub_category_edit_response.dart';
 import 'package:cbook_dt/feature/category/sub_category/model/item_sub_category.dart';
 import 'package:cbook_dt/feature/category/sub_category/sub_category_list.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,10 +23,16 @@ class CategoryProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http.get(
-        Uri.parse('https://commercebook.site/api/v1/item-categories'),
-        headers: {'Accept': 'application/json'},
+        Uri.parse('${AppUrl.baseurl}item-categories'),
+        headers: {'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+        },
       );
 
       if (response.statusCode == 200) {
@@ -57,12 +64,16 @@ class CategoryProvider extends ChangeNotifier {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String userId = prefs.getInt('user_id')?.toString() ?? '0';
 
+      final token = prefs.getString('token');
+
       final String url =
-          'https://commercebook.site/api/v1/item-categories/store?name=$name&status=$status&user_id=$userId';
+          '${AppUrl.baseurl}item-categories/store?name=$name&status=$status&user_id=$userId';
 
       final response = await http.post(
         Uri.parse(url),
-        headers: {'Accept': 'application/json'},
+        headers: {'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+        },
       );
 
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -88,11 +99,19 @@ class CategoryProvider extends ChangeNotifier {
   ///
    
    Future<bool> deleteCategory(int categoryId) async {
+    
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
   try {
     final response = await http.post(
       Uri.parse(
-          'https://commercebook.site/api/v1/item-categories/remove/$categoryId'),
-      headers: {'Accept': 'application/json'},
+          '${AppUrl.baseurl}item-categories/remove/$categoryId'),
+      headers: {'Accept': 'application/json',
+      
+      "Authorization": "Bearer $token",
+      },
     );
 
     final Map<String, dynamic> responseData = json.decode(response.body);
@@ -115,35 +134,20 @@ class CategoryProvider extends ChangeNotifier {
 
 
 
-  // Future<void> deleteCategory(int categoryId) async {
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse(
-  //           'https://commercebook.site/api/v1/item-categories/remove/$categoryId'),
-  //       headers: {'Accept': 'application/json'},
-  //     );
-
-  //     final Map<String, dynamic> responseData = json.decode(response.body);
-
-  //     if (response.statusCode == 200 && responseData['success'] == true) {
-  //       categories.removeWhere((category) => category.id == categoryId);
-  //       notifyListeners();
-
-  //       debugPrint("Category deleted successfully");
-  //     } else {
-  //       debugPrint("Failed to delete category: ${responseData['message']}");
-  //     }
-  //   } catch (error) {
-  //     debugPrint("Error deleting category: $error");
-  //   }
-  // }
-
+  
   ////get update catagory
   Future<EditCategoryModel?> fetchCategoryById(int id) async {
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     try {
       final response = await http.get(
-        Uri.parse('https://commercebook.site/api/v1/item-categories/edit/$id'),
-        headers: {'Accept': 'application/json'},
+        Uri.parse('${AppUrl.baseurl}/item-categories/edit/$id'),
+        headers: {'Accept': 'application/json',
+        
+        "Authorization": "Bearer $token",
+        },
       );
 
       if (response.statusCode == 200) {
@@ -165,12 +169,18 @@ class CategoryProvider extends ChangeNotifier {
     required String status,
   }) async {
     try {
+           
+               final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
       final response = await http.post(
         Uri.parse(
-            "https://commercebook.site/api/v1/item-categories/update?id=$id&name=$name&status=$status"),
+            "${AppUrl.baseurl}item-categories/update?id=$id&name=$name&status=$status"),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          "Authorization": "Bearer $token",
         },
       );
 
@@ -189,10 +199,17 @@ class CategoryProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http.get(
-        Uri.parse('https://commercebook.site/api/v1/item-subcategories'),
-        headers: {'Accept': 'application/json'},
+        Uri.parse('${AppUrl.baseurl}item-subcategories'),
+        headers: {'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+        
+        },
       );
 
       if (response.statusCode == 200) {
@@ -215,38 +232,21 @@ class CategoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-////delete sub category
-  ////=====> delete category .
-  // Future<void> deleteSubCategory(int subcategoryId) async {
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse(
-  //           'https://commercebook.site/api/v1/item-subcategories/remove/$subcategoryId'),
-  //       headers: {'Accept': 'application/json'},
-  //     );
-
-  //     final Map<String, dynamic> responseData = json.decode(response.body);
-
-  //     if (response.statusCode == 200 && responseData['success'] == true) {
-  //       subcategories
-  //           .removeWhere((subcategory) => subcategory.id == subcategoryId);
-  //       notifyListeners();
-
-  //       debugPrint("Sub Category deleted successfully");
-  //     } else {
-  //       debugPrint("Failed to delete Sub category: ${responseData['message']}");
-  //     }
-  //   } catch (error) {
-  //     debugPrint("Error deleting category: $error");
-  //   }
-  // }
+ 
 
   Future<bool> deleteSubCategory(int subcategoryId) async {
   try {
+      
+          final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final response = await http.post(
       Uri.parse(
-          'https://commercebook.site/api/v1/item-subcategories/remove/$subcategoryId'),
-      headers: {'Accept': 'application/json'},
+          '${AppUrl.baseurl}item-subcategories/remove/$subcategoryId'),
+      headers: {'Accept': 'application/json',
+      "Authorization": "Bearer $token",
+      },
     );
 
     final Map<String, dynamic> responseData = json.decode(response.body);
@@ -293,11 +293,16 @@ class CategoryProvider extends ChangeNotifier {
       debugPrint("SubCategory Name: $name");
       debugPrint("Status: $status");
 
+           
+      final token = prefs.getString('token');
+
+
       final response = await http.post(
-        Uri.parse('https://commercebook.site/api/v1/item-subcategories/store'),
+        Uri.parse('${AppUrl.baseurl}item-subcategories/store'),
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          "Authorization": "Bearer $token",
         },
         body: jsonEncode({
           "item_category": categoryId.toString(),
@@ -364,12 +369,17 @@ class CategoryProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/item-subcategories/edit/$id');
+        '${AppUrl.baseurl}item-subcategories/edit/$id');
 
     try {
       final response = await http.get(url, headers: {
         'Accept': 'application/json',
+        "Authorization": "Bearer $token",
       });
 
       if (response.statusCode == 200) {
@@ -393,11 +403,19 @@ class CategoryProvider extends ChangeNotifier {
     required String name,
     required String status,
   }) async {
+
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/item-subcategories/update?id=$id&item_category=$itemCategoryId&name=$name&status=$status');
+        '${AppUrl.baseurl}item-subcategories/update?id=$id&item_category=$itemCategoryId&name=$name&status=$status');
 
     try {
-      final response = await http.post(url);
+      final response = await http.post(url, headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

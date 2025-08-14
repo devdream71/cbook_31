@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/unit/model/unit_add_model.dart';
 import 'package:cbook_dt/feature/unit/model/unit_response_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,11 +17,16 @@ class UnitDTProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     try {
       final response = await http.get(
-        Uri.parse('https://commercebook.site/api/v1/units'),
+        Uri.parse('${AppUrl.baseurl}units'),
         headers: {
           'Accept': 'application/json',
+          "Authorization": "Bearer $token",
         },
       );
 
@@ -50,13 +56,19 @@ class UnitDTProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userId = prefs.getInt('user_id')?.toString() ?? '';
 
+       
+      final token = prefs.getString('token');
+
+
     final String url =
-        'https://commercebook.site/api/v1/unit/store?user_id=$userId&name=$name&symbol=$symbol&status=$status';
+        '${AppUrl.baseurl}unit/store?user_id=$userId&name=$name&symbol=$symbol&status=$status';
 
     try {
       final response = await http.post(
         Uri.parse(url),
-        headers: {'Accept': 'application/json'},
+        headers: {'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+        },
       );
 
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -85,12 +97,20 @@ class UnitDTProvider extends ChangeNotifier {
 
   ///unit delete.
   Future<bool> deleteUnit(int unitId, BuildContext context) async {
-  final String url = 'https://commercebook.site/api/v1/unit/remove/$unitId';
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+  final String url = '${AppUrl.baseurl}unit/remove/$unitId';
 
   try {
     final response = await http.post(
       Uri.parse(url),
-      headers: {'Accept': 'application/json'},
+      headers: {'Accept': 'application/json',
+
+      "Authorization": "Bearer $token",
+      
+      },
     );
 
     final Map<String, dynamic> responseData = json.decode(response.body);
@@ -130,13 +150,17 @@ class UnitDTProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userId = prefs.getInt('user_id')?.toString() ?? '';
 
+    final token = prefs.getString('token');
+
     final String url =
-        'https://commercebook.site/api/v1/unit/update?id=$unitId&user_id=$userId&name=$name&symbol=$symbol&status=$status';
+        '${AppUrl.baseurl}unit/update?id=$unitId&user_id=$userId&name=$name&symbol=$symbol&status=$status';
 
     try {
       final response = await http.post(
         Uri.parse(url),
-        headers: {'Accept': 'application/json'},
+        headers: {'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+        },
       );
 
       final Map<String, dynamic> responseData = json.decode(response.body);

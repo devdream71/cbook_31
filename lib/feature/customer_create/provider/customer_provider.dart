@@ -6,6 +6,7 @@ import 'package:cbook_dt/feature/customer_create/model/payment_voicer_model.dart
 import 'package:cbook_dt/feature/customer_create/model/received_voucher_model.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/utils/date_time_helper.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -88,10 +89,6 @@ class CustomerProvider extends ChangeNotifier {
   }
 
 
-  
-
-
-
   bool isLoading = false;
   CustomerResponse? customerResponse;
 
@@ -106,7 +103,7 @@ class CustomerProvider extends ChangeNotifier {
     //final url = Uri.parse('https://commercebook.site/api/v1/customers/list');
 
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/all/customers/'); //api/v1/all/customers/
+        '${AppUrl.baseurl}all/customers/'); //api/v1/all/customers/
 
     try {
       final response = await http.get(url);
@@ -168,7 +165,7 @@ class CustomerProvider extends ChangeNotifier {
 
   Future<void> fetchPaymentVouchersByCustomerId(int customerId) async {
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/payment-vouchers/purchase/invoice/$customerId');
+        '${AppUrl.baseurl}payment-vouchers/purchase/invoice/$customerId');
 
     try {
       final response = await http.get(url);
@@ -198,7 +195,7 @@ class CustomerProvider extends ChangeNotifier {
 
   Future<void> fetchReceviedVouchersByCustomerId(int customerId) async {
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/receive-vouchers/sales/invoice/$customerId');
+        '${AppUrl.baseurl}receive-vouchers/sales/invoice/$customerId');
 
     try {
       final response = await http.get(url);
@@ -225,7 +222,7 @@ class CustomerProvider extends ChangeNotifier {
   ///delete customer
   Future<bool> deleteCustomer(int supplierId) async {
     final url = Uri.parse(
-        'https://commercebook.site/api/v1/customer/remove/$supplierId');
+        '${AppUrl.baseurl}customer/remove/$supplierId');
 
     try {
       final response = await http.post(
@@ -352,7 +349,7 @@ class CustomerProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id')?.toString() ?? '';
 
-    final url = Uri.parse('https://commercebook.site/api/v1/customer/store');
+    final url = Uri.parse('${AppUrl.baseurl}customer/store');
     final request = http.MultipartRequest('POST', url);
 
     // ---- Fields (all as strings) ----
@@ -433,7 +430,7 @@ class CustomerProvider extends ChangeNotifier {
   ///get customer by id
   Future<CustomerData?> fetchCustomerById(int customerId) async {
     final url =
-        Uri.parse('https://commercebook.site/api/v1/customer/edit/$customerId');
+        Uri.parse('${AppUrl.baseurl}customer/edit/$customerId');
     try {
       final response = await http.get(url);
       debugPrint("API Response: ${response.body}"); // 🔍 Debugging Step
@@ -486,7 +483,7 @@ class CustomerProvider extends ChangeNotifier {
       return;
     }
 
-    final url = Uri.parse('https://commercebook.site/api/v1/customer/update');
+    final url = Uri.parse('${AppUrl.baseurl}customer/update');
 
     Map<String, dynamic> body = {
       'user_id': userId,

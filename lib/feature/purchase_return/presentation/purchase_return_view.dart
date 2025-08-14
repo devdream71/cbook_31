@@ -17,6 +17,7 @@ import 'package:cbook_dt/feature/purchase_return/layer/bottom_portion_purchase_r
 import 'package:cbook_dt/feature/purchase_return/purchase_return_item_details.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -113,7 +114,7 @@ class _LayoutState extends State<_Layout> {
     debugPrint('fetchAndSetBillNumber called');
 
     final url = Uri.parse(
-      'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=purchase&type=purchase_return&code=PURR&bill_number=100&with_nick_name=1',
+      '${AppUrl.baseurl}app/setting/bill/number?voucher_type=purchase&type=purchase_return&code=PURR&bill_number=100&with_nick_name=1',
     );
 
     debugPrint('API URL: $url');

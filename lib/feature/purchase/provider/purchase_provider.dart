@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/purchase/model/purchase_create_model.dart';
 import 'package:cbook_dt/feature/transaction/model/purchase_tr_list_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
- 
+
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PurchaseProvider with ChangeNotifier {
   bool _isLoading = false;
@@ -11,15 +13,23 @@ class PurchaseProvider with ChangeNotifier {
 
   PurchaseSummary? get summary => _purchaseData?.summary;
 
-
-   Future<void> fetchPurchases() async {
+  Future<void> fetchPurchases() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
-    final url = Uri.parse('https://commercebook.site/api/v1/purchase/');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    final url = Uri.parse('${AppUrl.baseurl}purchase');
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
@@ -40,38 +50,44 @@ class PurchaseProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-    /// ✅ Delete purchase method (NEW)
+  /// ✅ Delete purchase method (NEW)
   Future<void> deletePurchase(int purchaseId) async {
-  final url = Uri.parse(
-      'https://commercebook.site/api/v1/purchase/remove?id=$purchaseId');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-  try {
-    final response = await http.post(url);
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      if (data['success'] == true) {
-        // ✅ Remove the deleted item locally if _purchaseData is stored
-        _purchaseData?.data?.removeWhere(
-          (item) => item.purchaseDetails?.first.purchaseId == purchaseId,
-        );
+    final url = Uri.parse('${AppUrl.baseurl}purchase/remove?id=$purchaseId');
 
-        notifyListeners(); // ✅ This updates the UI
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        if (data['success'] == true) {
+          // ✅ Remove the deleted item locally if _purchaseData is stored
+          _purchaseData?.data?.removeWhere(
+            (item) => item.purchaseDetails?.first.purchaseId == purchaseId,
+          );
 
-        // Optionally refresh from API (optional but slower)
-        // await fetchPurchases();
+          notifyListeners(); // ✅ This updates the UI
+
+          // Optionally refresh from API (optional but slower)
+          // await fetchPurchases();
+        } else {
+          // Handle API response indicating failure
+          debugPrint('Failed to delete: ${data['message']}');
+        }
       } else {
-        // Handle API response indicating failure
-        debugPrint('Failed to delete: ${data['message']}');
+        throw Exception('Failed to delete purchase');
       }
-    } else {
-      throw Exception('Failed to delete purchase');
+    } catch (error) {
+      debugPrint('Delete error: $error');
     }
-  } catch (error) {
-    debugPrint('Delete error: $error');
   }
-}
-
 
   List<PurchaseItemModel> _purchaseItems = [];
   List<PurchaseItemModel> get purchaseItems => _purchaseItems;
@@ -92,26 +108,23 @@ class PurchaseProvider with ChangeNotifier {
   }
 
   /// Store purchase API call
-  
-   PurchaseViewModel? _purchaseData;
-   PurchaseViewModel? _filteredData;
+
+  PurchaseViewModel? _purchaseData;
+  PurchaseViewModel? _filteredData;
   //bool _isLoading = false;
   String? _errorMessage;
 
-   Map<int, String> _itemsMap = {};
+  Map<int, String> _itemsMap = {};
 
-   Map<int, String> _unitsMap = {}; // Store unit symbols
+  Map<int, String> _unitsMap = {}; // Store unit symbols
 
   // PurchaseViewModel? get purchaseData => _purchaseData;
-   PurchaseViewModel? get purchaseData => _filteredData ?? _purchaseData;
+  PurchaseViewModel? get purchaseData => _filteredData ?? _purchaseData;
   //bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  
-    
-
-    ///filter data 
-    void filterPurchases(String query) {
+  ///filter data
+  void filterPurchases(String query) {
     if (_purchaseData == null || _purchaseData!.data == null) return;
 
     if (query.isEmpty) {
@@ -129,17 +142,24 @@ class PurchaseProvider with ChangeNotifier {
     notifyListeners();
   }
 
-   void resetFilter() {
-  _filteredData = _purchaseData;
-  notifyListeners();
-}
+  void resetFilter() {
+    _filteredData = _purchaseData;
+    notifyListeners();
+  }
 
+  Future<void> fetchItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-
-   Future<void> fetchItems() async {
-    final url = Uri.parse('https://commercebook.site/api/v1/items');
+    final url = Uri.parse('${AppUrl.baseurl}items');
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         List<dynamic> itemsList = data['data'];
@@ -156,9 +176,18 @@ class PurchaseProvider with ChangeNotifier {
 
   /// Fetch unit symbols
   Future<void> fetchUnits() async {
-    final url = Uri.parse('https://commercebook.site/api/v1/units');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    final url = Uri.parse('${AppUrl.baseurl}units');
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data["success"] == true) {
@@ -178,19 +207,14 @@ class PurchaseProvider with ChangeNotifier {
     return _itemsMap[itemId] ?? "Unknown Item";
   }
 
-   /// Get unit symbol by ID
+  /// Get unit symbol by ID
   String getUnitSymbol(int unitId) {
     return _unitsMap[unitId] ?? "";
   }
 
-
   Future<void> fetchPurchasesAndItems() async {
     await fetchPurchases();
     await fetchItems(); // Fetch items along with purchases
-     await fetchUnits();
+    await fetchUnits();
   }
-
-
 }
-
-

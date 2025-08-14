@@ -5,9 +5,11 @@ import 'package:cbook_dt/feature/settings/ui/user/model/role_model.dart';
 import 'package:cbook_dt/feature/settings/ui/user/model/user_create_model.dart';
 import 'package:cbook_dt/feature/settings/ui/user/model/user_edit_model.dart';
 import 'package:cbook_dt/utils/date_time_helper.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingUserProvider with ChangeNotifier {
   final TextEditingController nameController = TextEditingController();
@@ -44,9 +46,30 @@ class SettingUserProvider with ChangeNotifier {
     _hasError = false; // reset error before fetching
     notifyListeners();
 
-    const url = 'https://commercebook.site/api/v1/users/list/';
+    final url = '${AppUrl.baseurl}users/list/';
     try {
-      final response = await http.get(Uri.parse(url));
+
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        _hasError = false;
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      final response = await http.get(Uri.parse(url,
+      
+      
+      ),
+      
+      headers: {
+
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+
+      }
+      );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List usersJson = data['data'];
@@ -63,6 +86,9 @@ class SettingUserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+
+
+
   ///delete user
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
@@ -73,7 +99,7 @@ class SettingUserProvider with ChangeNotifier {
     _errorMessage = '';
     notifyListeners();
 
-    final url = Uri.parse('https://commercebook.site/api/v1/users/remove/$id');
+    final url = Uri.parse('${AppUrl.baseurl}users/remove/$id');
 
     try {
       final response = await http.post(url); // or POST if backend expects POST
@@ -123,7 +149,7 @@ class SettingUserProvider with ChangeNotifier {
     String? avatarPath,
     String? signaturePath,
   }) async {
-    final url = Uri.parse('https://commercebook.site/api/v1/users/store');
+    final url = Uri.parse('${AppUrl.baseurl}users/store');
 
     try {
       final request = http.MultipartRequest('POST', url);
@@ -198,7 +224,7 @@ class SettingUserProvider with ChangeNotifier {
     notifyListeners();
 
     final url =
-        Uri.parse('https://commercebook.site/api/v1/users/edit/$userId');
+        Uri.parse('${AppUrl.baseurl}users/edit/$userId');
 
     try {
       final response = await http.get(url);
@@ -233,7 +259,7 @@ class SettingUserProvider with ChangeNotifier {
   }) async {
     try {
       final uri = Uri.parse(
-        'https://commercebook.site/api/v1/users/update?id=$id&user_type=$userType',
+        '${AppUrl.baseurl}users/update?id=$id&user_type=$userType',
       );
 
       final request = http.MultipartRequest('POST', uri);
@@ -322,7 +348,7 @@ class SettingUserProvider with ChangeNotifier {
 
   ///roles
   Future<void> fetchRoles() async {
-    const url = 'https://commercebook.site/api/v1/roles/';
+    final url = '${AppUrl.baseurl}roles/';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/purchase/model/purchase_create_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,13 +41,13 @@ class PurchaseController extends ChangeNotifier {
   TextEditingController receivedAmountController = TextEditingController();
   TextEditingController discountController = TextEditingController();
 
-   TextEditingController controller = TextEditingController(text: "Cash");
+  TextEditingController controller = TextEditingController(text: "Cash");
 
   List<ItemModel> itemsCash = [];
   List<ItemModel> itemsCredit = [];
   List<PurchaseItemModel> purchaseItem = [];
   List<String> unitIdsList = [];
-  
+
   String text = "Cash";
 
   String? selectedCategory;
@@ -56,7 +57,7 @@ class PurchaseController extends ChangeNotifier {
   String? selectedReceiptType;
   String? seletedItemName;
   bool isCreditSale = true;
-  
+
   double purchasePrice = 0.0;
   int onlinePaymentValue = 0;
   double _subtotalItemDialog = 0.0;
@@ -101,7 +102,6 @@ class PurchaseController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   // void dialogtotalController() {
   //   if (_isListenerAttached) return;
   //   mrpController.addListener(_dialogSubtotal);
@@ -116,7 +116,6 @@ class PurchaseController extends ChangeNotifier {
     _subtotalItemDialog = price * qty;
     notifyListeners();
   }
-
 
   void _dialogSubtotal() {
     final price = double.tryParse(mrpController.text) ?? 0;
@@ -139,55 +138,51 @@ class PurchaseController extends ChangeNotifier {
     _subtotalItemDialog = 0.0;
     selectedUnit = null;
     selectedUnitIdWithName = "";
-    
+
     // Remove listeners if they exist
     if (_isListenerAttached) {
       mrpController.removeListener(_dialogSubtotal);
       qtyController.removeListener(_dialogSubtotal);
       _isListenerAttached = false;
     }
-    
+
     notifyListeners();
   }
 
-   // ✅ Add method to reset dialog state when item changes
+  // ✅ Add method to reset dialog state when item changes
   void resetDialogState() {
-  mrpController.clear();
-  qtyController.clear();
-  _subtotalItemDialog = 0.0;
-  selectedUnit = null;
-  selectedUnitIdWithName = "";
-  // ✅ DON'T clear seletedItemName here - only clear it after adding item
-  // seletedItemName = null; // Remove this line
-  notifyListeners();
-}
-
+    mrpController.clear();
+    qtyController.clear();
+    _subtotalItemDialog = 0.0;
+    selectedUnit = null;
+    selectedUnitIdWithName = "";
+    // ✅ DON'T clear seletedItemName here - only clear it after adding item
+    // seletedItemName = null; // Remove this line
+    notifyListeners();
+  }
 
 // Add this new method to clear everything after adding item:
- void clearDialogAfterAdd() {
-  mrpController.clear();
-  qtyController.clear();
-  _subtotalItemDialog = 0.0;
-  selectedUnit = null;
-  selectedUnitIdWithName = "";
-  seletedItemName = null;
-  
-  // ✅ DON'T clear customer-related data here
-  // codeController.clear(); // This might be clearing customer field
-  
-  notifyListeners();
-}
+  void clearDialogAfterAdd() {
+    mrpController.clear();
+    qtyController.clear();
+    _subtotalItemDialog = 0.0;
+    selectedUnit = null;
+    selectedUnitIdWithName = "";
+    seletedItemName = null;
+
+    // ✅ DON'T clear customer-related data here
+    // codeController.clear(); // This might be clearing customer field
+
+    notifyListeners();
+  }
 
   void updateUnitIds(List<String> units) {
     unitIdsList = units;
     notifyListeners();
   }
 
-  
-
 // Ensure discount input is controlled
 
-  
   ///cash...discount amount and percentance
   void updateDiscountcash(String value) {
     double discountAmount = double.tryParse(value) ?? 0.0;
@@ -206,22 +201,20 @@ class PurchaseController extends ChangeNotifier {
 
   ///cash.  upadte discount percentanct
   void updateDiscountPercentageCash(String value) {
-  double percentage = double.tryParse(value) ?? 0.0;
-  double subtotal = double.tryParse(addAmount2()) ?? 0.0;
+    double percentage = double.tryParse(value) ?? 0.0;
+    double subtotal = double.tryParse(addAmount2()) ?? 0.0;
 
-  if (subtotal > 0) {
-    double discount = (percentage / 100) * subtotal;
-    discountController.text = discount.toStringAsFixed(2);
-  } else {
-    discountController.text = "0.00";
+    if (subtotal > 0) {
+      double discount = (percentage / 100) * subtotal;
+      discountController.text = discount.toStringAsFixed(2);
+    } else {
+      discountController.text = "0.00";
+    }
+
+    notifyListeners();
   }
 
-  notifyListeners();
-}
-
-
-  
-  ///credit...discount amount and percentance 
+  ///credit...discount amount and percentance
   void updateDiscountCredit(String value) {
     double discountAmount = double.tryParse(value) ?? 0.0;
     double subtotal = double.tryParse(addAmount()) ?? 0.0;
@@ -237,23 +230,20 @@ class PurchaseController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   ///credit discount percentace to amount calculation.
-   void updateDiscountPercentageCredit(String value) {
-  double percentage = double.tryParse(value) ?? 0.0;
-  double subtotal = double.tryParse(addAmount()) ?? 0.0;
+  void updateDiscountPercentageCredit(String value) {
+    double percentage = double.tryParse(value) ?? 0.0;
+    double subtotal = double.tryParse(addAmount()) ?? 0.0;
 
-  if (subtotal > 0) {
-    double discount = (percentage / 100) * subtotal;
-    discountController.text = discount.toStringAsFixed(2);
-  } else {
-    discountController.text = "0.00";
+    if (subtotal > 0) {
+      double discount = (percentage / 100) * subtotal;
+      discountController.text = discount.toStringAsFixed(2);
+    } else {
+      discountController.text = "0.00";
+    }
+
+    notifyListeners();
   }
-
-  notifyListeners();
-}
-
-
 
   ///credit payment check or uncheck,
   // void updateOnlineMoney() {
@@ -274,32 +264,28 @@ class PurchaseController extends ChangeNotifier {
   // }
 
   //credit payment check or uncheck, //working.
-   void updateOnlineMoney() {
-  isOnlineMoneyChecked = !isOnlineMoneyChecked;
+  void updateOnlineMoney() {
+    isOnlineMoneyChecked = !isOnlineMoneyChecked;
 
-  if (isOnlineMoneyChecked) {
-    receivedAmountController.text = totalAmount2;
+    if (isOnlineMoneyChecked) {
+      receivedAmountController.text = totalAmount2;
+    }
+
+    final received = double.tryParse(receivedAmountController.text) ?? 0.0;
+    onlinePaymentValue = received > 0 ? 1 : 0;
+
+    notifyListeners();
   }
 
-  final received = double.tryParse(receivedAmountController.text) ?? 0.0;
-  onlinePaymentValue = received > 0 ? 1 : 0;
+  void updateManualPayment(String value) {
+    receivedAmountController.text = value;
 
-  notifyListeners();
-}
+    final received = double.tryParse(value) ?? 0.0;
+    onlinePaymentValue = received > 0 ? 1 : 0;
 
+    notifyListeners();
+  }
 
-void updateManualPayment(String value) {
-  receivedAmountController.text = value;
-
-  final received = double.tryParse(value) ?? 0.0;
-  onlinePaymentValue = received > 0 ? 1 : 0;
-
-  notifyListeners();
-}
-
-  
-  
-  
   void updateCash() {
     isCash = !isCash;
     isReceived =
@@ -546,7 +532,6 @@ void updateManualPayment(String value) {
     notifyListeners();
   }
 
-
   /// Store purchase API call
   Future<bool> storePurchase(
     BuildContext context, {
@@ -567,7 +552,8 @@ void updateManualPayment(String value) {
       debugPrint("bill $billNo");
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-  
+
+      final token = prefs.getString('token');
 
       debugPrint('$noteController');
 
@@ -601,12 +587,10 @@ void updateManualPayment(String value) {
 
       debugPrint("bill $billNo");
 
-       
-
       //"https://commercebook.site/api/v1/purchase/store?user_id=${prefs.getString("id")}&customer_id=${purchaseCreditOrCash ? "cash" : selectedCustomerId}&bill_number=${newBillNumber}&pruchase_date=${billDate}&details_notes=notes&gross_total=${calculateSubTotal()}&discount=0&payment_out=${purchaseCreditOrCash ? 1 : 0}&payment_amount=${purchaseCreditOrCash ? calculateSubTotal() : paymentController.value.text}";
 
       final url =
-          "https://commercebook.site/api/v1/purchase/store?user_id=${prefs.getInt("user_id").toString()}&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}&bill_number=$billNo&purchase_date=$encodedDate&details_notes=$note&gross_total=${isCash ? totalAmount : totalAmount2}&discount=$discount&payment_out=${isCash ? 1 : onlinePaymentValue}&payment_amount=${isCash ? totalAmount : paymnetAmount}&bill_person_id=$billPersonId";
+          "${AppUrl.baseurl}purchase/store?user_id=${prefs.getInt("user_id").toString()}&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}&bill_number=$billNo&purchase_date=$encodedDate&details_notes=$note&gross_total=${isCash ? totalAmount : totalAmount2}&discount=$discount&payment_out=${isCash ? 1 : onlinePaymentValue}&payment_amount=${isCash ? totalAmount : paymnetAmount}&bill_person_id=$billPersonId";
 
       debugPrint("API URL: $url");
 
@@ -618,13 +602,16 @@ void updateManualPayment(String value) {
 
       debugPrint("Request Body: $requestBody");
 
-
       debugPrint("Stop === > ");
 
-
       final response = await http.post(
-        Uri.parse(url),
-        headers: {"Content-Type": "application/json"},
+        Uri.parse(
+          url,
+        ),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
         body: json.encode(requestBody),
       );
 
@@ -651,47 +638,45 @@ void updateManualPayment(String value) {
     }
   }
 
-  
+  // ✅ Update addCreditItem with same debugging:
+  addCreditItem() {
+    debugPrint("=== ADDING CREDIT ITEM ===");
+    debugPrint("seletedItemName: '$seletedItemName'");
 
-   // ✅ Update addCreditItem with same debugging:
- addCreditItem() {
-  debugPrint("=== ADDING CREDIT ITEM ===");
-  debugPrint("seletedItemName: '$seletedItemName'");
+    double price = double.tryParse(mrpController.text) ?? 0.0;
+    double quantity = double.tryParse(qtyController.text) ?? 0.0;
+    double calculatedTotal = price * quantity;
 
-  double price = double.tryParse(mrpController.text) ?? 0.0;
-  double quantity = double.tryParse(qtyController.text) ?? 0.0;
-  double calculatedTotal = price * quantity;
+    String itemNameToAdd = seletedItemName ?? "Unknown Item";
 
-  String itemNameToAdd = seletedItemName ?? "Unknown Item";
+    itemsCredit.add(ItemModel(
+      category: selectedCategory ?? "Category1",
+      subCategory: selectedSubCategory ?? "Sub Category1",
+      itemName: itemNameToAdd,
+      unit: selectedUnit ?? "PC",
+      itemCode: codeController.text,
+      mrp: mrpController.text,
+      quantity: qtyController.text,
+      total: calculatedTotal.toStringAsFixed(2),
+    ));
 
-  itemsCredit.add(ItemModel(
-    category: selectedCategory ?? "Category1",
-    subCategory: selectedSubCategory ?? "Sub Category1",
-    itemName: itemNameToAdd,
-    unit: selectedUnit ?? "PC",
-    itemCode: codeController.text,
-    mrp: mrpController.text,
-    quantity: qtyController.text,
-    total: calculatedTotal.toStringAsFixed(2),
-  ));
+    purchaseItem.add(PurchaseItemModel(
+        itemId: selcetedItemId,
+        price: mrpController.text,
+        qty: qtyController.text,
+        subTotal: calculatedTotal.toString(),
+        unitId: selectedUnitIdWithName));
 
-  purchaseItem.add(PurchaseItemModel(
-      itemId: selcetedItemId,
-      price: mrpController.text,
-      qty: qtyController.text,
-      subTotal: calculatedTotal.toString(),
-      unitId: selectedUnitIdWithName));
+    // ✅ Only clear item-related controllers, NOT customer field
+    // codeController.clear(); // Don't clear this as it might be the customer field
+    mrpController.clear();
+    qtyController.clear();
+    amountController.clear();
+    unitController.clear();
+    priceController.clear();
 
-  // ✅ Only clear item-related controllers, NOT customer field
-  // codeController.clear(); // Don't clear this as it might be the customer field
-  mrpController.clear();
-  qtyController.clear();
-  amountController.clear();
-  unitController.clear();
-  priceController.clear();
-
-  notifyListeners();
-}
+    notifyListeners();
+  }
 
   void removeCreditItem(int index) {
     // Remove the item from the itemsCash list
@@ -751,48 +736,46 @@ void updateManualPayment(String value) {
     notifyListeners();
   }
 
- 
-   
 // ✅ MOST IMPORTANT: Update your addCashItem method with debugging:
- addCashItem() {
-  debugPrint("=== ADDING CASH ITEM ===");
-  debugPrint("seletedItemName: '$seletedItemName'");
+  addCashItem() {
+    debugPrint("=== ADDING CASH ITEM ===");
+    debugPrint("seletedItemName: '$seletedItemName'");
 
-  double price = double.tryParse(mrpController.text) ?? 0.0;
-  double quantity = double.tryParse(qtyController.text) ?? 0.0;
-  double calculatedTotal = price * quantity;
+    double price = double.tryParse(mrpController.text) ?? 0.0;
+    double quantity = double.tryParse(qtyController.text) ?? 0.0;
+    double calculatedTotal = price * quantity;
 
-  String itemNameToAdd = seletedItemName ?? "Unknown Item";
+    String itemNameToAdd = seletedItemName ?? "Unknown Item";
 
-  itemsCash.add(ItemModel(
-    category: selectedCategory ?? "Category1",
-    subCategory: selectedSubCategory ?? "Sub Category1",
-    itemName: itemNameToAdd,
-    unit: selectedUnit ?? "N/A",
-    itemCode: codeController.text,
-    mrp: mrpController.text,
-    quantity: qtyController.text,
-    total: calculatedTotal.toStringAsFixed(2),
-  ));
+    itemsCash.add(ItemModel(
+      category: selectedCategory ?? "Category1",
+      subCategory: selectedSubCategory ?? "Sub Category1",
+      itemName: itemNameToAdd,
+      unit: selectedUnit ?? "N/A",
+      itemCode: codeController.text,
+      mrp: mrpController.text,
+      quantity: qtyController.text,
+      total: calculatedTotal.toStringAsFixed(2),
+    ));
 
-  purchaseItem.add(PurchaseItemModel(
-    itemId: selcetedItemId,
-    price: mrpController.text,
-    qty: qtyController.text,
-    subTotal: calculatedTotal.toString(),
-    unitId: selectedUnitIdWithName,
-  ));
+    purchaseItem.add(PurchaseItemModel(
+      itemId: selcetedItemId,
+      price: mrpController.text,
+      qty: qtyController.text,
+      subTotal: calculatedTotal.toString(),
+      unitId: selectedUnitIdWithName,
+    ));
 
-  // ✅ Only clear item-related controllers, NOT customer field
-  // codeController.clear(); // Don't clear this as it might be the customer field
-  mrpController.clear();
-  qtyController.clear();
-  amountController.clear();
-  unitController.clear();
-  priceController.clear();
+    // ✅ Only clear item-related controllers, NOT customer field
+    // codeController.clear(); // Don't clear this as it might be the customer field
+    mrpController.clear();
+    qtyController.clear();
+    amountController.clear();
+    unitController.clear();
+    priceController.clear();
 
-  notifyListeners();
-}
+    notifyListeners();
+  }
 
   // Remove Cash Item
 

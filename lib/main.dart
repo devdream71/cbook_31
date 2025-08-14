@@ -5,6 +5,7 @@ import 'package:cbook_dt/feature/account/ui/adjust_cash/provider/adjust_cash_pro
 import 'package:cbook_dt/feature/account/ui/cash_in_hand/provider/cash_in_hand.dart';
 import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
+import 'package:cbook_dt/feature/app_service_free_premium/controler/app_service_controller.dart';
 import 'package:cbook_dt/feature/authentication/presentation/forgot_password/provider/forget_password_provider.dart';
 import 'package:cbook_dt/feature/authentication/provider/login_provider.dart';
 import 'package:cbook_dt/feature/authentication/provider/otp_provider.dart';
@@ -128,9 +129,9 @@ void main() async {
           ChangeNotifierProvider(create: (_) => AdjustCashProvider()),
           ChangeNotifierProvider(create: (_) => BankAdjustProvider()),
           ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
+          ChangeNotifierProvider(create: (_) => AppServiceProvider()),
           ChangeNotifierProvider(create: (_) => BillSettingsProvider()..fetchSettings()),
-          ChangeNotifierProvider(create: (_) =>DashboardReportProvider()..fetchCustomerTransaction(),
-          ),
+          ChangeNotifierProvider(create: (_) =>DashboardReportProvider()..fetchCustomerTransaction()),
         ],
         child: const MyApp(),
       ),

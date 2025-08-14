@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:cbook_dt/feature/account/ui/adjust_cash/model/adjust_cash.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_cash/model/create_adjust_cash_model.dart';
 import 'package:cbook_dt/utils/date_time_helper.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdjustCashProvider with ChangeNotifier {
-
   final TextEditingController accountNameController = TextEditingController();
   final TextEditingController detailsController = TextEditingController();
-
 
   DateTime _selectedDate = DateTime.now();
 
@@ -27,23 +27,31 @@ class AdjustCashProvider with ChangeNotifier {
     }
   }
 
-
   List<AdjustCash> _accounts = [];
   bool _isLoading = false;
 
   List<AdjustCash> get accounts => _accounts;
   bool get isLoading => _isLoading;
 
-  
   ///fetch cash acccount.
   Future<void> fetchCashAccounts() async {
     _isLoading = true;
     notifyListeners();
 
-    const url = 'https://commercebook.site/api/v1/accounts/cash-accounts';
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    final url = '${AppUrl.baseurl}accounts/cash-accounts';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(
+          Uri.parse(
+            url,
+          ),
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -61,38 +69,40 @@ class AdjustCashProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   ///store cash adjust.
   Future<AdjustCashResponse?> adjustCashStore({
-  required String adjustCashType, // e.g. 'cash_add'
-  required String accountId,
-  required String amount,
-  required String date,
-  required String details,
-  required String userId,
-}) async {
-  final url =
-      'https://commercebook.site/api/v1/account/cash/adjustment/store?adjust_cash=$adjustCashType&account_id=$accountId&amount=$amount&date=$date&details=$details&user_id=$userId';
-   
+    required String adjustCashType, // e.g. 'cash_add'
+    required String accountId,
+    required String amount,
+    required String date,
+    required String details,
+    required String userId,
+  }) async {
 
-   debugPrint(" url ==> $url");
-  try {
-    final response = await http.post(Uri.parse(url));
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      return AdjustCashResponse.fromJson(jsonData);
-    } else {
-      debugPrint("Adjustment failed: ${response.body}");
+        final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
+
+    final url =
+        '${AppUrl.baseurl}account/cash/adjustment/store?adjust_cash=$adjustCashType&account_id=$accountId&amount=$amount&date=$date&details=$details&user_id=$userId';
+
+    debugPrint(" url ==> $url");
+    try {
+      final response = await http.post(Uri.parse(url, ), headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return AdjustCashResponse.fromJson(jsonData);
+      } else {
+        debugPrint("Adjustment failed: ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("API error: $e");
       return null;
     }
-  } catch (e) {
-    debugPrint("API error: $e");
-    return null;
   }
 }
-
-
-
-
-  
-  }

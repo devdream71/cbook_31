@@ -20,6 +20,7 @@ import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/custom_box.dart';
 import 'package:cbook_dt/feature/suppliers/suppliers_create.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -138,7 +139,7 @@ class LayoutState extends State<Layout> {
     debugPrint('fetchAndSetBillNumber called');
 
     final url = Uri.parse(
-      'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=purchase&type=purchase&code=PUR&bill_number=100&with_nick_name=1',
+      '${AppUrl.baseurl}app/setting/bill/number?voucher_type=purchase&type=purchase&code=PUR&bill_number=100&with_nick_name=1',
     );
 
     debugPrint('API URL: $url');

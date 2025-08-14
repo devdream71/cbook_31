@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/bill_voucher_settings/model/model_bill_settings.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
- 
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BillSettingsProvider with ChangeNotifier {
   List<BillSettingModel> _settings = [];
@@ -15,10 +16,26 @@ class BillSettingsProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    const url = 'https://commercebook.site/api/v1/app/setting';
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      //_error = 'No token found. Please login again.';
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    final url = '${AppUrl.baseurl}app/setting';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);

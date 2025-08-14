@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/purchase_return/model/purchase_return_list_model.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,7 +22,7 @@ class PurchaseReturnProvider with ChangeNotifier {
 
 
   Future<void> fetchPurchaseReturns() async {
-    const url = "https://commercebook.site/api/v1/purchase/return";
+     final url = "${AppUrl.baseurl}purchase/return";
 
     try {
       _isLoading = true;
@@ -57,7 +58,7 @@ class PurchaseReturnProvider with ChangeNotifier {
   ///delete purchse return
   Future<void> deletePurchaseReturn(String id, context) async {
     final url =
-        "https://commercebook.site/api/v1/purchase/return/remove/?id=$id";
+        "${AppUrl.baseurl}purchase/return/remove/?id=$id";
 
     try {
       _isLoading = true;
@@ -109,8 +110,8 @@ class PurchaseReturnProvider with ChangeNotifier {
   ///fetch item name.
   Future<void> _fetchItemNames() async {
     // Example API call to fetch item names
-    const itemUrl =
-        "https://commercebook.site/api/v1/items"; // Update with your item details endpoint
+    final itemUrl =
+        "${AppUrl.baseurl}items"; // Update with your item details endpoint
     final response = await http.get(Uri.parse(itemUrl));
 
     if (response.statusCode == 200) {
