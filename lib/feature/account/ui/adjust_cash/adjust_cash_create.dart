@@ -236,6 +236,11 @@ class _AdjustCashCreateState extends State<AdjustCashCreate> {
                           backgroundColor: Colors.green,
                           content: Text(result.message)),
                       );
+
+                      provider.detailsController.text == '';
+                      provider.accountNameController.text == '';
+ 
+
  
                       provider.fetchCashAccounts();
                       Navigator.of(context).pop(); // Close page if needed

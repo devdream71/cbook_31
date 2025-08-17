@@ -139,16 +139,27 @@ class _BankState extends State<Bank> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      
+                                      item.billType == '' ? 
+                                      
                                       Text(
-                                        (item.billNumber == null || item.billNumber!.trim().isEmpty) ?
+                                       
                                         
-                                        'N/A' : item.billNumber!,
+                                         item.billNumber ?? '',
                                         style: GoogleFonts.lato(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
                                           color: Colors.black87,
                                         ),
+                                      ) :
+                                      Text(
+                                        item.billType ?? '',
+                                        style: GoogleFonts.lato(
+                                          fontSize: 14,
+                                          color: Colors.black87,
+                                        ),
                                       ),
+                                       
                                       const SizedBox(height: 4),
                                       Text(
                                         item.date ?? '',

@@ -85,6 +85,8 @@ class _AddNewTaxState extends State<AddNewTax> {
                     final name = _nameController.text.trim();
                     final percent = _percentanceController.text.trim();
 
+                    final percentInt = int.tryParse(percent);
+
                     if (name.isNotEmpty && percent.isNotEmpty) {
                       final taxProvider =
                           Provider.of<TaxProvider>(context, listen: false);
@@ -93,23 +95,20 @@ class _AddNewTaxState extends State<AddNewTax> {
                           .createTax(
                         userId: int.parse(userId),
                         name: name,
-                        percent: percent,
+                        percent: percentInt!,
                         status: 1,
                       );
                       //Navigator.pop(context); // Optionally pop after saving
 
                       taxProvider.fetchTaxes();
 
+                      Navigator.pop(context);
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                             backgroundColor: Colors.green,
                             content: Text("Successfully, Tax Create.")),
                       );
-
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomeView()));
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Please fill all fields")),

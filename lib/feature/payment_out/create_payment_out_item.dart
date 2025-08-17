@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
-
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
+import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
 import 'package:cbook_dt/feature/customer_create/model/payment_voicer_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
@@ -107,8 +107,26 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
       Provider.of<PaymentVoucherProvider>(context, listen: false)
           .fetchBillPersons();
 
-      await fetchAndSetBillNumber();
+     
+          
+
+      //await fetchAndSetBillNumber();
     });
+
+    // Initialize with loading text
+    billController.text = "Loading...";
+    debugPrint('Bill controller initialized with: ${billController.text}');
+
+    Future.microtask(() async {
+      // First fetch settings and wait for completion
+      await Provider.of<BillSettingsProvider>(context, listen: false)
+          .fetchSettings();
+      debugPrint('Settings fetched successfully');
+      await fetchAndSetBillNumber(context);
+    });
+
+
+
   }
 
   @override
@@ -118,17 +136,45 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
     super.dispose();
   }
 
-  ///updated bill nunber json respoonse
-  Future<void> fetchAndSetBillNumber() async {
+
+  Future<void> fetchAndSetBillNumber(BuildContext context) async {
     debugPrint('fetchAndSetBillNumber called');
 
+    final settingsProvider =
+        Provider.of<BillSettingsProvider>(context, listen: false);
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    // Fetch required values from provider (now they should be available)
+    final code = settingsProvider.getValue("payment_code") ?? "";
+    final billNumber =
+        settingsProvider.getValue("payment_bill_no") ?? "";
+    final withNickName = settingsProvider.getValue("with_nick_name") ?? "0";
+
+    debugPrint(
+        'Settings values - code: $code, billNumber: $billNumber, withNickName: $withNickName');
+
     final url = Uri.parse(
-      '${AppUrl.baseurl}app/setting/bill/number?voucher_type=voucher&type=payment&code=PAY&bill_number=100&with_nick_name=1',
+      '${AppUrl.baseurl}app/setting/bill/number'
+      '?voucher_type=voucher'
+      '&type=payment'
+      '&code=$code'
+      '&bill_number=$billNumber'
+      '&with_nick_name=$withNickName',
     );
+
+    debugPrint('API URL: =====> $url');
 
     try {
       debugPrint('Making API call...');
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
       debugPrint('API Response Status: ${response.statusCode}');
       debugPrint('API Response Body: ${response.body}');
 
@@ -137,42 +183,93 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
         debugPrint('Parsed data: $data');
 
         if (data['success'] == true && data['data'] != null) {
-          final billFromApi =
-              data['data']['bill_number']?.toString().trim() ?? "";
-
+          String billFromApi = data['data']['bill_number'].toString();
           debugPrint('Bill from API: $billFromApi');
-
-          // Optional: extract only number from "PAY-100"
-          final billOnlyNumber = billFromApi;
 
           if (mounted) {
             setState(() {
-              billController.text = billOnlyNumber;
+              billController.text = billFromApi;
               debugPrint('Bill controller updated to: ${billController.text}');
             });
           }
-        } else {
-          debugPrint('API success false or data missing');
-          _setFallback();
+          return;
         }
-      } else {
-        debugPrint('Failed to fetch bill number: ${response.statusCode}');
-        _setFallback();
+      }
+
+      // API failed or returned no usable data
+      if (mounted) {
+        setState(() {
+          billController.text = code.isNotEmpty ? "$code-100" : "PAY-100";
+          debugPrint('Fallback bill set to: ${billController.text}');
+        });
       }
     } catch (e) {
       debugPrint('Error fetching bill number: $e');
-      _setFallback();
+      if (mounted) {
+        setState(() {
+          billController.text = code.isNotEmpty ? "$code-100" : "PAY-100";
+          debugPrint('Fallback bill set to: ${billController.text}');
+        });
+      }
     }
   }
 
-  void _setFallback() {
-    if (mounted) {
-      setState(() {
-        billController.text = "PAY-100"; // or any default you want
-        debugPrint('Fallback bill set: ${billController.text}');
-      });
-    }
-  }
+
+  ///updated bill nunber json respoonse
+  // Future<void> fetchAndSetBillNumber(context) async {
+  //   debugPrint('fetchAndSetBillNumber called');
+
+  //   final url = Uri.parse(
+  //     '${AppUrl.baseurl}app/setting/bill/number?voucher_type=voucher&type=payment&code=PAY&bill_number=100&with_nick_name=1',
+  //   );
+
+  //   try {
+  //     debugPrint('Making API call...');
+  //     final response = await http.get(url);
+  //     debugPrint('API Response Status: ${response.statusCode}');
+  //     debugPrint('API Response Body: ${response.body}');
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       debugPrint('Parsed data: $data');
+
+  //       if (data['success'] == true && data['data'] != null) {
+  //         final billFromApi =
+  //             data['data']['bill_number']?.toString().trim() ?? "";
+
+  //         debugPrint('Bill from API: $billFromApi');
+
+  //         // Optional: extract only number from "PAY-100"
+  //         final billOnlyNumber = billFromApi;
+
+  //         if (mounted) {
+  //           setState(() {
+  //             billController.text = billOnlyNumber;
+  //             debugPrint('Bill controller updated to: ${billController.text}');
+  //           });
+  //         }
+  //       } else {
+  //         debugPrint('API success false or data missing');
+  //         _setFallback();
+  //       }
+  //     } else {
+  //       debugPrint('Failed to fetch bill number: ${response.statusCode}');
+  //       _setFallback();
+  //     }
+  //   } catch (e) {
+  //     debugPrint('Error fetching bill number: $e');
+  //     _setFallback();
+  //   }
+  // }
+
+  // void _setFallback() {
+  //   if (mounted) {
+  //     setState(() {
+  //       billController.text = "PAY-100"; // or any default you want
+  //       debugPrint('Fallback bill set: ${billController.text}');
+  //     });
+  //   }
+  // }
 
   /// Calculate sum of all receipts input
   double get totalReceiptAmount {
@@ -255,7 +352,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           ///1 section
           Row(
@@ -359,47 +456,47 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                   //bill person
                   // Inside your build method:
 
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Consumer<PaymentVoucherProvider>(
-                      builder: (context, provider, child) {
-                        return SizedBox(
-                          height: 30,
-                          width: 130,
-                          child: provider.isLoading
-                              ? const Center(child: CircularProgressIndicator())
-                              : CustomDropdownTwo(
-                                  hint: '',
-                                  items: provider.billPersonNames,
-                                  width: double.infinity,
-                                  height: 30,
-                                  labelText: 'Bill Person',
-                                  selectedItem: selectedBillPerson,
-                                  onChanged: (value) {
-                                    debugPrint(
-                                        '=== Bill Person Selected: $value ===');
-                                    setState(() {
-                                      selectedBillPerson = value;
-                                      selectedBillPersonData =
-                                          provider.billPersons.firstWhere(
-                                        (person) => person.name == value,
-                                      ); // ✅ Save the whole object globally
-                                      selectedBillPersonId =
-                                          selectedBillPersonData!.id;
-                                    });
+                  // Padding(
+                  //   padding: const EdgeInsets.only(top: 8.0),
+                  //   child: Consumer<PaymentVoucherProvider>(
+                  //     builder: (context, provider, child) {
+                  //       return SizedBox(
+                  //         height: 30,
+                  //         width: 130,
+                  //         child: provider.isLoading
+                  //             ? const Center(child: CircularProgressIndicator())
+                  //             : CustomDropdownTwo(
+                  //                 hint: '',
+                  //                 items: provider.billPersonNames,
+                  //                 width: double.infinity,
+                  //                 height: 30,
+                  //                 labelText: 'Bill Person',
+                  //                 selectedItem: selectedBillPerson,
+                  //                 onChanged: (value) {
+                  //                   debugPrint(
+                  //                       '=== Bill Person Selected: $value ===');
+                  //                   setState(() {
+                  //                     selectedBillPerson = value;
+                  //                     selectedBillPersonData =
+                  //                         provider.billPersons.firstWhere(
+                  //                       (person) => person.name == value,
+                  //                     ); // ✅ Save the whole object globally
+                  //                     selectedBillPersonId =
+                  //                         selectedBillPersonData!.id;
+                  //                   });
 
-                                    debugPrint('Selected Bill Person Details:');
-                                    debugPrint(
-                                        '- ID: ${selectedBillPersonData!.id}');
-                                    debugPrint(
-                                        '- Name: ${selectedBillPersonData!.name}');
-                                    debugPrint(
-                                        '- Phone: ${selectedBillPersonData!.phone}');
-                                  }),
-                        );
-                      },
-                    ),
-                  ),
+                  //                   debugPrint('Selected Bill Person Details:');
+                  //                   debugPrint(
+                  //                       '- ID: ${selectedBillPersonData!.id}');
+                  //                   debugPrint(
+                  //                       '- Name: ${selectedBillPersonData!.name}');
+                  //                   debugPrint(
+                  //                       '- Phone: ${selectedBillPersonData!.phone}');
+                  //                 }),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
 
                   // Bill No Field
 

@@ -50,7 +50,7 @@ class TaxProvider with ChangeNotifier {
   Future<void> createTax({
     required int userId,
     required String name,
-    required String percent,
+    required int percent,
     required int status,
   }) async {
     _isLoading = true;

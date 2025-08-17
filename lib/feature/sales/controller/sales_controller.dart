@@ -3,6 +3,7 @@ import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/item/model/items_show.dart';
 import 'package:cbook_dt/feature/sales/model/sale_create_model.dart';
+import 'package:cbook_dt/feature/sales/provider/sales_provider.dart';
 import 'package:cbook_dt/feature/unit/model/unit_response_model.dart';
 import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
@@ -694,13 +695,7 @@ class SalesController extends ChangeNotifier {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      // if (!prefs.containsKey("bill_number")) {
-      //   await prefs.setInt("bill_number", 521444);
-      // }
-
-      // int lastBillNumber = prefs.getInt("bill_number") ?? 521444;
-      // int newBillNumber = lastBillNumber + 1;
-      // await prefs.setInt("bill_number", newBillNumber);
+     
 
       DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(date);
       String formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
@@ -781,11 +776,17 @@ class SalesController extends ChangeNotifier {
         notifyListeners();
         saleItem.clear();
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => const HomeView()),
-        );
+        final salesList = Provider.of<SalesProvider>(context, listen: false);
+
+        salesList.fetchSales();
+        
+        Navigator.pop(context);
+        
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (BuildContext context) => const HomeView()),
+        // );
 
         return true;
       } else {

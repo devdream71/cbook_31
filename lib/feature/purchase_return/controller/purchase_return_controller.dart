@@ -581,69 +581,211 @@ class PurchaseReturnController extends ChangeNotifier {
   }
 
   ///purchase return store.
-  Future<String> storePurchaseReturn(
-      {
-      //required String date,
-      required String amount,
-      required String customerId,
-      required String total,
-      required String discount,
-      required String billNo,
-      required saleType}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    try {
-      debugPrint(billNo);
+  // Future<String> storePurchaseReturn(
+  //     {
+  //     //required String date,
+  //     required String amount,
+  //     required String customerId,
+  //     required String total,
+  //     required String discount,
+  //     required String billNo,
+  //     required saleType}) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   try {
+  //     debugPrint(billNo);
 
-      final discount = discountController.text;
+  //     final discount = discountController.text;
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String userId = prefs.getInt('user_id')?.toString() ?? '0';
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     String userId = prefs.getInt('user_id')?.toString() ?? '0';
 
-      final url =
-          "https://commercebook.site/api/v1/purchase/return/store?user_id=$userId&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}&bill_number=$billNo&return_date=$formattedDate&details_notes=notes&gross_total=${isCash ? addAmount2() : addAmount()}&discount=$discount&payment_out=${isCash ? 1 : 0}&payment_amount=${isCash ? totalAmount() : totalAmount2()}";
+        
+  //     final token = prefs.getString('token');
 
-      debugPrint('url ====> $url');
+
+  //     final url =
+  //         "https://commercebook.site/api/v1/purchase/return/store?user_id=$userId&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}&bill_number=$billNo&return_date=$formattedDate&details_notes=notes&gross_total=${isCash ? addAmount2() : addAmount()}&discount=$discount&payment_out=${isCash ? 1 : 0}&payment_amount=${isCash ? totalAmount() : totalAmount2()}";
+
+  //     debugPrint('url ====> $url');
       
-      final requestBody = jsonEncode({
-        "purchase_items": List<Map<String, dynamic>>.from(
+  //     final requestBody = jsonEncode({
+  //       "purchase_items": List<Map<String, dynamic>>.from(
 
-            ///purchase_items  //old ==> pruchase_items
-            purchaseReturnItemModel.map((e) => e.toJson()))
-      });
-
-
-      debugPrint('request body $requestBody');
+  //           ///purchase_items  //old ==> pruchase_items
+  //           purchaseReturnItemModel.map((e) => e.toJson()))
+  //     });
 
 
-       debugPrint("====Stop=====");
+  //     debugPrint('request body $requestBody');
 
-       debugPrint("====Stop=====");
 
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: requestBody, // Use the wrapped JSON
-      );
-      debugPrint(response.body);
+  //      debugPrint("====Stop=====");
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data["success"] == true) {
-          return data["message"];
-        }
+  //      debugPrint("====Stop=====");
+
+  //     final response = await http.post(
+  //       Uri.parse(url),
+  //       headers: {
+  //         //"Content-Type": "application/json",
+  //         "Accept": "application/json",
+  //         "Authorization": "Bearer $token",
+  //       },
+  //       body: requestBody, // Use the wrapped JSON
+  //     );
+  //     debugPrint(response.body);
+
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       if (data["success"] == true) {
+  //         return data["message"];
+  //       }
+  //       demoPurchaseReturnModelList.clear();
+  //       purchaseReturnItemModel.clear();
+  //     } else {
+  //       return jsonDecode(response.body)['message'];
+  //     }
+  //     return "";
+  //   } catch (e) {
+  //     return e.toString();
+  //   }
+  // }
+
+  /// Purchase return store
+// Future<String> storePurchaseReturn({
+//   required String amount,
+//   required String customerId,
+//   required String total,
+//   required String discount,
+//   required String billNo,
+//   required String saleType,
+// }) async {
+//   try {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     String userId = prefs.getInt('user_id')?.toString() ?? '0';
+//     final token = prefs.getString('token');
+
+//     final formattedDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
+
+//     // Build URL without passing purchase_items in query
+//     final url = Uri.parse(
+//       "https://commercebook.site/api/v1/purchase/return/store"
+//       "?user_id=$userId"
+//       "&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}"
+//       "&bill_number=$billNo"
+//       "&return_date=$formattedDate"
+//       "&details_notes=notes"
+//       "&gross_total=$amount"
+//       "&discount=$discount"
+//       "&payment_out=1"
+//       "&payment_amount=$total",
+//     );
+
+//     // Build request body
+//     final requestBody = jsonEncode({
+//       "purchase_items": purchaseReturnItemModel.map((e) => e.toJson()).toList(),
+//     });
+
+//     debugPrint('Request URL: $url');
+//     debugPrint('Request Body: $requestBody');
+
+//     final response = await http.post(
+//       url,
+//       headers: {
+//         "Content-Type": "application/json", // ✅ Must include this
+//         "Accept": "application/json",
+//         "Authorization": "Bearer $token",
+//       },
+//       body: requestBody,
+//     );
+
+//     debugPrint('Response Body: ${response.body}');
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body);
+//       if (data["success"] == true) {
+//         return data["message"] ?? "Success";
+//       }
+//       demoPurchaseReturnModelList.clear();
+//       purchaseReturnItemModel.clear();
+//       return data["message"] ?? "Unknown error";
+//     } else {
+//       final data = jsonDecode(response.body);
+//       return data['message'] ?? "Server error";
+//     }
+//   } catch (e) {
+//     debugPrint('Error in storePurchaseReturn: $e');
+//     return e.toString();
+//   }
+// }
+
+
+
+
+Future<String> storePurchaseReturn({
+  required String amount,
+  required String customerId,
+  required String total,
+  required String discount,
+  required String billNo,
+  required String saleType,
+}) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id')?.toString() ?? '0';
+    final token = prefs.getString('token') ?? '';
+
+    final formattedDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
+
+    final url = Uri.parse(
+      "https://commercebook.site/api/v1/purchase/return/store"
+      "?user_id=$userId"
+      "&customer_id=${customerId.isNotEmpty ? customerId : 'cash'}"
+      "&bill_number=$billNo"
+      "&return_date=$formattedDate"
+      "&details_notes=notes"
+      "&gross_total=$amount"
+      "&discount=$discount"
+      "&payment_out=1"
+      "&payment_amount=$total",
+    );
+
+    final requestBody = jsonEncode({
+      "purchase_items": purchaseReturnItemModel.map((e) => e.toJson()).toList(),
+    });
+
+    debugPrint('Request URL: $url');
+    debugPrint('Request Body: $requestBody');
+
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: requestBody,
+    );
+
+    debugPrint('Response Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data["success"] == true) {
+        // ✅ Clear local lists after successful submission
         demoPurchaseReturnModelList.clear();
         purchaseReturnItemModel.clear();
+        return data["message"] ?? "Success";
       } else {
-        return jsonDecode(response.body)['message'];
+        return data["message"] ?? "Unknown error";
       }
-      return "";
-    } catch (e) {
-      return e.toString();
+    } else {
+      final data = jsonDecode(response.body);
+      return data['message'] ?? "Server error";
     }
+  } catch (e) {
+    debugPrint('Error in storePurchaseReturn: $e');
+    return e.toString();
   }
-
+}
 
 }

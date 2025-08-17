@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:cbook_dt/feature/suppliers/provider/suppliers_list.dart';
@@ -74,7 +75,6 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
         phone.isNotEmpty &&
         address.isNotEmpty &&
         openingBalance.isNotEmpty) {
-
       await supplierProvider.createSupplier(
         name: name,
         email: email,
@@ -108,10 +108,14 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
         _opiningBanglaceController.clear();
         _statusController.clear();
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeView()),
-        );
+        Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
+
+        Navigator.of(context);
+
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const HomeView()),
+        // );
       } else {
         if (!mounted) return;
 
@@ -143,7 +147,7 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
     final supplierProvider = Provider.of<SupplierProvider>(context);
 
     //final textTheme = Theme.of(context).textTheme;
-    
+
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(

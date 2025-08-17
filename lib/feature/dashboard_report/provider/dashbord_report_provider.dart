@@ -4,12 +4,12 @@ import 'package:cbook_dt/feature/dashboard_report/model/sales_report_model_home.
 import 'package:cbook_dt/feature/dashboard_report/model/supplier_trans.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/total_supplier_count_model.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/voucher_summary.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
- 
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardReportProvider extends ChangeNotifier {
-
   bool isLoading = false;
   String? error;
 
@@ -25,13 +25,23 @@ class DashboardReportProvider extends ChangeNotifier {
 
   /// Fetch customer transaction amount
   Future<void> fetchCustomerTransaction() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     isLoadingCustomerTransaction = true;
     errorCustomerTransaction = null;
     notifyListeners();
 
     try {
-      final url = Uri.parse('https://commercebook.site/api/v1/dashboard/transection/customer?type=customer');
-      final response = await http.post(url);
+      final url = Uri.parse(
+          '${AppUrl.baseurl}dashboard/transection/customer?type=customer');
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
@@ -49,6 +59,9 @@ class DashboardReportProvider extends ChangeNotifier {
 
   /// Fetch customer count
   Future<void> fetchCustomerCountTransaction() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     isLoadingCustomerCount = true;
     errorCustomerCount = null;
     notifyListeners();
@@ -56,8 +69,16 @@ class DashboardReportProvider extends ChangeNotifier {
     try {
       var request = http.Request(
         'POST',
-        Uri.parse('https://commercebook.site/api/v1/dashboard/customer?type=customer'),
+        Uri.parse(
+          '${AppUrl.baseurl}dashboard/customer?type=customer',
+        ),
       );
+
+      // ✅ Add headers here
+      request.headers.addAll({
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
 
       http.StreamedResponse response = await request.send();
 
@@ -66,7 +87,8 @@ class DashboardReportProvider extends ChangeNotifier {
         final jsonData = json.decode(jsonStr);
         customerTransactionCountTotal = jsonData['data'] ?? 0;
       } else {
-        errorCustomerCount = 'Failed to load data. Status code: ${response.statusCode}';
+        errorCustomerCount =
+            'Failed to load data. Status code: ${response.statusCode}';
       }
     } catch (e) {
       errorCustomerCount = 'Error occurred: $e';
@@ -82,15 +104,23 @@ class DashboardReportProvider extends ChangeNotifier {
   Future<void> fetchSupplierTransaction() async {
     _setLoading(true);
 
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     try {
       final url = Uri.parse(
-          'https://commercebook.site/api/v1/dashboard/transection/customer?type=suppliers');
-      final response = await http.post(url);
+          '${AppUrl.baseurl}dashboard/transection/customer?type=suppliers');
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
-        supplierTransaction =
-            SupplierTransactionModel.fromJson(decoded).data;
+        supplierTransaction = SupplierTransactionModel.fromJson(decoded).data;
       } else {
         error = "Server error: ${response.statusCode}";
       }
@@ -101,126 +131,147 @@ class DashboardReportProvider extends ChangeNotifier {
     }
   }
 
-
   ///total supplier count.
   int? totalSupplierCount;
 
-Future<void> fetchTotalSupplierCount() async {
-  _setLoading(true);
-  try {
-    final url = Uri.parse(
-        'https://commercebook.site/api/v1/dashboard/customer?type=suppliers');
-    final response = await http.post(url);
+  Future<void> fetchTotalSupplierCount() async {
+    _setLoading(true);
 
-    if (response.statusCode == 200) {
-      final decoded = json.decode(response.body);
-      totalSupplierCount = TotalSupplierCountModel.fromJson(decoded).data;
-    } else {
-      error = "Server error: ${response.statusCode}";
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    try {
+      final url = Uri.parse(
+          '${AppUrl.baseurl}dashboard/customer?type=suppliers');
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        totalSupplierCount = TotalSupplierCountModel.fromJson(decoded).data;
+      } else {
+        error = "Server error: ${response.statusCode}";
+      }
+    } catch (e) {
+      error = e.toString();
+    } finally {
+      _setLoading(false);
+      notifyListeners();
     }
-  } catch (e) {
-    error = e.toString();
-  } finally {
-    _setLoading(false);
-    notifyListeners();
   }
-}
 
   void _setLoading(bool value) {
     isLoading = value;
     notifyListeners();
   }
 
+  dynamic cashInHand;
 
+  ///cash in hand
+  Future<void> fetchCashInHandTransaction() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-    dynamic cashInHand;
+    final url = Uri.parse(
+        '${AppUrl.baseurl}dashboard/transection?type=cash');
+    try {
+      isLoading = true;
+      notifyListeners();
 
-    ///cash in hand
-    Future<void> fetchCashInHandTransaction() async {
-  final url = Uri.parse(
-      'https://commercebook.site/api/v1/dashboard/transection?type=cash');
-  try {
+      final response = await http.post(url, headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      });
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        cashInHand = jsonData['data'];
+        error = null;
+      } else {
+        error = 'Failed to fetch cash in hand data';
+      }
+    } catch (e) {
+      error = e.toString();
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  BankBalanceModel? bankBalanceModel;
+
+  dynamic bankBalance;
+
+  ///bank
+  Future<void> fetchBankBalance() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     isLoading = true;
+    error = null;
     notifyListeners();
 
-    final response = await http.post(url, headers: {
-      'Accept': 'application/json',
-    });
+    final url = Uri.parse(
+        '${AppUrl.baseurl}dashboard/transection?type=bank');
 
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      cashInHand = jsonData['data'];
-      error = null;
-    } else {
-      error = 'Failed to fetch cash in hand data';
+    try {
+      final response = await http.post(url, headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      });
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        bankBalance = decoded['data'] ?? 0;
+      } else {
+        error = 'Server error: ${response.statusCode}';
+      }
+    } catch (e) {
+      error = e.toString();
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-  } catch (e) {
-    error = e.toString();
-  } finally {
-    isLoading = false;
-    notifyListeners();
   }
-}
 
+  VoucherSummary? voucherSummary;
 
-BankBalanceModel? bankBalanceModel;
+  ///voucher summary 30 days
+  Future<void> fetchVoucherSummary() async {
+    isLoading = true;
+    error = null;
+    notifyListeners();
 
-dynamic bankBalance;
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
- ///bank
- Future<void> fetchBankBalance() async {
-  isLoading = true;
-  error = null;
-  notifyListeners();
+    final url = Uri.parse(
+        '${AppUrl.baseurl}dashboard/voucher-summary-30-days');
 
-  final url = Uri.parse('https://commercebook.site/api/v1/dashboard/transection?type=bank');
+    try {
+      final response = await http.post(url, headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      });
 
-  try {
-    final response = await http.post(url, headers: {
-      'Accept': 'application/json',
-    });
-
-    if (response.statusCode == 200) {
-      final decoded = json.decode(response.body);
-      bankBalance = decoded['data'] ?? 0;
-    } else {
-      error = 'Server error: ${response.statusCode}';
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        voucherSummary = VoucherSummary.fromJson(decoded['data']);
+      } else {
+        error = 'Server error: ${response.statusCode}';
+      }
+    } catch (e) {
+      error = e.toString();
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-  } catch (e) {
-    error = e.toString();
-  } finally {
-    isLoading = false;
-    notifyListeners();
   }
-}
-
-VoucherSummary? voucherSummary;
-///voucher summary 30 days
-Future<void> fetchVoucherSummary() async {
-  isLoading = true;
-  error = null;
-  notifyListeners();
-
-  final url = Uri.parse('https://commercebook.site/api/v1/dashboard/voucher-summary-30-days');
-
-  try {
-    final response = await http.post(url, headers: {
-      'Accept': 'application/json',
-    });
-
-    if (response.statusCode == 200) {
-      final decoded = json.decode(response.body);
-      voucherSummary = VoucherSummary.fromJson(decoded['data']);
-    } else {
-      error = 'Server error: ${response.statusCode}';
-    }
-  } catch (e) {
-    error = e.toString();
-  } finally {
-    isLoading = false;
-    notifyListeners();
-  }
-}
 
   List<SalesReportModel> _salesList = [];
   List<SalesReportModel> get salesList => _salesList;
@@ -229,16 +280,20 @@ Future<void> fetchVoucherSummary() async {
   Future<void> fetchSalesLast30Days() async {
     isLoading = true;
 
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     notifyListeners();
 
-    final url = Uri.parse('https://commercebook.site/api/v1/dashboard/sales-last-30-days');
+    final url = Uri.parse(
+        '${AppUrl.baseurl}dashboard/sales-last-30-days');
 
     try {
       final response = await http.post(
         url,
         headers: {
           'Accept': 'application/json',
-          
+          "Authorization": "Bearer $token",
         },
       );
 
@@ -262,17 +317,8 @@ Future<void> fetchVoucherSummary() async {
     notifyListeners();
   }
 
-double maxSalesValue() {
-  if (salesList.isEmpty) return 100;
-  return salesList.map((e) => e.sales).reduce((a, b) => a > b ? a : b);
-}
-
-
-
-
-
-
-
-
-  
+  double maxSalesValue() {
+    if (salesList.isEmpty) return 100;
+    return salesList.map((e) => e.sales).reduce((a, b) => a > b ? a : b);
+  }
 }

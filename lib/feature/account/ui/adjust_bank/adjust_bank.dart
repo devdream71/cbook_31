@@ -241,8 +241,10 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
                               content: Text(result.message)),
                         );
 
-                        //controller.fetchCashAccounts();
+                        controller.fetchBankAdjustments();
+
                         Navigator.of(context).pop();
+                        
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

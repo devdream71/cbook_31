@@ -96,6 +96,11 @@ class CustomerProvider extends ChangeNotifier {
 
   ///show supplier
   Future<void> fetchCustomsr() async {
+    
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     isLoading = true;
     errorMessage = "";
     notifyListeners(); // Notify listeners that data is being fetched
@@ -106,7 +111,13 @@ class CustomerProvider extends ChangeNotifier {
         '${AppUrl.baseurl}all/customers/'); //api/v1/all/customers/
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url,
+       headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      
+      );
       final data = jsonDecode(response.body);
 
       // Print the entire response in the terminal
@@ -164,11 +175,20 @@ class CustomerProvider extends ChangeNotifier {
   List<PaymentVoucherCustomer> get paymentVouchers => _paymentVouchers;
 
   Future<void> fetchPaymentVouchersByCustomerId(int customerId) async {
+     
+     final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     final url = Uri.parse(
         '${AppUrl.baseurl}payment-vouchers/purchase/invoice/$customerId');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url,
+       headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
       final data = jsonDecode(response.body);
 
       debugPrint("Payment Voucher Response: $data");
@@ -194,11 +214,18 @@ class CustomerProvider extends ChangeNotifier {
   List<ReceivedVoucherCustomer> get receivedVouchers => _receivedVouchers;
 
   Future<void> fetchReceviedVouchersByCustomerId(int customerId) async {
+
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     final url = Uri.parse(
         '${AppUrl.baseurl}receive-vouchers/sales/invoice/$customerId');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url,  headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
       final data = jsonDecode(response.body);
 
       debugPrint("received Voucher Response: $data");
@@ -221,6 +248,10 @@ class CustomerProvider extends ChangeNotifier {
 
   ///delete customer
   Future<bool> deleteCustomer(int supplierId) async {
+
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     final url = Uri.parse(
         '${AppUrl.baseurl}customer/remove/$supplierId');
 
@@ -230,6 +261,7 @@ class CustomerProvider extends ChangeNotifier {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          "Authorization": "Bearer $token",
         },
       );
 
@@ -349,8 +381,12 @@ class CustomerProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt('user_id')?.toString() ?? '';
 
+    final token = prefs.getString('token');
+
     final url = Uri.parse('${AppUrl.baseurl}customer/store');
     final request = http.MultipartRequest('POST', url);
+
+   
 
     // ---- Fields (all as strings) ----
     request.fields.addAll({
@@ -385,6 +421,7 @@ class CustomerProvider extends ChangeNotifier {
     // Optional headers; DO NOT set Content-Type manually for MultipartRequest
     request.headers.addAll({
       'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
       // 'Authorization': 'Bearer <token>', // if your API needs it
     });
 
@@ -429,10 +466,17 @@ class CustomerProvider extends ChangeNotifier {
   
   ///get customer by id
   Future<CustomerData?> fetchCustomerById(int customerId) async {
+
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     final url =
         Uri.parse('${AppUrl.baseurl}customer/edit/$customerId');
     try {
-      final response = await http.get(url);
+      final response = await http.get(url,  headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
       debugPrint("API Response: ${response.body}"); // 🔍 Debugging Step
 
       final data = jsonDecode(response.body);
@@ -468,6 +512,8 @@ class CustomerProvider extends ChangeNotifier {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getInt('user_id')?.toString();
+
+    final token = prefs.getString('token');
 
     if (userId == null || userId.isEmpty) {
       errorMessage = "User ID is not available. Please login again.";
@@ -507,6 +553,7 @@ class CustomerProvider extends ChangeNotifier {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        "Authorization": "Bearer $token",
       },
       body: jsonEncode(body),
     );

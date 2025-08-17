@@ -1,7 +1,7 @@
 class PurchaseStoreModel {
   String purchaseDetailsId;
   String itemId;
-  String qty;
+  dynamic qty;
   String unitId;
   String price;
   String subTotal;

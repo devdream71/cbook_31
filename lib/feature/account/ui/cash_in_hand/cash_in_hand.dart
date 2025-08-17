@@ -142,14 +142,24 @@ class _CashInHandState extends State<CashInHand> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      
+                                      item.billNumber == '' ? Text(
+                                        item.billType ?? '',
+                                        style: GoogleFonts.lato(
+                                          fontSize: 14,
+                                          color: Colors.black87,
+                                        ),
+                                      ) : 
+                                      
                                       Text(
                                         item.billNumber ?? '',
                                         style: GoogleFonts.lato(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                                          //fontWeight: FontWeight.bold,
+                                          fontSize: 14,
                                           color: Colors.black87,
                                         ),
                                       ),
+                                      
                                       const SizedBox(height: 4),
                                       Text(
                                         item.date ?? '',

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/close_button_icon.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
+import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
 import 'package:cbook_dt/feature/customer_create/customer_create.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
@@ -22,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/give_information_dialog.dart';
 import '../../sales/widget/add_sales_formfield.dart';
 import 'package:http/http.dart' as http;
@@ -91,6 +93,19 @@ class _LayoutState extends State<_Layout> {
   @override
   void initState() {
     super.initState();
+
+    // Initialize with loading text
+    billController.text = "Loading...";
+    debugPrint('Bill controller initialized with: ${billController.text}');
+
+    Future.microtask(() async {
+      // First fetch settings and wait for completion
+      await Provider.of<BillSettingsProvider>(context, listen: false)
+          .fetchSettings();
+      debugPrint('Settings fetched successfully');
+      await fetchAndSetBillNumber(context);
+    });
+
     Future.microtask(() =>
         Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr());
 
@@ -106,22 +121,49 @@ class _LayoutState extends State<_Layout> {
 
     Provider.of<PurchaseReturnController>(context, listen: false).clearAll();
 
-    Future.microtask(() async => await fetchAndSetBillNumber());
+    //Future.microtask(() async => await fetchAndSetBillNumber());
   }
 
   // Updated fetchAndSetBillNumber with more debugging:
-  Future<void> fetchAndSetBillNumber() async {
+
+  Future<void> fetchAndSetBillNumber(BuildContext context) async {
     debugPrint('fetchAndSetBillNumber called');
 
+    final settingsProvider =
+        Provider.of<BillSettingsProvider>(context, listen: false);
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    // Fetch required values from provider (now they should be available)
+    final code = settingsProvider.getValue("purchases_return_code") ?? "";
+    final billNumber =
+        settingsProvider.getValue("purchase_return_bill_no") ?? "";
+    final withNickName = settingsProvider.getValue("with_nick_name") ?? "0";
+
+    debugPrint(
+        'Settings values - code: $code, billNumber: $billNumber, withNickName: $withNickName');
+
     final url = Uri.parse(
-      '${AppUrl.baseurl}app/setting/bill/number?voucher_type=purchase&type=purchase_return&code=PURR&bill_number=100&with_nick_name=1',
+      '${AppUrl.baseurl}app/setting/bill/number'
+      '?voucher_type=purchase'
+      '&type=purchase_return'
+      '&code=$code'
+      '&bill_number=$billNumber'
+      '&with_nick_name=$withNickName',
     );
 
-    debugPrint('API URL: $url');
+    debugPrint('API URL: =====> $url');
 
     try {
       debugPrint('Making API call...');
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
       debugPrint('API Response Status: ${response.statusCode}');
       debugPrint('API Response Body: ${response.body}');
 
@@ -130,57 +172,108 @@ class _LayoutState extends State<_Layout> {
         debugPrint('Parsed data: $data');
 
         if (data['success'] == true && data['data'] != null) {
-          // String billFromApi = data['data'].toString(); // Ensure it's a string
-
           String billFromApi = data['data']['bill_number'].toString();
           debugPrint('Bill from API: $billFromApi');
 
-          //String newBill = _incrementBillNumber(billFromApi);
-
-          String newBill = billFromApi;
-
-          debugPrint('New bill after increment: $newBill');
-
-          // Update the controller and trigger UI rebuild
           if (mounted) {
             setState(() {
-              billController.text = newBill;
+              billController.text = billFromApi;
               debugPrint('Bill controller updated to: ${billController.text}');
             });
           }
-        } else {
-          debugPrint('API success false or data null');
-          // Handle API error
-          if (mounted) {
-            setState(() {
-              billController.text = "PURR-100"; // Default fallback
-              debugPrint('Set fallback bill: ${billController.text}');
-            });
-          }
+          return;
         }
-      } else {
-        debugPrint('Failed to fetch bill number: ${response.statusCode}');
-        // Set fallback bill number
-        if (mounted) {
-          setState(() {
-            billController.text = "PURR-100";
-            debugPrint(
-                'Set fallback bill due to status code: ${billController.text}');
-          });
-        }
+      }
+
+      // API failed or returned no usable data
+      if (mounted) {
+        setState(() {
+          billController.text = code.isNotEmpty ? "$code-100" : "PURR-100";
+          debugPrint('Fallback bill set to: ${billController.text}');
+        });
       }
     } catch (e) {
       debugPrint('Error fetching bill number: $e');
-      // Set fallback bill number
       if (mounted) {
         setState(() {
-          billController.text = "PURR-100";
-          debugPrint(
-              'Set fallback bill due to exception: ${billController.text}');
+          billController.text = code.isNotEmpty ? "$code-100" : "PURR-100";
+          debugPrint('Fallback bill set to: ${billController.text}');
         });
       }
     }
   }
+
+  // Future<void> fetchAndSetBillNumber(context) async {
+  //   debugPrint('fetchAndSetBillNumber called');
+
+  //   final url = Uri.parse(
+  //     '${AppUrl.baseurl}app/setting/bill/number?voucher_type=purchase&type=purchase_return&code=PURR&bill_number=100&with_nick_name=1',
+  //   );
+
+  //   debugPrint('API URL: $url');
+
+  //   try {
+  //     debugPrint('Making API call...');
+  //     final response = await http.get(url);
+  //     debugPrint('API Response Status: ${response.statusCode}');
+  //     debugPrint('API Response Body: ${response.body}');
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       debugPrint('Parsed data: $data');
+
+  //       if (data['success'] == true && data['data'] != null) {
+  //         // String billFromApi = data['data'].toString(); // Ensure it's a string
+
+  //         String billFromApi = data['data']['bill_number'].toString();
+  //         debugPrint('Bill from API: $billFromApi');
+
+  //         //String newBill = _incrementBillNumber(billFromApi);
+
+  //         String newBill = billFromApi;
+
+  //         debugPrint('New bill after increment: $newBill');
+
+  //         // Update the controller and trigger UI rebuild
+  //         if (mounted) {
+  //           setState(() {
+  //             billController.text = newBill;
+  //             debugPrint('Bill controller updated to: ${billController.text}');
+  //           });
+  //         }
+  //       } else {
+  //         debugPrint('API success false or data null');
+  //         // Handle API error
+  //         if (mounted) {
+  //           setState(() {
+  //             billController.text = "PURR-100"; // Default fallback
+  //             debugPrint('Set fallback bill: ${billController.text}');
+  //           });
+  //         }
+  //       }
+  //     } else {
+  //       debugPrint('Failed to fetch bill number: ${response.statusCode}');
+  //       // Set fallback bill number
+  //       if (mounted) {
+  //         setState(() {
+  //           billController.text = "PURR-100";
+  //           debugPrint(
+  //               'Set fallback bill due to status code: ${billController.text}');
+  //         });
+  //       }
+  //     }
+  //   } catch (e) {
+  //     debugPrint('Error fetching bill number: $e');
+  //     // Set fallback bill number
+  //     if (mounted) {
+  //       setState(() {
+  //         billController.text = "PURR-100";
+  //         debugPrint(
+  //             'Set fallback bill due to exception: ${billController.text}');
+  //       });
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -634,57 +727,57 @@ class _LayoutState extends State<_Layout> {
                                   ),
 
                                   ///bill person
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 8.0),
-                                    child: Consumer<PaymentVoucherProvider>(
-                                      builder: (context, provider, child) {
-                                        return SizedBox(
-                                          height: 30,
-                                          width: double.infinity,
-                                          child: provider.isLoading
-                                              ? const Center(
-                                                  child:
-                                                      CircularProgressIndicator())
-                                              : CustomDropdownTwo(
-                                                  hint: '',
-                                                  items:
-                                                      provider.billPersonNames,
-                                                  width: double.infinity,
-                                                  height: 30,
-                                                  labelText: 'Bill Person',
-                                                  selectedItem:
-                                                      selectedBillPerson,
-                                                  onChanged: (value) {
-                                                    debugPrint(
-                                                        '=== Bill Person Selected: $value ===');
-                                                    setState(() {
-                                                      selectedBillPerson =
-                                                          value;
-                                                      selectedBillPersonData =
-                                                          provider.billPersons
-                                                              .firstWhere(
-                                                        (person) =>
-                                                            person.name ==
-                                                            value,
-                                                      ); // ✅ Save the whole object globally
-                                                      selectedBillPersonId =
-                                                          selectedBillPersonData!
-                                                              .id;
-                                                    });
+                                  // Padding(
+                                  //   padding: const EdgeInsets.only(top: 8.0),
+                                  //   child: Consumer<PaymentVoucherProvider>(
+                                  //     builder: (context, provider, child) {
+                                  //       return SizedBox(
+                                  //         height: 30,
+                                  //         width: double.infinity,
+                                  //         child: provider.isLoading
+                                  //             ? const Center(
+                                  //                 child:
+                                  //                     CircularProgressIndicator())
+                                  //             : CustomDropdownTwo(
+                                  //                 hint: '',
+                                  //                 items:
+                                  //                     provider.billPersonNames,
+                                  //                 width: double.infinity,
+                                  //                 height: 30,
+                                  //                 labelText: 'Bill Person',
+                                  //                 selectedItem:
+                                  //                     selectedBillPerson,
+                                  //                 onChanged: (value) {
+                                  //                   debugPrint(
+                                  //                       '=== Bill Person Selected: $value ===');
+                                  //                   setState(() {
+                                  //                     selectedBillPerson =
+                                  //                         value;
+                                  //                     selectedBillPersonData =
+                                  //                         provider.billPersons
+                                  //                             .firstWhere(
+                                  //                       (person) =>
+                                  //                           person.name ==
+                                  //                           value,
+                                  //                     ); // ✅ Save the whole object globally
+                                  //                     selectedBillPersonId =
+                                  //                         selectedBillPersonData!
+                                  //                             .id;
+                                  //                   });
 
-                                                    debugPrint(
-                                                        'Selected Bill Person Details:');
-                                                    debugPrint(
-                                                        '- ID: ${selectedBillPersonData!.id}');
-                                                    debugPrint(
-                                                        '- Name: ${selectedBillPersonData!.name}');
-                                                    debugPrint(
-                                                        '- Phone: ${selectedBillPersonData!.phone}');
-                                                  }),
-                                        );
-                                      },
-                                    ),
-                                  ),
+                                  //                   debugPrint(
+                                  //                       'Selected Bill Person Details:');
+                                  //                   debugPrint(
+                                  //                       '- ID: ${selectedBillPersonData!.id}');
+                                  //                   debugPrint(
+                                  //                       '- Name: ${selectedBillPersonData!.name}');
+                                  //                   debugPrint(
+                                  //                       '- Phone: ${selectedBillPersonData!.phone}');
+                                  //                 }),
+                                  //       );
+                                  //     },
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             )
@@ -742,33 +835,31 @@ class _LayoutState extends State<_Layout> {
                                           });
                                         });
 
-                                          final customerProvider =
-                                                          Provider.of<
-                                                                  CustomerProvider>(
-                                                              context,
-                                                              listen: false);
-                                                      final selectedCustomer =
-                                                          customerProvider
-                                                              .selectedCustomer; // Or selectedCustomerRecived
+                                        final customerProvider =
+                                            Provider.of<CustomerProvider>(
+                                                context,
+                                                listen: false);
+                                        final selectedCustomer = customerProvider
+                                            .selectedCustomer; // Or selectedCustomerRecived
 
-                                                      if (selectedCustomer !=
-                                                          null) {
-                                                        debugPrint(
-                                                            "Customer Name: ${selectedCustomer.name}");
-                                                        debugPrint(
-                                                            "Customer ID: ${selectedCustomer.id}");
+                                        if (selectedCustomer != null) {
+                                          debugPrint(
+                                              "Customer Name: ${selectedCustomer.name}");
+                                          debugPrint(
+                                              "Customer ID: ${selectedCustomer.id}");
 
-                                                            selectedCustomerId = selectedCustomer.id.toString();
-                                                      }
+                                          selectedCustomerId =
+                                              selectedCustomer.id.toString();
+                                        }
 
-                                              final selctedvalue = selectedCustomerId ?? "cash";     
-
+                                        final selctedvalue =
+                                            selectedCustomerId ?? "cash";
 
                                         if (controller.selcetedItemId != null) {
                                           await itemProvider
                                               .fetchPurchaseHistory(
-                                            controller.selcetedItemId, selctedvalue
-                                          );
+                                                  controller.selcetedItemId,
+                                                  selctedvalue);
                                         }
                                       },
                                     ),

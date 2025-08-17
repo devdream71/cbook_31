@@ -36,10 +36,14 @@ class _AddUnitState extends State<AddUnit> {
           ),
         );
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const UnitListView()),
-        );
+        unitProvider.fetchUnits();
+
+        Navigator.pop(context);
+
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const UnitListView()),
+        // );
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

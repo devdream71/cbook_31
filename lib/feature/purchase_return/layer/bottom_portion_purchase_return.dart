@@ -2,12 +2,13 @@ import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/invoice/invoice_model.dart';
 import 'package:cbook_dt/feature/purchase_return/controller/purchase_return_controller.dart';
+import 'package:cbook_dt/feature/purchase_return/provider/purchase_return_provider.dart';
 import 'package:cbook_dt/feature/sales/widget/custom_box.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BottomPortionPurchaseReturn extends StatelessWidget {
+class BottomPortionPurchaseReturn extends StatefulWidget {
   final String saleType;
   final String? customerId;
   final List<InvoiceItem> invoiceItems;
@@ -21,12 +22,20 @@ class BottomPortionPurchaseReturn extends StatelessWidget {
   });
 
   @override
+  State<BottomPortionPurchaseReturn> createState() =>
+      _BottomPortionPurchaseReturnState();
+}
+
+class _BottomPortionPurchaseReturnState
+    extends State<BottomPortionPurchaseReturn> {
+  @override
   Widget build(BuildContext context) {
     final controller = context.watch<PurchaseReturnController>();
+
     //final colorScheme = Theme.of(context).colorScheme;
     debugPrint("its bottom portion page");
-    debugPrint(saleType);
-    debugPrint(customerId);
+    debugPrint(widget.saleType);
+    debugPrint(widget.customerId);
 
     return SingleChildScrollView(
       child: Padding(
@@ -153,106 +162,72 @@ class BottomPortionPurchaseReturn extends StatelessWidget {
             ////===
             InkWell(
               onTap: () async {
-                if (billNumber.trim().isEmpty) {
+                if (widget.billNumber.trim().isEmpty ||
+                    controller.demoPurchaseReturnModelList.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Bill number cannot be empty'),
+                      content:
+                          Text('Bill number cannot be empty or no item added.'),
                       backgroundColor: Colors.red,
                     ),
                   );
+                  return;
+                }
+
+                final amount = controller.isCash
+                    ? controller.addAmount2()
+                    : controller.addAmount();
+                final total = controller.isCash
+                    ? controller.totalAmount()
+                    : controller.totalAmount2();
+                final discount = controller.discountController.text;
+
+                final isSuccess = await controller.storePurchaseReturn(
+                  amount: amount,
+                  customerId: widget.customerId ?? "cash",
+                  saleType: widget.saleType,
+                  discount: discount,
+                  billNo: widget.billNumber,
+                  total: total,
+                );
+
+                if (isSuccess.isNotEmpty) {
+                  // ✅ Clear controllers and lists BEFORE popping
+                  controller.itemsCashReuturn.clear();
+                  controller.itemsCreditReturn.clear();
+                  controller.purchaseItemReturn.clear();
+                  controller.reductionQtyList.clear();
+                  controller.demoPurchaseReturnModelList.clear();
+                  controller.discountController.clear();
+                  controller.discountAmountController.clear();
+                  controller.customerNameController.clear();
+
+                  // Refresh purchase return list in provider
+                  await Provider.of<PurchaseReturnProvider>(context,
+                          listen: false)
+                      .fetchPurchaseReturns();
+
+                  Navigator.pop(context);
+
+                  // Show success snackbar
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(isSuccess),
+                      backgroundColor: Colors.green,
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+
+
+                  // ✅ Pop page after clearing state
                 } else {
-                  String amount = controller.isCash
-                      ? controller.addAmount2()
-                      : controller.addAmount();
-
-                  String discount = controller.discountController.text;
-
-                  String total = controller.isCash
-                      ? controller.totalAmount()
-                      : controller.totalAmount2();
-
-                  print(
-                      "demoPurchaseReturnModelList (${controller.demoPurchaseReturnModelList.length} items):");
-                  for (var item in controller.demoPurchaseReturnModelList) {
-                    print(item
-                        .toString()); // Make sure your model has a proper toString() method
-                  }
-
-                  debugPrint(
-                      ' cash / credit / item length. ${controller.itemsCashReuturn.length} ==== ${controller.itemsCreditReturn.length}  === ${controller.demoPurchaseReturnModelList.length}');
-
-                  if (controller.demoPurchaseReturnModelList.isEmpty ||
-                      billNumber.isEmpty) {
-                    debugPrint(
-                        ' cash / credit / item length. ${controller.itemsCashReuturn} ==== ${controller.itemsCreditReturn}  === ${controller.demoPurchaseReturnModelList}');
-
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text(
-                        'No item is added or no bill number.',
-                      ),
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(isSuccess),
                       backgroundColor: Colors.red,
-                    ));
-
-                    print(
-                        "demoPurchaseReturnModelList (${controller.demoPurchaseReturnModelList.length} items):");
-                    for (var item in controller.demoPurchaseReturnModelList) {
-                      print(item
-                          .toString()); // Make sure your model has a proper toString() method
-                    }
-                  } else {
-                    final isSuccess = await controller.storePurchaseReturn(
-                        //date: date,
-                        amount: amount,
-                        customerId: customerId ?? "cash",
-                        saleType: saleType,
-                        discount: discount,
-                        billNo: billNumber,
-                        total: total);
-
-                    if (isSuccess.isNotEmpty) {
-                      // ✅ Clear text fields
-                      controller.discountController.clear();
-                      controller.discountAmountController.clear();
-                      controller.customerNameController
-                          .clear(); // Customer dropdown text
-
-                      // ✅ Clear lists
-                      controller.itemsCashReuturn.clear();
-                      controller.itemsCreditReturn.clear();
-                      controller.purchaseItemReturn.clear();
-                      controller.reductionQtyList.clear();
-                      controller.demoPurchaseReturnModelList.clear();
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomeView()));
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.green,
-                          duration: const Duration(seconds: 1),
-                          content: Text(isSuccess),
-                        ),
-                      );
-
-                      controller.itemsCashReuturn.clear();
-                      controller.itemsCreditReturn.clear();
-                      controller.purchaseItemReturn.clear();
-
-                      controller.reductionQtyList.clear();
-                      controller.itemsCashReuturn.clear();
-                      controller.discountAmountController.clear();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.red,
-                          duration: const Duration(seconds: 1),
-                          content: Text(isSuccess),
-                        ),
-                      );
-                    }
-                  }
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
                 }
               },
               child: CustomBox(

@@ -9,6 +9,7 @@ import 'package:cbook_dt/feature/item/multiprice_two.dart';
 import 'package:cbook_dt/feature/item/multipul_price.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
 import 'package:cbook_dt/feature/item/provider/item_save_provider.dart';
+import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
 import 'package:cbook_dt/feature/sales/controller/sales_controller.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:cbook_dt/feature/unit/unit_list.dart';
@@ -50,6 +51,11 @@ class _AddItemState extends State<AddItem> {
     Future.microtask(() =>
         Provider.of<ItemCategoryProvider>(context, listen: false)
             .fetchCategories());
+
+    Future.microtask(() =>
+        Provider.of<AddItemProvider>(context, listen: false)
+             );        
+
 
     Future.microtask(() {
       final controller = Provider.of<SalesController>(context, listen: false);
@@ -179,11 +185,11 @@ class _AddItemState extends State<AddItem> {
                               ///item
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const AddItem()),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (context) => const AddItem()),
+                                  // );
                                 },
                                 child: Container(
                                   decoration: const BoxDecoration(
@@ -220,7 +226,8 @@ class _AddItemState extends State<AddItem> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const UnitListView()),
+                                        builder: (context) =>
+                                            const UnitListView()),
                                   );
                                 },
                                 child: Container(
@@ -865,13 +872,12 @@ class _AddItemState extends State<AddItem> {
                                   ),
                                   if (_isDefaultPriceChecked)
                                     const Padding(
-                                      padding:
-                                            EdgeInsets.only(left: 50.0),
+                                      padding: EdgeInsets.only(left: 50.0),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                            SizedBox(height: 5),
+                                          SizedBox(height: 5),
                                           SupplierCustomerPriceTwoPage(), // your price fields
                                         ],
                                       ),
@@ -1280,6 +1286,12 @@ class _AddItemState extends State<AddItem> {
                               categorypriceData['ecommerces_price'],
                         );
 
+                       final itemList =  Provider.of<AddItemProvider>(context, listen: false);
+
+                        itemList.fetchItems();
+
+                        Navigator.pop(context);
+
                         //Clear all form fields after saving
                         controller.nameAddItemController.clear();
                         controller.stockAddItemController.clear();
@@ -1320,7 +1332,9 @@ class _AddItemState extends State<AddItem> {
                 ),
               ),
 
-               const SizedBox(height: 50,)
+              const SizedBox(
+                height: 50,
+              )
             ],
           ),
         ),

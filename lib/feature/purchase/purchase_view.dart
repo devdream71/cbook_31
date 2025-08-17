@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
+import 'package:cbook_dt/feature/app_service_free_premium/controler/app_service_controller.dart';
+import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
@@ -14,6 +16,7 @@ import 'package:cbook_dt/feature/item/provider/unit_provider.dart';
 import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
 import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/purchase/model/purchase_create_model.dart';
+import 'package:cbook_dt/feature/purchase/provider/purchase_provider.dart';
 import 'package:cbook_dt/feature/purchase/purchase_setting.dart';
 import 'package:cbook_dt/feature/sales/sales_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
@@ -25,6 +28,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../common/give_information_dialog.dart';
 import '../sales/widget/add_sales_formfield.dart';
 import 'controller/purchase_controller.dart';
@@ -91,6 +95,49 @@ class LayoutState extends State<Layout> {
   int? selectedBillPersonId;
   BillPersonModel? selectedBillPersonData;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   // Initialize with loading text
+  //   billController.text = "Loading...";
+  //   debugPrint('Bill controller initialized with: ${billController.text}');
+
+  //   Future.microtask(() async {
+  //     ///fetch customer.
+  //     Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
+
+  //     ///fetch category.
+  //     Provider.of<ItemCategoryProvider>(context, listen: false)
+  //         .fetchCategories();
+
+  //     ///fetch item.
+  //     Provider.of<AddItemProvider>(context, listen: false).fetchItems();
+
+  //     ///fetch stock quantity.
+  //     Provider.of<AddItemProvider>(context, listen: false)
+  //         .fetchPurchaseStockQuantity(
+  //             "1"); // Pass a default itemId or handle it later
+
+  //     ///fetch customer.
+  //     Future.microtask(() =>
+  //         Provider.of<CustomerProvider>(context, listen: false)
+  //             .fetchCustomsr());
+
+  //     ///fetch bill person.
+  //     Future.microtask(() =>
+  //         Provider.of<PaymentVoucherProvider>(context, listen: false)
+  //             .fetchBillPersons());
+
+  //     // await fetchAndSetBillNumber();
+
+  //     debugPrint('About to fetch bill number...');
+  //     await fetchAndSetBillNumber(context);
+  //     debugPrint(
+  //         'Bill number fetch completed. Current value: ${billController.text}');
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
@@ -100,53 +147,87 @@ class LayoutState extends State<Layout> {
     debugPrint('Bill controller initialized with: ${billController.text}');
 
     Future.microtask(() async {
-      ///fetch customer.
-      Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
+      try {
+        // First fetch settings and wait for completion
+        await Provider.of<BillSettingsProvider>(context, listen: false)
+            .fetchSettings();
+        debugPrint('Settings fetched successfully');
 
-      ///fetch category.
-      Provider.of<ItemCategoryProvider>(context, listen: false)
-          .fetchCategories();
+        final appServiceProvider =
+            await Provider.of<AppServiceProvider>(context, listen: false);
 
-      ///fetch item.
-      Provider.of<AddItemProvider>(context, listen: false).fetchItems();
+        // Now fetch the bill number after settings are loaded
+        await fetchAndSetBillNumber(context);
+        debugPrint(
+            'Bill number fetch completed. Current value: ${billController.text}');
 
-      ///fetch stock quantity.
-      Provider.of<AddItemProvider>(context, listen: false)
-          .fetchPurchaseStockQuantity(
-              "1"); // Pass a default itemId or handle it later
+        // Fetch other data in parallel since they don't depend on settings
+        await Future.wait([
+          // Fetch customer
+          Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr(),
 
-      ///fetch customer.
-      Future.microtask(() =>
-          Provider.of<CustomerProvider>(context, listen: false)
-              .fetchCustomsr());
+          // Fetch category
+          Provider.of<ItemCategoryProvider>(context, listen: false)
+              .fetchCategories(),
 
-      ///fetch bill person.
-      Future.microtask(() =>
+          // Fetch item
+          Provider.of<AddItemProvider>(context, listen: false).fetchItems(),
+
+          // Fetch bill person
           Provider.of<PaymentVoucherProvider>(context, listen: false)
-              .fetchBillPersons());
+              .fetchBillPersons(),
+        ]);
 
-      // await fetchAndSetBillNumber();
-
-      debugPrint('About to fetch bill number...');
-      await fetchAndSetBillNumber();
-      debugPrint(
-          'Bill number fetch completed. Current value: ${billController.text}');
+        // Fetch stock quantity with default itemId
+        await Provider.of<AddItemProvider>(context, listen: false)
+            .fetchPurchaseStockQuantity("1");
+      } catch (e) {
+        debugPrint('Error in initState: $e');
+        // Set fallback bill number if everything fails
+        if (mounted) {
+          setState(() {
+            billController.text = "PUR-100";
+          });
+        }
+      }
     });
   }
 
-  // Updated fetchAndSetBillNumber with more debugging:
-  Future<void> fetchAndSetBillNumber() async {
+  Future<void> fetchAndSetBillNumber(BuildContext context) async {
     debugPrint('fetchAndSetBillNumber called');
 
+    final settingsProvider =
+        Provider.of<BillSettingsProvider>(context, listen: false);
+
+       final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+    
+
+    // Fetch required values from provider (now they should be available)
+    final code = settingsProvider.getValue("purchases_code") ?? "";
+    final billNumber = settingsProvider.getValue("purchase_bill_no") ?? "";
+    final withNickName = settingsProvider.getValue("with_nick_name") ?? "0";
+
+    debugPrint(
+        'Settings values - code: $code, billNumber: $billNumber, withNickName: $withNickName');
+
     final url = Uri.parse(
-      '${AppUrl.baseurl}app/setting/bill/number?voucher_type=purchase&type=purchase&code=PUR&bill_number=100&with_nick_name=1',
+      '${AppUrl.baseurl}app/setting/bill/number'
+      '?voucher_type=purchase'
+      '&type=purchase'
+      '&code=$code'
+      '&bill_number=$billNumber'
+      '&with_nick_name=$withNickName',
     );
 
-    debugPrint('API URL: $url');
+    debugPrint('API URL: =====> $url');
 
     try {
       debugPrint('Making API call...');
-      final response = await http.get(url);
+      final response = await http.get(url,  headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
       debugPrint('API Response Status: ${response.statusCode}');
       debugPrint('API Response Body: ${response.body}');
 
@@ -155,52 +236,32 @@ class LayoutState extends State<Layout> {
         debugPrint('Parsed data: $data');
 
         if (data['success'] == true && data['data'] != null) {
-          // String billFromApi = data['data'].toString(); // Ensure it's a string
           String billFromApi = data['data']['bill_number'].toString();
           debugPrint('Bill from API: $billFromApi');
 
-          //String newBill = _incrementBillNumber(billFromApi);
-
-          String newBill = billFromApi;
-
-          debugPrint('New bill after increment: $newBill');
-
-          // Update the controller and trigger UI rebuild
           if (mounted) {
             setState(() {
-              billController.text = newBill;
+              billController.text = billFromApi;
               debugPrint('Bill controller updated to: ${billController.text}');
             });
           }
-        } else {
-          debugPrint('API success false or data null');
-          // Handle API error
-          if (mounted) {
-            setState(() {
-              billController.text = "PUR-102"; // Default fallback
-              debugPrint('Set fallback bill: ${billController.text}');
-            });
-          }
+          return;
         }
-      } else {
-        debugPrint('Failed to fetch bill number: ${response.statusCode}');
-        // Set fallback bill number
-        if (mounted) {
-          setState(() {
-            billController.text = "PUR-102";
-            debugPrint(
-                'Set fallback bill due to status code: ${billController.text}');
-          });
-        }
+      }
+
+      // API failed or returned no usable data
+      if (mounted) {
+        setState(() {
+          billController.text = code.isNotEmpty ? "$code-100" : "PUR-100";
+          debugPrint('Fallback bill set to: ${billController.text}');
+        });
       }
     } catch (e) {
       debugPrint('Error fetching bill number: $e');
-      // Set fallback bill number
       if (mounted) {
         setState(() {
-          billController.text = "PUR-102";
-          debugPrint(
-              'Set fallback bill due to exception: ${billController.text}');
+          billController.text = code.isNotEmpty ? "$code-100" : "PUR-100";
+          debugPrint('Fallback bill set to: ${billController.text}');
         });
       }
     }
@@ -440,8 +501,6 @@ class LayoutState extends State<Layout> {
                                                                       (context) =>
                                                                           const SuppliersCreate()));
                                                         }),
-
-                                                    
                                                   ],
                                                 ),
                                         ),
@@ -541,57 +600,58 @@ class LayoutState extends State<Layout> {
                                     ),
 
                                     ///bill person
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Consumer<PaymentVoucherProvider>(
-                                        builder: (context, provider, child) {
-                                          return SizedBox(
-                                            height: 30,
-                                            width: 130,
-                                            child: provider.isLoading
-                                                ? const Center(
-                                                    child:
-                                                        CircularProgressIndicator())
-                                                : CustomDropdownTwo(
-                                                    hint: '',
-                                                    items: provider
-                                                        .billPersonNames,
-                                                    width: double.infinity,
-                                                    height: 30,
-                                                    labelText: 'Bill Person',
-                                                    selectedItem:
-                                                        selectedBillPerson,
-                                                    onChanged: (value) {
-                                                      debugPrint(
-                                                          '=== Bill Person Selected: $value ===');
-                                                      setState(() {
-                                                        selectedBillPerson =
-                                                            value;
-                                                        selectedBillPersonData =
-                                                            provider.billPersons
-                                                                .firstWhere(
-                                                          (person) =>
-                                                              person.name ==
-                                                              value,
-                                                        ); // ✅ Save the whole object globally
-                                                        selectedBillPersonId =
-                                                            selectedBillPersonData!
-                                                                .id;
-                                                      });
 
-                                                      debugPrint(
-                                                          'Selected Bill Person Details:');
-                                                      debugPrint(
-                                                          '- ID: ${selectedBillPersonData!.id}');
-                                                      debugPrint(
-                                                          '- Name: ${selectedBillPersonData!.name}');
-                                                      debugPrint(
-                                                          '- Phone: ${selectedBillPersonData!.phone}');
-                                                    }),
-                                          );
-                                        },
-                                      ),
-                                    ),
+                                    //   Padding(
+                                    //   padding: const EdgeInsets.only(top: 8.0),
+                                    //   child: Consumer<PaymentVoucherProvider>(
+                                    //     builder: (context, provider, child) {
+                                    //       return SizedBox(
+                                    //         height: 30,
+                                    //         width: 130,
+                                    //         child: provider.isLoading
+                                    //             ? const Center(
+                                    //                 child:
+                                    //                     CircularProgressIndicator())
+                                    //             : CustomDropdownTwo(
+                                    //                 hint: '',
+                                    //                 items: provider
+                                    //                     .billPersonNames,
+                                    //                 width: double.infinity,
+                                    //                 height: 30,
+                                    //                 labelText: 'Bill Person',
+                                    //                 selectedItem:
+                                    //                     selectedBillPerson,
+                                    //                 onChanged: (value) {
+                                    //                   debugPrint(
+                                    //                       '=== Bill Person Selected: $value ===');
+                                    //                   setState(() {
+                                    //                     selectedBillPerson =
+                                    //                         value;
+                                    //                     selectedBillPersonData =
+                                    //                         provider.billPersons
+                                    //                             .firstWhere(
+                                    //                       (person) =>
+                                    //                           person.name ==
+                                    //                           value,
+                                    //                     ); // ✅ Save the whole object globally
+                                    //                     selectedBillPersonId =
+                                    //                         selectedBillPersonData!
+                                    //                             .id;
+                                    //                   });
+
+                                    //                   debugPrint(
+                                    //                       'Selected Bill Person Details:');
+                                    //                   debugPrint(
+                                    //                       '- ID: ${selectedBillPersonData!.id}');
+                                    //                   debugPrint(
+                                    //                       '- Name: ${selectedBillPersonData!.name}');
+                                    //                   debugPrint(
+                                    //                       '- Phone: ${selectedBillPersonData!.phone}');
+                                    //                 }),
+                                    //       );
+                                    //     },
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               )
@@ -760,9 +820,10 @@ class LayoutState extends State<Layout> {
                                                         Expanded(
                                                           child: InkWell(
                                                             onTap: () {
-                                                             
-                                                              showCashItemDetailsDialog(context, item, index);
-                                                             
+                                                              showCashItemDetailsDialog(
+                                                                  context,
+                                                                  item,
+                                                                  index);
                                                             },
                                                             child: DecoratedBox(
                                                                 decoration:
@@ -1013,7 +1074,10 @@ class LayoutState extends State<Layout> {
                                                           Expanded(
                                                             child: InkWell(
                                                               onTap: () {
-                                                                 showCashItemDetailsDialog(context, item, index);
+                                                                showCashItemDetailsDialog(
+                                                                    context,
+                                                                    item,
+                                                                    index);
                                                               },
                                                               child:
                                                                   DecoratedBox(
@@ -1393,7 +1457,6 @@ class LayoutState extends State<Layout> {
                                                 height: 30,
                                                 width: 75,
                                                 child: AddSalesFormfield(
-                                                  
                                                   labelText: "৳",
                                                   keyboardType:
                                                       TextInputType.number,
@@ -1436,7 +1499,8 @@ class LayoutState extends State<Layout> {
                                                 height: 30,
                                                 width: 150,
                                                 child: AddSalesFormfield(
-                                                  keyboardType: TextInputType.number,
+                                                  keyboardType:
+                                                      TextInputType.number,
                                                   readOnly: true,
                                                   onChanged: (value) {
                                                     Provider.of(context)<
@@ -1580,7 +1644,8 @@ class LayoutState extends State<Layout> {
                                                 height: 30,
                                                 width: 75,
                                                 child: AddSalesFormfield(
-                                                  keyboardType: TextInputType.number,
+                                                  keyboardType:
+                                                      TextInputType.number,
                                                   labelText: "%",
                                                   onChanged: (value) {
                                                     controller
@@ -1598,7 +1663,8 @@ class LayoutState extends State<Layout> {
                                                 height: 30,
                                                 width: 75,
                                                 child: AddSalesFormfield(
-                                                  keyboardType: TextInputType.number,
+                                                  keyboardType:
+                                                      TextInputType.number,
                                                   labelText: "৳",
                                                   controller: controller
                                                       .discountController,
@@ -1793,9 +1859,9 @@ class LayoutState extends State<Layout> {
                         ),
 
                         hPad5,
-                       
+
                         hPad5,
-                       
+
                         hPad5,
                         InkWell(
                           onTap: () async {
@@ -1826,8 +1892,6 @@ class LayoutState extends State<Layout> {
 
                             // 👉 Check: if sales type is credit but no customer selected
 
-                           
-
                             if (controller.purchaseItem.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -1835,11 +1899,7 @@ class LayoutState extends State<Layout> {
                                   backgroundColor: Colors.red,
                                 ),
                               );
-                            } 
-                            
-                           
-                            
-                            else {
+                            } else {
                               bool isSuccess = await controller.storePurchase(
                                 context,
                                 date: date,
@@ -1858,7 +1918,7 @@ class LayoutState extends State<Layout> {
                                 billNo: billController.text,
                                 total: total,
                                 paymnetAmount: payment,
-                                billPersonId: selectedBillPersonData!.id,
+                                //billPersonId: selectedBillPersonData!.id,
                               );
 
                               if (isSuccess) {
@@ -1885,12 +1945,20 @@ class LayoutState extends State<Layout> {
                                 controller.itemsCredit = [];
                                 controller.itemsCash = [];
 
-                                Navigator.pushReplacement(
-                                  // ignore: use_build_context_synchronously
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const HomeView()),
-                                );
+                                final purchaseProvider =
+                                    Provider.of<PurchaseProvider>(context,
+                                        listen: false);
+
+                                purchaseProvider.fetchPurchases();
+
+                                Navigator.pop(context);
+
+                                // Navigator.pushReplacement(
+                                //   // ignore: use_build_context_synchronously
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (_) => const HomeView()),
+                                // );
                               } else {
                                 if (!mounted) return;
 
@@ -1927,841 +1995,914 @@ class LayoutState extends State<Layout> {
     );
   }
 
- 
+  ///purchase item add in list.
 
-   ///purchase item add in list.
- 
-void showSalesDialog(
-    BuildContext context, PurchaseController controller) async {
-  final ColorScheme colorScheme = Theme.of(context).colorScheme;
+  void showSalesDialog(
+      BuildContext context, PurchaseController controller) async {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-  final unitProvider = Provider.of<UnitProvider>(context, listen: false);
+    final unitProvider = Provider.of<UnitProvider>(context, listen: false);
 
-  final fetchStockQuantity =
-      Provider.of<AddItemProvider>(context, listen: false);
+    final fetchStockQuantity =
+        Provider.of<AddItemProvider>(context, listen: false);
 
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (_) => const Center(child: CircularProgressIndicator()),
-  );
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
 
-  // ✅ Pop the loading dialog
-  Navigator.of(context).pop();
+    // ✅ Pop the loading dialog
+    Navigator.of(context).pop();
 
-  // Define local state variables
-  String? selectedCategoryId;
-  String? selectedSubCategoryId;
-  String? selectedItemName;
-  ItemsModel? selectedItemData;
-  int? selectedItemId;
-  List<String> unitIdsList = [];
+    // Define local state variables
+    String? selectedCategoryId;
+    String? selectedSubCategoryId;
+    String? selectedItemName;
+    ItemsModel? selectedItemData;
+    int? selectedItemId;
+    List<String> unitIdsList = [];
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return StatefulBuilder(builder: (context, setState) {
-        
-        // ✅ ADD LISTENERS FOR QTY AND PRICE CHANGES
-        void updateSubtotal() {
-          // Call the controller's subtotal calculation method
-          controller.dialogtotalController();
-          // Force UI update
-          setState(() {});
-        }
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          // ✅ ADD LISTENERS FOR QTY AND PRICE CHANGES
+          void updateSubtotal() {
+            // Call the controller's subtotal calculation method
+            controller.dialogtotalController();
+            // Force UI update
+            setState(() {});
+          }
 
-        // Add listeners to text controllers if not already added
-        if (!controller.qtyController.hasListeners) {
-          controller.qtyController.addListener(updateSubtotal);
-        }
-        if (!controller.mrpController.hasListeners) {
-          controller.mrpController.addListener(updateSubtotal);
-        }
+          // Add listeners to text controllers if not already added
+          if (!controller.qtyController.hasListeners) {
+            controller.qtyController.addListener(updateSubtotal);
+          }
+          if (!controller.mrpController.hasListeners) {
+            controller.mrpController.addListener(updateSubtotal);
+          }
 
-        return Dialog(
-            backgroundColor: Colors.grey.shade400,
-            child: Container(
-              height: 300,
-              decoration: BoxDecoration(
-                color: const Color(0xffe7edf4),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Column(
-                children: [
-                  ///header, add item & service , and close icon
-                  Container(
-                    height: 30,
-                    color: const Color(0xff278d46),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(width: 30),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 5),
-                            Text(
-                              "Add Item & service",
-                              style: TextStyle(
-                                  color: Colors.yellow,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        InkWell(
-                          onTap: () {
-                            // ✅ REMOVE LISTENERS WHEN CLOSING DIALOG
-                            controller.qtyController.removeListener(updateSubtotal);
-                            controller.mrpController.removeListener(updateSubtotal);
-                            Navigator.pop(context);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: CircleAvatar(
-                                radius: 10,
-                                backgroundColor: Colors.grey.shade100,
-                                child: const Icon(
-                                  Icons.close,
-                                  size: 18,
-                                  color: Colors.green,
-                                )),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 6.0, right: 6.0, top: 4.0),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 3),
-                        const SizedBox(height: 5),
-                        const Column(children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          return Dialog(
+              backgroundColor: Colors.grey.shade400,
+              child: Container(
+                height: 300,
+                decoration: BoxDecoration(
+                  color: const Color(0xffe7edf4),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Column(
+                  children: [
+                    ///header, add item & service , and close icon
+                    Container(
+                      height: 30,
+                      color: const Color(0xff278d46),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(width: 30),
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(width: 10),
+                              SizedBox(width: 5),
+                              Text(
+                                "Add Item & service",
+                                style: TextStyle(
+                                    color: Colors.yellow,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ],
                           ),
-                          SizedBox(height: 5),
-                        ]),
-
-                        ///Item Dropdown
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Consumer<AddItemProvider>(
-                            builder: (context, itemProvider, child) {
-                              return SizedBox(
-                                height: 30,
-                                width: double.infinity,
-                                child: itemProvider.isLoading
-                                    ? const Center(
-                                        child: CircularProgressIndicator())
-                                    : CustomDropdownTwo(
-                                        enableSearch: true,
-                                        hint: 'Select Item',
-                                        items: itemProvider.items
-                                            .map((item) => item.name)
-                                            .toList(),
-                                        width: double.infinity,
-                                        height: 30,
-                                        selectedItem: selectedItemName,
-                                        onChanged: (value) async {
-                                          debugPrint('=== Item Selected: $value ===');
-
-                                          final selectedItem = itemProvider.items.firstWhere(
-                                            (item) => item.name == value,
-                                          );
-
-                                          // ✅ RESET EVERYTHING WHEN ITEM CHANGES
-                                          setState(() {
-                                            selectedItemName = value;
-                                            selectedItemData = selectedItem;
-                                            selectedItemId = selectedItem.id;
-
-                                            // Clear units immediately
-                                            unitIdsList.clear();
-
-                                            // Set controller properties
-                                            controller.seletedItemName = selectedItem.name;
-                                            controller.selcetedItemId = selectedItem.id.toString();
-
-                                            controller.purchasePrice = selectedItem.purchasePrice is int
-                                                ? (selectedItem.purchasePrice as int).toDouble()
-                                                : (selectedItem.purchasePrice ?? 0.0);
-
-                                            controller.unitQty = selectedItem.unitQty ?? 1;
-
-                                            // ✅ Use resetDialogState to clear everything properly
-                                            controller.resetDialogState();
-
-                                            // Set initial price
-                                            controller.mrpController.text =
-                                                controller.purchasePrice.toStringAsFixed(2);
-                                          });
-
-                                          // Fetch stock quantity
-                                          if (controller.selcetedItemId != null) {
-                                            fetchStockQuantity.fetchStockQuantity(
-                                                controller.selcetedItemId!);
-                                          }
-
-                                          // Ensure unitProvider is loaded
-                                          if (unitProvider.units.isEmpty) {
-                                            await unitProvider.fetchUnits();
-                                          }
-
-                                          // Populate units
-                                          setState(() {
-                                            unitIdsList.clear();
-
-                                            // Primary unit
-                                            if (selectedItem.unitId != null) {
-                                              final unit = unitProvider.units.firstWhere(
-                                                (unit) => unit.id.toString() ==
-                                                    selectedItem.unitId.toString(),
-                                                orElse: () => Unit(
-                                                  id: 0,
-                                                  name: 'Unknown',
-                                                  symbol: '',
-                                                  status: 0,
-                                                ),
-                                              );
-                                              if (unit.id != 0) {
-                                                unitIdsList.add(unit.name);
-                                                controller.primaryUnitName = unit.name;
-                                                controller.selectedUnit = unit.name;
-                                                controller.selectedUnitIdWithNameFunction(
-                                                    "${unit.id}_${unit.name}");
-                                              }
-                                            }
-
-                                            // Secondary unit
-                                            if (selectedItem.secondaryUnitId != null) {
-                                              final secondaryUnit = unitProvider.units.firstWhere(
-                                                (unit) => unit.id.toString() ==
-                                                    selectedItem.secondaryUnitId.toString(),
-                                                orElse: () => Unit(
-                                                  id: 0,
-                                                  name: 'Unknown',
-                                                  symbol: '',
-                                                  status: 0,
-                                                ),
-                                              );
-                                              if (secondaryUnit.id != 0) {
-                                                unitIdsList.add(secondaryUnit.name);
-                                                controller.secondaryUnitName = secondaryUnit.name;
-                                              }
-                                            }
-                                          });
-
-                                          debugPrint("Units Available: $unitIdsList");
-                                          debugPrint("purchase price ===> ${controller.purchasePrice}");
-                                        }),
-                              );
+                          InkWell(
+                            onTap: () {
+                              // ✅ REMOVE LISTENERS WHEN CLOSING DIALOG
+                              controller.qtyController
+                                  .removeListener(updateSubtotal);
+                              controller.mrpController
+                                  .removeListener(updateSubtotal);
+                              Navigator.pop(context);
                             },
-                          ),
-                        ),
-
-                        ///Qty and Unit Row
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            //qty
-                            Column(
-                              children: [
-                                SizedBox(
-                                  width: 150,
-                                  child: AddSalesFormfield(
-                                    labelText: "Qty",
-                                    label: "",
-                                    controller: controller.qtyController,
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            // Unit Dropdown
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 20),
-                                SizedBox(
-                                  width: 150,
-                                  child: CustomDropdownTwo(
-                                    key: ValueKey(
-                                        'unit_dropdown_${selectedItemId}_${unitIdsList.length}'),
-                                    labelText: "Unit",
-                                    hint: 'Select Unit',
-                                    items: unitIdsList,
-                                    width: 150,
-                                    height: 30,
-                                    selectedItem: unitIdsList.isNotEmpty &&
-                                            controller.selectedUnit != null &&
-                                            unitIdsList.contains(controller.selectedUnit)
-                                        ? controller.selectedUnit
-                                        : (unitIdsList.isNotEmpty ? unitIdsList.first : null),
-                                    onChanged: (selectedUnit) {
-                                      debugPrint("Selected Unit: $selectedUnit");
-
-                                      controller.selectedUnit = selectedUnit;
-
-                                      final selectedUnitObj = unitProvider.units.firstWhere(
-                                        (unit) => unit.name == selectedUnit,
-                                        orElse: () => Unit(
-                                            id: 0, name: "Unknown", symbol: "", status: 0),
-                                      );
-
-                                      controller.selectedUnitIdWithNameFunction(
-                                          "${selectedUnitObj.id}_${selectedUnitObj.symbol}");
-
-                                      debugPrint("🆔 Unit ID: ${selectedUnitObj.id}_${selectedUnitObj.symbol}");
-
-                                      // ✅ Price update logic with setState AND subtotal calculation
-                                      setState(() {
-                                        if (selectedUnit == controller.secondaryUnitName) {
-                                          double newPrice = controller.purchasePrice / controller.unitQty;
-                                          controller.mrpController.text = newPrice.toStringAsFixed(2);
-                                        } else if (selectedUnit == controller.primaryUnitName) {
-                                          controller.mrpController.text =
-                                              controller.purchasePrice.toStringAsFixed(2);
-                                        }
-                                        
-                                        // ✅ Calculate subtotal after price update
-                                        controller.dialogtotalController();
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        ///Price Field
-                        AddSalesFormfield(
-                          labelText: "Price",
-                          label: "",
-                          controller: controller.mrpController,
-                          keyboardType: TextInputType.number,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // ✅ IMPROVED SUBTOTAL DISPLAY WITH BETTER CONSUMER
-                  Consumer<PurchaseController>(
-                    builder: (context, purchaseController, _) => Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          const Text("Subtotal: ",
-                              style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold)),
-                          const SizedBox(width: 5),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 7.0),
-                            child: Text(
-                              purchaseController.subtotalItemDiolog.toStringAsFixed(2),
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: CircleAvatar(
+                                  radius: 10,
+                                  backgroundColor: Colors.grey.shade100,
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 18,
+                                    color: Colors.green,
+                                  )),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                  const Spacer(),
-                  
-                  // Add Button
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Align(
-                          alignment: Alignment.bottomRight,
-                          child: InkWell(
-                            onTap: () async {
-                              debugPrint("🟢 Add Item button tapped");
 
-                              if (controller.qtyController.text.isEmpty ||
-                                  controller.mrpController.text.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                  content: Text('Please enter the qty & price'),
-                                  backgroundColor: Colors.red,
-                                ));
-                              } else {
-                                // ✅ REMOVE LISTENERS BEFORE CLOSING
-                                controller.qtyController.removeListener(updateSubtotal);
-                                controller.mrpController.removeListener(updateSubtotal);
-
-                                // ✅ Add item first, THEN clear only item-related data
-                                setState(() {
-                                  controller.isCash
-                                      ? controller.addCashItem()
-                                      : controller.addCreditItem();
-
-                                  controller.addAmount();
-                                });
-
-                                // ✅ Clear only item-related data, NOT customer data
-                                selectedCategoryId = null;
-                                selectedSubCategoryId = null;
-                                selectedItemName = null;
-                                selectedItemData = null;
-                                selectedItemId = null;
-                                unitIdsList.clear();
-                                
-                                // ✅ Clear only item-related providers, NOT customer provider
-                                Provider.of<ItemCategoryProvider>(context, listen: false)
-                                    .subCategories = [];
-                                Provider.of<AddItemProvider>(context, listen: false)
-                                    .clearPurchaseStockData();
-
-                                // ✅ Clear only dialog-specific controllers
-                                controller.mrpController.clear();
-                                controller.qtyController.clear();
-                                controller.subtotalItemDiolog = 0.0;
-                                controller.selectedUnit = null;
-                                controller.selectedUnitIdWithName = "";
-                                controller.seletedItemName = null;
-
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: SizedBox(
-                              width: 90,
-                              child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color: colorScheme.primary,
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 2),
-                                    child: Center(
-                                      child: Text(
-                                        "Add",
-                                        style: TextStyle(color: Colors.white, fontSize: 14),
-                                      ),
-                                    ),
-                                  )),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 6.0, right: 6.0, top: 4.0),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 3),
+                          const SizedBox(height: 5),
+                          const Column(children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(width: 10),
+                              ],
                             ),
+                            SizedBox(height: 5),
+                          ]),
+
+                          ///Item Dropdown
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Consumer<AddItemProvider>(
+                              builder: (context, itemProvider, child) {
+                                return SizedBox(
+                                  height: 30,
+                                  width: double.infinity,
+                                  child: itemProvider.isLoading
+                                      ? const Center(
+                                          child: CircularProgressIndicator())
+                                      : CustomDropdownTwo(
+                                          enableSearch: true,
+                                          hint: 'Select Item',
+                                          items: itemProvider.items
+                                              .map((item) => item.name)
+                                              .toList(),
+                                          width: double.infinity,
+                                          height: 30,
+                                          selectedItem: selectedItemName,
+                                          onChanged: (value) async {
+                                            debugPrint(
+                                                '=== Item Selected: $value ===');
+
+                                            final selectedItem =
+                                                itemProvider.items.firstWhere(
+                                              (item) => item.name == value,
+                                            );
+
+                                            // ✅ RESET EVERYTHING WHEN ITEM CHANGES
+                                            setState(() {
+                                              selectedItemName = value;
+                                              selectedItemData = selectedItem;
+                                              selectedItemId = selectedItem.id;
+
+                                              // Clear units immediately
+                                              unitIdsList.clear();
+
+                                              // Set controller properties
+                                              controller.seletedItemName =
+                                                  selectedItem.name;
+                                              controller.selcetedItemId =
+                                                  selectedItem.id.toString();
+
+                                              controller.purchasePrice =
+                                                  selectedItem.purchasePrice
+                                                          is int
+                                                      ? (selectedItem
+                                                                  .purchasePrice
+                                                              as int)
+                                                          .toDouble()
+                                                      : (selectedItem
+                                                              .purchasePrice ??
+                                                          0.0);
+
+                                              controller.unitQty =
+                                                  selectedItem.unitQty ?? 1;
+
+                                              // ✅ Use resetDialogState to clear everything properly
+                                              controller.resetDialogState();
+
+                                              // Set initial price
+                                              controller.mrpController.text =
+                                                  controller.purchasePrice
+                                                      .toStringAsFixed(2);
+                                            });
+
+                                            // Fetch stock quantity
+                                            if (controller.selcetedItemId !=
+                                                null) {
+                                              fetchStockQuantity
+                                                  .fetchStockQuantity(controller
+                                                      .selcetedItemId!);
+                                            }
+
+                                            // Ensure unitProvider is loaded
+                                            if (unitProvider.units.isEmpty) {
+                                              await unitProvider.fetchUnits();
+                                            }
+
+                                            // Populate units
+                                            setState(() {
+                                              unitIdsList.clear();
+
+                                              // Primary unit
+                                              if (selectedItem.unitId != null) {
+                                                final unit = unitProvider.units
+                                                    .firstWhere(
+                                                  (unit) =>
+                                                      unit.id.toString() ==
+                                                      selectedItem.unitId
+                                                          .toString(),
+                                                  orElse: () => Unit(
+                                                    id: 0,
+                                                    name: 'Unknown',
+                                                    symbol: '',
+                                                    status: 0,
+                                                  ),
+                                                );
+                                                if (unit.id != 0) {
+                                                  unitIdsList.add(unit.name);
+                                                  controller.primaryUnitName =
+                                                      unit.name;
+                                                  controller.selectedUnit =
+                                                      unit.name;
+                                                  controller
+                                                      .selectedUnitIdWithNameFunction(
+                                                          "${unit.id}_${unit.name}");
+                                                }
+                                              }
+
+                                              // Secondary unit
+                                              if (selectedItem
+                                                      .secondaryUnitId !=
+                                                  null) {
+                                                final secondaryUnit =
+                                                    unitProvider.units
+                                                        .firstWhere(
+                                                  (unit) =>
+                                                      unit.id.toString() ==
+                                                      selectedItem
+                                                          .secondaryUnitId
+                                                          .toString(),
+                                                  orElse: () => Unit(
+                                                    id: 0,
+                                                    name: 'Unknown',
+                                                    symbol: '',
+                                                    status: 0,
+                                                  ),
+                                                );
+                                                if (secondaryUnit.id != 0) {
+                                                  unitIdsList
+                                                      .add(secondaryUnit.name);
+                                                  controller.secondaryUnitName =
+                                                      secondaryUnit.name;
+                                                }
+                                              }
+                                            });
+
+                                            debugPrint(
+                                                "Units Available: $unitIdsList");
+                                            debugPrint(
+                                                "purchase price ===> ${controller.purchasePrice}");
+                                          }),
+                                );
+                              },
+                            ),
+                          ),
+
+                          ///Qty and Unit Row
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              //qty
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    width: 150,
+                                    child: AddSalesFormfield(
+                                      labelText: "Qty",
+                                      label: "",
+                                      controller: controller.qtyController,
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              // Unit Dropdown
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                    width: 150,
+                                    child: CustomDropdownTwo(
+                                      key: ValueKey(
+                                          'unit_dropdown_${selectedItemId}_${unitIdsList.length}'),
+                                      labelText: "Unit",
+                                      hint: 'Select Unit',
+                                      items: unitIdsList,
+                                      width: 150,
+                                      height: 30,
+                                      selectedItem: unitIdsList.isNotEmpty &&
+                                              controller.selectedUnit != null &&
+                                              unitIdsList.contains(
+                                                  controller.selectedUnit)
+                                          ? controller.selectedUnit
+                                          : (unitIdsList.isNotEmpty
+                                              ? unitIdsList.first
+                                              : null),
+                                      onChanged: (selectedUnit) {
+                                        debugPrint(
+                                            "Selected Unit: $selectedUnit");
+
+                                        controller.selectedUnit = selectedUnit;
+
+                                        final selectedUnitObj =
+                                            unitProvider.units.firstWhere(
+                                          (unit) => unit.name == selectedUnit,
+                                          orElse: () => Unit(
+                                              id: 0,
+                                              name: "Unknown",
+                                              symbol: "",
+                                              status: 0),
+                                        );
+
+                                        controller.selectedUnitIdWithNameFunction(
+                                            "${selectedUnitObj.id}_${selectedUnitObj.symbol}");
+
+                                        debugPrint(
+                                            "🆔 Unit ID: ${selectedUnitObj.id}_${selectedUnitObj.symbol}");
+
+                                        // ✅ Price update logic with setState AND subtotal calculation
+                                        setState(() {
+                                          if (selectedUnit ==
+                                              controller.secondaryUnitName) {
+                                            double newPrice =
+                                                controller.purchasePrice /
+                                                    controller.unitQty;
+                                            controller.mrpController.text =
+                                                newPrice.toStringAsFixed(2);
+                                          } else if (selectedUnit ==
+                                              controller.primaryUnitName) {
+                                            controller.mrpController.text =
+                                                controller.purchasePrice
+                                                    .toStringAsFixed(2);
+                                          }
+
+                                          // ✅ Calculate subtotal after price update
+                                          controller.dialogtotalController();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                          ///Price Field
+                          AddSalesFormfield(
+                            labelText: "Price",
+                            label: "",
+                            controller: controller.mrpController,
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // ✅ IMPROVED SUBTOTAL DISPLAY WITH BETTER CONSUMER
+                    Consumer<PurchaseController>(
+                      builder: (context, purchaseController, _) => Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Text("Subtotal: ",
+                                style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 5),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 7.0),
+                              child: Text(
+                                purchaseController.subtotalItemDiolog
+                                    .toStringAsFixed(2),
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+
+                    // Add Button
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Align(
+                            alignment: Alignment.bottomRight,
+                            child: InkWell(
+                              onTap: () async {
+                                debugPrint("🟢 Add Item button tapped");
+
+                                if (controller.qtyController.text.isEmpty ||
+                                    controller.mrpController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    content:
+                                        Text('Please enter the qty & price'),
+                                    backgroundColor: Colors.red,
+                                  ));
+                                } else {
+                                  // ✅ REMOVE LISTENERS BEFORE CLOSING
+                                  controller.qtyController
+                                      .removeListener(updateSubtotal);
+                                  controller.mrpController
+                                      .removeListener(updateSubtotal);
+
+                                  // ✅ Add item first, THEN clear only item-related data
+                                  setState(() {
+                                    controller.isCash
+                                        ? controller.addCashItem()
+                                        : controller.addCreditItem();
+
+                                    controller.addAmount();
+                                  });
+
+                                  // ✅ Clear only item-related data, NOT customer data
+                                  selectedCategoryId = null;
+                                  selectedSubCategoryId = null;
+                                  selectedItemName = null;
+                                  selectedItemData = null;
+                                  selectedItemId = null;
+                                  unitIdsList.clear();
+
+                                  // ✅ Clear only item-related providers, NOT customer provider
+                                  Provider.of<ItemCategoryProvider>(context,
+                                          listen: false)
+                                      .subCategories = [];
+                                  Provider.of<AddItemProvider>(context,
+                                          listen: false)
+                                      .clearPurchaseStockData();
+
+                                  // ✅ Clear only dialog-specific controllers
+                                  controller.mrpController.clear();
+                                  controller.qtyController.clear();
+                                  controller.subtotalItemDiolog = 0.0;
+                                  controller.selectedUnit = null;
+                                  controller.selectedUnitIdWithName = "";
+                                  controller.seletedItemName = null;
+
+                                  Navigator.pop(context);
+                                }
+                              },
+                              child: SizedBox(
+                                width: 90,
+                                child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: colorScheme.primary,
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 6.0, vertical: 2),
+                                      child: Center(
+                                        child: Text(
+                                          "Add",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14),
+                                        ),
+                                      ),
+                                    )),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ));
+        });
+      },
+    );
+  }
+
+  ///purchase item edit.  Purchase item edit <<<======
+
+  // ✅ FIXED VERSION: Replace your showCashItemDetailsDialog method with this corrected version:
+
+  Future<void> showCashItemDetailsDialog(
+    BuildContext context,
+    ItemModel selectedItem,
+    int itemIndex,
+  ) async {
+    final priceController = TextEditingController(text: "${selectedItem.mrp}");
+    final qtyController =
+        TextEditingController(text: "${selectedItem.quantity}");
+
+    final addItemProvider =
+        Provider.of<AddItemProvider>(context, listen: false);
+    final unitProvider = Provider.of<UnitProvider>(context, listen: false);
+    final fetchStockQuantity =
+        Provider.of<AddItemProvider>(context, listen: false);
+    final controller = Provider.of<PurchaseController>(context, listen: false);
+
+    TextEditingController totalController = TextEditingController();
+
+    // ✅ Get available units for this specific item
+    List<String> availableUnits = [];
+    String? selectedUnitForItem = selectedItem.unit;
+
+    // ✅ FIXED: Handle nullable return type properly
+    ItemsModel? itemInProvider;
+    try {
+      itemInProvider = addItemProvider.items.firstWhere(
+        (item) => item.name == selectedItem.itemName,
+      );
+    } catch (e) {
+      // Item not found in provider, handle gracefully
+      debugPrint("Item not found in provider: ${selectedItem.itemName}");
+      itemInProvider = null;
+    }
+
+    if (itemInProvider != null) {
+      // Ensure units are loaded
+      if (unitProvider.units.isEmpty) {
+        await unitProvider.fetchUnits();
+      }
+
+      // Primary unit
+      if (itemInProvider.unitId != null) {
+        final unit = unitProvider.units.firstWhere(
+          (unit) => unit.id.toString() == itemInProvider!.unitId.toString(),
+          orElse: () => Unit(id: 0, name: 'Unknown', symbol: '', status: 0),
+        );
+        if (unit.id != 0) {
+          availableUnits.add(unit.name);
+        }
+      }
+
+      // Secondary unit
+      if (itemInProvider.secondaryUnitId != null) {
+        final secondaryUnit = unitProvider.units.firstWhere(
+          (unit) =>
+              unit.id.toString() == itemInProvider!.secondaryUnitId.toString(),
+          orElse: () => Unit(id: 0, name: 'Unknown', symbol: '', status: 0),
+        );
+        if (secondaryUnit.id != 0 &&
+            !availableUnits.contains(secondaryUnit.name)) {
+          availableUnits.add(secondaryUnit.name);
+        }
+      }
+    }
+
+    // If no units found, add the current unit
+    if (availableUnits.isEmpty && selectedItem.unit != null) {
+      availableUnits.add(selectedItem.unit!);
+    }
+
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          void updateTotal() {
+            final price = double.tryParse(priceController.text) ?? 0.0;
+            final qty = double.tryParse(qtyController.text) ?? 0.0;
+            final total = price * qty;
+            totalController.text = total.toStringAsFixed(2);
+          }
+
+          // Initialize total
+          updateTotal();
+
+          return AlertDialog(
+            title: const Text("Edit Item Details"),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ✅ Item name (read-only display)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Item Name",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Container(
+                        height: 40,
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          selectedItem.itemName ?? "Unknown Item",
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                ],
-              ),
-            ));
-      });
-    },
-  );
-}
-  ///purchase item edit.  Purchase item edit <<<======
 
- // ✅ FIXED VERSION: Replace your showCashItemDetailsDialog method with this corrected version:
+                  const SizedBox(height: 15),
 
-Future<void> showCashItemDetailsDialog(
-  BuildContext context,
-  ItemModel selectedItem,
-  int itemIndex,
-) async {
-  final priceController = TextEditingController(text: "${selectedItem.mrp}");
-  final qtyController = TextEditingController(text: "${selectedItem.quantity}");
-
-  final addItemProvider = Provider.of<AddItemProvider>(context, listen: false);
-  final unitProvider = Provider.of<UnitProvider>(context, listen: false);
-  final fetchStockQuantity = Provider.of<AddItemProvider>(context, listen: false);
-  final controller = Provider.of<PurchaseController>(context, listen: false);
-
-  TextEditingController totalController = TextEditingController();
-
-  // ✅ Get available units for this specific item
-  List<String> availableUnits = [];
-  String? selectedUnitForItem = selectedItem.unit;
-
-  // ✅ FIXED: Handle nullable return type properly
-  ItemsModel? itemInProvider;
-  try {
-    itemInProvider = addItemProvider.items.firstWhere(
-      (item) => item.name == selectedItem.itemName,
-    );
-  } catch (e) {
-    // Item not found in provider, handle gracefully
-    debugPrint("Item not found in provider: ${selectedItem.itemName}");
-    itemInProvider = null;
-  }
-
-  if (itemInProvider != null) {
-    // Ensure units are loaded
-    if (unitProvider.units.isEmpty) {
-      await unitProvider.fetchUnits();
-    }
-
-    // Primary unit
-    if (itemInProvider.unitId != null) {
-      final unit = unitProvider.units.firstWhere(
-        (unit) => unit.id.toString() == itemInProvider!.unitId.toString(),
-        orElse: () => Unit(id: 0, name: 'Unknown', symbol: '', status: 0),
-      );
-      if (unit.id != 0) {
-        availableUnits.add(unit.name);
-      }
-    }
-
-    // Secondary unit
-    if (itemInProvider.secondaryUnitId != null) {
-      final secondaryUnit = unitProvider.units.firstWhere(
-        (unit) => unit.id.toString() == itemInProvider!.secondaryUnitId.toString(),
-        orElse: () => Unit(id: 0, name: 'Unknown', symbol: '', status: 0),
-      );
-      if (secondaryUnit.id != 0 && !availableUnits.contains(secondaryUnit.name)) {
-        availableUnits.add(secondaryUnit.name);
-      }
-    }
-  }
-
-  // If no units found, add the current unit
-  if (availableUnits.isEmpty && selectedItem.unit != null) {
-    availableUnits.add(selectedItem.unit!);
-  }
-
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return StatefulBuilder(builder: (context, setState) {
-        void updateTotal() {
-          final price = double.tryParse(priceController.text) ?? 0.0;
-          final qty = double.tryParse(qtyController.text) ?? 0.0;
-          final total = price * qty;
-          totalController.text = total.toStringAsFixed(2);
-        }
-
-        // Initialize total
-        updateTotal();
-
-        return AlertDialog(
-          title: const Text("Edit Item Details"),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ✅ Item name (read-only display)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Item Name",
-                      style: TextStyle(
-                        color: Colors.black, 
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Container(
-                      height: 40,
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        selectedItem.itemName ?? "Unknown Item",
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 15),
-
-                // ✅ Unit and Price row
-                Row(
-                  children: [
-                    // Unit dropdown
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Unit",
-                            style: TextStyle(
-                              color: Colors.black, 
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          SizedBox(
-                            height: 40,
-                            child: availableUnits.isEmpty
-                                ? Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade100,
-                                      border: Border.all(color: Colors.grey.shade300),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Text("No units"),
-                                  )
-                                : CustomDropdownTwo(
-                                    hint: 'Unit',
-                                    items: availableUnits,
-                                    width: double.infinity,
-                                    height: 25,
-                                    selectedItem: selectedUnitForItem,
-                                    onChanged: (selectedUnit) {
-                                      setState(() {
-                                        selectedUnitForItem = selectedUnit;
-                                      });
-                                      debugPrint("Unit changed to: $selectedUnit");
-                                    },
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    // Price field
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Price",
-                            style: TextStyle(
-                              color: Colors.black, 
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          SizedBox(
-                            height: 40,
-                            child: AddSalesFormfield(
-                              controller: priceController,
-                              keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                updateTotal();
-                                setState(() {});
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 15),
-
-                // ✅ Quantity and Total row
-                Row(
-                  children: [
-                    // Quantity field
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Quantity",
-                            style: TextStyle(
-                              color: Colors.black, 
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          SizedBox(
-                            height: 40,
-                            child: AddSalesFormfield(
-                              controller: qtyController,
-                              keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                updateTotal();
-                                setState(() {});
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    // Total field (read-only)
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Total",
-                            style: TextStyle(
-                              color: Colors.black, 
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          SizedBox(
-                            height: 40,
-                            child: AddSalesFormfield(
-                              controller: totalController,
-                              readOnly: true,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.grey.shade50,
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  // ✅ Unit and Price row
+                  Row(
+                    children: [
+                      // Unit dropdown
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Unit",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 5),
+                            SizedBox(
+                              height: 40,
+                              child: availableUnits.isEmpty
+                                  ? Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade100,
+                                        border: Border.all(
+                                            color: Colors.grey.shade300),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: const Text("No units"),
+                                    )
+                                  : CustomDropdownTwo(
+                                      hint: 'Unit',
+                                      items: availableUnits,
+                                      width: double.infinity,
+                                      height: 25,
+                                      selectedItem: selectedUnitForItem,
+                                      onChanged: (selectedUnit) {
+                                        setState(() {
+                                          selectedUnitForItem = selectedUnit;
+                                        });
+                                        debugPrint(
+                                            "Unit changed to: $selectedUnit");
+                                      },
+                                    ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // ✅ Validate input
-                final updatedPrice = double.tryParse(priceController.text);
-                final updatedQty = double.tryParse(qtyController.text);
 
-                if (updatedPrice == null || updatedPrice <= 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Please enter a valid price"),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                  return;
-                }
+                      const SizedBox(width: 10),
 
-                if (updatedQty == null || updatedQty <= 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Please enter a valid quantity"),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                  return;
-                }
-
-                final updatedTotal = updatedPrice * updatedQty;
-
-                // ✅ Create updated item
-                final updatedItem = ItemModel(
-                  category: selectedItem.category,
-                  subCategory: selectedItem.subCategory,
-                  itemName: selectedItem.itemName, // Keep original name
-                  itemCode: selectedItem.itemCode,
-                  mrp: priceController.text,
-                  quantity: qtyController.text,
-                  price: priceController.text,
-                  unit: selectedUnitForItem ?? selectedItem.unit,
-                  total: updatedTotal.toStringAsFixed(2),
-                );
-
-                // ✅ Update the correct list based on cash/credit
-                if (controller.isCash) {
-                  if (itemIndex >= 0 && itemIndex < controller.itemsCash.length) {
-                    controller.itemsCash[itemIndex] = updatedItem;
-                    debugPrint("✅ Updated cash item at index $itemIndex");
-                  }
-                } else {
-                  if (itemIndex >= 0 && itemIndex < controller.itemsCredit.length) {
-                    controller.itemsCredit[itemIndex] = updatedItem;
-                    debugPrint("✅ Updated credit item at index $itemIndex");
-                  }
-                }
-
-                // ✅ FIXED: Create new PurchaseItemModel with proper constructor
-                if (itemIndex >= 0 && itemIndex < controller.purchaseItem.length) {
-                  // Get the existing purchase item to preserve original data
-                  final existingPurchaseItem = controller.purchaseItem[itemIndex];
-                  
-                  // Create updated purchase item using the constructor parameters
-                  final updatedPurchaseItem = PurchaseItemModel(
-                    itemId: existingPurchaseItem.itemId, // Keep original ID
-                    price: priceController.text,
-                    qty: qtyController.text,
-                    subTotal: updatedTotal.toString(),
-                    unitId: existingPurchaseItem.unitId, // Keep original unit ID
-                  );
-                  
-                  controller.purchaseItem[itemIndex] = updatedPurchaseItem;
-                  debugPrint("✅ Updated purchase item at index $itemIndex");
-                }
-
-                // ✅ Notify listeners to refresh UI
-                controller.notifyListeners();
-
-                Navigator.pop(context);
-
-                // ✅ Show success message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("${selectedItem.itemName} updated successfully"),
-                    backgroundColor: Colors.green,
-                    duration: const Duration(seconds: 2),
+                      // Price field
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Price",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            SizedBox(
+                              height: 40,
+                              child: AddSalesFormfield(
+                                controller: priceController,
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  updateTotal();
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                );
 
-                debugPrint("✅ Item update completed:");
-                debugPrint("- Item: ${updatedItem.itemName}");
-                debugPrint("- Price: ৳${updatedItem.mrp}");
-                debugPrint("- Qty: ${updatedItem.quantity}");
-                debugPrint("- Unit: ${updatedItem.unit}");
-                debugPrint("- Total: ৳${updatedItem.total}");
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
+                  const SizedBox(height: 15),
+
+                  // ✅ Quantity and Total row
+                  Row(
+                    children: [
+                      // Quantity field
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Quantity",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            SizedBox(
+                              height: 40,
+                              child: AddSalesFormfield(
+                                controller: qtyController,
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  updateTotal();
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      // Total field (read-only)
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Total",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            SizedBox(
+                              height: 40,
+                              child: AddSalesFormfield(
+                                controller: totalController,
+                                readOnly: true,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.grey.shade50,
+                                  border: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 10),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              child: const Text("Update Item"),
             ),
-          ],
-        );
-      });
-    },
-  );
-}
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child:
+                    const Text("Cancel", style: TextStyle(color: Colors.grey)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // ✅ Validate input
+                  final updatedPrice = double.tryParse(priceController.text);
+                  final updatedQty = double.tryParse(qtyController.text);
 
+                  if (updatedPrice == null || updatedPrice <= 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Please enter a valid price"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
 
+                  if (updatedQty == null || updatedQty <= 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Please enter a valid quantity"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
 
+                  final updatedTotal = updatedPrice * updatedQty;
+
+                  // ✅ Create updated item
+                  final updatedItem = ItemModel(
+                    category: selectedItem.category,
+                    subCategory: selectedItem.subCategory,
+                    itemName: selectedItem.itemName, // Keep original name
+                    itemCode: selectedItem.itemCode,
+                    mrp: priceController.text,
+                    quantity: qtyController.text,
+                    price: priceController.text,
+                    unit: selectedUnitForItem ?? selectedItem.unit,
+                    total: updatedTotal.toStringAsFixed(2),
+                  );
+
+                  // ✅ Update the correct list based on cash/credit
+                  if (controller.isCash) {
+                    if (itemIndex >= 0 &&
+                        itemIndex < controller.itemsCash.length) {
+                      controller.itemsCash[itemIndex] = updatedItem;
+                      debugPrint("✅ Updated cash item at index $itemIndex");
+                    }
+                  } else {
+                    if (itemIndex >= 0 &&
+                        itemIndex < controller.itemsCredit.length) {
+                      controller.itemsCredit[itemIndex] = updatedItem;
+                      debugPrint("✅ Updated credit item at index $itemIndex");
+                    }
+                  }
+
+                  // ✅ FIXED: Create new PurchaseItemModel with proper constructor
+                  if (itemIndex >= 0 &&
+                      itemIndex < controller.purchaseItem.length) {
+                    // Get the existing purchase item to preserve original data
+                    final existingPurchaseItem =
+                        controller.purchaseItem[itemIndex];
+
+                    // Create updated purchase item using the constructor parameters
+                    final updatedPurchaseItem = PurchaseItemModel(
+                      itemId: existingPurchaseItem.itemId, // Keep original ID
+                      price: priceController.text,
+                      qty: qtyController.text,
+                      subTotal: updatedTotal.toString(),
+                      unitId:
+                          existingPurchaseItem.unitId, // Keep original unit ID
+                    );
+
+                    controller.purchaseItem[itemIndex] = updatedPurchaseItem;
+                    debugPrint("✅ Updated purchase item at index $itemIndex");
+                  }
+
+                  // ✅ Notify listeners to refresh UI
+                  controller.notifyListeners();
+
+                  Navigator.pop(context);
+
+                  // ✅ Show success message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content:
+                          Text("${selectedItem.itemName} updated successfully"),
+                      backgroundColor: Colors.green,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+
+                  debugPrint("✅ Item update completed:");
+                  debugPrint("- Item: ${updatedItem.itemName}");
+                  debugPrint("- Price: ৳${updatedItem.mrp}");
+                  debugPrint("- Qty: ${updatedItem.quantity}");
+                  debugPrint("- Unit: ${updatedItem.unit}");
+                  debugPrint("- Total: ৳${updatedItem.total}");
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text("Update Item"),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
 }

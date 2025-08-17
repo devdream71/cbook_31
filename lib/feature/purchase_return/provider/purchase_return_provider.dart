@@ -3,6 +3,7 @@ import 'package:cbook_dt/feature/purchase_return/model/purchase_return_list_mode
 import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PurchaseReturnProvider with ChangeNotifier {
 
@@ -24,12 +25,18 @@ class PurchaseReturnProvider with ChangeNotifier {
   Future<void> fetchPurchaseReturns() async {
      final url = "${AppUrl.baseurl}purchase/return";
 
+     final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     try {
       _isLoading = true;
       _errorMessage = '';
       notifyListeners();
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url),  headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },);
 
       if (response.statusCode == 200) {
         final result = PurchaseReturnResponse.fromJson(response.body);

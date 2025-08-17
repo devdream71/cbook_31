@@ -18,7 +18,19 @@ class AccountTypeProvider with ChangeNotifier {
   final TextEditingController routingNumberController = TextEditingController();
   final TextEditingController bankLocationController = TextEditingController();
 
- 
+ void resetForm() {
+  accountNameController.clear();
+  accountGroupController.clear();
+  openBlanceController.clear();
+  accountHolderNameController.clear();
+  accountNoController.clear();
+  routingNumberController.clear();
+  bankLocationController.clear();
+  
+   
+  
+  notifyListeners();
+}
 
   // Date
   DateTime _selectedDate = DateTime.now();
@@ -170,6 +182,9 @@ class AccountTypeProvider with ChangeNotifier {
       }
     };
 
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     final uri = Uri.https(
       'commercebook.site',
       '/api/v1/account/store',
@@ -183,7 +198,14 @@ class AccountTypeProvider with ChangeNotifier {
 
 
     try {
-      final response = await http.post(uri);
+      final response = await http.post(uri, 
+       
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      
+       );
       final jsonData = json.decode(response.body);
       debugPrint("✅ Sent URL: $uri");
       debugPrint("📥 Response: $jsonData");

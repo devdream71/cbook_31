@@ -31,11 +31,20 @@ class SupplierProvider extends ChangeNotifier {
     isLoading = true;
     errorMessage = "";
     notifyListeners(); // Notify listeners that data is being fetched
+    
+       final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
 
     final url = Uri.parse('${AppUrl.baseurl}suppliers');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url,
+       headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
       final data = jsonDecode(response.body);
 
       // Print the entire response in the terminal
@@ -60,11 +69,18 @@ class SupplierProvider extends ChangeNotifier {
 
   /// **Delete Supplier**
   Future<void> deleteSupplier(int supplierId) async {
+         
+            final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     final url = Uri.parse(
         '${AppUrl.baseurl}supplier/remove/$supplierId');
 
     try {
-      final response = await http.post(url);
+      final response = await http.post(url,  headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
       final data = jsonDecode(response.body);
 
       debugPrint("Delete Response: $data");
@@ -103,6 +119,8 @@ class SupplierProvider extends ChangeNotifier {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? userId = prefs.getInt('user_id')?.toString();
 
+  final token = prefs.getString('token');
+
   if (userId == null || userId.isEmpty) {
     errorMessage = "User ID is missing. Please log in again.";
     isLoading = false;
@@ -113,7 +131,15 @@ class SupplierProvider extends ChangeNotifier {
   final url = Uri.parse('${AppUrl.baseurl}supplier/store');
 
   try {
-    var request = http.MultipartRequest('POST', url);
+    var request = http.MultipartRequest('POST', url,);
+
+    
+    // ✅ Add headers here
+    request.headers.addAll({
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
 
     request.fields.addAll({
       'user_id': userId,
@@ -159,10 +185,16 @@ class SupplierProvider extends ChangeNotifier {
    
   /// **featch supplier by id**
   Future<SupplierData?> fetchSupplierById(int supplierId) async {
+       final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     final url =
         Uri.parse('${AppUrl.baseurl}supplier/edit/$supplierId');
     try {
-      final response = await http.get(url);
+      final response = await http.get(url,  headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
       debugPrint("API Response: ${response.body}"); // 🔍 Debugging Step
 
       final data = jsonDecode(response.body);
@@ -197,6 +229,8 @@ class SupplierProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getInt('user_id')?.toString();
 
+    final token = prefs.getString('token');
+
     if (userId == null || userId.isEmpty) {
       errorMessage = "User ID is not available. Please login again.";
       isLoading = false;
@@ -219,6 +253,7 @@ class SupplierProvider extends ChangeNotifier {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+         "Authorization": "Bearer $token",
       },
     );
 
