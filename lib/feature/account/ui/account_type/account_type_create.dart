@@ -20,14 +20,23 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
 
   String selectedStatus = "1";
 
-  List<String> itemList = [
-    'Cash in Hand',
-    'Bank',
-    "Direct Income",
-    'Indirect Income',
-    "Direct Expense",
-    "Indirect Expense",
-  ];
+  // List<String> itemList = [
+  //   'Cash in Hand',
+  //   'Bank',
+  //   "Direct Income",
+  //   'Indirect Income',
+  //   "Direct Expense",
+  //   "Indirect Expense",
+  // ];
+
+  final Map<String, String> accountTypeMap = {
+    "Cash in Hand": "cash",
+    "Bank": "bank",
+    "Direct Income": "direct_income",
+    "Indirect Income": "indirect_income",
+    "Direct Expense": "direct_expense",
+    "Indirect Expense": "indirect_expense",
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +50,7 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-          "Account Type List",
+          "Account List",
           style: TextStyle(
               color: Colors.yellow, fontSize: 16, fontWeight: FontWeight.bold),
         ),
@@ -53,7 +62,6 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
             Expanded(
               child: Column(
                 children: [
-
                   ///account name
                   AddSalesFormfield(
                     height: 40,
@@ -63,15 +71,36 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
                   const SizedBox(
                     height: 10,
                   ),
-                  
 
                   ///account type
+                  // SizedBox(
+                  //   height: 40,
+                  //   width: double.infinity,
+                  //   child: CustomDropdownTwo(
+                  //     hint: '',
+                  //     items: itemList,
+                  //     width: double.infinity,
+                  //     height: 40,
+                  //     labelText: 'Account Type',
+                  //     selectedItem: selectedAccountType,
+                  //     onChanged: (value) async {
+                  //       setState(() {
+                  //         selectedAccountType = value;
+                  //         selectedAccount = null; // reset account selection
+
+                  //         debugPrint(
+                  //             "selectedAccountType  $selectedAccountType");
+                  //       });
+                  //     },
+                  //   ),
+                  // ),
+
                   SizedBox(
                     height: 40,
                     width: double.infinity,
                     child: CustomDropdownTwo(
                       hint: '',
-                      items: itemList,
+                      items: accountTypeMap.keys.toList(), // show labels
                       width: double.infinity,
                       height: 40,
                       labelText: 'Account Type',
@@ -79,17 +108,22 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
                       onChanged: (value) async {
                         setState(() {
                           selectedAccountType = value;
-                          selectedAccount = null; // reset account selection
+
+                          // Get the mapped backend value
+                          final backendValue = accountTypeMap[value] ?? "";
+
+                          selectedAccount =
+                              backendValue; // store correct value for API
 
                           debugPrint(
-                              "selectedAccountType  $selectedAccountType");
+                              "selectedAccountType (UI)  $selectedAccountType");
+                          debugPrint("selectedAccount (API)  $selectedAccount");
                         });
                       },
                     ),
                   ),
 
                   const SizedBox(height: 10),
-
 
                   ///acount balance
                   AddSalesFormfield(
@@ -100,8 +134,7 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
                   const SizedBox(
                     height: 10,
                   ),
-                 
-                  
+
                   ///date
                   Container(
                     height: 40,
@@ -157,7 +190,6 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
                     ),
                   ),
 
-                  
                   const SizedBox(
                     height: 10,
                   ),
@@ -254,95 +286,99 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
               ),
             ),
 
-
             SizedBox(
-  height: 40,
-  width: double.infinity,
-  child: ElevatedButton(
-    onPressed: () async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? userId = prefs.getInt('user_id')?.toString();
+              height: 40,
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  String? userId = prefs.getInt('user_id')?.toString();
 
-      final provider = Provider.of<AccountTypeProvider>(context, listen: false);
+                  final provider =
+                      Provider.of<AccountTypeProvider>(context, listen: false);
 
-      final result = await controller.createAccount(
-        userId: userId.toString(),
-        accountName: controller.accountNameController.text.trim(),
-        accountType: selectedAccountType?.toLowerCase() ?? 'cash',
-        accountGroup: controller.accountGroupController.text.trim(),
-        openingBalance: controller.openBlanceController.text.trim(),
-        date: controller.formattedDate.isNotEmpty
-            ? controller.formattedDate
-            : '2025-07-14',
-        status: selectedStatus,
-        accountHolderName: selectedAccountType?.toLowerCase() == 'bank'
-            ? controller.accountHolderNameController.text.trim()
-            : null,
-        accountNo: selectedAccountType?.toLowerCase() == 'bank'
-            ? controller.accountNoController.text.trim()
-            : null,
-        routingNumber: selectedAccountType?.toLowerCase() == 'bank'
-            ? controller.routingNumberController.text.trim()
-            : null,
-        bankLocation: selectedAccountType?.toLowerCase() == 'bank'
-            ? controller.bankLocationController.text.trim()
-            : null,
-      );
+                      debugPrint( 'selectedAccount  ${selectedAccount}');
 
-      if (result.success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result.message),
-            backgroundColor: Colors.green,
-          ),
-        );
-        
-        // Refresh the accounts list
-        provider.fetchAccounts();
-        
-        // ✅ Reset all form fields using controller method
-        controller.resetForm();
-        
-        // ✅ Reset widget state variables
-        setState(() {
-          selectedAccountType = null;
-          selectedAccount = null;
-          selectedStatus = "1";
-          showBankDetails = false;
-        });
-        
-        Navigator.pop(context);
-        
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result.message),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    },
-    style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.primaryColor,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(6),
-      ),
-    ),
-    child: const Text(
-      'Save Account Type',
-      style: TextStyle(color: Colors.white),
-    ),
-  ),
-),
+                  final result = await controller.createAccount(
+                    userId: userId.toString(),
+                    accountName: controller.accountNameController.text.trim(),
+                    accountType: selectedAccount! ,
+                    
+                    accountGroup: controller.accountGroupController.text.trim(),
+                    openingBalance: controller.openBlanceController.text.trim(),
+                    date: controller.formattedDate.isNotEmpty
+                        ? controller.formattedDate
+                        : '2025-07-14',
+                    status: selectedStatus,
+                    accountHolderName:
+                        selectedAccountType?.toLowerCase() == 'bank'
+                            ? controller.accountHolderNameController.text.trim()
+                            : null,
+                    accountNo: selectedAccountType?.toLowerCase() == 'bank'
+                        ? controller.accountNoController.text.trim()
+                        : null,
+                    routingNumber: selectedAccountType?.toLowerCase() == 'bank'
+                        ? controller.routingNumberController.text.trim()
+                        : null,
+                    bankLocation: selectedAccountType?.toLowerCase() == 'bank'
+                        ? controller.bankLocationController.text.trim()
+                        : null,
+                  );
 
+                  if (result.success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(result.message),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+
+                    // Refresh the accounts list
+                    provider.fetchAccounts();
+
+                    // ✅ Reset all form fields using controller method
+                    controller.resetForm();
+
+                    // ✅ Reset widget state variables
+                    setState(() {
+                      selectedAccountType = null;
+                      selectedAccount = null;
+                      selectedStatus = "1";
+                      showBankDetails = false;
+                    });
+
+                    Navigator.pop(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(result.message),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                child: const Text(
+                  'Save Account Type',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
 
             // SizedBox(
             //   height: 40,
             //   width: double.infinity,
             //   child: ElevatedButton(
             //       onPressed: () async {
-                     
+
             //         SharedPreferences prefs =
             //             await SharedPreferences.getInstance();
             //         String? userId = prefs.getInt('user_id')?.toString();
@@ -358,12 +394,10 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
             //               controller.accountGroupController.text.trim(),
             //           openingBalance:
             //               controller.openBlanceController.text.trim(),
-                      
-                      
+
             //           date: controller.formattedDate.isNotEmpty
             //               ? controller.formattedDate
             //               : '2025-07-14',
-
 
             //           status: selectedStatus,
 
@@ -414,8 +448,7 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
             //       child: const Text('Save Account Type',
             //           style: TextStyle(color: Colors.white))),
             // ),
-           
-           
+
             const SizedBox(
               height: 50,
             )

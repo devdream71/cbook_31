@@ -296,6 +296,8 @@ class ItemProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         debugPrint("✅ Success: $message");
         if (!context.mounted) return;
+
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message, style: const TextStyle(color: Colors.white)),
@@ -303,23 +305,7 @@ class ItemProvider with ChangeNotifier {
           ),
         );
 
-        // await Future.delayed(const Duration(milliseconds: 500));
-        // if (!context.mounted) return;
-
-
-
-
         
-
-
-        
-        //Navigator.pop(context);
-        
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const HomeView()),
-        // );
-
 
       } else {
         debugPrint("❌ API Error (${response.statusCode}): $message");
@@ -342,4 +328,6 @@ class ItemProvider with ChangeNotifier {
       );
     }
   }
+
+
 }

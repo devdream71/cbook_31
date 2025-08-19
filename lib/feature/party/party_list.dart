@@ -6,7 +6,7 @@ import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart'
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/dashboard_report/provider/dashbord_report_provider.dart';
 import 'package:cbook_dt/feature/party/party_intro_page.dart';
-import 'package:cbook_dt/feature/suppliers/provider/suppliers_list.dart';
+import 'package:cbook_dt/feature/suppliers/provider/suppliers_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';

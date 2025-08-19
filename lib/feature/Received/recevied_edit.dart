@@ -1,6 +1,6 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
-import 'package:cbook_dt/feature/Received/model/create_recived_voucher.dart';
+import 'package:cbook_dt/feature/Received/model/create_recived_voucher_model.dart';
 import 'package:cbook_dt/feature/Received/provider/received_provider.dart';
 import 'package:cbook_dt/feature/Received/received_list.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
@@ -968,8 +968,8 @@ class _ReceviedEditState extends State<ReceviedEdit> {
                     //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
                     double paymentAmt =
                         double.tryParse(paymentAmount.text) ?? 0;
-                    double discountAmt =
-                        double.tryParse(discountAmount.text) ?? 0;
+                    String discountAmt =
+                      discountAmount.text;
                     String notes = 'notes';
 
                     final customerProvider =

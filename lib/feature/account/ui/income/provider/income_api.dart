@@ -306,10 +306,10 @@ class IncomeProvider with ChangeNotifier {
     required String notes,
     required int status,
     required List<IncomeItem> incomeItems,
-    required String billPersonID,
+    //required String billPersonID,
   }) async {
     final url = Uri.parse('${AppUrl.baseurl}income/store?'
-        'user_id=$userId&invoice_no=$invoiceNo&date=$date&received_to=$receivedTo&account=$account&total_amount=$totalAmount&notes=$notes&status=$status&bill_person_id=$billPersonID');
+        'user_id=$userId&invoice_no=$invoiceNo&date=$date&received_to=$receivedTo&account=$account&total_amount=$totalAmount&notes=$notes&status=$status'); //bill_person_id=$billPersonID
 
     final body = IncomeStoreRequest(incomeItems: incomeItems).toJson();
 

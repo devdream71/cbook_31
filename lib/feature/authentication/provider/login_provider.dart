@@ -67,11 +67,25 @@ class LoginProvider with ChangeNotifier {
 
 
 
+  ///remove token. 
+  // Future<void> logout() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   await prefs.remove('token');
+  //   _isLoggedIn = false;
+  //   notifyListeners();
+  // }
+
 
   Future<void> logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    _isLoggedIn = false;
-    notifyListeners();
-  }
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  
+  // Clear everything (token, user_id, cookie, etc.)
+  await prefs.clear();
+
+  // Reset local states
+  _isLoggedIn = false;
+  _loginResponse = null;
+
+  notifyListeners();
+}
 }

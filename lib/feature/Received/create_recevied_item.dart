@@ -1,8 +1,7 @@
 import 'dart:convert';
-
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
-import 'package:cbook_dt/feature/Received/model/create_recived_voucher.dart';
+import 'package:cbook_dt/feature/Received/model/create_recived_voucher_model.dart';
 import 'package:cbook_dt/feature/Received/provider/received_provider.dart';
 import 'package:cbook_dt/feature/Received/received_list.dart';
 import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.dart';
@@ -45,6 +44,10 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
   TextEditingController totalAmount = TextEditingController();
   TextEditingController discountAmount = TextEditingController();
   TextEditingController paymentAmount = TextEditingController();
+
+  TextEditingController discountPercentage = TextEditingController();
+  TextEditingController discountValue = TextEditingController();
+
   String selectedDiscountType = '%'; // default '%'
   double dueAmount = 0;
 
@@ -63,12 +66,8 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
     return total;
   }
 
-  /// Called when discount or receipt amounts change
-  void _recalculatePayment() {
+  void _recalculatePayment({String? changedField}) {
     double due = totalReceiptAmount; // total receipt entered by user
-
-    final discountText = discountAmount.text.trim();
-    double discountValue = double.tryParse(discountText) ?? 0;
 
     if (due <= 0) {
       paymentAmount.text = "0.00";
@@ -76,29 +75,54 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
       return;
     }
 
-    // Clamp discount value
-    if (selectedDiscountType == '%') {
-      if (discountValue > 100) discountValue = 100;
-    } else {
-      if (discountValue > due) discountValue = due;
+    double percent = double.tryParse(discountPercentage.text.trim()) ?? 0;
+    double value = double.tryParse(discountValue.text.trim()) ?? 0;
+
+    // Clamp percentage to 0-100
+    if (percent > 100) {
+      percent = 100;
+      discountPercentage.text = "100";
+    }
+    if (percent < 0) {
+      percent = 0;
+      discountPercentage.text = "0";
     }
 
-    double discountAmountCalculated = selectedDiscountType == '%'
-        ? (discountValue / 100) * due
-        : discountValue;
+    // Clamp value to 0-due
+    if (value > due) {
+      value = due;
+      discountValue.text = due.toStringAsFixed(2);
+    }
+    if (value < 0) {
+      value = 0;
+      discountValue.text = "0";
+    }
 
-    double finalPayment = due - discountAmountCalculated;
+    // Cross-calculate based on which field was changed
+    if (changedField == 'percentage') {
+      // User changed percentage, calculate value
+      double calculatedValue = (percent / 100) * due;
+      discountValue.text = calculatedValue.toStringAsFixed(2);
+      value = calculatedValue;
+    } else if (changedField == 'value') {
+      // User changed value, calculate percentage
+      double calculatedPercent = due > 0 ? (value / due) * 100 : 0;
+      discountPercentage.text = calculatedPercent.toStringAsFixed(2);
+      percent = calculatedPercent;
+    }
 
+    // Calculate final payment
+    double finalPayment = due - value;
     if (finalPayment < 0) finalPayment = 0;
 
     setState(() {
-      totalAmount.text = due.toStringAsFixed(2); // show total before discount
+      totalAmount.text = due.toStringAsFixed(2); // total before discount
       paymentAmount.text = finalPayment.toStringAsFixed(2);
     });
 
     debugPrint(
-      'Total Receipt: $due, Discount: $discountValue $selectedDiscountType, '
-      'Discount Amt: $discountAmountCalculated, Final Payment: $finalPayment',
+      'Total Receipt: $due, Percent: $percent, Value: $value, '
+      'Final Payment: $finalPayment',
     );
   }
 
@@ -188,7 +212,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
       // API failed or returned no usable data
       if (mounted) {
         setState(() {
-          billController.text = code.isNotEmpty ? "$code-100" : "PURR-100";
+          billController.text = code.isNotEmpty ? "$code-100" : "REC-100";
           debugPrint('Fallback bill set to: ${billController.text}');
         });
       }
@@ -196,88 +220,82 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
       debugPrint('Error fetching bill number: $e');
       if (mounted) {
         setState(() {
-          billController.text = code.isNotEmpty ? "$code-100" : "PURR-100";
+          billController.text = code.isNotEmpty ? "$code-100" : "REC-100";
           debugPrint('Fallback bill set to: ${billController.text}');
         });
       }
     }
   }
 
-  // Updated fetchAndSetBillNumber with more debugging:
-  // Future<void> fetchAndSetBillNumber() async {
-  //   debugPrint('fetchAndSetBillNumber called');
+  void _clearAllControllers() {
+  debugPrint('Clearing all controllers...');
+  
+  // Clear text controllers
+  billNoController.clear();
+  totalAmount.clear();
+  discountAmount.clear();
+  paymentAmount.clear();
+  discountPercentage.clear();
+  discountValue.clear();
+  billController.clear();
+  
+  // Clear receipt controllers map
+  receiptControllers.forEach((key, controller) {
+    controller.clear();
+    controller.dispose(); // Dispose to prevent memory leaks
+  });
+  receiptControllers.clear();
+  
+  // Reset dropdown selections
+  selectedReceivedTo = null;
+  selectedAccount = null;
+  selectedAccountId = null;
+  selectedBillPerson = null;
+  selectedBillPersonId = null;
+  selectedBillPersonData = null;
+  
+  // Reset other state variables
+  billNo = '';
+  dueAmount = 0;
+  expandedIndexes.clear();
+  
+  debugPrint('All controllers cleared successfully');
+}
 
-  //   final url = Uri.parse(
-  //     'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=voucher&type=receipt&code=REC&bill_number=100&with_nick_name=1',
-  //   );
 
-  //   debugPrint('API URL: $url');
+// Add this method to your _ReceivedCreateItemState class
 
-  //   try {
-  //     debugPrint('Making API call...');
-  //     final response = await http.get(url);
-  //     debugPrint('API Response Status: ${response.statusCode}');
-  //     debugPrint('API Response Body: ${response.body}');
+/// Clear all controllers and reset form state
+ 
 
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       debugPrint('Parsed data: $data');
+// Override dispose method to clean up controllers when widget is destroyed
+@override
+void dispose() {
+  debugPrint('Disposing controllers...');
+  
+  // Dispose all text controllers
+  billNoController.dispose();
+  totalAmount.dispose();
+  discountAmount.dispose();
+  paymentAmount.dispose();
+  discountPercentage.dispose();
+  discountValue.dispose();
+  billController.dispose();
+  
+  // Dispose receipt controllers
+  receiptControllers.forEach((key, controller) {
+    controller.dispose();
+  });
+  receiptControllers.clear();
+  
+  super.dispose();
+}
 
-  //       if (data['success'] == true && data['data'] != null) {
-  //         // String billFromApi = data['data'].toString(); // Ensure it's a string
-  //          String billFromApi = data['data']['bill_number'].toString();
-  //         debugPrint('Bill from API: $billFromApi');
-
-  //         //String newBill = _incrementBillNumber(billFromApi);
-
-  //         String newBill = billFromApi;
-
-  //         debugPrint('New bill after increment: $newBill');
-
-  //         // Update the controller and trigger UI rebuild
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = newBill;
-  //             debugPrint('Bill controller updated to: ${billController.text}');
-  //           });
-  //         }
-  //       } else {
-  //         debugPrint('API success false or data null');
-  //         // Handle API error
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = "REC-100"; // Default fallback
-  //             debugPrint('Set fallback bill: ${billController.text}');
-  //           });
-  //         }
-  //       }
-  //     } else {
-  //       debugPrint('Failed to fetch bill number: ${response.statusCode}');
-  //       // Set fallback bill number
-  //       if (mounted) {
-  //         setState(() {
-  //           billController.text = "REC-100";
-  //           debugPrint(
-  //               'Set fallback bill due to status code: ${billController.text}');
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error fetching bill number: $e');
-  //     // Set fallback bill number
-  //     if (mounted) {
-  //       setState(() {
-  //         billController.text = "REC-100";
-  //         debugPrint('Set fallback bill due to exception: ${billController.text}');
-  //       });
-  //     }
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<SalesController>();
-    //final provider = Provider.of<IncomeProvider>(context);
+  
     final provider = context.watch<IncomeProvider>();
 
     final colorScheme = Theme.of(context).colorScheme;
@@ -293,6 +311,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         automaticallyImplyLeading: true,
+        
         title: const Column(
           children: [
             SizedBox(
@@ -312,7 +331,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        padding: const EdgeInsets.only(left: 4.0, right: 4.0, top: 6),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           ///1 section
           Row(
@@ -322,6 +341,8 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                
+
                   SizedBox(
                     height: 30,
                     width: 150,
@@ -335,19 +356,29 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                       onChanged: (value) async {
                         debugPrint('=== Received To Selected: $value ===');
 
+                        // Map label to backend value
+                        String? mappedValue;
+                        if (value == 'Cash in Hand') {
+                          mappedValue = 'cash';
+                        } else if (value == 'Bank') {
+                          mappedValue = 'bank';
+                        }
+
                         setState(() {
-                          selectedReceivedTo = value;
+                          selectedReceivedTo =
+                              mappedValue; // store mapped value
                           selectedAccount = null; // reset account selection
                         });
 
-                        if (value == 'Cash in Hand') {
+                        if (mappedValue == 'cash') {
                           debugPrint('Fetching Cash accounts...');
                           await provider.fetchAccounts('cash');
-                        } else if (value == 'Bank') {
+                        } else if (mappedValue == 'bank') {
                           debugPrint('Fetching Bank accounts...');
                           await provider.fetchAccounts('bank');
                         }
 
+                        debugPrint('cash or bank: $selectedReceivedTo');
                         debugPrint(
                             'Fetched Account Names: ${provider.accountNames}');
                       },
@@ -403,47 +434,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 8.0),
-                  //   child: Consumer<PaymentVoucherProvider>(
-                  //     builder: (context, provider, child) {
-                  //       return SizedBox(
-                  //         height: 30,
-                  //         width: 130,
-                  //         child: provider.isLoading
-                  //             ? const Center(child: CircularProgressIndicator())
-                  //             : CustomDropdownTwo(
-                  //                 hint: '',
-                  //                 items: provider.billPersonNames,
-                  //                 width: double.infinity,
-                  //                 height: 30,
-                  //                 labelText: 'Bill Person',
-                  //                 selectedItem: selectedBillPerson,
-                  //                 onChanged: (value) {
-                  //                   debugPrint(
-                  //                       '=== Bill Person Selected: $value ===');
-                  //                   setState(() {
-                  //                     selectedBillPerson = value;
-                  //                     selectedBillPersonData =
-                  //                         provider.billPersons.firstWhere(
-                  //                       (person) => person.name == value,
-                  //                     ); // ✅ Save the whole object globally
-                  //                     selectedBillPersonId =
-                  //                         selectedBillPersonData!.id;
-                  //                   });
-
-                  //                   debugPrint('Selected Bill Person Details:');
-                  //                   debugPrint(
-                  //                       '- ID: ${selectedBillPersonData!.id}');
-                  //                   debugPrint(
-                  //                       '- Name: ${selectedBillPersonData!.name}');
-                  //                   debugPrint(
-                  //                       '- Phone: ${selectedBillPersonData!.phone}');
-                  //                 }),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
+                 
 
                   // Bill No Field
 
@@ -451,20 +442,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                     height: 8,
                   ),
 
-                  ///bill no, bill person
-                  // SizedBox(
-                  //   height: 30,
-                  //   width: 130,
-                  //   child: AddSalesFormfield(
-                  //     labelText: "Bill No",
-
-                  //     controller: billNoController,
-
-                  //     onChanged: (value) {
-                  //       billNo = value;
-                  //     }, // Match cursor height to text size
-                  //   ),
-                  // ),
+                  
 
                   SizedBox(
                     height: 30,
@@ -531,33 +509,11 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
             height: 8,
           ),
 
-          ///2 section
-          InkWell(
-            onTap: () async {},
-            child: Container(
-              decoration: BoxDecoration(
-                color: colorScheme.primary,
-                borderRadius: BorderRadius.circular(3),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Received From",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
+         
+          const Center(
+            child: Text(
+              "Received From",
+              style: TextStyle(color: Colors.black, fontSize: 14),
             ),
           ),
 
@@ -590,31 +546,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                   if (customerList.isNotEmpty &&
                       selectedCustomerRecived != null &&
                       selectedCustomerRecived.id != -1) ...[
-                    Row(
-                      children: [
-                        Text(
-                          "${selectedCustomerRecived.type == 'customer' ? 'Receivable' : 'Payable'}: ",
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: selectedCustomerRecived.type == 'customer'
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2.0),
-                          child: Text(
-                            "৳ ${selectedCustomerRecived.due.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  
                     const SizedBox(height: 8),
                     SizedBox(
                       height: 300,
@@ -844,46 +776,44 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                 ),
                 const SizedBox(height: 4),
 
-                // Discount row with % dropdown and text field
+              
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text("Discount", style: ts),
                     const SizedBox(width: 10),
+
+                    // Percentage input
                     SizedBox(
                       height: 30,
-                      width: 76,
-                      child: CustomDropdownTwo(
-                        hint: '',
-                        items: ['%', '৳'],
-                        width: double.infinity,
-                        height: 30,
-                        labelText: selectedDiscountType,
-                        selectedItem: selectedDiscountType,
+                      width: 78,
+                      child: AddSalesFormfield(
+                        labelText: '%',
+                        controller: discountPercentage,
                         onChanged: (value) {
-                          setState(() {
-                            selectedDiscountType = value ?? '%';
-                            _recalculatePayment();
-                          });
-                          debugPrint(
-                              'Discount type selected: $selectedDiscountType');
+                          _recalculatePayment(changedField: 'percentage');
                         },
                       ),
                     ),
-                    const SizedBox(width: 10),
+
+                    const SizedBox(width: 4),
+
+                    // Discount value input
                     SizedBox(
                       height: 30,
-                      width: 76,
+                      width: 78,
                       child: AddSalesFormfield(
-                        labelText: 'Amount',
-                        controller: discountAmount,
+                        labelText: 'Value',
+                        controller: discountValue,
                         onChanged: (value) {
-                          _recalculatePayment();
+                          _recalculatePayment(changedField: 'value');
                         },
                       ),
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 4),
 
                 // Received
@@ -951,7 +881,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                     int userId = int.parse(userIdStr);
                     int customerId = selectedCustomer.id;
                     int voucherPerson = selectedBillPersonData?.id ?? 0;
-                    String voucherNumber = billNoController.text.trim();
+                    String billNO = billController.text;
                     String voucherDate =
                         DateFormat('yyyy-MM-dd').format(DateTime.now());
                     String voucherTime =
@@ -960,18 +890,18 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                         (selectedReceivedTo ?? "cash").toLowerCase();
                     int accountId = selectedAccountId ?? 0;
                     int receivedFrom = customerId;
-                    String percent = selectedDiscountType;
+                    String percent = discountPercentage.text;
                     //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
                     double paymentAmt =
                         double.tryParse(paymentAmount.text) ?? 0;
-                    double discountAmt =
-                        double.tryParse(discountAmount.text) ?? 0;
+                    String discountAmt = discountValue.text;
                     String notes = 'notes';
 
-                    // List<ReceivedVoucherItem> voucherItems = [
-                    //   ReceivedVoucherItem(
-                    //       salesId: "57", amount: totalAmt.toStringAsFixed(2)),
-                    // ];
+                    debugPrint('voucher number  ${billNO}');
+                    debugPrint('discount percentance  ${percent}');
+                    debugPrint('discount amount  ${discountAmt}');
+
+                   
 
                     final customerProvider =
                         Provider.of<CustomerProvider>(context, listen: false);
@@ -1002,15 +932,15 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                       userId: userId,
                       custoerID: customerId,
                       voucherPerson: voucherPerson,
-                      voucherNumber: voucherNumber,
+                      voucherNumber: billNO,
                       voucherDate: voucherDate,
                       voucherTime: voucherTime,
                       receivedTo: receivedTo,
                       accountId: accountId,
                       receivedFrom: receivedFrom,
                       percent: percent,
-                      totalAmount: paymentAmt,
                       discount: discountAmt,
+                      totalAmount: paymentAmt,
                       notes: notes,
                       voucherItems: voucherItems,
                     );
@@ -1021,17 +951,22 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
                     bool success = await provider.storeReceivedVoucher(request);
 
                     if (success) {
+                       
+                       _clearAllControllers();
+
                       // ✅ Clear the selected customer
                       Provider.of<CustomerProvider>(context, listen: false)
                           .clearSelectedCustomerRecived();
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                          "Received voucher saved successfully!",
-                          style: TextStyle(color: Colors.green),
-                        )),
+                        SnackBar(
+                            backgroundColor: AppColors.primaryColor,
+                            content: const Text(
+                              "Received voucher saved successfully!",
+                              style: TextStyle(color: Colors.white),
+                            )),
                       );
+
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

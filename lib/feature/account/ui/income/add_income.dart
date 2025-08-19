@@ -6,10 +6,12 @@ import 'package:cbook_dt/feature/account/ui/income/income_list.dart';
 import 'package:cbook_dt/feature/account/ui/income/model/income_item.dart';
 import 'package:cbook_dt/feature/account/ui/income/model/recived_item.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
+import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
 import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
 import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/sales/controller/sales_controller.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
+import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -45,6 +47,20 @@ class _IncomeCreateState extends State<IncomeCreate> {
   void initState() {
     super.initState();
 
+    
+    // Initialize with loading text
+    billController.text = "Loading...";
+    debugPrint('Bill controller initialized with: ${billController.text}');
+
+    Future.microtask(() async {
+      // First fetch settings and wait for completion
+      await Provider.of<BillSettingsProvider>(context, listen: false)
+          .fetchSettings();
+      debugPrint('Settings fetched successfully');
+      await fetchAndSetBillNumber(context);
+    });
+
+
     // Fetch bill persons asynchronously
     Future.microtask(() {
       Provider.of<PaymentVoucherProvider>(context, listen: false)
@@ -64,66 +80,153 @@ class _IncomeCreateState extends State<IncomeCreate> {
       }
     });
 
-    Future.microtask(() async {
-      fetchAndSetBillNumber();
-    });
+ 
   }
 
+ 
 
-  ///updated bill nunber json respoonse
-  Future<void> fetchAndSetBillNumber() async {
-  debugPrint('fetchAndSetBillNumber called');
 
-  final url = Uri.parse(
-    'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=voucher&type=indirect_income&code=IN&bill_number=100&with_nick_name=1',
-  );
+       ////bill number build 
+     Future<void> fetchAndSetBillNumber(BuildContext context) async {
+    debugPrint('fetchAndSetBillNumber called');
 
-  try {
-    debugPrint('Making API call...');
-    final response = await http.get(url);
-    debugPrint('API Response Status: ${response.statusCode}');
-    debugPrint('API Response Body: ${response.body}');
+    final settingsProvider =
+        Provider.of<BillSettingsProvider>(context, listen: false);
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      debugPrint('Parsed data: $data');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-      if (data['success'] == true && data['data'] != null) {
-        final billFromApi = data['data']['bill_number']?.toString().trim() ?? "";
+    // Fetch required values from provider (now they should be available)
+    final code = settingsProvider.getValue("income_code") ?? "";
+    final billNumber = settingsProvider.getValue("income_bill_no") ?? "";
+    final withNickName = settingsProvider.getValue("with_nick_name") ?? "0";
 
-        debugPrint('Bill from API: $billFromApi');
+    debugPrint(
+        'Settings values - code: $code, billNumber: $billNumber, withNickName: $withNickName');
 
-        // Optional: extract only number from "IN-102"
-        final billOnlyNumber =  billFromApi;
+    final url = Uri.parse(
+      '${AppUrl.baseurl}app/setting/bill/number'
+      '?voucher_type=voucher'
+      '&type=indirect_income'
+      '&code=$code'
+      '&bill_number=$billNumber'
+      '&with_nick_name=$withNickName',
+    );
 
-        if (mounted) {
-          setState(() {
-            billController.text = billOnlyNumber;
-            debugPrint('Bill controller updated to: ${billController.text}');
-          });
+    debugPrint('API URL: =====> $url');
+
+    try {
+      debugPrint('Making API call...');
+      final response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
+      debugPrint('API Response Status: ${response.statusCode}');
+      debugPrint('API Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        debugPrint('Parsed data: $data');
+
+        if (data['success'] == true && data['data'] != null) {
+          String billFromApi = data['data']['bill_number'].toString();
+          debugPrint('Bill from API: $billFromApi');
+
+          if (mounted) {
+            setState(() {
+              billController.text = billFromApi;
+              debugPrint('Bill controller updated to: ${billController.text}');
+            });
+          }
+          return;
         }
-      } else {
-        debugPrint('API success false or data missing');
-        _setFallback();
       }
-    } else {
-      debugPrint('Failed to fetch bill number: ${response.statusCode}');
-      _setFallback();
-    }
-  } catch (e) {
-    debugPrint('Error fetching bill number: $e');
-    _setFallback();
-  }
-}
 
-void _setFallback() {
-  if (mounted) {
-    setState(() {
-      billController.text = "101"; // or any default you want
-      debugPrint('Fallback bill set: ${billController.text}');
-    });
+      // API failed or returned no usable data
+      if (mounted) {
+        setState(() {
+          billController.text = code.isNotEmpty ? "$code-100" : "IN-100";
+          debugPrint('Fallback bill set to: ${billController.text}');
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching bill number: $e');
+      if (mounted) {
+        setState(() {
+          billController.text = code.isNotEmpty ? "$code-100" : "IN-100";
+          debugPrint('Fallback bill set to: ${billController.text}');
+        });
+      }
+    }
   }
-}
+
+  final Map<String, String> paidToOptions = {
+    "Cash in Hand": "cash",
+    "Bank": "bank",
+  };
+
+
+
+
+
+
+//   ///updated bill nunber json respoonse
+//   Future<void> fetchAndSetBillNumber() async {
+//   debugPrint('fetchAndSetBillNumber called');
+
+//   final url = Uri.parse(
+//     'https://commercebook.site/api/v1/app/setting/bill/number?voucher_type=voucher&type=indirect_income&code=IN&bill_number=100&with_nick_name=1',
+//   );
+
+//   try {
+//     debugPrint('Making API call...');
+//     final response = await http.get(url);
+//     debugPrint('API Response Status: ${response.statusCode}');
+//     debugPrint('API Response Body: ${response.body}');
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body);
+//       debugPrint('Parsed data: $data');
+
+//       if (data['success'] == true && data['data'] != null) {
+//         final billFromApi = data['data']['bill_number']?.toString().trim() ?? "";
+
+//         debugPrint('Bill from API: $billFromApi');
+
+//         // Optional: extract only number from "IN-102"
+//         final billOnlyNumber =  billFromApi;
+
+//         if (mounted) {
+//           setState(() {
+//             billController.text = billOnlyNumber;
+//             debugPrint('Bill controller updated to: ${billController.text}');
+//           });
+//         }
+//       } else {
+//         debugPrint('API success false or data missing');
+//         _setFallback();
+//       }
+//     } else {
+//       debugPrint('Failed to fetch bill number: ${response.statusCode}');
+//       _setFallback();
+//     }
+//   } catch (e) {
+//     debugPrint('Error fetching bill number: $e');
+//     _setFallback();
+//   }
+// }
+
+// void _setFallback() {
+//   if (mounted) {
+//     setState(() {
+//       billController.text = "101"; // or any default you want
+//       debugPrint('Fallback bill set: ${billController.text}');
+//     });
+//   }
+// }
 
 
   @override
@@ -177,7 +280,7 @@ void _setFallback() {
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             ///1 section
@@ -189,15 +292,16 @@ void _setFallback() {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ///received to
-                    SizedBox(
+                     
+                   SizedBox(
                       height: 30,
                       width: 150,
                       child: CustomDropdownTwo(
                         hint: '',
-                        items: const ['Cash in Hand', 'Bank'],
+                        items: paidToOptions.keys.toList(), // show labels
                         width: double.infinity,
                         height: 30,
-                        labelText: 'Received to',
+                        labelText: 'Paid To',
                         selectedItem: selectedReceivedTo,
                         onChanged: (value) async {
                           debugPrint('=== Received To Selected: $value ===');
@@ -207,10 +311,16 @@ void _setFallback() {
                             selectedAccount = null; // reset account selection
                           });
 
-                          if (value == 'Cash in Hand') {
+                          // get actual API value (cash / bank)
+                          final apiValue = paidToOptions[value];
+                          debugPrint("Sending to API as: $apiValue");
+
+                          //apiValue = selectedReceivedTo;
+
+                          if (apiValue == 'cash') {
                             debugPrint('Fetching Cash accounts...');
                             await provider.fetchAccounts('cash');
-                          } else if (value == 'Bank') {
+                          } else if (apiValue == 'bank') {
                             debugPrint('Fetching Bank accounts...');
                             await provider.fetchAccounts('bank');
                           }
@@ -220,6 +330,40 @@ void _setFallback() {
                         },
                       ),
                     ),
+  
+
+
+                    // SizedBox(
+                    //   height: 30,
+                    //   width: 150,
+                    //   child: CustomDropdownTwo(
+                    //     hint: '',
+                    //     items: const ['Cash in Hand', 'Bank'],
+                    //     width: double.infinity,
+                    //     height: 30,
+                    //     labelText: 'Received to',
+                    //     selectedItem: selectedReceivedTo,
+                    //     onChanged: (value) async {
+                    //       debugPrint('=== Received To Selected: $value ===');
+
+                    //       setState(() {
+                    //         selectedReceivedTo = value;
+                    //         selectedAccount = null; // reset account selection
+                    //       });
+
+                    //       if (value == 'Cash in Hand') {
+                    //         debugPrint('Fetching Cash accounts...');
+                    //         await provider.fetchAccounts('cash');
+                    //       } else if (value == 'Bank') {
+                    //         debugPrint('Fetching Bank accounts...');
+                    //         await provider.fetchAccounts('bank');
+                    //       }
+
+                    //       debugPrint(
+                    //           'Fetched Account Names: ${provider.accountNames}');
+                    //     },
+                    //   ),
+                    // ),
 
                     const SizedBox(height: 10),
 
@@ -272,49 +416,49 @@ void _setFallback() {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     //bill person
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Consumer<PaymentVoucherProvider>(
-                        builder: (context, provider, child) {
-                          return SizedBox(
-                            height: 30,
-                            width: 130,
-                            child: provider.isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator())
-                                : CustomDropdownTwo(
-                                    hint: '',
-                                    items: provider.billPersonNames,
-                                    width: double.infinity,
-                                    height: 30,
-                                    labelText: 'Bill Person',
-                                    selectedItem: selectedBillPerson,
-                                    onChanged: (value) {
-                                      debugPrint(
-                                          '=== Bill Person Selected: $value ===');
-                                      setState(() {
-                                        selectedBillPerson = value;
-                                        selectedBillPersonData =
-                                            provider.billPersons.firstWhere(
-                                          (person) => person.name == value,
-                                        ); // ✅ Save the whole object globally
-                                        selectedBillPersonId =
-                                            selectedBillPersonData!.id;
-                                      });
+                    // Padding(
+                    //   padding: const EdgeInsets.only(top: 8.0),
+                    //   child: Consumer<PaymentVoucherProvider>(
+                    //     builder: (context, provider, child) {
+                    //       return SizedBox(
+                    //         height: 30,
+                    //         width: 130,
+                    //         child: provider.isLoading
+                    //             ? const Center(
+                    //                 child: CircularProgressIndicator())
+                    //             : CustomDropdownTwo(
+                    //                 hint: '',
+                    //                 items: provider.billPersonNames,
+                    //                 width: double.infinity,
+                    //                 height: 30,
+                    //                 labelText: 'Bill Person',
+                    //                 selectedItem: selectedBillPerson,
+                    //                 onChanged: (value) {
+                    //                   debugPrint(
+                    //                       '=== Bill Person Selected: $value ===');
+                    //                   setState(() {
+                    //                     selectedBillPerson = value;
+                    //                     selectedBillPersonData =
+                    //                         provider.billPersons.firstWhere(
+                    //                       (person) => person.name == value,
+                    //                     ); // ✅ Save the whole object globally
+                    //                     selectedBillPersonId =
+                    //                         selectedBillPersonData!.id;
+                    //                   });
 
-                                      debugPrint(
-                                          'Selected Bill Person Details:');
-                                      debugPrint(
-                                          '- ID: ${selectedBillPersonData!.id}');
-                                      debugPrint(
-                                          '- Name: ${selectedBillPersonData!.name}');
-                                      debugPrint(
-                                          '- Phone: ${selectedBillPersonData!.phone}');
-                                    }),
-                          );
-                        },
-                      ),
-                    ),
+                    //                   debugPrint(
+                    //                       'Selected Bill Person Details:');
+                    //                   debugPrint(
+                    //                       '- ID: ${selectedBillPersonData!.id}');
+                    //                   debugPrint(
+                    //                       '- Name: ${selectedBillPersonData!.name}');
+                    //                   debugPrint(
+                    //                       '- Phone: ${selectedBillPersonData!.phone}');
+                    //                 }),
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
 
                     // Bill No Field
 
@@ -628,11 +772,17 @@ void _setFallback() {
                       // const date =
                       //     "2025-06-10"; // your date string like '2025-06-10'
 
-                      final receivedTo =
-                          (selectedReceivedTo ?? '').toLowerCase();
+                      // final receivedTo =
+                      //     (selectedReceivedTo ?? '').toLowerCase();
+
+                       final receivedTo = selectedReceivedTo != null
+                          ? paidToOptions[selectedReceivedTo]
+                          : null;
+
+
                       final account = selectedAccountId.toString();
                       const notes = 'text'; // Or from your input field
-                      final billPersonID = selectedBillPersonData!.id;
+                      //final billPersonID = selectedBillPersonData!.id;
 
                       const status = 1;
 
@@ -664,7 +814,7 @@ void _setFallback() {
                       debugPrint('Total Amount: $totalAmount');
                       debugPrint('Notes: $notes');
                       debugPrint('Status: $status');
-                      debugPrint(" bill  person $billPersonID");
+                      //debugPrint(" bill  person $billPersonID");
                       debugPrint(
                           "📅 Selected Bill Date: ${controller.formattedDate2}");
                       debugPrint(
@@ -674,26 +824,30 @@ void _setFallback() {
                         userId: userId,
                         invoiceNo: invoiceNo,
                         date: controller.formattedDate2,
-                        receivedTo: receivedTo,
+                        receivedTo: receivedTo ?? "",
                         account: account,
                         totalAmount: totalAmount,
                         notes: notes,
                         status: status,
                         incomeItems: incomeItems,
-                        billPersonID: billPersonID.toString(),
+                        //billPersonID: billPersonID.toString(),
                       );
 
                       if (success) {
                         provider.receiptItems.clear();
                         provider.notifyListeners();
 
-                        await provider.fetchIncomeList();
+                        final listIncome = Provider.of<IncomeProvider>(context, listen: false);
+
+                        await listIncome.fetchIncomeList();
+
+                        Navigator.pop(context);
 
                         // Navigate to Income page (replace with your actual route)
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Income()));
+                        // Navigator.pushReplacement(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => const Income()));
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -714,7 +868,7 @@ void _setFallback() {
             ),
 
             const SizedBox(
-              height: 10,
+              height: 50,
             )
           ]),
         ),

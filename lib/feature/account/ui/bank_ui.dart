@@ -20,6 +20,7 @@ class _BankState extends State<Bank> {
     super.initState();
     Provider.of<BankAdjustProvider>(context, listen: false)
         .fetchBankAdjustments();
+        
   }
 
   @override

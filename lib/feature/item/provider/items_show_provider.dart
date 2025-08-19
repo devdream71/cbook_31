@@ -167,7 +167,7 @@ class AddItemProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
 
 

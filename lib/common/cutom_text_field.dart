@@ -40,8 +40,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
       style: const TextStyle(fontSize: 12, color: Colors.black),
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(
+        
         hintText: widget.hint,
-        hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
+        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
         border: const UnderlineInputBorder(),
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(
@@ -54,7 +55,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             width: 2.0,
           ),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         suffixIcon: widget.isObscure
             ? IconButton(
                 icon: Icon(

@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 class ItemDetailsPopUpTwo extends StatelessWidget {
   final String leftTest;
   final String rightText;
-  final String last;
+  //final String last;
   final FontWeight? fontWeight;
   const ItemDetailsPopUpTwo(
       {super.key,
       required this.leftTest,
-      required this.rightText,
+required this.rightText,
       this.fontWeight,
-      required this.last});
+      //required this.last
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +42,17 @@ class ItemDetailsPopUpTwo extends StatelessWidget {
                         fontSize: 12)),
               ),
             ),
-            SizedBox(
-              //color: Colors.red,
-              child: SizedBox(
-                width: 70,
-                child: Text(" $last",
-                    style: TextStyle(
-                        fontWeight: fontWeight,
-                        color: Colors.black,
-                        fontSize: 12)),
-              ),
-            ),
+            // SizedBox(
+            //   //color: Colors.red,
+            //   child: SizedBox(
+            //     width: 70,
+            //     child: Text(" $last",
+            //         style: TextStyle(
+            //             fontWeight: fontWeight,
+            //             color: Colors.black,
+            //             fontSize: 12)),
+            //   ),
+            // ),
             const SizedBox(height: 3),
           ]),
     );

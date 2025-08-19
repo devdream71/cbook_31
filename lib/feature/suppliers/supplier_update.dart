@@ -2,7 +2,7 @@ import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:cbook_dt/feature/suppliers/model/suppliers_creat.dart';
-import 'package:cbook_dt/feature/suppliers/provider/suppliers_list.dart';
+import 'package:cbook_dt/feature/suppliers/provider/suppliers_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

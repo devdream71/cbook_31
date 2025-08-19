@@ -111,6 +111,7 @@ class SupplierProvider extends ChangeNotifier {
   required String proprietorName,
   required String openingBalance,
   XFile? avatarImage,
+  XFile? logo,
 }) async {
   isLoading = true;
   errorMessage = "";
@@ -156,6 +157,13 @@ class SupplierProvider extends ChangeNotifier {
     if (avatarImage != null) {
       request.files.add(
         await http.MultipartFile.fromPath('avatar', avatarImage.path),
+      );
+    }
+
+
+    if (logo != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath('avatar', logo.path),
       );
     }
 

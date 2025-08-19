@@ -4,6 +4,7 @@ import 'package:cbook_dt/feature/authentication/model/register_model.dart';
 import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService with ChangeNotifier {
   ///reg url
@@ -74,10 +75,16 @@ class AuthService with ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
+//     final prefs = await SharedPreferences.getInstance();
+//  final token = prefs.getString('token');
+
+
     try {
       final response = await http.post(
         Uri.parse(baseUrl),
-        headers: {"Content-Type": "application/json"},
+        headers: {"Content-Type": "application/json",
+        // "Authorization": "Bearer $token",
+        },
         body: jsonEncode({
           "company_name": name,
           "email": email,
@@ -85,6 +92,8 @@ class AuthService with ChangeNotifier {
           "country_id": countryId,
           "password": password,
           "confirm_password": confirmPassword,
+          'reg_type': 'free',
+          "reg_from" :'android',
         }),
       );
 
@@ -122,8 +131,17 @@ class AuthService with ChangeNotifier {
   List<Country> get countries => _countries;
 
   Future<void> fetchCountries() async {
+    
+//     final prefs = await SharedPreferences.getInstance();
+//  final token = prefs.getString('token');
+
+
     try {
-      final response = await http.get(Uri.parse(countryUrl));
+      final response = await http.get(Uri.parse(countryUrl),  headers: {
+          'Accept': 'application/json',
+          //"Authorization": "Bearer $token",
+        },    
+);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         CountryResponse countryResponse = CountryResponse.fromJson(data);

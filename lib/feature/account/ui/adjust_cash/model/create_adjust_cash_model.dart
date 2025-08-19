@@ -24,7 +24,7 @@ class AdjustCashData {
   final String voucherDate;
   final String totalAmount;
   final String accountId;
-  final String notes;
+  final String ? notes;
   final int id;
 
   AdjustCashData({
@@ -33,7 +33,7 @@ class AdjustCashData {
     required this.voucherDate,
     required this.totalAmount,
     required this.accountId,
-    required this.notes,
+      this.notes,
     required this.id,
   });
 

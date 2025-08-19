@@ -1,10 +1,9 @@
-
-
 import 'dart:io';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/price_option_selector_customer.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
+import 'package:cbook_dt/feature/party/party_list.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,13 +17,14 @@ class CustomerCreate extends StatefulWidget {
 }
 
 class _CustomerCreateState extends State<CustomerCreate> {
-
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _proprietorController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _statusController = TextEditingController();
+  final TextEditingController _individualNameController = TextEditingController();
+
   final TextEditingController _opiningBanglaceController =
       TextEditingController();
 
@@ -65,7 +65,14 @@ class _CustomerCreateState extends State<CustomerCreate> {
 
   bool isLoading = false;
 
+    String _selectedType = 'Individual'; //Individual
+
   void _saveCustomer() async {
+
+    // FocusManager.instance.primaryFocus?.unfocus();
+
+ FocusScope.of(context).unfocus();
+
     final customerProvider =
         Provider.of<CustomerProvider>(context, listen: false);
 
@@ -99,8 +106,8 @@ class _CustomerCreateState extends State<CustomerCreate> {
         levelType: levelType,
         level: level,
         imageFile: _imageFile != null ? File(_imageFile!.path) : null,
-       
-      
+        logo: _imageFile2 != null ? File(_imageFile2!.path) : null,
+
       );
 
       setState(() {
@@ -108,6 +115,16 @@ class _CustomerCreateState extends State<CustomerCreate> {
       });
 
       if (customerProvider.errorMessage.isEmpty) {
+        final customerProvider =
+            Provider.of<CustomerProvider>(context, listen: false);
+
+        customerProvider.fetchCustomsr();
+
+        ///back to 2 step back.
+        Navigator.pop(context);
+        Navigator.pop(context);
+ 
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content:
@@ -125,10 +142,6 @@ class _CustomerCreateState extends State<CustomerCreate> {
         _statusController.clear();
         _opiningBanglaceController.clear();
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeView()),
-        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(customerProvider.errorMessage)),
@@ -164,332 +177,383 @@ class _CustomerCreateState extends State<CustomerCreate> {
                 fontSize: 16,
                 fontWeight: FontWeight.bold)),
       ),
-      body: 
-      
-      Padding(
+      body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // _buildFieldLabel("Customer Name", textTheme, colorScheme),
-
-            AddSalesFormfield(
-              labelText: "Customer Name",
-              height: 40,
-
-              controller: _nameController,
-              //validator: _validateRequired,
-            ),
-
-            const SizedBox(
-              height: 12,
-            ),
-
-            AddSalesFormfield(
-              labelText: "Proprietor Name",
-              height: 40,
-
-              controller: _proprietorController,
-              //validator: _validateRequired,
-            ),
-
-            /// Price Level Selector
-            PriceOptionSelectorCustomer(
-              title: "Price Level",
-              selectedPrice: _selectedPrice,
-              onPriceChanged: (value) {
-                // setState(() {
-                //   _selectedPrice = value!;
-                // });
-                setState(() {
-                  // Convert "Dealer Price" back to "dealer_price"
-                  _selectedPrice =
-                      value?.replaceAll(" ", "_").toLowerCase() ?? "";
-                });
-              },
-              isChecked: _isChecked,
-              onCheckedChanged: (value) {
-                setState(() {
-                  _isChecked = value;
-                  if (!value)
-                    _selectedPrice = ""; // Reset dropdown if unchecked
-                });
-              },
-            ),
-
-            const SizedBox(
-              height: 12,
-            ),
-
-            AddSalesFormfield(
-              labelText: "Phone",
-              height: 40,
-
-              controller: _phoneController,
-              //validator: _validatePhone,
-              keyboardType: TextInputType.number,
-            ),
-
-            const SizedBox(
-              height: 12,
-            ),
-
-            AddSalesFormfield(
-              labelText: "Email",
-              height: 40,
-
-              controller: _emailController,
-              //validator: _validateEmail,
-            ),
-
-            const SizedBox(
-              height: 12,
-            ),
-
-            const SizedBox(
-              height: 12,
-            ),
-
-            AddSalesFormfield(
-              labelText: "Address",
-              height: 40,
-              controller: _addressController,
-              //validator: _validateRequired,
-            ),
-
-            const SizedBox(
-              height: 12,
-            ),
-
-            Row(
-              children: [
-                Expanded(
-                  child: AddSalesFormfield(
-                    keyboardType: TextInputType.number,
-                    labelText: "Opening Balance",
-                    height: 40,
-
-                    controller: _opiningBanglaceController,
-                    //validator: _validateRequired,
-                  ),
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        child: GestureDetector(
+          onTap: () {
+             FocusScope.of(context).unfocus();
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // _buildFieldLabel("Customer Name", textTheme, colorScheme),
+          
+              // Radio buttons
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        height: 40,
-                        width: double.maxFinite,
-                        decoration: BoxDecoration(
-                          color: Colors.transparent, // Background color
-                          borderRadius:
-                              BorderRadius.circular(8), // Rounded corners
-                          border: Border.all(
-                              color: Colors.grey.shade300,
-                              width: 0.5), // Border
-                          boxShadow: [
-                            BoxShadow(
-                              color:
-                                  Colors.grey.withOpacity(0.1), // Light shadow
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 1), // Shadow position
+
+                      Expanded(
+                        child: RadioListTile<String>(
+                          title: const Text("Individual",
+                              style: TextStyle(fontSize: 12)),
+                          value: 'Individual',
+                          groupValue: _selectedType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedType = value!;
+                            });
+                          },
+                        ),
+                      ),
+
+
+                      Expanded(
+                        child: RadioListTile<String>(
+                          dense: true,
+                          title: const Text(
+                            "Business",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          value: 'Business',
+                          groupValue: _selectedType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedType = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      
+                    ],
+                  ),
+          
+              if (_selectedType == 'Business') AddSalesFormfield(
+                labelText: "Customer Name",
+                height: 40,
+          
+                controller: _nameController,
+                //validator: _validateRequired,
+              ),
+          
+              const SizedBox(
+                height: 12,
+              ),
+          
+             if (_selectedType == 'Business') AddSalesFormfield(
+                labelText: "Proprietor Name",
+                height: 40,
+          
+                controller: _proprietorController,
+                //validator: _validateRequired,
+              ),
+          
+              if (_selectedType == 'Individual')
+                    AddSalesFormfield(
+                      labelText: "Name",
+                      height: 40,
+                      controller: _individualNameController,
+                      //validator: _validateRequired,
+                    ),
+          
+              /// Price Level Selector
+              PriceOptionSelectorCustomer(
+                title: "Price Level",
+                selectedPrice: _selectedPrice,
+                onPriceChanged: (value) {
+                  // setState(() {
+                  //   _selectedPrice = value!;
+                  // });
+                  setState(() {
+                    // Convert "Dealer Price" back to "dealer_price"
+                    _selectedPrice =
+                        value?.replaceAll(" ", "_").toLowerCase() ?? "";
+                  });
+                },
+                isChecked: _isChecked,
+                onCheckedChanged: (value) {
+                  setState(() {
+                    _isChecked = value;
+                    if (!value)
+                      _selectedPrice = ""; // Reset dropdown if unchecked
+                  });
+                },
+              ),
+          
+              const SizedBox(
+                height: 12,
+              ),
+          
+              AddSalesFormfield(
+                labelText: "Phone",
+                height: 40,
+          
+                controller: _phoneController,
+                //validator: _validatePhone,
+                keyboardType: TextInputType.number,
+              ),
+          
+              const SizedBox(
+                height: 12,
+              ),
+          
+              AddSalesFormfield(
+                labelText: "Email",
+                height: 40,
+          
+                controller: _emailController,
+                //validator: _validateEmail,
+              ),
+          
+              const SizedBox(
+                height: 12,
+              ),
+          
+              const SizedBox(
+                height: 12,
+              ),
+          
+              AddSalesFormfield(
+                labelText: "Address",
+                height: 40,
+                controller: _addressController,
+                //validator: _validateRequired,
+              ),
+          
+              const SizedBox(
+                height: 12,
+              ),
+          
+              Row(
+                children: [
+                  Expanded(
+                    child: AddSalesFormfield(
+                      keyboardType: TextInputType.number,
+                      labelText: "Opening Balance",
+                      height: 40,
+          
+                      controller: _opiningBanglaceController,
+                      //validator: _validateRequired,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 40,
+                          width: double.maxFinite,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent, // Background color
+                            borderRadius:
+                                BorderRadius.circular(8), // Rounded corners
+                            border: Border.all(
+                                color: Colors.grey.shade300,
+                                width: 0.5), // Border
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    Colors.grey.withOpacity(0.1), // Light shadow
+                                spreadRadius: 1,
+                                blurRadius: 2,
+                                offset: const Offset(0, 1), // Shadow position
+                              ),
+                            ],
+                          ),
+                          child: InkWell(
+                            onTap: () => controller.pickDate(context),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                suffixIcon: Icon(
+                                  Icons.calendar_today,
+                                  size: 16,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                suffixIconConstraints: const BoxConstraints(
+                                  minWidth: 16,
+                                  minHeight: 16,
+                                ),
+                                hintText: "Bill Date",
+                                hintStyle: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 10,
+                                ),
+                                border:
+                                    InputBorder.none, // Remove default underline
+                              ),
+                              child: Text(
+                                controller.formattedDate.isNotEmpty
+                                    ? controller.formattedDate
+                                    : "No Date Provided",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+          
+              const SizedBox(
+                height: 12,
+              ),
+          
+              const SizedBox(height: 8),
+          
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ///business logoi
+                   if (_selectedType == 'Business') Column(
+                    children: [
+                      Center(
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            Container(
+                              width: 90,
+                              height: 90,
+                              decoration: BoxDecoration(
+                                color: Colors.green[100],
+                                borderRadius: BorderRadius.circular(8),
+                                image: DecorationImage(
+                                  image: _imageFile != null
+                                      ? FileImage(File(_imageFile!.path))
+                                      : const AssetImage(
+                                          "assets/image/image_upload_blue.png"),
+                                  fit: BoxFit.fitWidth,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _showImageSourceActionSheet(context);
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                  ),
+                                  padding: const EdgeInsets.all(6),
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    size: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                        child: InkWell(
-                          onTap: () => controller.pickDate(context),
-                          child: InputDecorator(
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              suffixIcon: Icon(
-                                Icons.calendar_today,
-                                size: 16,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              suffixIconConstraints: const BoxConstraints(
-                                minWidth: 16,
-                                minHeight: 16,
-                              ),
-                              hintText: "Bill Date",
-                              hintStyle: TextStyle(
-                                color: Colors.grey.shade400,
-                                fontSize: 10,
-                              ),
-                              border:
-                                  InputBorder.none, // Remove default underline
-                            ),
-                            child: Text(
-                              controller.formattedDate.isNotEmpty
-                                  ? controller.formattedDate
-                                  : "No Date Provided",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ),
+                      ),
+                      const Text(
+                        "Upload logo",
+                        style: TextStyle(color: Colors.black, fontSize: 13),
                       ),
                     ],
                   ),
-                )
-              ],
-            ),
-
-            const SizedBox(
-              height: 12,
-            ),
-
-            const SizedBox(height: 8),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ///business logoi
-                Column(
-                  children: [
-                    Center(
-                      child: Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          Container(
-                            width: 90,
-                            height: 90,
-                            decoration: BoxDecoration(
-                              color: Colors.green[100],
-                              borderRadius: BorderRadius.circular(8),
-                              image: DecorationImage(
-                                image: _imageFile != null
-                                    ? FileImage(File(_imageFile!.path))
-                                    : const AssetImage(
-                                        "assets/image/image_upload_blue.png"),
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 4,
-                            right: 4,
-                            child: GestureDetector(
-                              onTap: () {
-                                _showImageSourceActionSheet(context);
-                              },
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                ),
-                                padding: const EdgeInsets.all(6),
-                                child: const Icon(
-                                  Icons.camera_alt,
-                                  size: 20,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Text(
-                      "Upload image",
-                      style: TextStyle(color: Colors.black, fontSize: 13),
-                    ),
-                  ],
-                ),
-
-                //company/ customer
-                // Column(
-                //   children: [
-                //     Center(
-                //       child: Stack(
-                //         alignment: Alignment.bottomRight,
-                //         children: [
-                //           Container(
-                //             width: 90,
-                //             height: 90,
-                //             decoration: BoxDecoration(
-                //               color: Colors.green[100],
-                //               borderRadius: BorderRadius.circular(8),
-                //               image: DecorationImage(
-                //                 image: _imageFile2 != null
-                //                     ? FileImage(File(_imageFile2!.path))
-                //                     : const AssetImage(
-                //                         "assets/image/image_upload_green.png",
-                //                       ),
-                //                 fit: BoxFit.fitWidth,
-                //               ),
-                //             ),
-                //           ),
-                //           Positioned(
-                //             bottom: 4,
-                //             right: 4,
-                //             child: GestureDetector(
-                //               onTap: () {
-                //                 _showImageSourceActionSheet2(context);
-                //               },
-                //               child: Container(
-                //                 decoration: const BoxDecoration(
-                //                   shape: BoxShape.circle,
-                //                   color: Colors.white,
-                //                 ),
-                //                 padding: const EdgeInsets.all(6),
-                //                 child: const Icon(
-                //                   Icons.camera_alt,
-                //                   size: 20,
-                //                   color: Colors.black,
-                //                 ),
-                //               ),
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //     const Text(
-                //       "Company/Customer Logo",
-                //       style: TextStyle(color: Colors.black, fontSize: 13),
-                //     ),
-                //   ],
-                // ),
-              
-              
-              ],
-            ),
-
-            const Spacer(),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _saveCustomer,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+          
+                  const SizedBox(
+                    height: 10,
                   ),
-                ),
-                child: const Text("Save Customer",
-                    style: TextStyle(color: Colors.white)),
+          
+          
+                  ///business logoi
+                  Column(
+                    children: [
+                      Center(
+                        child: Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            Container(
+                              width: 90,
+                              height: 90,
+                              decoration: BoxDecoration(
+                                color: Colors.green[100],
+                                borderRadius: BorderRadius.circular(8),
+                                image: DecorationImage(
+                                  image: _imageFile2 != null
+                                      ? FileImage(File(_imageFile2!.path))
+                                      : const AssetImage(
+                                          "assets/image/image_upload_blue.png"),
+                                  fit: BoxFit.fitWidth,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _showImageSourceActionSheet2(context);
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                  ),
+                                  padding: const EdgeInsets.all(6),
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    size: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Text(
+                        "Upload Avater",
+                        style: TextStyle(color: Colors.black, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-
-            const SizedBox(
-              height: 50,
-            )
-          ],
+          
+              const Spacer(),
+          
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _saveCustomer,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text("Save Customer",
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ),
+          
+              const SizedBox(
+                height: 50,
+              )
+            ],
+          ),
         ),
       ),
-    
-    
     );
   }
 

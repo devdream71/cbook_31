@@ -5,7 +5,7 @@ import 'package:cbook_dt/feature/customer_create/customer_create.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
-import 'package:cbook_dt/feature/suppliers/provider/suppliers_list.dart';
+import 'package:cbook_dt/feature/suppliers/provider/suppliers_list_provider.dart';
 
 import 'package:cbook_dt/feature/suppliers/suppliers_create.dart';
 

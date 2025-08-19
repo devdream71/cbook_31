@@ -39,18 +39,16 @@ class BankAdjustProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-
-    final url =
-        Uri.parse('${AppUrl.baseurl}accounts/bank-accounts');
+    final url = Uri.parse('${AppUrl.baseurl}accounts/bank-accounts');
 
     try {
       final response = await http.get(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -78,10 +76,9 @@ class BankAdjustProvider with ChangeNotifier {
     required String accountId,
     required String amount,
     required String date,
-    required String details,
+    String? details,
   }) async {
-    final Uri url = Uri.parse(
-        '${AppUrl.baseurl}account/bank/adjustment/store'
+    final Uri url = Uri.parse('${AppUrl.baseurl}account/bank/adjustment/store'
         '?user_id=$userId'
         '&adjust_bank=$adjustType'
         '&account_id=$accountId'
@@ -91,15 +88,14 @@ class BankAdjustProvider with ChangeNotifier {
 
     debugPrint(' url $url');
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
       final response = await http.post(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
         return AdjustBankResponse.fromJson(decoded);
@@ -115,18 +111,16 @@ class BankAdjustProvider with ChangeNotifier {
 
   ///delete bank
   Future<bool> deleteBankVoucher(int bankId) async {
-    final url = Uri.parse(
-        '${AppUrl.baseurl}account/bank/remove/?id=$bankId');
+    final url = Uri.parse('${AppUrl.baseurl}account/bank/remove/?id=$bankId');
 
-            final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
       final response = await http.post(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -156,23 +150,20 @@ class BankAdjustProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     final url = '${AppUrl.baseurl}accounts/bank';
 
     try {
-      final response = await http.get(Uri.parse(url, 
-      
-      
-      ),
-      
-      headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        }
-      );
+      final response = await http.get(
+          Uri.parse(
+            url,
+          ),
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          });
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         bankAdjustmentModel = BankAdjustmentResponse.fromJson(jsonData);

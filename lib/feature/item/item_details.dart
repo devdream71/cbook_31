@@ -196,35 +196,35 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(6)),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 2.0),
+                            child:   Padding(
+                              padding: EdgeInsets.only(left: 2.0),
                               child: Column(
                                 children: [
                                   const ItemDetailsPopUpTwo(
-                                    leftTest: "Vat/Tax 15%",
-                                    rightText: 'Exclusive',
-                                    last: "Inclusive",
+                                    leftTest: "Price Level",
+                                    rightText: "",
+                                    //last: "Inclusive",
                                     fontWeight: FontWeight.bold,
                                   ),
                                   ItemDetailsPopUpTwo(
-                                    leftTest: "Pur Price",
+                                    leftTest: "Purchase Price",
                                     rightText: purchasePrice,
-                                    last: purchasePrice,
+                                    //last: purchasePrice,
                                   ),
                                   ItemDetailsPopUpTwo(
-                                    leftTest: "Sales. Price",
+                                    leftTest: "Sales Price",
                                     rightText: salesPrice,
-                                    last: salesPrice,
+                                    //last: salesPrice,
                                   ),
-                                  const ItemDetailsPopUpTwo(
-                                    leftTest: "Discount",
-                                    rightText: '5%',
-                                    last: " ",
-                                  ),
+                                  // const ItemDetailsPopUpTwo(
+                                  //   leftTest: "Discount",
+                                  //   //rightText: '5%',
+                                  //   //last: " ",
+                                  // ),
                                   ItemDetailsPopUpTwo(
-                                    leftTest: "MRP",
+                                    leftTest: "MRP Price",
                                     rightText: mrpspricesPrice,
-                                    last: mrpspricesPrice,
+                                    //last: mrpspricesPrice,
                                   ),
                                 ],
                               ),
@@ -242,6 +242,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
             //// info and dropdown filter.,
             Container(
               decoration: BoxDecoration(
+                
                 borderRadius: BorderRadius.circular(0),
                 //color: Colors.white
               ),
@@ -250,29 +251,29 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                 child: Row(
                   children: [
                     ///info button
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: IconButton(
-                        iconSize: 20, // match icon size
-                        padding: EdgeInsets
-                            .zero, // remove inner padding :contentReference[oaicite:1]{index=1}
-                        constraints:
-                            const BoxConstraints(), // override default 48×48 minimum :contentReference[oaicite:2]{index=2}
-                        visualDensity: VisualDensity
-                            .compact, // further tighten around the icon :contentReference[oaicite:3]{index=3}
-                        onPressed: () {
-                          showItemDetailsDialog(context);
-                        },
-                        icon: Icon(
-                          Icons.info,
-                          size: 20,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                    ),
+                    // SizedBox(
+                    //   width: 20,
+                    //   height: 20,
+                    //   child: IconButton(
+                    //     iconSize: 20, // match icon size
+                    //     padding: EdgeInsets
+                    //         .zero, // remove inner padding :contentReference[oaicite:1]{index=1}
+                    //     constraints:
+                    //         const BoxConstraints(), // override default 48×48 minimum :contentReference[oaicite:2]{index=2}
+                    //     visualDensity: VisualDensity
+                    //         .compact, // further tighten around the icon :contentReference[oaicite:3]{index=3}
+                    //     onPressed: () {
+                    //       showItemDetailsDialog(context);
+                    //     },
+                    //     icon: Icon(
+                    //       Icons.info,
+                    //       size: 20,
+                    //       color: colorScheme.primary,
+                    //     ),
+                    //   ),
+                    // ),
 
-                    const Spacer(),
+                    //const Spacer(),
 
                     // Dropdown
                     SizedBox(
@@ -334,8 +335,8 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                 const Padding(
                   padding: EdgeInsets.all(2.0),
                   child: Text(
-                    "Purchase History",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    "Transactions History",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                 ),
                 purchaseDetails.isEmpty
@@ -355,17 +356,19 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                           Color bgColor = index % 2 == 0
                               ? Colors.blueGrey.withOpacity(0.1)
                               : Colors.grey.withOpacity(0.1);
-
+            
                           return Container(
                             color: bgColor,
                             margin: const EdgeInsets.symmetric(
                                 vertical: 4, horizontal: 8),
-                            padding: const EdgeInsets.all(8),
+                            //padding: const EdgeInsets.all(8),
                             child: Row(
                               children: [
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+            
+                                    
                                     Text(
                                       purchase.purchaseDate,
                                       style: const TextStyle(
@@ -382,7 +385,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                     ),
                                   ],
                                 ),
-
+            
                                 //divider
                                 Container(
                                   height: 30,
@@ -391,7 +394,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                   margin:
                                       const EdgeInsets.symmetric(horizontal: 6),
                                 ),
-
+            
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [

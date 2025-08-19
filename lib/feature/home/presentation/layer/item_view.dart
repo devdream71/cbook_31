@@ -178,13 +178,16 @@ class _ItemViewState extends State<ItemView> {
                   radius: 12,
                   backgroundColor: Colors.white,
                   child: Icon(Icons.add, color: Colors.green)),
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const AddItem(),
                   ),
                 );
+
+                // Refresh the data when returning
+                _initData();
               },
             ),
           ],

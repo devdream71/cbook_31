@@ -44,8 +44,8 @@ class _CashInHandState extends State<CashInHand> {
             Row(
               children: [
                 InkWell(
-                  onTap: () {
-                    Navigator.push(
+                  onTap: ()   {
+                   Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const AdjustCashCreate()));

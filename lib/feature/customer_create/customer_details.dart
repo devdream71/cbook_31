@@ -6,6 +6,7 @@ import 'package:cbook_dt/feature/customer_create/model/customer_create.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailsScreen extends StatefulWidget {
@@ -36,11 +37,19 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
   }
 
   Future<void> fetchSupplierDetails() async {
+    
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+
     final url = Uri.parse(
         'https://commercebook.site/api/v1/customer/edit/${widget.customerId}');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url,  headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        });
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data["success"] == true) {
@@ -291,60 +300,7 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
                                     color: Colors.black,
                                   ),
                                 ),
-                                // Row(
-                                //   mainAxisAlignment: MainAxisAlignment.end,
-                                //   crossAxisAlignment: CrossAxisAlignment.center,
-                                //   children: [
-                                //     GestureDetector(
-                                //       onTap: () {
-                                //         // handle SMS tap
-
-                                //         _openSms(
-                                //             phone: '01759546853',
-                                //             body: 'Hello from  cBook!');
-                                //       },
-                                //       child: SizedBox(
-                                //         width: 20,
-                                //         height: 20,
-                                //         child: Image.asset(
-                                //           'assets/image/communication.png',
-                                //           fit: BoxFit.contain,
-                                //         ),
-                                //       ),
-                                //     ),
-                                //     const SizedBox(width: 4),
-                                //     GestureDetector(
-                                //       onTap: () => openWhatsApp(
-                                //         context: context,
-                                //         phone: '01759546853',
-                                //         message:
-                                //             'Hello from cbook!', // optional
-                                //       ),
-                                //       child: SizedBox(
-                                //         width: 20,
-                                //         height: 20,
-                                //         child: Image.asset(
-                                //           'assets/image/whatsapp_color.png',
-                                //           fit: BoxFit.contain,
-                                //         ),
-                                //       ),
-                                //     ),
-                                //     const SizedBox(width: 4),
-                                //     GestureDetector(
-                                //       onTap: () {
-                                //         // handle Report tap
-                                //       },
-                                //       child: SizedBox(
-                                //         width: 20,
-                                //         height: 20,
-                                //         child: Image.asset(
-                                //           'assets/image/pdf.png',
-                                //           fit: BoxFit.contain,
-                                //         ),
-                                //       ),
-                                //     ),
-                                //   ],
-                                // )
+                                
                               ],
                             ),
                           ],

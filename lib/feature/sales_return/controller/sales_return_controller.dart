@@ -120,6 +120,46 @@ class SalesReturnController extends ChangeNotifier {
   }
 
   
+
+  Map<int, String> selectedUnitsMap = {};
+
+  void setSelectedUnit(int index, String unit) {
+    selectedUnitsMap[index] = unit;
+    notifyListeners();
+  }
+
+  String? getSelectedUnit(int index) {
+    return selectedUnitsMap[index];
+  }
+
+
+  void resetAll() {
+  // Clear all lists
+  itemsCashReuturn.clear();
+  itemsCreditReturn.clear();
+  reductionQtyList.clear();
+  demoPurchaseReturnModelList.clear();
+  itemsCash.clear();
+
+  // Reset controllers
+  billNoController.clear();
+  discountController.clear();
+  //paymentController.clear();
+
+  // Reset selected values
+ // selcetedItemId = null;
+  seletedItemName = null;
+  isCash = false;
+
+  // Reset totals
+  totalAmountController.text = "0.00";
+  paymentAmountController.text = "0.00";
+
+  debugPrint("✅ Controller reset done!");
+}
+
+
+  
   ///cash.
   void updatePaymentFromDiscount() {
   double amount = double.tryParse(addAmount2()) ?? 0.0;
@@ -235,9 +275,13 @@ required String unitQty,
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userId = prefs.getInt('user_id')?.toString();
 
+       final token = prefs.getString('token');
+
+
+
       //DateTime _selectedDate = DateTime.now();
 
-      final billNumber = billNoController.value.text;
+      final billNumber = billNo;
       final discountValue = discount.isNotEmpty ? discount : "0";
       final isCash = saleType.toLowerCase() == "cash";
       final paymentAmount = isCash ? totalAmount() : totalAmount2();
@@ -278,6 +322,7 @@ required String unitQty,
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
+           "Authorization": "Bearer $token",
         },
         body: requestBody,
       );
@@ -288,6 +333,7 @@ required String unitQty,
 
       if (response.statusCode == 200) {
         if (responseData["success"] == true) {
+          
           return responseData["message"];
         } else {
           return responseData["message"];

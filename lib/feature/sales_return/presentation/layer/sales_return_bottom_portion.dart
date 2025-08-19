@@ -6,6 +6,7 @@ import 'package:cbook_dt/feature/invoice/invoice.dart';
 import 'package:cbook_dt/feature/invoice/invoice_model.dart';
 import 'package:cbook_dt/feature/sales/widget/custom_box.dart';
 import 'package:cbook_dt/feature/sales_return/controller/sales_return_controller.dart';
+import 'package:cbook_dt/feature/sales_return/provider/sale_return_provider.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,12 +14,14 @@ import 'package:provider/provider.dart';
 class BottomPortionSaleReturn extends StatelessWidget {
   final String saleType;
   final String? customerId;
+  final String billNo;
   final List<InvoiceItem> invoiceItems;
   const BottomPortionSaleReturn({
     super.key,
     required this.saleType,
     this.customerId,
     required this.invoiceItems,
+    required this.billNo
   });
 
   @override
@@ -156,7 +159,7 @@ class BottomPortionSaleReturn extends StatelessWidget {
                 debugPrint(
                     "item length ====== > ${controller.itemsCash.length}");
       
-                if (controller.billNoController.text.trim().isEmpty) {
+                if (billNo.trim().isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Bill number cannot be empty'),
@@ -175,19 +178,9 @@ class BottomPortionSaleReturn extends StatelessWidget {
                       : controller.totalAmount2();
       
       
-                  //  final isSuccess = await controller.storeSalesReturen(
-                  //       //date: date,
-                  //       amount: amount,
-                  //       customerId: customerId ?? "cash",
-                  //       saleType: saleType,
-                  //       discount: discount,
-                  //       billNo: controller.billNoController.text,
-                  //       total: total);    
-      
-                   ///controller.demoPurchaseReturnModelList.length
+                
                   
-                  if (controller.itemsCashReuturn.isNotEmpty ||  ////controller.itemsCashReuturn.isEmpty ///it was. ///modified.
-                      controller.itemsCashReuturn.isNotEmpty) {
+                  if (billNo.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text(
                         'No item added',
@@ -201,10 +194,19 @@ class BottomPortionSaleReturn extends StatelessWidget {
                         customerId: customerId ?? "cash",
                         saleType: saleType,
                         discount: discount,
-                        billNo: controller.billNoController.text,
+                        billNo: billNo,
                         total: total);
       
                     if (isSuccess.isNotEmpty) {
+
+                      final salesProvider = Provider.of<SalesReturnProvider>(context, listen: false);
+                      salesProvider.fetchSalesReturn();
+
+                      Navigator.pop(context);
+
+                        controller.resetAll(); 
+  
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Colors.green,
@@ -212,19 +214,9 @@ class BottomPortionSaleReturn extends StatelessWidget {
                           content: Text(isSuccess),
                         ),
                       );
-      
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomeView(),
-                        ),
-                      );
-      
-                      controller.itemsCashReuturn.clear();
-                      controller.itemsCreditReturn.clear();
-                      //controller.purchaseItemReturn.clear();
-                      controller.reductionQtyList.clear();
-                      controller.itemsCashReuturn.clear();
+
+                    
+                    
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

@@ -12,6 +12,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomerProvider extends ChangeNotifier {
+
+
   DateTime _selectedDate = DateTime.now();
 
   String get formattedDate => DateTimeHelper.formatDate(_selectedDate);
@@ -27,7 +29,7 @@ class CustomerProvider extends ChangeNotifier {
   Customer? _selectedCustomer;
 
   Customer? get selectedCustomer => _selectedCustomer;
-
+  
   Customer? _selectedCustomerRecived;
   Customer? get selectedCustomerRecived => _selectedCustomerRecived;
 
@@ -42,8 +44,6 @@ class CustomerProvider extends ChangeNotifier {
     fetchReceviedVouchersByCustomerId(customer.id);
     notifyListeners();
   }
-
-  
 
   void clearSelectedCustomerRecived() {
     _selectedCustomerRecived = null;
@@ -62,8 +62,6 @@ class CustomerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  
   // ✅ ADD: Payment customer selection (if you need separate payment customer tracking)
   Customer? _selectedCustomerPayment;
   Customer? get selectedCustomerPayment => _selectedCustomerPayment;
@@ -88,7 +86,6 @@ class CustomerProvider extends ChangeNotifier {
     }
   }
 
-
   bool isLoading = false;
   CustomerResponse? customerResponse;
 
@@ -96,10 +93,8 @@ class CustomerProvider extends ChangeNotifier {
 
   ///show supplier
   Future<void> fetchCustomsr() async {
-    
     final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final token = prefs.getString('token');
 
     isLoading = true;
     errorMessage = "";
@@ -107,16 +102,16 @@ class CustomerProvider extends ChangeNotifier {
 
     //final url = Uri.parse('https://commercebook.site/api/v1/customers/list');
 
-    final url = Uri.parse(
-        '${AppUrl.baseurl}all/customers/'); //api/v1/all/customers/
+    final url =
+        Uri.parse('${AppUrl.baseurl}all/customers/'); //api/v1/all/customers/
 
     try {
-      final response = await http.get(url,
-       headers: {
+      final response = await http.get(
+        url,
+        headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer $token",
         },
-      
       );
       final data = jsonDecode(response.body);
 
@@ -140,13 +135,13 @@ class CustomerProvider extends ChangeNotifier {
     notifyListeners(); // Notify after data fetch is completed
   }
 
-
   // ✅ ADD THIS METHOD - Find customer by ID
   Customer? findCustomerById(int customerId) {
     if (customerResponse?.data == null) return null;
-    
+
     try {
-      return customerResponse!.data.firstWhere((customer) => customer.id == customerId);
+      return customerResponse!.data
+          .firstWhere((customer) => customer.id == customerId);
     } catch (e) {
       debugPrint('Customer not found with ID: $customerId');
       return null;
@@ -169,22 +164,21 @@ class CustomerProvider extends ChangeNotifier {
     }
   }
 
-
   ///paymet voucher
   List<PaymentVoucherCustomer> _paymentVouchers = [];
   List<PaymentVoucherCustomer> get paymentVouchers => _paymentVouchers;
 
   Future<void> fetchPaymentVouchersByCustomerId(int customerId) async {
-     
-     final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     final url = Uri.parse(
         '${AppUrl.baseurl}payment-vouchers/purchase/invoice/$customerId');
 
     try {
-      final response = await http.get(url,
-       headers: {
+      final response = await http.get(
+        url,
+        headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer $token",
         },
@@ -214,18 +208,20 @@ class CustomerProvider extends ChangeNotifier {
   List<ReceivedVoucherCustomer> get receivedVouchers => _receivedVouchers;
 
   Future<void> fetchReceviedVouchersByCustomerId(int customerId) async {
-
     final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+    final token = prefs.getString('token');
 
     final url = Uri.parse(
         '${AppUrl.baseurl}receive-vouchers/sales/invoice/$customerId');
 
     try {
-      final response = await http.get(url,  headers: {
+      final response = await http.get(
+        url,
+        headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer $token",
-        },);
+        },
+      );
       final data = jsonDecode(response.body);
 
       debugPrint("received Voucher Response: $data");
@@ -248,12 +244,10 @@ class CustomerProvider extends ChangeNotifier {
 
   ///delete customer
   Future<bool> deleteCustomer(int supplierId) async {
-
     final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+    final token = prefs.getString('token');
 
-    final url = Uri.parse(
-        '${AppUrl.baseurl}customer/remove/$supplierId');
+    final url = Uri.parse('${AppUrl.baseurl}customer/remove/$supplierId');
 
     try {
       final response = await http.post(
@@ -359,124 +353,122 @@ class CustomerProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-
-
   Future<void> createCustomer({
-  required String name,
-  required String email,
-  required String phone,
-  required String address,
-  required String status, // '1' or '0'
-  required String proprietorName,
-  required String openingBalance,
-  String levelType = "",
-  String level = "",
-  File? imageFile, // pass File(...) from XFile.path
-}) async {
-  isLoading = true;
-  errorMessage = "";
-  notifyListeners();
+    required String name,
+    required String email,
+    required String phone,
+    required String address,
+    required String status, // '1' or '0'
+    required String proprietorName,
+    required String openingBalance,
+    String levelType = "",
+    String level = "",
+    File? imageFile, // pass File(...) from XFile.path
+    File? logo,
+  }) async {
+    isLoading = true;
+    errorMessage = "";
+    notifyListeners();
 
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt('user_id')?.toString() ?? '';
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getInt('user_id')?.toString() ?? '';
 
-    final token = prefs.getString('token');
-
-    final url = Uri.parse('${AppUrl.baseurl}customer/store');
-    final request = http.MultipartRequest('POST', url);
-
-   
-
-    // ---- Fields (all as strings) ----
-    request.fields.addAll({
-      'user_id': userId,
-      'name': name,
-      'proprietor_name': proprietorName,
-      'email': email,
-      'phone': phone,
-      'opening_balance': openingBalance,
-      'address': address,
-      'status': status, // '1' or '0'
-    });
-
-    // Optional level fields
-    if (levelType.isNotEmpty) {
-      request.fields['level_type'] = levelType; // e.g., dealer_price
-      request.fields['level'] = "1";
-    } else {
-      // If API requires them even when empty, uncomment:
-      // request.fields['level_type'] = '';
-      // request.fields['level'] = '';
-    }
-
-    // ---- Optional image ----
-    if (imageFile != null) {
-      // Field name must match backend: 'avatar'
-      request.files.add(
-        await http.MultipartFile.fromPath('avatar', imageFile.path),
-      );
-    }
-
-    // Optional headers; DO NOT set Content-Type manually for MultipartRequest
-    request.headers.addAll({
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-      // 'Authorization': 'Bearer <token>', // if your API needs it
-    });
-
-    final streamed = await request.send();
-    final response = await http.Response.fromStream(streamed);
-
-    debugPrint("CreateCustomer Status: ${response.statusCode}");
-    debugPrint("CreateCustomer Body: ${response.body}");
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final data = jsonDecode(response.body);
-      if (data is Map && data['success'] == true) {
-        errorMessage = "";
-        // You can read returned fields if needed:
-        // final createdName = data['data']?['name'];
-        // debugPrint("Customer Created: $createdName");
-      } else {
-        errorMessage = (data is Map ? (data['message']?.toString() ?? '') : '')
-            .isNotEmpty
-            ? data['message'].toString()
-            : "Failed to create customer";
-      }
-    } else {
-      errorMessage = "Unexpected response (${response.statusCode})";
-    }
-  } catch (e) {
-    errorMessage = "Error: $e";
-    debugPrint("Create customer error: $e");
-  }
-
-  isLoading = false;
-  notifyListeners();
-}
-
-
-  
-  
-  
-  
-  
-  
-  
-  ///get customer by id
-  Future<CustomerData?> fetchCustomerById(int customerId) async {
-
-    final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
 
-    final url =
-        Uri.parse('${AppUrl.baseurl}customer/edit/$customerId');
+      final url = Uri.parse('${AppUrl.baseurl}customer/store');
+      final request = http.MultipartRequest('POST', url);
+
+      // ---- Fields (all as strings) ----
+      request.fields.addAll({
+        'user_id': userId,
+        'name': name,
+        'proprietor_name': proprietorName,
+        'email': email,
+        'phone': phone,
+        'opening_balance': openingBalance,
+        'address': address,
+        'status': status, // '1' or '0'
+      });
+
+      // Optional level fields
+      if (levelType.isNotEmpty) {
+        request.fields['level_type'] = levelType; // e.g., dealer_price
+        request.fields['level'] = "1";
+      } else {
+        // If API requires them even when empty, uncomment:
+        // request.fields['level_type'] = '';
+        // request.fields['level'] = '';
+      }
+
+      // ---- Optional image ----
+      if (imageFile != null) {
+        // Field name must match backend: 'avatar'
+        request.files.add(
+          await http.MultipartFile.fromPath('avatar', imageFile.path),
+        );
+      }
+
+      if (logo != null) {
+        // Field name must match backend: 'avatar'
+        request.files.add(
+          await http.MultipartFile.fromPath('avatar', logo.path),
+        );
+      }
+
+      // Optional headers; DO NOT set Content-Type manually for MultipartRequest
+      request.headers.addAll({
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        // 'Authorization': 'Bearer <token>', // if your API needs it
+      });
+
+      final streamed = await request.send();
+      final response = await http.Response.fromStream(streamed);
+
+      debugPrint("CreateCustomer Status: ${response.statusCode}");
+      debugPrint("CreateCustomer Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        if (data is Map && data['success'] == true) {
+          errorMessage = "";
+          // You can read returned fields if needed:
+          // final createdName = data['data']?['name'];
+          // debugPrint("Customer Created: $createdName");
+        } else {
+          errorMessage =
+              (data is Map ? (data['message']?.toString() ?? '') : '')
+                      .isNotEmpty
+                  ? data['message'].toString()
+                  : "Failed to create customer";
+        }
+      } else {
+        errorMessage = "Unexpected response (${response.statusCode})";
+      }
+    } catch (e) {
+      errorMessage = "Error: $e";
+      debugPrint("Create customer error: $e");
+    }
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  ///get customer by id
+  Future<CustomerData?> fetchCustomerById(int customerId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    final url = Uri.parse('${AppUrl.baseurl}customer/edit/$customerId');
     try {
-      final response = await http.get(url,  headers: {
+      final response = await http.get(
+        url,
+        headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer $token",
-        },);
+        },
+      );
       debugPrint("API Response: ${response.body}"); // 🔍 Debugging Step
 
       final data = jsonDecode(response.body);
@@ -492,7 +484,6 @@ class CustomerProvider extends ChangeNotifier {
     return null;
   }
 
- 
   ///customer update.
   Future<void> updateCustomer({
     required String id,

@@ -74,6 +74,12 @@ class SettingsView extends StatelessWidget {
         iconPath: 'assets/image/profile.svg',
         destination: CompanyInfromation(), //SalesFormSetting
       ),
+
+       const FormSettingMeta(
+        name: 'Logout',
+        iconPath: 'assets/image/profile.svg',
+        destination: CompanyInfromation(), //SalesFormSetting
+      ),
     ];
 
     return Scaffold(

@@ -243,7 +243,7 @@ class ExpenseProvider with ChangeNotifier {
     required double totalAmount,
     required String notes,
     required int status,
-    required String billPersonId,
+    //required String billPersonId,
     required List<ExpenseItemPopUp> expenseItems,
   }) async {
 
@@ -253,7 +253,7 @@ class ExpenseProvider with ChangeNotifier {
 
 
     final url = Uri.parse('${AppUrl.baseurl}expense/store?'
-        'user_id=$userId&expence_no=$invoiceNo&date=$date&paid_to=$receivedTo&account=$account&total_amount=$totalAmount&notes=$notes&status=$status&bill_person_id=$billPersonId');
+        'user_id=$userId&expence_no=$invoiceNo&date=$date&paid_to=$receivedTo&account=$account&total_amount=$totalAmount&notes=$notes&status=$status');
 
     final body = ExpenseStoreRequest(expenseItems: expenseItems).toJson();
 

@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:cbook_dt/feature/Received/model/create_recived_voucher.dart';
+import 'package:cbook_dt/feature/Received/model/create_recived_voucher_model.dart';
 import 'package:cbook_dt/feature/Received/model/received_list_model.dart';
 import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http; 
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart'; 
 
 class ReceiveVoucherProvider with ChangeNotifier {
   List<ReceiveVoucherModel> _vouchers = [];
@@ -63,9 +64,15 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
   isLoading = true;
   notifyListeners();
 
+   final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
   try {
     final url = Uri.parse('${AppUrl.baseurl}receive-vouchers');
-    final response = await http.get(url);
+    final response = await http.get(url, headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
 
     if (response.statusCode == 200) {
       final extractedData = json.decode(response.body);
@@ -126,20 +133,19 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
 
 
 
-
-  
-
-
-
-  
-
-
   ///delete payment voucher
   Future<bool> deleteRecivedVoucher(String id) async {
+     
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     final url = Uri.parse(
         '${AppUrl.baseurl}receive-vouchers/removes?id=$id');
     try {
-      final response = await http.post(url);
+      final response = await http.post(url, headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
       debugPrint('DELETE RESPONSE: ${response.body}');
 
       if (response.statusCode == 200) {
@@ -161,6 +167,9 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
     isLoading = true;
     notifyListeners();
 
+     final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     try {
       final uri = Uri.https(
         'commercebook.site',
@@ -177,7 +186,9 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
 
       final response = await http.post(
         uri,
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json',
+        "Authorization": "Bearer $token",
+        },
         body: bodyJson,
       );
 
@@ -201,8 +212,14 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
     final url =
         Uri.parse('${AppUrl.baseurl}receive-vouchers/edit/$id');
 
+    final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');     
+
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
       debugPrint('Edit Voucher Response: ${response.body}');
 
       if (response.statusCode == 200) {
@@ -223,6 +240,9 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
   Future<bool> updateReceivedVoucher(String voucherId, ReceivedVoucherRequest request) async {
     isLoading = true;
     notifyListeners();
+
+     final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
 
     try {
       // Create query parameters for the URL
@@ -265,7 +285,9 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
 
       final response = await http.post(
         uri,
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json',
+        "Authorization": "Bearer $token",
+        },
         body: bodyJson,
       );
 

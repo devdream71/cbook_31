@@ -3,6 +3,7 @@ import 'package:cbook_dt/feature/sales_return/model/sale_return_model.dart';
 import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SalesReturnProvider extends ChangeNotifier {
   List<SalesReturnData> salesReturns = [];
@@ -11,13 +12,21 @@ class SalesReturnProvider extends ChangeNotifier {
   final Map<int, String> _itemIdNameMap = {};
   Map<int, String> get itemIdNameMap => _itemIdNameMap;
 
-   double totalReturn = 0.0;
+  double totalReturn = 0.0;
 
   ///items get.
   Future<void> fetchItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     try {
-      final response =
-          await http.get(Uri.parse('${AppUrl.baseurl}items'));
+      final response = await http.get(
+        Uri.parse('${AppUrl.baseurl}items'),
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
@@ -67,15 +76,22 @@ class SalesReturnProvider extends ChangeNotifier {
   //   }
   // }
 
-
   Future<void> fetchSalesReturn() async {
     isLoading = true;
     notifyListeners();
+   
+   
+final prefs = await SharedPreferences.getInstance();
+ final token = prefs.getString('token');
+
 
     String url = "${AppUrl.baseurl}sales/return";
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url),  headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        }, );
       if (response.statusCode == 200) {
         final data = SalesReturnResponse.fromJson(response.body);
         salesReturns = data.salesReturns;
@@ -93,8 +109,7 @@ class SalesReturnProvider extends ChangeNotifier {
 
   ///sales return delele.
   Future<void> deleteSalesReturn(int? id, BuildContext context) async {
-    final url = Uri.parse(
-        '${AppUrl.baseurl}sales/return/remove/?id=$id');
+    final url = Uri.parse('${AppUrl.baseurl}sales/return/remove/?id=$id');
 
     try {
       final response = await http.post(url); // ⬅ POST method as per API

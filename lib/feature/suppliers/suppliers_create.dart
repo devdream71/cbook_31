@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/price_option_selector_customer.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
+import 'package:cbook_dt/feature/party/party_list.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
-import 'package:cbook_dt/feature/suppliers/provider/suppliers_list.dart';
+import 'package:cbook_dt/feature/suppliers/provider/suppliers_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,8 @@ class SuppliersCreate extends StatefulWidget {
 class _SuppliersCreateState extends State<SuppliersCreate> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _proprietorController = TextEditingController();
+  final TextEditingController _individualNameController =
+      TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -26,6 +30,9 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
       TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+
+  String _selectedPrice = "";
+  bool _isChecked = false;
 
   String selectedStatus = "1"; // Default status
 
@@ -58,6 +65,10 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
   }
 
   void _saveSupplier() async {
+    //FocusScope.of(context).unfocus();
+
+    FocusManager.instance.primaryFocus?.unfocus();
+
     final supplierProvider =
         Provider.of<SupplierProvider>(context, listen: false);
 
@@ -84,10 +95,29 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
         proprietorName: proprietorName,
         openingBalance: openingBalance,
         avatarImage: _imageFile,
+        logo: _imageFile2,
+
       );
 
       if (supplierProvider.errorMessage.isEmpty) {
         if (!mounted) return;
+
+        Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
+
+        Navigator.of(context).pop(); // go back one
+        Navigator.of(context).pop(); // go back two
+
+//         int count = 0;
+// Navigator.of(context).popUntil((route) {
+//   return count++ == 2; // pops until 2 screens back
+// });
+
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const Party()),
+        // );
+
+        //Navigator.of(context);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -107,10 +137,6 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
         _addressController.clear();
         _opiningBanglaceController.clear();
         _statusController.clear();
-
-        Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
-
-        Navigator.of(context);
 
         // Navigator.pushReplacement(
         //   context,
@@ -142,6 +168,8 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
     }
   }
 
+  String _selectedType = 'Individual'; //Individual
+
   @override
   Widget build(BuildContext context) {
     final supplierProvider = Provider.of<SupplierProvider>(context);
@@ -162,282 +190,373 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
                 fontSize: 16,
                 fontWeight: FontWeight.bold)),
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              AddSalesFormfield(
-                labelText: "Supplier Name",
-                height: 40,
+      body: GestureDetector(
+        onTap: () {
+          // FocusScope.of(context).unfocus();
 
-                controller: _nameController,
-                //validator: _validateRequired,
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              AddSalesFormfield(
-                labelText: "Proprietor Name",
-                height: 40,
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // Radio buttons
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
 
-                controller: _proprietorController,
-                //validator: _validateRequired,
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              AddSalesFormfield(
-                labelText: "Phone",
-                height: 40,
-
-                controller: _phoneController,
-                keyboardType: TextInputType.number,
-                //validator: _validateRequired,
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              AddSalesFormfield(
-                labelText: "Email",
-                height: 40,
-
-                controller: _emailController,
-                //validator: _validateRequired,
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              AddSalesFormfield(
-                labelText: "Address",
-                height: 40,
-
-                controller: _addressController,
-                //validator: _validateRequired,
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: AddSalesFormfield(
-                      keyboardType: TextInputType.number,
-                      labelText: "Opening Balance",
-                      height: 40,
-
-                      controller: _opiningBanglaceController,
-                      //validator: _validateRequired,
+                    Expanded(
+                      child: RadioListTile<String>(
+                        title: const Text("Individual",
+                            style: TextStyle(fontSize: 12)),
+                        value: 'Individual',
+                        groupValue: _selectedType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedType = value!;
+                          });
+                        },
+                      ),
                     ),
+
+
+                    Expanded(
+                      child: RadioListTile<String>(
+                        dense: true,
+                        title: const Text(
+                          "Business",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        value: 'Business',
+                        groupValue: _selectedType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedType = value!;
+                          });
+                        },
+                      ),
+                    ),
+                    
+                  ],
+                ),
+
+                if (_selectedType == 'Business')
+                  AddSalesFormfield(
+                    labelText: "Supplier Name",
+                    height: 40,
+                    controller: _nameController,
+                    //validator: _validateRequired,
                   ),
+                const SizedBox(
+                  height: 12,
+                ),
+
+                if (_selectedType == 'Business')
+                  AddSalesFormfield(
+                    labelText: "Proprietor Name",
+                    height: 40,
+                    controller: _proprietorController,
+                    //validator: _validateRequired,
+                  ),
+
+                if (_selectedType == 'Individual')
                   const SizedBox(
-                    width: 8,
+                    height: 12,
                   ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                if (_selectedType == 'Individual')
+                  AddSalesFormfield(
+                    labelText: "Name",
+                    height: 40,
+                    controller: _individualNameController,
+                    //validator: _validateRequired,
+                  ),
+
+                // PriceOptionSelectorCustomer(
+                //   title: "Price Level",
+                //   selectedPrice: _selectedPrice,
+                //   onPriceChanged: (value) {
+                //     // setState(() {
+                //     //   _selectedPrice = value!;
+                //     // });
+                //     setState(() {
+                //       // Convert "Dealer Price" back to "dealer_price"
+                //       _selectedPrice =
+                //           value?.replaceAll(" ", "_").toLowerCase() ?? "";
+                //     });
+                //   },
+                //   isChecked: _isChecked,
+                //   onCheckedChanged: (value) {
+                //     setState(() {
+                //       _isChecked = value;
+                //       if (!value)
+                //         _selectedPrice = ""; // Reset dropdown if unchecked
+                //     });
+                //   },
+                // ),
+
+
+                const SizedBox(
+                  height: 12,
+                ),
+                AddSalesFormfield(
+                  labelText: "Phone",
+                  height: 40,
+                  controller: _phoneController,
+                  keyboardType: TextInputType.number,
+                  //validator: _validateRequired,
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                AddSalesFormfield(
+                  labelText: "Email",
+                  height: 40,
+
+                  controller: _emailController,
+                  //validator: _validateRequired,
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                AddSalesFormfield(
+                  labelText: "Address",
+                  height: 40,
+
+                  controller: _addressController,
+                  //validator: _validateRequired,
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: AddSalesFormfield(
+                        keyboardType: TextInputType.number,
+                        labelText: "Opening Balance",
+                        height: 40,
+
+                        controller: _opiningBanglaceController,
+                        //validator: _validateRequired,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 40,
+                            width: double.maxFinite,
+                            decoration: BoxDecoration(
+                              color: Colors.transparent, // Background color
+                              borderRadius:
+                                  BorderRadius.circular(8), // Rounded corners
+                              border: Border.all(
+                                  color: Colors.grey.shade300,
+                                  width: 0.5), // Border
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey
+                                      .withOpacity(0.1), // Light shadow
+                                  spreadRadius: 1,
+                                  blurRadius: 2,
+                                  offset: const Offset(0, 1), // Shadow position
+                                ),
+                              ],
+                            ),
+                            child: InkWell(
+                              onTap: () => supplierProvider.pickDate(context),
+                              child: InputDecorator(
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  suffixIcon: Icon(
+                                    Icons.calendar_today,
+                                    size: 16,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  suffixIconConstraints: const BoxConstraints(
+                                    minWidth: 16,
+                                    minHeight: 16,
+                                  ),
+                                  hintText: "Bill Date",
+                                  hintStyle: TextStyle(
+                                    color: Colors.grey.shade400,
+                                    fontSize: 10,
+                                  ),
+                                  border: InputBorder
+                                      .none, // Remove default underline
+                                ),
+                                child: Text(
+                                  supplierProvider.formattedDate.isNotEmpty
+                                      ? supplierProvider.formattedDate
+                                      : "No Date Provided",
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ///avater
+                    if (_selectedType == 'Business')
+                      Column(
+                        children: [
+                          Center(
+                            child: Stack(
+                              alignment: Alignment.bottomRight,
+                              children: [
+                                Container(
+                                  width: 90,
+                                  height: 90,
+                                  decoration: BoxDecoration(
+                                    color: Colors.green[100],
+                                    borderRadius: BorderRadius.circular(8),
+                                    image: DecorationImage(
+                                      image: _imageFile != null
+                                          ? FileImage(File(_imageFile!.path))
+                                          : const AssetImage(
+                                              "assets/image/image_upload_blue.png"),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 4,
+                                  right: 4,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _showImageSourceActionSheet(context);
+                                    },
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                      ),
+                                      padding: const EdgeInsets.all(6),
+                                      child: const Icon(
+                                        Icons.camera_alt,
+                                        size: 20,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Text(
+                            "Upload Avater ",
+                            style: TextStyle(color: Colors.black, fontSize: 13),
+                          ),
+                        ],
+                      ),
+
+                    const SizedBox(
+                      width: 20,
+                    ),
+
+                    ///logo
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          height: 40,
-                          width: double.maxFinite,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent, // Background color
-                            borderRadius:
-                                BorderRadius.circular(8), // Rounded corners
-                            border: Border.all(
-                                color: Colors.grey.shade300,
-                                width: 0.5), // Border
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey
-                                    .withOpacity(0.1), // Light shadow
-                                spreadRadius: 1,
-                                blurRadius: 2,
-                                offset: const Offset(0, 1), // Shadow position
+                        Center(
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              Container(
+                                width: 90,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  color: Colors.green[100],
+                                  borderRadius: BorderRadius.circular(8),
+                                  image: DecorationImage(
+                                    image: _imageFile2 != null
+                                        ? FileImage(File(_imageFile2!.path))
+                                        : const AssetImage(
+                                            "assets/image/image_upload_blue.png"),
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 4,
+                                right: 4,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _showImageSourceActionSheet2(context);
+                                  },
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white,
+                                    ),
+                                    padding: const EdgeInsets.all(6),
+                                    child: const Icon(
+                                      Icons.camera_alt,
+                                      size: 20,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                          child: InkWell(
-                            onTap: () => supplierProvider.pickDate(context),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                isDense: true,
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 5),
-                                suffixIcon: Icon(
-                                  Icons.calendar_today,
-                                  size: 16,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                suffixIconConstraints: const BoxConstraints(
-                                  minWidth: 16,
-                                  minHeight: 16,
-                                ),
-                                hintText: "Bill Date",
-                                hintStyle: TextStyle(
-                                  color: Colors.grey.shade400,
-                                  fontSize: 10,
-                                ),
-                                border: InputBorder
-                                    .none, // Remove default underline
-                              ),
-                              child: Text(
-                                supplierProvider.formattedDate.isNotEmpty
-                                    ? supplierProvider.formattedDate
-                                    : "No Date Provided",
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ),
+                        ),
+                        const Text(
+                          "Upload logo ",
+                          style: TextStyle(color: Colors.black, fontSize: 13),
                         ),
                       ],
                     ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ///business logoi
-                  Column(
-                    children: [
-                      Center(
-                        child: Stack(
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            Container(
-                              width: 90,
-                              height: 90,
-                              decoration: BoxDecoration(
-                                color: Colors.green[100],
-                                borderRadius: BorderRadius.circular(8),
-                                image: DecorationImage(
-                                  image: _imageFile != null
-                                      ? FileImage(File(_imageFile!.path))
-                                      : const AssetImage(
-                                          "assets/image/image_upload_blue.png"),
-                                  fit: BoxFit.fitWidth,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 4,
-                              right: 4,
-                              child: GestureDetector(
-                                onTap: () {
-                                  _showImageSourceActionSheet(context);
-                                },
-                                child: Container(
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white,
-                                  ),
-                                  padding: const EdgeInsets.all(6),
-                                  child: const Icon(
-                                    Icons.camera_alt,
-                                    size: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Text(
-                        "Upload Image ",
-                        style: TextStyle(color: Colors.black, fontSize: 13),
-                      ),
-                    ],
-                  ),
-
-                  //company/ customer
-                  // Column(
-                  //   children: [
-                  //     Center(
-                  //       child: Stack(
-                  //         alignment: Alignment.bottomRight,
-                  //         children: [
-                  //           Container(
-                  //             width: 90,
-                  //             height: 90,
-                  //             decoration: BoxDecoration(
-                  //               color: Colors.green[100],
-                  //               borderRadius: BorderRadius.circular(8),
-                  //               image: DecorationImage(
-                  //                 image: _imageFile2 != null
-                  //                     ? FileImage(File(_imageFile2!.path))
-                  //                     : const AssetImage(
-                  //                         "assets/image/image_upload_green.png",
-                  //                       ),
-                  //                 fit: BoxFit.fitWidth,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //           Positioned(
-                  //             bottom: 4,
-                  //             right: 4,
-                  //             child: GestureDetector(
-                  //               onTap: () {
-                  //                 _showImageSourceActionSheet2(context);
-                  //               },
-                  //               child: Container(
-                  //                 decoration: const BoxDecoration(
-                  //                   shape: BoxShape.circle,
-                  //                   color: Colors.white,
-                  //                 ),
-                  //                 padding: const EdgeInsets.all(6),
-                  //                 child: const Icon(
-                  //                   Icons.camera_alt,
-                  //                   size: 20,
-                  //                   color: Colors.black,
-                  //                 ),
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //     const Text(
-                  //       "Company/Customer Logo",
-                  //       style: TextStyle(color: Colors.black, fontSize: 13),
-                  //     ),
-                  //   ],
-                  // ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _saveSupplier,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text("Save Supplier",
-                      style: TextStyle(color: Colors.white)),
+                  ],
                 ),
-              ),
-              const SizedBox(
-                height: 50,
-              )
-            ],
+                const SizedBox(height: 8),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saveSupplier,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text("Save Supplier",
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(
+                  height: 50,
+                )
+              ],
+            ),
           ),
         ),
       ),

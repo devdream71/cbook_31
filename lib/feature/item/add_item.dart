@@ -491,70 +491,70 @@ class _AddItemState extends State<AddItem> {
                         vPad5,
 
                         if (_isCategoryEnabled)
-                          Row(
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // CATEGORY Dropdown
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "Category",
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 180,
-                                    child: categoryProvider.isLoading
-                                        ? const Center(
-                                            child: SizedBox(
-                                              width: 24,
-                                              height: 24,
-                                              child: CircularProgressIndicator(
-                                                  strokeWidth: 2),
-                                            ),
-                                          )
-                                        : CustomDropdownTwo(
-                                            items: categoryProvider.categories
-                                                .map(
-                                                    (category) => category.name)
-                                                .toList(),
-                                            hint: '',
-                                            width: double.infinity,
-                                            height: 40,
-                                            onChanged: (value) {
-                                              final selectedCategory =
-                                                  categoryProvider.categories
-                                                      .firstWhere((cat) =>
-                                                          cat.name == value);
-
-                                              setState(() {
-                                                selectedCategoryId =
-                                                    selectedCategory.id;
-                                                selectedSubCategoryId = null;
-                                              });
-
-                                              categoryProvider
-                                                  .fetchSubCategories(
-                                                      selectedCategory.id);
-                                            },
-                                          ),
-                                  ),
-                                ],
+                              // const Text(
+                              //   "Category",
+                              //   style: TextStyle(
+                              //     color: Colors.black,
+                              //     fontWeight: FontWeight.w600,
+                              //     fontSize: 12,
+                              //   ),
+                              // ),
+                              SizedBox(
+                                //width: 180,
+                                child: categoryProvider.isLoading
+                                    ? const Center(
+                                        child: SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                              strokeWidth: 2),
+                                        ),
+                                      )
+                                    : CustomDropdownTwo(
+                                      labelText: 'Category',
+                                        items: categoryProvider.categories
+                                            .map(
+                                                (category) => category.name)
+                                            .toList(),
+                                        hint: '',
+                                        width: double.infinity,
+                                        height: 40,
+                                        onChanged: (value) {
+                                          final selectedCategory =
+                                              categoryProvider.categories
+                                                  .firstWhere((cat) =>
+                                                      cat.name == value);
+                          
+                                          setState(() {
+                                            selectedCategoryId =
+                                                selectedCategory.id;
+                                            selectedSubCategoryId = null;
+                                          });
+                          
+                                          categoryProvider
+                                              .fetchSubCategories(
+                                                  selectedCategory.id);
+                                        },
+                                      ),
                               ),
+                            ],
+                          ),
+                        // else
+                        //   const SizedBox.shrink(),
 
-                              const SizedBox(width: 10),
+                        const SizedBox(height: 5,),
 
-                              // SUBCATEGORY Dropdown
-                              Column(
+                        // SUBCATEGORY Dropdown
+                               if (_isCategoryEnabled) Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SizedBox(
-                                    width: 180,
+                                    //width: 180,
                                     child: categoryProvider.isSubCategoryLoading
                                         ? const Center(
                                             child: SizedBox(
@@ -570,16 +570,17 @@ class _AddItemState extends State<AddItem> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  const Text(
-                                                    "Sub Category",
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
+                                                  // const Text(
+                                                  //   "Sub Category",
+                                                  //   style: TextStyle(
+                                                  //     color: Colors.black,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w600,
+                                                  //     fontSize: 12,
+                                                  //   ),
+                                                  // ),
                                                   CustomDropdownTwo(
+                                                     labelText: 'Sub Category',
                                                     items: categoryProvider
                                                         .subCategories
                                                         .map((subCategory) =>
@@ -612,11 +613,7 @@ class _AddItemState extends State<AddItem> {
                                             : const SizedBox.shrink(),
                                   ),
                                 ],
-                              ),
-                            ],
-                          )
-                        else
-                          const SizedBox.shrink(),
+                              ),  
 
                         ////=======>category and subcategory = if setting enable then show.
 
@@ -1110,12 +1107,12 @@ class _AddItemState extends State<AddItem> {
               ),
 
               ///save button .
-              Align(
+              Align(    
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
                   width: double.maxFinite,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       //print all price level price
                       final priceData =
                           Provider.of<ItemProvider>(context, listen: false)
@@ -1175,17 +1172,13 @@ class _AddItemState extends State<AddItem> {
 
                       if (controller.nameAddItemController.text
                               .trim()
-                              .isEmpty ||
-                          controller.priceAddItemController.text
-                              .trim()
-                              .isEmpty ||
-                          controller.stockAddItemController.text
-                              .trim()
-                              .isEmpty) {
+                              .isEmpty || controller.selectedUnitID == null
+                          
+                          ) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
-                                'Please fill in all required fields, Name, Price, Stock'),
+                                'Please fill in all required fields Name & Unit'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -1288,7 +1281,7 @@ class _AddItemState extends State<AddItem> {
 
                        final itemList =  Provider.of<AddItemProvider>(context, listen: false);
 
-                        itemList.fetchItems();
+                       await itemList.fetchItems();
 
                         Navigator.pop(context);
 

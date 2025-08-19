@@ -1,6 +1,9 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
+import 'package:cbook_dt/feature/account/ui/adjust_bank/model/adjust_bank_model.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/provider/bank_adjust_provider.dart';
+import 'package:cbook_dt/feature/account/ui/bank_ui.dart';
+import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -83,6 +86,7 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
                     const SizedBox(
                       height: 10,
                     ),
+
                     Consumer<BankAdjustProvider>(
                       builder: (context, provider, child) {
                         if (provider.isLoading) {
@@ -90,12 +94,19 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
                               child: CircularProgressIndicator());
                         }
 
-                        if (provider.bankAccounts.isEmpty) {
-                          return const Text("No bank accounts found");
-                        }
+                        // Default "Bank" account (id = 1)
+                        final defaultBankAccount =
+                            BankAdjustAccount(id: 1, name: "Bank");
 
+                        // Merge default bank with API accounts
+                        final allBankAccounts = [
+                          defaultBankAccount,
+                          ...provider.bankAccounts
+                        ];
+
+                        // Map names to dropdown items
                         final itemBankAccounts =
-                            provider.bankAccounts.map((e) => e.name).toList();
+                            allBankAccounts.map((e) => e.name).toList();
 
                         return SizedBox(
                           height: 40,
@@ -111,28 +122,76 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
                               setState(() {
                                 selectedAccountType = value;
 
-                                final selected =
-                                    provider.bankAccounts.firstWhere(
+                                // get the selected account's ID if needed
+                                final selected = allBankAccounts.firstWhere(
                                   (e) => e.name == value,
-                                  orElse: () => provider.bankAccounts.first,
+                                  orElse: () => defaultBankAccount,
                                 );
 
                                 selectedAccount = selected.id.toString();
 
                                 debugPrint(
-                                    "Selected Bank Account: $value, ID: $selectedAccount");
+                                  "Selected Bank Account: $value, ID: $selectedAccount",
+                                );
                               });
                             },
                           ),
                         );
                       },
                     ),
+
+                    // Consumer<BankAdjustProvider>(
+                    //   builder: (context, provider, child) {
+                    //     if (provider.isLoading) {
+                    //       return const Center(
+                    //           child: CircularProgressIndicator());
+                    //     }
+
+                    //     if (provider.bankAccounts.isEmpty) {
+                    //       return const Text("No bank accounts found");
+                    //     }
+
+                    //     final itemBankAccounts =
+                    //         provider.bankAccounts.map((e) => e.name).toList();
+
+                    //     return SizedBox(
+                    //       height: 40,
+                    //       width: double.infinity,
+                    //       child: CustomDropdownTwo(
+                    //         hint: '',
+                    //         items: itemBankAccounts,
+                    //         width: double.infinity,
+                    //         height: 40,
+                    //         labelText: 'Account Name',
+                    //         selectedItem: selectedAccountType,
+                    //         onChanged: (value) async {
+                    //           setState(() {
+                    //             selectedAccountType = value;
+
+                    //             final selected =
+                    //                 provider.bankAccounts.firstWhere(
+                    //               (e) => e.name == value,
+                    //               orElse: () => provider.bankAccounts.first,
+                    //             );
+
+                    //             selectedAccount = selected.id.toString();
+
+                    //             debugPrint(
+                    //                 "Selected Bank Account: $value, ID: $selectedAccount");
+                    //           });
+                    //         },
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
+
                     const SizedBox(
                       height: 10,
                     ),
                     AddSalesFormfield(
                       height: 40,
                       labelText: "Amount",
+                      keyboardType: TextInputType.number,
                       controller: controller.accountNameController,
                     ),
                     const SizedBox(
@@ -209,6 +268,8 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed: () async {
+                      FocusScope.of(context).unfocus();
+
                       SharedPreferences prefs =
                           await SharedPreferences.getInstance();
                       String? userId = prefs.getInt('user_id')?.toString();
@@ -241,10 +302,21 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
                               content: Text(result.message)),
                         );
 
-                        controller.fetchBankAdjustments();
+                        controller.detailsController.text = '';
+                        controller.accountNameController.text = '';
+
+                        ///BankAdjustProvider //BankAdjustProvider //fetchBankAdjustments
+
+                        final listBank = Provider.of<BankAdjustProvider>(context, listen: false);
+
+                        await listBank.fetchBankAdjustments();
 
                         Navigator.of(context).pop();
-                        
+
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => const HomeView()),
+                        // );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

@@ -28,7 +28,7 @@ class ReceivedVoucherRequest {
   final dynamic receivedFrom;
   final String percent;     // "percent" or "flat"
   final double totalAmount;
-  final double discount;
+  final String discount;
   final String notes;
   final List<ReceivedVoucherItem> voucherItems;
 
@@ -63,7 +63,7 @@ class ReceivedVoucherRequest {
       'received_from': receivedFrom.toString(),
       'percent': percent,
       'total_amount': totalAmount.toStringAsFixed(2),
-      'discount': discount.toStringAsFixed(2),
+      'discount': discount,
       'notes': notes,
     };
   }

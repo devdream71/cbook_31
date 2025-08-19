@@ -16,7 +16,8 @@
         android:label="cbook"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true"
+        android:allowBackup="false"
+        android:requestLegacyExternalStorage="false"
         android:enableOnBackInvokedCallback="true"
         >
         <activity

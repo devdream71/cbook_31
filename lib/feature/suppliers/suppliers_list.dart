@@ -1,6 +1,6 @@
 
 import 'package:cbook_dt/app_const/app_colors.dart';
-import 'package:cbook_dt/feature/suppliers/provider/suppliers_list.dart';
+import 'package:cbook_dt/feature/suppliers/provider/suppliers_list_provider.dart';
 import 'package:cbook_dt/feature/suppliers/supplier_update.dart';
 import 'package:cbook_dt/feature/suppliers/suppliers_create.dart';
 import 'package:cbook_dt/feature/suppliers/supplies_details.dart';

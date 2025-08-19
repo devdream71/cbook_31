@@ -49,7 +49,7 @@ class Account extends StatelessWidget {
         destination: TaxListView(), //SalesFormSetting
       ),
       const FormSettingMeta(
-        name: 'Account Type',
+        name: 'Account',
         iconPath: 'assets/image/vat_tax.svg',
         destination: AccountListPage(), //SalesFormSetting
       ),

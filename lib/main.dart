@@ -33,7 +33,7 @@ import 'package:cbook_dt/feature/sales_return/provider/sale_return_provider.dart
 import 'package:cbook_dt/feature/settings/ui/bill/provider/bill_provider.dart';
 import 'package:cbook_dt/feature/settings/ui/user/user_provider/user_provider.dart';
 import 'package:cbook_dt/feature/splash_screen.dart';
-import 'package:cbook_dt/feature/suppliers/provider/suppliers_list.dart';
+import 'package:cbook_dt/feature/suppliers/provider/suppliers_list_provider.dart';
 import 'package:cbook_dt/feature/tax/provider/tax_provider.dart';
 import 'package:cbook_dt/feature/unit/provider/unit_provider.dart';
 import 'package:device_preview/device_preview.dart';
