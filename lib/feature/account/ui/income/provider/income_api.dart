@@ -153,72 +153,176 @@ class IncomeProvider with ChangeNotifier {
   }
 
   /// fetch account
-  Future<void> fetchAccounts(String type) async {
-    debugPrint('=== Starting fetchAccounts for type: $type ===');
+   
+   /// fetch account '''''' ===> newly added for default cash and bank.
+Future<void> fetchAccounts(String type) async {
+  debugPrint('=== Starting fetchAccounts for type: $type ===');
 
-    isAccountLoading = true;
-    notifyListeners();
+  isAccountLoading = true;
+  notifyListeners();
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
 
-    final url = '${AppUrl.baseurl}receive/form/account?type=$type';
-    debugPrint('API URL: $url');
+  final url = '${AppUrl.baseurl}receive/form/account?type=$type';
+  debugPrint('API URL: $url');
 
-    try {
-      debugPrint('Making API request...');
-      final response = await http.post(Uri.parse(url), headers: {
+  try {
+    debugPrint('Making API request...');
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
         "Authorization": "Bearer $token",
         "Accept": "application/json",
-      });
+      },
+    );
 
-      debugPrint('Response Status Code: ${response.statusCode}');
-      debugPrint('Response Body: ${response.body}');
+    debugPrint('Response Status Code: ${response.statusCode}');
+    debugPrint('Response Body: ${response.body}');
 
-      debugPrint('response Status code');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      debugPrint('Parsed JSON Data: $data');
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        debugPrint('Parsed JSON Data: $data');
+      accountModel = AccountModel.fromJson(data);
+      accountNames = accountModel!.data.map((e) => e.accountName).toList();
 
-        accountModel = AccountModel.fromJson(data);
-        accountNames = accountModel!.data.map((e) => e.accountName).toList();
+      debugPrint('Account Model Created Successfully');
+      debugPrint('Total Accounts Found: ${accountModel!.data.length}');
+      debugPrint('Account Names: $accountNames');
 
-        debugPrint('Account Model Created Successfully');
-        debugPrint('Total Accounts Found: ${accountModel!.data.length}');
-        debugPrint('Account Names: $accountNames');
+      // Prepend default Cash or Bank
+      if (type == 'cash') {
+        // Insert default Cash at beginning
+        accountNames.insert(0, 'Cash');
+        accountModel!.data.insert(
+          0,
+          AccountData(id: 1, accountName: 'Cash'),
+        );
+      } else if (type == 'bank') {
+        // Insert default Bank at beginning
+        accountNames.insert(0, 'Bank');
+        accountModel!.data.insert(
+          0,
+          AccountData(id: 2, accountName: 'Bank'),
+        );
+      }
+    } else {
+      debugPrint('API Error: Status ${response.statusCode}');
+      debugPrint('Error Body: ${response.body}');
 
-        // Print detailed account info
-        for (int i = 0; i < accountModel!.data.length; i++) {
-          final account = accountModel!.data[i];
-          debugPrint(
-              'Account $i: ID=${account.id}, Name=${account.accountName}');
-        }
+      // If error, still show default
+      if (type == 'cash') {
+        accountNames = ['Cash'];
+        accountModel = AccountModel(data: [
+          AccountData(id: 1, accountName: 'Cash'),
+        ]);
+      } else if (type == 'bank') {
+        accountNames = ['Bank'];
+        accountModel = AccountModel(data: [
+          AccountData(id: 2, accountName: 'Bank'),
+        ]);
       } else {
-        debugPrint('API Error: Status ${response.statusCode}');
-        debugPrint('Error Body: ${response.body}');
-
-        // Clear previous data on error
         accountModel = null;
         accountNames = [];
       }
-    } catch (e, st) {
-      debugPrint('Exception occurred: $e');
-      debugPrint(st.toString());
-      debugPrint('Stack trace: ${StackTrace.current}');
+    }
+  } catch (e, st) {
+    debugPrint('❌ Exception occurred: $e');
+    debugPrint(st.toString());
 
-      debugPrint('❌ Exception: $e');
-
-      // Clear data on exception
+    // If exception, still show default
+    if (type == 'cash') {
+      accountNames = ['Cash'];
+      accountModel = AccountModel(data: [
+        AccountData(id: 1, accountName: 'Cash'),
+      ]);
+    } else if (type == 'bank') {
+      accountNames = ['Bank'];
+      accountModel = AccountModel(data: [
+        AccountData(id: 2, accountName: 'Bank'),
+      ]);
+    } else {
       accountModel = null;
       accountNames = [];
     }
-
-    isAccountLoading = false;
-    debugPrint(
-        '=== fetchAccounts completed. Loading state: $isAccountLoading ===');
-    notifyListeners();
   }
+
+  isAccountLoading = false;
+  debugPrint(
+      '=== fetchAccounts completed. Loading state: $isAccountLoading ===');
+  notifyListeners();
+}
+
+
+
+   /////====>its work ===>
+  // Future<void> fetchAccounts(String type) async {
+  //   debugPrint('=== Starting fetchAccounts for type: $type ===');
+
+  //   isAccountLoading = true;
+  //   notifyListeners();
+
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('token');
+
+  //   final url = '${AppUrl.baseurl}receive/form/account?type=$type';
+  //   debugPrint('API URL: $url');
+
+  //   try {
+  //     debugPrint('Making API request...');
+  //     final response = await http.post(Uri.parse(url), headers: {
+  //       "Authorization": "Bearer $token",
+  //       "Accept": "application/json",
+  //     });
+
+  //     debugPrint('Response Status Code: ${response.statusCode}');
+  //     debugPrint('Response Body: ${response.body}');
+
+  //     debugPrint('response Status code');
+
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       debugPrint('Parsed JSON Data: $data');
+
+  //       accountModel = AccountModel.fromJson(data);
+  //       accountNames = accountModel!.data.map((e) => e.accountName).toList();
+
+  //       debugPrint('Account Model Created Successfully');
+  //       debugPrint('Total Accounts Found: ${accountModel!.data.length}');
+  //       debugPrint('Account Names: $accountNames');
+
+  //       // Print detailed account info
+  //       for (int i = 0; i < accountModel!.data.length; i++) {
+  //         final account = accountModel!.data[i];
+  //         debugPrint(
+  //             'Account $i: ID=${account.id}, Name=${account.accountName}');
+  //       }
+  //     } else {
+  //       debugPrint('API Error: Status ${response.statusCode}');
+  //       debugPrint('Error Body: ${response.body}');
+
+  //       // Clear previous data on error
+  //       accountModel = null;
+  //       accountNames = [];
+  //     }
+  //   } catch (e, st) {
+  //     debugPrint('Exception occurred: $e');
+  //     debugPrint(st.toString());
+  //     debugPrint('Stack trace: ${StackTrace.current}');
+
+  //     debugPrint('❌ Exception: $e');
+
+  //     // Clear data on exception
+  //     accountModel = null;
+  //     accountNames = [];
+  //   }
+
+  //   isAccountLoading = false;
+  //   debugPrint(
+  //       '=== fetchAccounts completed. Loading state: $isAccountLoading ===');
+  //   notifyListeners();
+  // }
 
   ///acount type list bas on recived to , cash or bank
   Map<int, String> _accountNameMap = {};

@@ -228,11 +228,11 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                       color: Colors.green,
                     ),
                   ),
-                  SizedBox(width: 3),
-                  Text(
-                    'Purchase',
-                    style: TextStyle(color: Colors.yellow, fontSize: 16),
-                  ),
+                  // SizedBox(width: 3),
+                  // Text(
+                  //   'Purchase',
+                  //   style: TextStyle(color: Colors.yellow, fontSize: 16),
+                  // ),
                 ],
               ),
             ),
@@ -482,7 +482,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                           shadowColor: const Color.fromARGB(255, 12, 9, 199),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                              6.0,
+                              2.0,
                             ),
                             // side: BorderSide(color: Color(0xffdddefa))
                           ),

@@ -68,6 +68,8 @@ class LayoutState extends State<Layout> {
   TextEditingController addressController = TextEditingController();
   TextEditingController billController = TextEditingController();
 
+  TextEditingController customerNameController = TextEditingController();
+
   void _onCancel() {
     Navigator.pop(context);
   }
@@ -95,48 +97,7 @@ class LayoutState extends State<Layout> {
   int? selectedBillPersonId;
   BillPersonModel? selectedBillPersonData;
 
-  // @override
-  // void initState() {
-  //   super.initState();
 
-  //   // Initialize with loading text
-  //   billController.text = "Loading...";
-  //   debugPrint('Bill controller initialized with: ${billController.text}');
-
-  //   Future.microtask(() async {
-  //     ///fetch customer.
-  //     Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
-
-  //     ///fetch category.
-  //     Provider.of<ItemCategoryProvider>(context, listen: false)
-  //         .fetchCategories();
-
-  //     ///fetch item.
-  //     Provider.of<AddItemProvider>(context, listen: false).fetchItems();
-
-  //     ///fetch stock quantity.
-  //     Provider.of<AddItemProvider>(context, listen: false)
-  //         .fetchPurchaseStockQuantity(
-  //             "1"); // Pass a default itemId or handle it later
-
-  //     ///fetch customer.
-  //     Future.microtask(() =>
-  //         Provider.of<CustomerProvider>(context, listen: false)
-  //             .fetchCustomsr());
-
-  //     ///fetch bill person.
-  //     Future.microtask(() =>
-  //         Provider.of<PaymentVoucherProvider>(context, listen: false)
-  //             .fetchBillPersons());
-
-  //     // await fetchAndSetBillNumber();
-
-  //     debugPrint('About to fetch bill number...');
-  //     await fetchAndSetBillNumber(context);
-  //     debugPrint(
-  //         'Bill number fetch completed. Current value: ${billController.text}');
-  //   });
-  // }
 
   @override
   void initState() {
@@ -145,6 +106,8 @@ class LayoutState extends State<Layout> {
     // Initialize with loading text
     billController.text = "Loading...";
     debugPrint('Bill controller initialized with: ${billController.text}');
+
+    customerNameController.clear();
 
     Future.microtask(() async {
       try {
@@ -273,6 +236,8 @@ class LayoutState extends State<Layout> {
 
     final controller = context.watch<PurchaseController>();
     final categoryProvider = Provider.of<ItemCategoryProvider>(context);
+
+    customerNameController.clear();
 
     //String? selectedItemNameInvoice;
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -486,8 +451,7 @@ class LayoutState extends State<Layout> {
                                               : Column(
                                                   children: [
                                                     AddSalesFormfieldTwo(
-                                                        controller: controller
-                                                            .codeController,
+                                                        controller: customerNameController,
                                                         //label: "Customer",
                                                         customerorSaleslist:
                                                             "Cus/Sup list",
@@ -1923,6 +1887,8 @@ class LayoutState extends State<Layout> {
 
                               if (isSuccess) {
                                 // Clear all controllers and purchase items
+
+                                customerNameController.clear();
 
                                 controller.clearPurchaseForm();
 

@@ -24,7 +24,7 @@ class DonutChartViewRoundState extends State<DonutChartViewRound>
   late Animation<double> _animation;
 
   final List<Color> colors = [
-    Colors.green,
+    AppColors.primaryColor,
     Colors.orange,
      AppColors.purple2,
     Colors.purple,
@@ -152,64 +152,7 @@ class DonutChartViewRoundState extends State<DonutChartViewRound>
             ],
           ),
          
-          // Row(
-          //   children: [
-          //     Container(
-          //       height: 15,
-          //       width: 15,
-          //       color: Colors.green,
-          //     ),
-          //     const SizedBox(
-          //       width: 2,
-          //     ),
-
-          //     /// 
-          //     const Text(
-          //       'Received',
-          //       style: TextStyle(color: Colors.black, fontSize: 12),
-          //     ),
-          //     const SizedBox(
-          //       width: 8,
-          //     ),
-          //     Container(
-          //       height: 15,
-          //       width: 15,
-          //       color: Colors.orange,
-          //     ),
-          //     const SizedBox(
-          //       width: 2,
-          //     ),
-          //     const Text('Payment',
-          //         style: TextStyle(color: Colors.black, fontSize: 12)),
-          //     const SizedBox(
-          //       width: 8,
-          //     ),
-          //     Container(
-          //       height: 15,
-          //       width: 15,
-          //       color: AppColors.purple2,
-          //     ),
-          //     const SizedBox(
-          //       width: 2,
-          //     ),
-          //     const Text('Income',
-          //         style: TextStyle(color: Colors.black, fontSize: 12)),
-          //     const SizedBox(
-          //       width: 8,
-          //     ),
-          //     Container(
-          //       height: 15,
-          //       width: 15,
-          //       color: Colors.purple,
-          //     ),
-          //     const SizedBox(
-          //       width: 2,
-          //     ),
-          //     const Text('Expense',
-          //         style: TextStyle(color: Colors.black, fontSize: 12)),
-          //   ],
-          // )
-      
+        
       
         ],
       ),

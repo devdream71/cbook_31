@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
-import 'package:cbook_dt/feature/account/ui/income/income_list.dart';
+import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/income/model/income_item.dart';
 import 'package:cbook_dt/feature/account/ui/income/model/recived_item.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
@@ -258,7 +258,7 @@ class _IncomeCreateState extends State<IncomeCreate> {
         backgroundColor: AppColors.sfWhite,
         appBar: AppBar(
           backgroundColor: colorScheme.primary,
-          centerTitle: true,
+          //centerTitle: true,
           iconTheme: const IconThemeData(color: Colors.white),
           automaticallyImplyLeading: true,
           title: const Column(
@@ -278,6 +278,20 @@ class _IncomeCreateState extends State<IncomeCreate> {
               )
             ],
           ),
+          actions:  [
+              InkWell(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (_)=> const AccountTypeCreate()));
+                },
+                child: const Text(
+                'Account Create',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+                            ),
+              ),
+          ]
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4),

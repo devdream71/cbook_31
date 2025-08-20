@@ -175,7 +175,7 @@ class _FieldPortionState extends State<FieldPortion> {
                                 CustomDropdownTwo(
                                   hint: '', //Select VAT/TAX
                                   items: taxProvider.taxList
-                                      .map((tax) => tax.percent) //${tax.name} -
+                                      .map((tax) => tax.percent.toString()) //${tax.name} -
                                       .toList(),
 
                                   width: double.infinity,
@@ -498,7 +498,7 @@ class _FieldPortionState extends State<FieldPortion> {
                                 CustomDropdownTwo(
                                   hint: '', //Select VAT/TAX
                                   items: taxProvider.taxList
-                                      .map((tax) => tax.percent) //${tax.name} -
+                                      .map((tax) => tax.percent.toString()) //${tax.name} -
                                       .toList(),
 
                                   width: double.infinity,

@@ -48,6 +48,8 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
   TextEditingController discountPercentage = TextEditingController();
   TextEditingController discountValue = TextEditingController();
 
+  TextEditingController customerNameController = TextEditingController();
+
   String selectedDiscountType = '%'; // default '%'
   double dueAmount = 0;
 
@@ -135,6 +137,8 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
     billController.text = "Loading...";
     debugPrint('Bill controller initialized with: ${billController.text}');
 
+    customerNameController.clear();
+
     Future.microtask(() async {
       // First fetch settings and wait for completion
       await Provider.of<BillSettingsProvider>(context, listen: false)
@@ -151,6 +155,8 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
     });
   }
 
+  
+  ///bill number
   Future<void> fetchAndSetBillNumber(BuildContext context) async {
     debugPrint('fetchAndSetBillNumber called');
 
@@ -227,6 +233,7 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
     }
   }
 
+  ///clear the controller
   void _clearAllControllers() {
   debugPrint('Clearing all controllers...');
   
@@ -238,6 +245,10 @@ class _ReceivedCreateItemState extends State<ReceivedCreateItem> {
   discountPercentage.clear();
   discountValue.clear();
   billController.clear();
+
+  // ✅ Clear customer name controller from SalesController
+  // final controllerCustomerName = Provider.of<SalesController>(context, listen: false);
+  // controllerCustomerName.customerNameController.clear();
   
   // Clear receipt controllers map
   receiptControllers.forEach((key, controller) {
@@ -281,6 +292,8 @@ void dispose() {
   discountPercentage.dispose();
   discountValue.dispose();
   billController.dispose();
+
+
   
   // Dispose receipt controllers
   receiptControllers.forEach((key, controller) {
@@ -521,7 +534,7 @@ void dispose() {
 
           /// Customer search field
           AddSalesFormfieldTwo(
-            controller: controller.customerNameController,
+            controller: customerNameController,
             customerorSaleslist: "Showing Customer list",
             customerOrSupplierButtonLavel: "",
             color: Colors.grey,
@@ -788,7 +801,9 @@ void dispose() {
                     SizedBox(
                       height: 30,
                       width: 78,
+                      
                       child: AddSalesFormfield(
+                         keyboardType: TextInputType.number,
                         labelText: '%',
                         controller: discountPercentage,
                         onChanged: (value) {
@@ -804,6 +819,7 @@ void dispose() {
                       height: 30,
                       width: 78,
                       child: AddSalesFormfield(
+                         keyboardType: TextInputType.number,
                         labelText: 'Value',
                         controller: discountValue,
                         onChanged: (value) {
@@ -954,6 +970,10 @@ void dispose() {
                        
                        _clearAllControllers();
 
+                        customerNameController.clear();
+
+                      
+
                       // ✅ Clear the selected customer
                       Provider.of<CustomerProvider>(context, listen: false)
                           .clearSelectedCustomerRecived();
@@ -986,7 +1006,7 @@ void dispose() {
           ),
 
           const SizedBox(
-            height: 10,
+            height: 50,
           )
         ]),
       ),

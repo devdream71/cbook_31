@@ -107,6 +107,8 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
       Provider.of<PaymentVoucherProvider>(context, listen: false)
           .fetchBillPersons();
 
+          customerNameController.clear();
+
      
           
 
@@ -215,61 +217,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
   }
 
 
-  ///updated bill nunber json respoonse
-  // Future<void> fetchAndSetBillNumber(context) async {
-  //   debugPrint('fetchAndSetBillNumber called');
-
-  //   final url = Uri.parse(
-  //     '${AppUrl.baseurl}app/setting/bill/number?voucher_type=voucher&type=payment&code=PAY&bill_number=100&with_nick_name=1',
-  //   );
-
-  //   try {
-  //     debugPrint('Making API call...');
-  //     final response = await http.get(url);
-  //     debugPrint('API Response Status: ${response.statusCode}');
-  //     debugPrint('API Response Body: ${response.body}');
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       debugPrint('Parsed data: $data');
-
-  //       if (data['success'] == true && data['data'] != null) {
-  //         final billFromApi =
-  //             data['data']['bill_number']?.toString().trim() ?? "";
-
-  //         debugPrint('Bill from API: $billFromApi');
-
-  //         // Optional: extract only number from "PAY-100"
-  //         final billOnlyNumber = billFromApi;
-
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = billOnlyNumber;
-  //             debugPrint('Bill controller updated to: ${billController.text}');
-  //           });
-  //         }
-  //       } else {
-  //         debugPrint('API success false or data missing');
-  //         _setFallback();
-  //       }
-  //     } else {
-  //       debugPrint('Failed to fetch bill number: ${response.statusCode}');
-  //       _setFallback();
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error fetching bill number: $e');
-  //     _setFallback();
-  //   }
-  // }
-
-  // void _setFallback() {
-  //   if (mounted) {
-  //     setState(() {
-  //       billController.text = "PAY-100"; // or any default you want
-  //       debugPrint('Fallback bill set: ${billController.text}');
-  //     });
-  //   }
-  // }
+   
 
   /// Calculate sum of all receipts input
   double get totalReceiptAmount {
@@ -406,7 +354,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
                   const SizedBox(height: 10),
 
-                  /// Account Dropdown
+                  /// Account Dropdown || A/C
                   SizedBox(
                     height: 30,
                     width: 150,
@@ -917,6 +865,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                       height: 30,
                       width: 76,
                       child: AddSalesFormfield(
+                        keyboardType: TextInputType.number,
                         labelText: "%",
                         controller: discountPercentageController,
                         onChanged: (value) {
@@ -962,6 +911,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                       child: AddSalesFormfield(
                         labelText: "Amount",
                         controller: discountAmount,
+                         keyboardType: TextInputType.number,
                         onChanged: (value) {
                           // ✅ Prevent infinite loops by checking if we're updating from percentage field
                           if (_isUpdatingFromPercentage) return;
@@ -1178,6 +1128,8 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                       receiptControllers
                           .clear(); // Clear all TextEditingControllers
 
+                      customerNameController.clear();    
+
                       // ✅ Clear selected customer in provider
                      customerProvider.clearSelectedCustomer();
                       customerProvider.paymentVouchers
@@ -1213,7 +1165,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
           ),
 
           const SizedBox(
-            height: 10,
+            height: 50,
           )
         ]),
       ),

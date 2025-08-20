@@ -2,7 +2,7 @@ class TaxModel {
   final int id;
   final int userId;
   final String name;
-  final String percent;
+  final dynamic percent;
   final int status;
 
   TaxModel({

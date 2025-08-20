@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
+import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/expense/expense_list.dart';
 import 'package:cbook_dt/feature/account/ui/expense/model/expence_item.dart';
 import 'package:cbook_dt/feature/account/ui/expense/model/expense_item_list_popup.dart';
@@ -299,6 +300,20 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
               )
             ],
           ),
+          actions:  [
+              InkWell(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (_)=> const AccountTypeCreate()));
+                },
+                child: const Text(
+                'Account Create',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+                            ),
+              ),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.only(left: 4.0, right: 4.0, top: 6.0),

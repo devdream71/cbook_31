@@ -50,7 +50,7 @@ class TaxProvider with ChangeNotifier {
   Future<void> createTax({
     required int userId,
     required String name,
-    required int percent,
+    required dynamic percent,
     required int status,
   }) async {
     _isLoading = true;
@@ -71,7 +71,7 @@ class TaxProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final newTax = TaxModel.fromJson(data['data']);
-        _taxList.add(newTax);
+        //_taxList.add(newTax);
         fetchTaxes();
         notifyListeners();
 
@@ -94,7 +94,7 @@ class TaxProvider with ChangeNotifier {
 
     final url = Uri.parse('${AppUrl.baseurl}tax/remove/$id');
 
-        final prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
 
 

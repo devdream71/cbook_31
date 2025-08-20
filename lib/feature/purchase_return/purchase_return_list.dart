@@ -91,13 +91,13 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                         size: 20,
                         color: Colors.green,
                       )),
-                  SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    'P. Return',
-                    style: TextStyle(color: Colors.yellow, fontSize: 16),
-                  ),
+                  // SizedBox(
+                  //   width: 3,
+                  // ),
+                  // Text(
+                  //   'P. Return',
+                  //   style: TextStyle(color: Colors.yellow, fontSize: 16),
+                  // ),
                 ],
               ),
             ),

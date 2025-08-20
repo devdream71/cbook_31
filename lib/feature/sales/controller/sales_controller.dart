@@ -33,7 +33,6 @@ class SalesController extends ChangeNotifier {
   ///discount amount and discount percentance.
   TextEditingController discountAmount = TextEditingController();
   TextEditingController discountPercentance = TextEditingController();
-
   TextEditingController controller = TextEditingController(text: "Cash");
 
   String? selectedCategory;

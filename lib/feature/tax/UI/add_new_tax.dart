@@ -1,5 +1,4 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
-import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:cbook_dt/feature/tax/provider/tax_provider.dart';
 import 'package:flutter/material.dart';
@@ -84,37 +83,97 @@ class _AddNewTaxState extends State<AddNewTax> {
 
                     final name = _nameController.text.trim();
                     final percent = _percentanceController.text.trim();
+                    // final percentInt = int.tryParse(percent);
+                    final percentDouble = double.tryParse(percent);
 
-                    final percentInt = int.tryParse(percent);
-
-                    if (name.isNotEmpty && percent.isNotEmpty) {
-                      final taxProvider =
-                          Provider.of<TaxProvider>(context, listen: false);
-
-                      Provider.of<TaxProvider>(context, listen: false)
-                          .createTax(
-                        userId: int.parse(userId),
-                        name: name,
-                        percent: percentInt!,
-                        status: 1,
+                    // ✅ Better validation
+                    if (name.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Please enter tax name")),
                       );
-                      //Navigator.pop(context); // Optionally pop after saving
+                      return;
+                    }
 
-                      taxProvider.fetchTaxes();
-
-                      Navigator.pop(context);
-
+                    if (percent.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            backgroundColor: Colors.green,
-                            content: Text("Successfully, Tax Create.")),
+                            content: Text("Please enter tax percentage")),
                       );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Please fill all fields")),
-                      );
+                      return;
                     }
+
+                    if (percentDouble == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                                "Please enter a valid number for percentage")),
+                      );
+                      return;
+                    }
+
+                    // ✅ Now safe to use percentInt without null check operator
+                    final taxProvider =
+                        Provider.of<TaxProvider>(context, listen: false);
+
+                    await taxProvider.createTax(
+                      userId: int.parse(userId),
+                      name: name,
+                      percent: percentDouble, // ✅ No need for ! operator
+                      status: 1,
+                    );
+
+                    Navigator.pop(context, true);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text("Successfully, Tax Create.")),
+                    );
                   },
+
+                  // onPressed: () async {
+                  //   SharedPreferences prefs =
+                  //       await SharedPreferences.getInstance();
+                  //   String? userId = prefs.getInt('user_id')?.toString();
+
+                  //   if (userId == null) {
+                  //     debugPrint("User ID is null");
+                  //     return;
+                  //   }
+
+                  //   final name = _nameController.text.trim();
+                  //   final percent = _percentanceController.text.trim();
+
+                  //   final percentInt = int.tryParse(percent);
+
+                  //   if (name.isNotEmpty && percent.isNotEmpty) {
+                  //     final taxProvider =
+                  //         Provider.of<TaxProvider>(context, listen: false);
+
+                  //     await taxProvider.createTax(
+                  //       userId: int.parse(userId),
+                  //       name: name,
+                  //       percent: percentInt!,
+                  //       status: 1,
+                  //     );
+                  //     //Navigator.pop(context); // Optionally pop after saving
+
+                  //    //await taxProvider.fetchTaxes(); //fetchTaxes
+
+                  //    Navigator.pop(context, true);
+
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(
+                  //           backgroundColor: Colors.green,
+                  //           content: Text("Successfully, Tax Create.")),
+                  //     );
+                  //   } else {
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(content: Text("Please fill all fields")),
+                  //     );
+                  //   }
+                  // },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
                     padding: const EdgeInsets.symmetric(

@@ -26,7 +26,7 @@ class _AccountListPageState extends State<AccountListPage> {
       backgroundColor: AppColors.sfWhite,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
-        centerTitle: true,
+        //centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "Account Type List",
