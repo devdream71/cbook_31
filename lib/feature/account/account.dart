@@ -28,21 +28,21 @@ class Account extends StatelessWidget {
         iconPath: 'assets/image/bank.svg',
         destination: Bank(), //SalesFormSetting
       ),
-      const FormSettingMeta(
-        name: 'Income',
-        iconPath: 'assets/image/income.svg',
-        destination: IncomeReport(), //SalesFormSetting
-      ),
-      const FormSettingMeta(
-        name: 'Expanse',
-        iconPath: 'assets/image/expanse.svg',
-        destination: ExpenseReport(), //SalesFormSetting
-      ),
-      const FormSettingMeta(
-        name: 'Discount',
-        iconPath: 'assets/image/discount.svg',
-        destination: Discount(), //SalesFormSetting
-      ),
+      // const FormSettingMeta(
+      //   name: 'Income',
+      //   iconPath: 'assets/image/income.svg',
+      //   destination: IncomeReport(), //SalesFormSetting
+      // ),
+      // const FormSettingMeta(
+      //   name: 'Expanse',
+      //   iconPath: 'assets/image/expanse.svg',
+      //   destination: ExpenseReport(), //SalesFormSetting
+      // ),
+      // const FormSettingMeta(
+      //   name: 'Discount',
+      //   iconPath: 'assets/image/discount.svg',
+      //   destination: Discount(), //SalesFormSetting
+      // ),
       const FormSettingMeta(
         name: 'Vat/Tax',
         iconPath: 'assets/image/vat_tax.svg',
@@ -50,7 +50,7 @@ class Account extends StatelessWidget {
       ),
       const FormSettingMeta(
         name: 'Account',
-        iconPath: 'assets/image/vat_tax.svg',
+        iconPath: 'assets/image/accounting.svg', //assets/image/accounting.png //assets/image/accounting.svg
         destination: AccountListPage(), //SalesFormSetting
       ),
     ];

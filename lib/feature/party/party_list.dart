@@ -227,12 +227,12 @@ class _PartyState extends State<Party> {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                    Text(
+                                  Text(
                                     'Customer (${provider.customerTransactionCountTotal ?? 0})',
                                     style: const TextStyle(
-                                        color: Colors.black, fontSize: 12,
-                                        fontWeight: FontWeight.bold
-                                        ),
+                                        color: Colors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                   Row(
                                     children: [
@@ -245,7 +245,6 @@ class _PartyState extends State<Party> {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                       
                                     ],
                                   ),
                                 ],
@@ -286,13 +285,12 @@ class _PartyState extends State<Party> {
                                   return Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                        Text(
+                                      Text(
                                         'Supplier  (${provider.totalSupplierCount ?? 0})',
                                         style: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 12,
-                                            fontWeight: FontWeight.bold
-                                            ),
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       Text(
                                         '৳ ${provider.supplierTransaction ?? 0}  ',
@@ -351,6 +349,7 @@ class _PartyState extends State<Party> {
                       final customers = customer[index];
                       final customersPurchase = customers.purchases;
                       final customerId = customers.id;
+                      final customerImage = customers.avatar;
                       final customerType = customers.type;
 
                       return InkWell(
@@ -613,6 +612,7 @@ class _PartyState extends State<Party> {
                               email: "", // or correct value
                               phone: customers.phone ?? "",
                               address: customers.address ?? "",
+                              avatar: customers.avatar,
                               openingBalance: customers.due,
                               status: 1,
                               createdAt: "",
@@ -638,6 +638,7 @@ class _PartyState extends State<Party> {
                               proprietorName: customers.proprietorName,
                               email: "", // or correct value
                               phone: customers.phone ?? "",
+                              avatar: customers.avatar,
                               address: customers.address ?? "",
                               openingBalance: customers.due,
                               status: 1,
@@ -718,9 +719,10 @@ class _PartyState extends State<Party> {
               if (isDeleted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
+                    backgroundColor: AppColors.primaryColor,
+                    content: const Text(
                       'Customer/Supplier deleted successfully!',
-                      style: TextStyle(color: colorScheme.primary),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 );

@@ -836,41 +836,56 @@ class _ItemViewState extends State<ItemView> {
                         child: _buildIconWithLabel(Icons.shopping_cart_checkout,
                             "Sales/Bill/\nInvoice", context)),
 
-                    //// bulk sales
-                    InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const ItemListPage()));
+                    // //// bulk sales
+                    // InkWell(
+                    //     onTap: () {
+                    //       Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //               builder: (_) => const ItemListPage()));
 
-                          // showFeatureNotAvailableDialog(context);
-                        },
-                        child: _buildIconWithLabel(
-                            Icons.apps, "Bulk sales/\nInvoice", context)),
+                    //       // showFeatureNotAvailableDialog(context);
+                    //     },
+                    //     child: _buildIconWithLabel(
+                    //         Icons.apps, "Bulk sales/\nInvoice", context)),
 
                     //// Estimate/\nQuotation
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) =>
-                                const FeatureNotAvailableDialog());
-                      },
-                      child: _buildIconWithLabel(
-                          Icons.view_timeline, "Estimate/\nQuotation", context),
-                    ),
+                    // InkWell(
+                    //   onTap: () {
+                    //     showDialog(
+                    //         context: context,
+                    //         builder: (context) =>
+                    //             const FeatureNotAvailableDialog());
+                    //   },
+                    //   child: _buildIconWithLabel(
+                    //       Icons.view_timeline, "Estimate/\nQuotation", context),
+                    // ),
 
                     //// Challan
+                    // InkWell(
+                    //     onTap: () {
+                    //       showDialog(
+                    //           context: context,
+                    //           builder: (context) =>
+                    //               const FeatureNotAvailableDialog());
+                    //     },
+                    //     child:
+                    //         _buildIconWithLabel(Icons.tab, "Challan", context)),
+
+                      ////Sales\nReturn
                     InkWell(
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) =>
-                                  const FeatureNotAvailableDialog());
-                        },
-                        child:
-                            _buildIconWithLabel(Icons.tab, "Challan", context)),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    const SalesReturnScreen())); //SalesReturnView
+                        //showFeatureNotAvailableDialog(context);
+                      },
+                      child: _buildIconWithLabel(
+                          Icons.redo, "Sales\nReturn", context),
+                    ),
+
 
                     //// Receipt In
                     InkWell(
@@ -888,30 +903,17 @@ class _ItemViewState extends State<ItemView> {
                         child: _buildIconWithLabel(
                             Icons.receipt, "Receipt In", context)),
 
-                    ////Sales\nReturn
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) =>
-                                    const SalesReturnScreen())); //SalesReturnView
-                        //showFeatureNotAvailableDialog(context);
-                      },
-                      child: _buildIconWithLabel(
-                          Icons.redo, "Sales\nReturn", context),
-                    ),
-
-                    ////Delivery
-                    InkWell(
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) =>
-                                  const FeatureNotAvailableDialog());
-                        },
-                        child: _buildIconWithLabel(
-                            Icons.delivery_dining, "Delivery", context)),
+                  
+                    // ////Delivery
+                    // InkWell(
+                    //     onTap: () {
+                    //       showDialog(
+                    //           context: context,
+                    //           builder: (context) =>
+                    //               const FeatureNotAvailableDialog());
+                    //     },
+                    //     child: _buildIconWithLabel(
+                    //         Icons.delivery_dining, "Delivery", context)),
                   ],
                 ),
 
@@ -946,15 +948,33 @@ class _ItemViewState extends State<ItemView> {
                     ),
 
                     ////  Purchase/\nOrder
+                    // InkWell(
+                    //   onTap: () {
+                    //     showDialog(
+                    //         context: context,
+                    //         builder: (context) =>
+                    //             const FeatureNotAvailableDialog());
+                    //   },
+                    //   child: _buildIconWithLabel(
+                    //       Icons.work_history, "Purchase/\nOrder", context),
+                    // ),
+
+                     ///// Purchase\nReturn
                     InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) =>
-                                const FeatureNotAvailableDialog());
-                      },
-                      child: _buildIconWithLabel(
-                          Icons.work_history, "Purchase/\nOrder", context),
+                      onTap: () {},
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const PurchaseReturnList()));
+
+                          //showFeatureNotAvailableDialog(context);
+                        },
+                        child: _buildIconWithLabel(
+                            Icons.redo_rounded, "Purchase\nReturn", context),
+                      ),
                     ),
 
                     //// Payment\nOut
@@ -974,23 +994,7 @@ class _ItemViewState extends State<ItemView> {
                         child: _buildIconWithLabel(
                             Icons.tab, "Payment\nOut", context)),
 
-                    ///// Purchase\nReturn
-                    InkWell(
-                      onTap: () {},
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const PurchaseReturnList()));
-
-                          //showFeatureNotAvailableDialog(context);
-                        },
-                        child: _buildIconWithLabel(
-                            Icons.redo_rounded, "Purchase\nReturn", context),
-                      ),
-                    ),
+                   
                   ],
                 ),
 
@@ -1030,16 +1034,16 @@ class _ItemViewState extends State<ItemView> {
                     ),
 
                     ////  Purchase/\nOrder
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) =>
-                                const FeatureNotAvailableDialog());
-                      },
-                      child: _buildIconWithLabel(
-                          Icons.work_history, "Contacts", context),
-                    ),
+                    // InkWell(
+                    //   onTap: () {
+                    //     showDialog(
+                    //         context: context,
+                    //         builder: (context) =>
+                    //             const FeatureNotAvailableDialog());
+                    //   },
+                    //   child: _buildIconWithLabel(
+                    //       Icons.work_history, "Contacts", context),
+                    // ),
 
                     //// Payment\nOut
                     InkWell(

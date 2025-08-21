@@ -198,8 +198,6 @@ class _LayoutState extends State<_Layout> {
     }
   }
 
- 
-
   void _onCancel() {
     Navigator.pop(context);
   }
@@ -311,8 +309,11 @@ class _LayoutState extends State<_Layout> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             ///   ====> cash / credit button
+                                            ///
+
                                             InkWell(
                                               onTap: () {
+                                                //controller.updateCash();
                                                 controller.updateCash(context);
 
                                                 Provider.of<CustomerProvider>(
@@ -322,13 +323,19 @@ class _LayoutState extends State<_Layout> {
                                               },
                                               child: DecoratedBox(
                                                 decoration: BoxDecoration(
-                                                  color: AppColors.primaryColor,
+                                                  color: controller.isCash
+                                                      ? Colors.blue
+                                                          .shade600 // 🔹 Cash background
+                                                      : Colors.orange
+                                                          .shade600, // ✅ Credit background
                                                   borderRadius:
                                                       BorderRadius.circular(5),
                                                 ),
                                                 child: Padding(
                                                   padding: const EdgeInsets
-                                                      .symmetric(horizontal: 5),
+                                                      .symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 4),
                                                   child: Row(
                                                     mainAxisSize:
                                                         MainAxisSize.min,
@@ -338,12 +345,13 @@ class _LayoutState extends State<_Layout> {
                                                             ? "Cash"
                                                             : "Credit",
                                                         style: GoogleFonts.lato(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            fontSize: 14),
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontSize: 14,
+                                                        ),
                                                       ),
-                                                      const SizedBox(width: 1),
+                                                      const SizedBox(width: 4),
                                                       const Icon(
                                                         Icons.arrow_forward_ios,
                                                         color: Colors.white,
@@ -354,6 +362,45 @@ class _LayoutState extends State<_Layout> {
                                                 ),
                                               ),
                                             ),
+
+                                            // InkWell(
+                                            //   onTap: () {
+
+                                            //   },
+                                            //   child: DecoratedBox(
+                                            //     decoration: BoxDecoration(
+                                            //       color: AppColors.primaryColor,
+                                            //       borderRadius:
+                                            //           BorderRadius.circular(5),
+                                            //     ),
+                                            //     child: Padding(
+                                            //       padding: const EdgeInsets
+                                            //           .symmetric(horizontal: 5),
+                                            //       child: Row(
+                                            //         mainAxisSize:
+                                            //             MainAxisSize.min,
+                                            //         children: [
+                                            //           Text(
+                                            //             controller.isCash
+                                            //                 ? "Cash"
+                                            //                 : "Credit",
+                                            //             style: GoogleFonts.lato(
+                                            //                 color: Colors.white,
+                                            //                 fontWeight:
+                                            //                     FontWeight.w600,
+                                            //                 fontSize: 14),
+                                            //           ),
+                                            //           const SizedBox(width: 1),
+                                            //           const Icon(
+                                            //             Icons.arrow_forward_ios,
+                                            //             color: Colors.white,
+                                            //             size: 12,
+                                            //           )
+                                            //         ],
+                                            //       ),
+                                            //     ),
+                                            //   ),
+                                            // ),
 
                                             ///bill to text
                                             const Text(
@@ -592,7 +639,6 @@ class _LayoutState extends State<_Layout> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    
                                     SizedBox(
                                       height: 30,
                                       width: 130,
@@ -860,12 +906,9 @@ class _LayoutState extends State<_Layout> {
                                                           child: InkWell(
                                                             ///cash item list edit.
                                                             onTap: () {
-                                                             
                                                               showCashItemDetailsDialog(
                                                                   context,
                                                                   item);
-
-                                                               
                                                             },
                                                             child:
                                                                 //cash item
@@ -1078,11 +1121,9 @@ class _LayoutState extends State<_Layout> {
                                                         ),
                                                         InkWell(
                                                           onTap: () {
-                                                            
                                                             showSalesDialog(
                                                                 context,
                                                                 controller);
-                                                             
                                                           },
                                                           child: const Icon(
                                                             Icons.add,
@@ -1410,7 +1451,6 @@ class _LayoutState extends State<_Layout> {
                             ],
                           ),
 
-                    
                           ///bottom button portion amount, discount, tax vat, adjust total, received
                           const FieldPortion(),
                         ],
@@ -1418,7 +1458,7 @@ class _LayoutState extends State<_Layout> {
                     ),
                   ),
                   vPad20,
- 
+
                   ///bottom portion new view, view a4, view a5, save and view.
                   BottomPortion(
                     invoiceItems: invoiceItems,
@@ -1437,790 +1477,788 @@ class _LayoutState extends State<_Layout> {
     );
   }
 
-
-
-
-
   ////show sales diolog. && item picked.
-void showSalesDialog(BuildContext context, SalesController controller) async {
-  final ColorScheme colorScheme = Theme.of(context).colorScheme;
+  void showSalesDialog(BuildContext context, SalesController controller) async {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-  final categoryProvider =
-      Provider.of<ItemCategoryProvider>(context, listen: false);
+    final categoryProvider =
+        Provider.of<ItemCategoryProvider>(context, listen: false);
 
-  final unitProvider = Provider.of<UnitProvider>(context, listen: false);
+    final unitProvider = Provider.of<UnitProvider>(context, listen: false);
 
-  final fetchStockQuantity =
-      Provider.of<AddItemProvider>(context, listen: false);
+    final fetchStockQuantity =
+        Provider.of<AddItemProvider>(context, listen: false);
 
-  final taxProvider = Provider.of<TaxProvider>(context, listen: false);
+    final taxProvider = Provider.of<TaxProvider>(context, listen: false);
 
-  String? selectedTaxName;
-  String? selectedTaxId;
+    String? selectedTaxName;
+    String? selectedTaxId;
 
-  String? selectedItemName;
-  ItemsModel? selectedItemData;
-  int? selectedItemId;
+    String? selectedItemName;
+    ItemsModel? selectedItemData;
+    int? selectedItemId;
 
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (_) => const Center(child: CircularProgressIndicator()),
-  );
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
 
-  if (categoryProvider.categories.isEmpty) {
-    await categoryProvider.fetchCategories();
-  }
+    if (categoryProvider.categories.isEmpty) {
+      await categoryProvider.fetchCategories();
+    }
 
-  if (taxProvider.taxList.isEmpty) {
-    await taxProvider.fetchTaxes();
-  }
+    if (taxProvider.taxList.isEmpty) {
+      await taxProvider.fetchTaxes();
+    }
 
-  Provider.of<AddItemProvider>(context, listen: false).clearStockData();
-  controller.clearFields();
+    Provider.of<AddItemProvider>(context, listen: false).clearStockData();
+    controller.clearFields();
 
-  Navigator.of(context).pop();
+    Navigator.of(context).pop();
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      // Local state variables that will persist within StatefulBuilder
-      List<String> unitIdsList = [];
-      String? localSelectedUnit; // ✅ Add this local variable
-      bool isItemSelected = false;
+    showDialog(
+      context: context,
+      builder: (context) {
+        // Local state variables that will persist within StatefulBuilder
+        List<String> unitIdsList = [];
+        String? localSelectedUnit; // ✅ Add this local variable
+        bool isItemSelected = false;
 
-      return StatefulBuilder(builder: (context, setState) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final controller =
-              Provider.of<SalesController>(context, listen: false);
-          controller.addListener(() {
-            setState(() {});
+        return StatefulBuilder(builder: (context, setState) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final controller =
+                Provider.of<SalesController>(context, listen: false);
+            controller.addListener(() {
+              setState(() {});
+            });
           });
-        });
 
-        bool isLoading =
-            categoryProvider.isLoading || fetchStockQuantity.isLoading;
+          bool isLoading =
+              categoryProvider.isLoading || fetchStockQuantity.isLoading;
 
-        final double screenWidth = MediaQuery.of(context).size.width;
+          final double screenWidth = MediaQuery.of(context).size.width;
 
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            height: 380,
-            width: screenWidth,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Column(
-              children: [
-                ///dialog title and close button.
-                Container(
-                  height: 30,
-                  color: const Color(0xff278d46),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(width: 30),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(width: 5),
-                          Text(
-                            "Add Item & service",
-                            style: TextStyle(
-                                color: Colors.yellow,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: CircleAvatar(
-                            radius: 10,
-                            backgroundColor: Colors.grey.shade100,
-                            child: const Icon(
-                              Icons.close,
-                              size: 18,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                ///Content
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 10.0, right: 10.0, top: 1),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-
-                      ////new sales item dropdown.
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Consumer<AddItemProvider>(
-                          builder: (context, itemProvider, child) {
-                            return SizedBox(
-                              height: 30,
-                              width: double.infinity,
-                              child: itemProvider.isLoading
-                                  ? const Center(
-                                      child: CircularProgressIndicator())
-                                  : CustomDropdownTwo(
-                                      enableSearch: true,
-                                      hint: 'Select Item',
-                                      items: itemProvider.items
-                                          .map((item) => item.name)
-                                          .toList(), // List<String>
-                                      width: double.infinity,
-                                      height: 30,
-                                      selectedItem:
-                                          selectedItemName, // Global/state variable
-                                      onChanged: (value) async {
-                                        debugPrint(
-                                            '=== Item Selected: $value ===');
-
-                                        // Find selected item from provider
-                                        final selectedItem =
-                                            itemProvider.items.firstWhere(
-                                          (item) => item.name == value,
-                                        );
-
-                                        setState(() {
-                                          selectedItemName = value;
-                                          selectedItemData = selectedItem;
-                                          selectedItemId = selectedItem.id;
-                                        });
-
-                                        // ✅ Clear previous units
-                                        unitIdsList.clear();
-                                        localSelectedUnit = null; // ✅ Reset local unit selection
-
-                                        // ✅ Set sales price first
-                                        controller.salePrice = selectedItem
-                                                .salesPrice is int
-                                            ? (selectedItem.salesPrice as int)
-                                                .toDouble()
-                                            : (selectedItem.salesPrice ??
-                                                0.0);
-
-                                        // ✅ Set unit quantity (default to 1 if null)
-                                        controller.unitQty =
-                                            selectedItem.unitQty ?? 1;
-
-                                        // ✅ Set price initially to sales price
-                                        controller.mrpController.text =
-                                            controller.salePrice
-                                                .toStringAsFixed(2);
-
-                                        controller.seletedItemName =
-                                            selectedItem.name;
-                                        controller.selcetedItemId =
-                                            selectedItem.id.toString();
-
-                                        // fetch stock quantity
-                                        if (controller.selcetedItemId !=
-                                            null) {
-                                          fetchStockQuantity
-                                              .fetchStockQuantity(controller
-                                                  .selcetedItemId!);
-                                        }
-
-                                        // Ensure unitProvider is loaded
-                                        if (unitProvider.units.isEmpty) {
-                                          await unitProvider.fetchUnits();
-                                        }
-
-                                        // ===> Primary unit
-                                        if (selectedItem.unitId != null) {
-                                          final unit =
-                                              unitProvider.units.firstWhere(
-                                            (unit) =>
-                                                unit.id.toString() ==
-                                                selectedItem.unitId
-                                                    .toString(),
-                                            orElse: () => Unit(
-                                              id: 0,
-                                              name: 'Unknown',
-                                              symbol: '',
-                                              status: 0,
-                                            ),
-                                          );
-                                          if (unit.id != 0) {
-                                            unitIdsList.add(unit.name);
-                                            controller.primaryUnitName =
-                                                unit.name;
-                                            controller.selectedUnit =
-                                                unit.name;
-                                            localSelectedUnit = unit.name; // ✅ Set local selection
-
-                                            // Set with default quantity "1"
-                                            controller
-                                                .selectedUnitIdWithNameFunction(
-                                                    "${unit.id}_${unit.name}_1");
-                                          }
-                                        }
-
-                                        // ===> Secondary unit
-                                        if (selectedItem.secondaryUnitId !=
-                                            null) {
-                                          final secondaryUnit =
-                                              unitProvider.units.firstWhere(
-                                            (unit) =>
-                                                unit.id.toString() ==
-                                                selectedItem.secondaryUnitId
-                                                    .toString(),
-                                            orElse: () => Unit(
-                                              id: 0,
-                                              name: 'Unknown',
-                                              symbol: '',
-                                              status: 0,
-                                            ),
-                                          );
-                                          if (secondaryUnit.id != 0) {
-                                            unitIdsList
-                                                .add(secondaryUnit.name);
-                                            controller.secondaryUnitName =
-                                                secondaryUnit.name;
-                                          }
-                                        }
-
-                                        // ✅ Force UI update after setting units
-                                        setState(() {
-                                          // This triggers the UI rebuild with updated unitIdsList and localSelectedUnit
-                                        });
-
-                                        debugPrint(
-                                            "Units Available: $unitIdsList");
-                                        debugPrint(
-                                            "Selected Unit: $localSelectedUnit");
-                                        debugPrint(
-                                            "sales price ===> ${controller.salePrice}");
-                                      },
-                                    ),
-                            );
-                          },
-                        ),
-                      ),
-
-                      ///Stock available display
-                      Consumer<AddItemProvider>(
-                        builder: (context, stockProvider, child) {
-                          final stock = stockProvider.stockData;
-
-                          if (stock != null && !controller.hasCustomPrice) {
-                            controller.mrpController.text =
-                                stock.price.toString();
-                          }
-
-                          return stock != null
-                              ? Padding(
-                                  padding: const EdgeInsets.only(top: 0.0),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      "   Stock Available: ${stock.unitStocks} ",
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox();
-                        },
-                      ),
-
-                      ///Qty and Unit.
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          /// Qty field
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                AddSalesFormfield(
-                                  label: "",
-                                  labelText: "Item Qty",
-                                  controller: controller.qtyController,
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      controller.calculateSubtotal();
-
-                                      // 🔥 SOLUTION 2: Directly update selectedUnitIdWithName with quantity
-                                      if (controller
-                                          .selectedUnit!.isNotEmpty) {
-                                        final selectedUnitObj =
-                                            unitProvider.units.firstWhere(
-                                          (unit) =>
-                                              unit.name ==
-                                              controller.selectedUnit,
-                                          orElse: () => Unit(
-                                              id: 0,
-                                              name: "Unknown",
-                                              symbol: "",
-                                              status: 0),
-                                        );
-
-                                        final qtyText = controller
-                                            .qtyController.text
-                                            .trim();
-                                        final qty = qtyText.isNotEmpty
-                                            ? qtyText
-                                            : "1";
-
-                                        controller.selectedUnitIdWithNameFunction(
-                                            "${selectedUnitObj.id}_${selectedUnitObj.name}_$qty");
-
-                                        debugPrint(
-                                            "✅ Updated unit_id after qty change: ${controller.selectedUnitIdWithName}");
-                                      }
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(width: 8),
-
-                          /// Unit Dropdown
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 20),
-                              SizedBox(
-                                width: 150,
-                                child: CustomDropdownTwo(
-                                  labelText: "Unit",
-                                  hint: '',
-                                  items: unitIdsList,
-                                  width: 150,
-                                  height: 30,
-                                  selectedItem: localSelectedUnit, // ✅ Use local variable
-                                  onChanged: (selectedUnit) {
-                                    debugPrint(
-                                        "Selected Unit: $selectedUnit");
-
-                                    setState(() {
-                                      localSelectedUnit = selectedUnit; // ✅ Update local state
-                                      controller.selectedUnit = selectedUnit;
-                                    });
-
-                                    final selectedUnitObj =
-                                        unitProvider.units.firstWhere(
-                                      (unit) => unit.name == selectedUnit,
-                                      orElse: () => Unit(
-                                          id: 0,
-                                          name: "Unknown",
-                                          symbol: "",
-                                          status: 0),
-                                    );
-
-                                    final qtyText =
-                                        controller.qtyController.text.trim();
-                                    final qty =
-                                        qtyText.isNotEmpty ? qtyText : "1";
-
-                                    controller.selectedUnitIdWithNameFunction(
-                                        "${selectedUnitObj.id}_${selectedUnitObj.name}_$qty");
-
-                                    debugPrint(
-                                        "🆔 Unit ID: ${selectedUnitObj.id}_${selectedUnitObj.name}");
-
-                                    // ✅ Price update logic
-                                    if (selectedUnit ==
-                                        controller.secondaryUnitName) {
-                                      double newPrice = controller.salePrice /
-                                          controller.unitQty;
-                                      controller.mrpController.text =
-                                          newPrice.toStringAsFixed(2);
-                                    } else if (selectedUnit ==
-                                        controller.primaryUnitName) {
-                                      controller.mrpController.text =
-                                          controller.salePrice
-                                              .toStringAsFixed(2);
-                                    }
-
-                                    setState(() {
-                                      controller.hasCustomPrice = true;
-                                      controller.calculateSubtotal();
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                      Container(
-                        child: AddSalesFormfield(
-                          label: "", // price
-                          labelText: "Price",
-                          controller: controller.mrpController,
-                          keyboardType: TextInputType.number,
-                          readOnly: false,
-                          onChanged: (value) {
-                            setState(() {
-                              controller.hasCustomPrice = true;
-                              controller.calculateSubtotal();
-                            });
-                          },
-                        ),
-                      ),
-
-                      ////discount percentan ande amount
-
-                      // Discount percentage and amount row
-                      Container(
-                        // color: Colors.tealAccent,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              height: 380,
+              width: screenWidth,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Column(
+                children: [
+                  ///dialog title and close button.
+                  Container(
+                    height: 30,
+                    color: const Color(0xff278d46),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(width: 30),
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            /// Discount Percentage (%)
-                            Expanded(
-                              flex: 1,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 0.0),
-                                    child: AddSalesFormfield(
-                                      labelText: "Discount (%)",
-                                      label: " ",
-                                      controller:
-                                          controller.discountPercentance,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          controller.lastChanged = 'percent';
-                                          controller.calculateSubtotal();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(
-                                width: 8), // spacing between fields
-
-                            /// Discount Amount
-                            Expanded(
-                              flex: 1,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 0.0),
-                                    child: AddSalesFormfield(
-                                      label: "",
-                                      labelText: "Amount",
-                                      controller: controller.discountAmount,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          controller.lastChanged = 'amount';
-                                          controller.calculateSubtotal();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            SizedBox(width: 5),
+                            Text(
+                              "Add Item & service",
+                              style: TextStyle(
+                                  color: Colors.yellow,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                      ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: CircleAvatar(
+                              radius: 10,
+                              backgroundColor: Colors.grey.shade100,
+                              child: const Icon(
+                                Icons.close,
+                                size: 18,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
-                      // ✅ VAT/TAX Dropdown Row
-                      Container(
-                        // color: Colors.brown,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Dropdown (VAT / TAX)
-                            Expanded(
-                              flex: 1,
-                              child: Consumer<TaxProvider>(
-                                builder: (context, taxProvider, child) {
-                                  if (taxProvider.isLoading) {
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  }
-                                  if (taxProvider.taxList.isEmpty) {
-                                    return const Center(
-                                      child: Text(
-                                        'No tax options available.',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    );
-                                  }
+                  ///Content
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 10.0, right: 10.0, top: 1),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 8),
 
-                                  return Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 20),
-                                      SizedBox(
+                        ////new sales item dropdown.
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Consumer<AddItemProvider>(
+                            builder: (context, itemProvider, child) {
+                              return SizedBox(
+                                height: 30,
+                                width: double.infinity,
+                                child: itemProvider.isLoading
+                                    ? const Center(
+                                        child: CircularProgressIndicator())
+                                    : CustomDropdownTwo(
+                                        enableSearch: true,
+                                        hint: 'Select Item',
+                                        items: itemProvider.items
+                                            .map((item) => item.name)
+                                            .toList(), // List<String>
+                                        width: double.infinity,
                                         height: 30,
-                                        child: CustomDropdownTwo(
-                                          labelText: 'Vat/Tax',
-                                          hint: '',
-                                          items: taxProvider.taxList
-                                              .map((tax) =>
-                                                  "${tax.name} - (${tax.percent})")
-                                              .toList(),
-                                          width: double.infinity,
-                                          height: 30,
-                                          selectedItem: selectedTaxName,
-                                          onChanged: (newValue) {
-                                            setState(() {
-                                              selectedTaxName = newValue;
+                                        selectedItem:
+                                            selectedItemName, // Global/state variable
+                                        onChanged: (value) async {
+                                          debugPrint(
+                                              '=== Item Selected: $value ===');
 
-                                              final nameOnly = newValue
-                                                  ?.split(" - ")
-                                                  .first;
+                                          // Find selected item from provider
+                                          final selectedItem =
+                                              itemProvider.items.firstWhere(
+                                            (item) => item.name == value,
+                                          );
 
-                                              final selected = taxProvider
-                                                  .taxList
-                                                  .firstWhere(
-                                                (tax) => tax.name == nameOnly,
-                                                orElse: () =>
-                                                    taxProvider.taxList.first,
-                                              );
+                                          setState(() {
+                                            selectedItemName = value;
+                                            selectedItemData = selectedItem;
+                                            selectedItemId = selectedItem.id;
+                                          });
 
-                                              selectedTaxId =
-                                                  selected.id.toString();
+                                          // ✅ Clear previous units
+                                          unitIdsList.clear();
+                                          localSelectedUnit =
+                                              null; // ✅ Reset local unit selection
 
-                                              controller.selectedTaxPercent =
-                                                  double.tryParse(
-                                                      selected.percent);
+                                          // ✅ Set sales price first
+                                          controller.salePrice = selectedItem
+                                                  .salesPrice is int
+                                              ? (selectedItem.salesPrice as int)
+                                                  .toDouble()
+                                              : (selectedItem.salesPrice ??
+                                                  0.0);
 
+                                          // ✅ Set unit quantity (default to 1 if null)
+                                          controller.unitQty =
+                                              selectedItem.unitQty ?? 1;
+
+                                          // ✅ Set price initially to sales price
+                                          controller.mrpController.text =
+                                              controller.salePrice
+                                                  .toStringAsFixed(2);
+
+                                          controller.seletedItemName =
+                                              selectedItem.name;
+                                          controller.selcetedItemId =
+                                              selectedItem.id.toString();
+
+                                          // fetch stock quantity
+                                          if (controller.selcetedItemId !=
+                                              null) {
+                                            fetchStockQuantity
+                                                .fetchStockQuantity(
+                                                    controller.selcetedItemId!);
+                                          }
+
+                                          // Ensure unitProvider is loaded
+                                          if (unitProvider.units.isEmpty) {
+                                            await unitProvider.fetchUnits();
+                                          }
+
+                                          // ===> Primary unit
+                                          if (selectedItem.unitId != null) {
+                                            final unit =
+                                                unitProvider.units.firstWhere(
+                                              (unit) =>
+                                                  unit.id.toString() ==
+                                                  selectedItem.unitId
+                                                      .toString(),
+                                              orElse: () => Unit(
+                                                id: 0,
+                                                name: 'Unknown',
+                                                symbol: '',
+                                                status: 0,
+                                              ),
+                                            );
+                                            if (unit.id != 0) {
+                                              unitIdsList.add(unit.name);
+                                              controller.primaryUnitName =
+                                                  unit.name;
+                                              controller.selectedUnit =
+                                                  unit.name;
+                                              localSelectedUnit = unit
+                                                  .name; // ✅ Set local selection
+
+                                              // Set with default quantity "1"
                                               controller
-                                                  .taxPercent = controller
-                                                      .selectedTaxPercent ??
-                                                  0.0;
+                                                  .selectedUnitIdWithNameFunction(
+                                                      "${unit.id}_${unit.name}_1");
+                                            }
+                                          }
 
-                                              controller.selectedTaxId =
-                                                  selected.id.toString();
-                                              controller.selectedTaxPercent =
-                                                  double.tryParse(
-                                                      selected.percent);
+                                          // ===> Secondary unit
+                                          if (selectedItem.secondaryUnitId !=
+                                              null) {
+                                            final secondaryUnit =
+                                                unitProvider.units.firstWhere(
+                                              (unit) =>
+                                                  unit.id.toString() ==
+                                                  selectedItem.secondaryUnitId
+                                                      .toString(),
+                                              orElse: () => Unit(
+                                                id: 0,
+                                                name: 'Unknown',
+                                                symbol: '',
+                                                status: 0,
+                                              ),
+                                            );
+                                            if (secondaryUnit.id != 0) {
+                                              unitIdsList
+                                                  .add(secondaryUnit.name);
+                                              controller.secondaryUnitName =
+                                                  secondaryUnit.name;
+                                            }
+                                          }
 
-                                              final taxPercent = (controller
-                                                          .selectedTaxPercent ??
-                                                      0)
-                                                  .toStringAsFixed(0);
-                                              controller.updateTaxPaecentId(
-                                                  '${selectedTaxId}_$taxPercent');
+                                          // ✅ Force UI update after setting units
+                                          setState(() {
+                                            // This triggers the UI rebuild with updated unitIdsList and localSelectedUnit
+                                          });
 
-                                              debugPrint(
-                                                  'tax_percent: "${controller.taxPercentValue}"');
-                                              debugPrint(
-                                                  "Selected Tax ID: $selectedTaxId");
-                                              debugPrint(
-                                                  "Selected Tax Percent: ${controller.selectedTaxPercent}");
-                                            });
-                                          },
+                                          debugPrint(
+                                              "Units Available: $unitIdsList");
+                                          debugPrint(
+                                              "Selected Unit: $localSelectedUnit");
+                                          debugPrint(
+                                              "sales price ===> ${controller.salePrice}");
+                                        },
+                                      ),
+                              );
+                            },
+                          ),
+                        ),
+
+                        ///Stock available display
+                        Consumer<AddItemProvider>(
+                          builder: (context, stockProvider, child) {
+                            final stock = stockProvider.stockData;
+
+                            if (stock != null && !controller.hasCustomPrice) {
+                              controller.mrpController.text =
+                                  stock.price.toString();
+                            }
+
+                            return stock != null
+                                ? Padding(
+                                    padding: const EdgeInsets.only(top: 0.0),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        "   Stock Available: ${stock.unitStocks} ",
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
                                         ),
                                       ),
-                                    ],
-                                  );
-                                },
+                                    ),
+                                  )
+                                : const SizedBox();
+                          },
+                        ),
+
+                        ///Qty and Unit.
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            /// Qty field
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                children: [
+                                  AddSalesFormfield(
+                                    label: "",
+                                    labelText: "Item Qty",
+                                    controller: controller.qtyController,
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        controller.calculateSubtotal();
+
+                                        // 🔥 SOLUTION 2: Directly update selectedUnitIdWithName with quantity
+                                        if (controller
+                                            .selectedUnit!.isNotEmpty) {
+                                          final selectedUnitObj =
+                                              unitProvider.units.firstWhere(
+                                            (unit) =>
+                                                unit.name ==
+                                                controller.selectedUnit,
+                                            orElse: () => Unit(
+                                                id: 0,
+                                                name: "Unknown",
+                                                symbol: "",
+                                                status: 0),
+                                          );
+
+                                          final qtyText = controller
+                                              .qtyController.text
+                                              .trim();
+                                          final qty = qtyText.isNotEmpty
+                                              ? qtyText
+                                              : "1";
+
+                                          controller.selectedUnitIdWithNameFunction(
+                                              "${selectedUnitObj.id}_${selectedUnitObj.name}_$qty");
+
+                                          debugPrint(
+                                              "✅ Updated unit_id after qty change: ${controller.selectedUnitIdWithName}");
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
 
                             const SizedBox(width: 8),
 
-                            // VAT / TAX Amount (Read-only field)
-                            Expanded(
-                              flex: 1,
-                              child: AddSalesFormfield(
-                                readOnly: true,
-                                label: "",
-                                labelText: "Amount",
-                                controller: TextEditingController(
-                                  text:
-                                      controller.taxAmount.toStringAsFixed(2),
+                            /// Unit Dropdown
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 20),
+                                SizedBox(
+                                  width: 150,
+                                  child: CustomDropdownTwo(
+                                    labelText: "Unit",
+                                    hint: '',
+                                    items: unitIdsList,
+                                    width: 150,
+                                    height: 30,
+                                    selectedItem:
+                                        localSelectedUnit, // ✅ Use local variable
+                                    onChanged: (selectedUnit) {
+                                      debugPrint(
+                                          "Selected Unit: $selectedUnit");
+
+                                      setState(() {
+                                        localSelectedUnit =
+                                            selectedUnit; // ✅ Update local state
+                                        controller.selectedUnit = selectedUnit;
+                                      });
+
+                                      final selectedUnitObj =
+                                          unitProvider.units.firstWhere(
+                                        (unit) => unit.name == selectedUnit,
+                                        orElse: () => Unit(
+                                            id: 0,
+                                            name: "Unknown",
+                                            symbol: "",
+                                            status: 0),
+                                      );
+
+                                      final qtyText =
+                                          controller.qtyController.text.trim();
+                                      final qty =
+                                          qtyText.isNotEmpty ? qtyText : "1";
+
+                                      controller.selectedUnitIdWithNameFunction(
+                                          "${selectedUnitObj.id}_${selectedUnitObj.name}_$qty");
+
+                                      debugPrint(
+                                          "🆔 Unit ID: ${selectedUnitObj.id}_${selectedUnitObj.name}");
+
+                                      // ✅ Price update logic
+                                      if (selectedUnit ==
+                                          controller.secondaryUnitName) {
+                                        double newPrice = controller.salePrice /
+                                            controller.unitQty;
+                                        controller.mrpController.text =
+                                            newPrice.toStringAsFixed(2);
+                                      } else if (selectedUnit ==
+                                          controller.primaryUnitName) {
+                                        controller.mrpController.text =
+                                            controller.salePrice
+                                                .toStringAsFixed(2);
+                                      }
+
+                                      setState(() {
+                                        controller.hasCustomPrice = true;
+                                        controller.calculateSubtotal();
+                                      });
+                                    },
+                                  ),
                                 ),
-                                keyboardType: TextInputType.number,
-                              ),
+                              ],
                             ),
                           ],
                         ),
-                      ),
 
-                      const SizedBox(
-                        height: 5,
-                      ),
+                        Container(
+                          child: AddSalesFormfield(
+                            label: "", // price
+                            labelText: "Price",
+                            controller: controller.mrpController,
+                            keyboardType: TextInputType.number,
+                            readOnly: false,
+                            onChanged: (value) {
+                              setState(() {
+                                controller.hasCustomPrice = true;
+                                controller.calculateSubtotal();
+                              });
+                            },
+                          ),
+                        ),
 
-                      ///total sub
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Align(
-                              alignment: Alignment.topRight,
-                              child: Text(
-                                "Subtotal (with Tax):  ",
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
+                        ////discount percentan ande amount
+
+                        // Discount percentage and amount row
+                        Container(
+                          // color: Colors.tealAccent,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              /// Discount Percentage (%)
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 0.0),
+                                      child: AddSalesFormfield(
+                                        labelText: "Discount (%)",
+                                        label: " ",
+                                        controller:
+                                            controller.discountPercentance,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            controller.lastChanged = 'percent';
+                                            controller.calculateSubtotal();
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 7.0),
-                              child: Align(
+
+                              const SizedBox(
+                                  width: 8), // spacing between fields
+
+                              /// Discount Amount
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 0.0),
+                                      child: AddSalesFormfield(
+                                        label: "",
+                                        labelText: "Amount",
+                                        controller: controller.discountAmount,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            controller.lastChanged = 'amount';
+                                            controller.calculateSubtotal();
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // ✅ VAT/TAX Dropdown Row
+                        Container(
+                          // color: Colors.brown,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Dropdown (VAT / TAX)
+                              Expanded(
+                                flex: 1,
+                                child: Consumer<TaxProvider>(
+                                  builder: (context, taxProvider, child) {
+                                    if (taxProvider.isLoading) {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    }
+                                    if (taxProvider.taxList.isEmpty) {
+                                      return const Center(
+                                        child: Text(
+                                          'No tax options available.',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      );
+                                    }
+
+                                    return Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 20),
+                                        SizedBox(
+                                          height: 30,
+                                          child: CustomDropdownTwo(
+                                            labelText: 'Vat/Tax',
+                                            hint: '',
+                                            items: taxProvider.taxList
+                                                .map((tax) =>
+                                                    "${tax.name} - (${tax.percent})")
+                                                .toList(),
+                                            width: double.infinity,
+                                            height: 30,
+                                            selectedItem: selectedTaxName,
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                selectedTaxName = newValue;
+
+                                                final nameOnly = newValue
+                                                    ?.split(" - ")
+                                                    .first;
+
+                                                final selected = taxProvider
+                                                    .taxList
+                                                    .firstWhere(
+                                                  (tax) => tax.name == nameOnly,
+                                                  orElse: () =>
+                                                      taxProvider.taxList.first,
+                                                );
+
+                                                selectedTaxId =
+                                                    selected.id.toString();
+
+                                                controller.selectedTaxPercent =
+                                                    double.tryParse(
+                                                        selected.percent);
+
+                                                controller
+                                                    .taxPercent = controller
+                                                        .selectedTaxPercent ??
+                                                    0.0;
+
+                                                controller.selectedTaxId =
+                                                    selected.id.toString();
+                                                controller.selectedTaxPercent =
+                                                    double.tryParse(
+                                                        selected.percent);
+
+                                                final taxPercent = (controller
+                                                            .selectedTaxPercent ??
+                                                        0)
+                                                    .toStringAsFixed(0);
+                                                controller.updateTaxPaecentId(
+                                                    '${selectedTaxId}_$taxPercent');
+
+                                                debugPrint(
+                                                    'tax_percent: "${controller.taxPercentValue}"');
+                                                debugPrint(
+                                                    "Selected Tax ID: $selectedTaxId");
+                                                debugPrint(
+                                                    "Selected Tax Percent: ${controller.selectedTaxPercent}");
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
+
+                              const SizedBox(width: 8),
+
+                              // VAT / TAX Amount (Read-only field)
+                              Expanded(
+                                flex: 1,
+                                child: AddSalesFormfield(
+                                  readOnly: true,
+                                  label: "",
+                                  labelText: "Amount",
+                                  controller: TextEditingController(
+                                    text:
+                                        controller.taxAmount.toStringAsFixed(2),
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(
+                          height: 5,
+                        ),
+
+                        ///total sub
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              const Align(
                                 alignment: Alignment.topRight,
                                 child: Text(
-                                  controller.subtotalWithTax
-                                      .toStringAsFixed(2),
-                                  style: const TextStyle(
-                                    color: Colors.black,
+                                  "Subtotal (with Tax):  ",
+                                  style: TextStyle(
+                                    color: Colors.green,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 7.0),
+                                child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Text(
+                                    controller.subtotalWithTax
+                                        .toStringAsFixed(2),
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  ///add & new , add
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const SizedBox(
+                        width: 4,
+                      ),
+
+                      /////====> add item
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Align(
+                          alignment: Alignment.bottomRight,
+                          child: InkWell(
+                            onTap: () async {
+                              debugPrint("Add Item");
+
+                              debugPrint(
+                                  "Selected Unit: ${controller.selectedUnit}");
+                              debugPrint(
+                                  "Selected Unit ID: ${controller.selectedUnitIdWithName}");
+
+                              if (controller.qtyController.text.isEmpty) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text(
+                                    'Please entry the QTY',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ));
+                              } else {
+                                setState(() {
+                                  debugPrint(
+                                      'cash or credit =====>${controller.isCash}');
+
+                                  controller.isCash
+                                      ? controller.addCashItem()
+                                      : controller.addCreditItem();
+
+                                  controller.isCash
+                                      ? controller.addAmount2()
+                                      : controller.addAmount();
+                                });
+
+                                controller.clearFields();
+
+                                Navigator.pop(context);
+                              }
+
+                              Provider.of<SalesController>(context,
+                                      listen: false)
+                                  .notifyListeners();
+
+                              setState(() {
+                                controller.seletedItemName = null;
+
+                                Provider.of<AddItemProvider>(context,
+                                        listen: false)
+                                    .clearPurchaseStockDatasale();
+
+                                controller.mrpController.clear();
+                                controller.qtyController.clear();
+
+                                // ✅ Clear local states
+                                selectedItemName = null;
+                                localSelectedUnit = null;
+                                unitIdsList.clear();
+                              });
+                            },
+                            child: SizedBox(
+                              width: 90,
+                              child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: colorScheme.primary,
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 6.0, vertical: 2),
+                                    child: Center(
+                                      child: Text(
+                                        "Add",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 14),
+                                      ),
+                                    ),
+                                  )),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-
-                ///add & new , add
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    
-                    const SizedBox(
-                      width: 4,
-                    ),
-
-                    /////====> add item
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: InkWell(
-                          onTap: () async {
-                            debugPrint("Add Item");
-
-                            debugPrint(
-                                "Selected Unit: ${controller.selectedUnit}");
-                            debugPrint(
-                                "Selected Unit ID: ${controller.selectedUnitIdWithName}");
-
-                            if (controller.qtyController.text.isEmpty) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  'Please entry the QTY',
-                                ),
-                                backgroundColor: Colors.red,
-                              ));
-                            } else {
-                              setState(() {
-                                debugPrint(
-                                    'cash or credit =====>${controller.isCash}');
-
-                                controller.isCash
-                                    ? controller.addCashItem()
-                                    : controller.addCreditItem();
-
-                                controller.isCash
-                                    ? controller.addAmount2()
-                                    : controller.addAmount();
-                              });
-
-                              controller.clearFields();
-
-                              Navigator.pop(context);
-                            }
-
-                            Provider.of<SalesController>(context,
-                                    listen: false)
-                                .notifyListeners();
-
-                            setState(() {
-                              controller.seletedItemName = null;
-
-                              Provider.of<AddItemProvider>(context,
-                                      listen: false)
-                                  .clearPurchaseStockDatasale();
-
-                              controller.mrpController.clear();
-                              controller.qtyController.clear();
-                              
-                              // ✅ Clear local states
-                              selectedItemName = null;
-                              localSelectedUnit = null;
-                              unitIdsList.clear();
-                            });
-                          },
-                          child: SizedBox(
-                            width: 90,
-                            child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: colorScheme.primary,
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 6.0, vertical: 2),
-                                  child: Center(
-                                    child: Text(
-                                      "Add",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 14),
-                                    ),
-                                  ),
-                                )),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      });
-    },
-  );
-}
+          );
+        });
+      },
+    );
+  }
 
-   
   ////show sales diolog. && item picked.
   // void showSalesDialog(BuildContext context, SalesController controller) async {
   //   final ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -2350,8 +2388,6 @@ void showSalesDialog(BuildContext context, SalesController controller) async {
   //                     crossAxisAlignment: CrossAxisAlignment.start,
   //                     children: [
   //                       const SizedBox(height: 8),
-
-                        
 
   //                       ////new sales item dropdown.
   //                       Padding(
@@ -2903,7 +2939,7 @@ void showSalesDialog(BuildContext context, SalesController controller) async {
   //                   crossAxisAlignment: CrossAxisAlignment.end,
   //                   mainAxisAlignment: MainAxisAlignment.end,
   //                   children: [
-                      
+
   //                     const SizedBox(
   //                       width: 4,
   //                     ),
@@ -3005,7 +3041,6 @@ void showSalesDialog(BuildContext context, SalesController controller) async {
   //     },
   //   );
   // }
-
 
   ////item edit list ===>
   Future<void> showCashItemDetailsDialog(

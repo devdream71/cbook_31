@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class CompanySettings extends StatelessWidget {
   const CompanySettings({super.key});
 
@@ -12,21 +11,23 @@ class CompanySettings extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         centerTitle: true,
-
         title: const Text(
           'Company Settings',
           style: TextStyle(
               color: Colors.yellow, fontSize: 16, fontWeight: FontWeight.bold),
         ),
         iconTheme: const IconThemeData(
-    color: Colors.white, // ← makes back icon white
-  ),
+          color: Colors.white, // ← makes back icon white
+        ),
         automaticallyImplyLeading: true,
-        
       ),
-      body: const Text("cBook"),
+      body: const Center(
+        child: Text(
+          'No Company Settings',
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+      ),
     );
   }
 }
-
- 

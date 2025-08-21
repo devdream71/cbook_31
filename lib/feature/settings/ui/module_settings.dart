@@ -24,7 +24,13 @@ class ModuleSettings extends StatelessWidget {
         automaticallyImplyLeading: true,
         
       ),
-      body: const Text("cBook"),
+      body: const Center(
+        child: Text(
+          'No Module Settings',
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+      ),
     );
   }
 }

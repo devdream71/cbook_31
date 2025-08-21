@@ -136,31 +136,81 @@ class CategoryProvider extends ChangeNotifier {
 
   
   ////get update catagory
-  Future<EditCategoryModel?> fetchCategoryById(int id) async {
+  // Future<EditCategoryModel?> fetchCategoryById(int id) async {
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+  //       final prefs = await SharedPreferences.getInstance();
+  //     final token = prefs.getString('token');
 
-    try {
-      final response = await http.get(
-        Uri.parse('${AppUrl.baseurl}/item-categories/edit/$id'),
-        headers: {'Accept': 'application/json',
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse('${AppUrl.baseurl}/item-categories/edit/$id'),
+  //       headers: {'Accept': 'application/json',
         
-        "Authorization": "Bearer $token",
-        },
-      );
+  //       "Authorization": "Bearer $token",
+  //       },
+  //     );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['success'] == true) {
-          return EditCategoryModel.fromJson(data['data']);
-        }
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       if (data['success'] == true) {
+  //         return EditCategoryModel.fromJson(data['data']);
+  //       }
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Error fetching category: $e");
+  //   }
+  //   return null;
+  // }
+
+
+  // Fixed fetchCategoryById method for CategoryProvider
+
+Future<EditCategoryModel?> fetchCategoryById(int id) async {
+  debugPrint('🔍 Fetching category by ID: $id');
+  
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  try {
+    // ✅ Fixed: Remove extra slash in URL
+    final url = '${AppUrl.baseurl}item-categories/edit/$id';
+    debugPrint('🔍 API URL: $url');
+    
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    debugPrint('🔍 Response Status: ${response.statusCode}');
+    debugPrint('🔍 Response Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      
+      debugPrint('🔍 Parsed Data: $data');
+      
+      if (data['success'] == true && data['data'] != null) {
+        final categoryData = EditCategoryModel.fromJson(data['data']);
+        debugPrint('✅ Successfully parsed category: ${categoryData.name}');
+        return categoryData;
+      } else {
+        debugPrint('❌ API returned success=false or null data');
+        debugPrint('❌ Full response: $data');
       }
-    } catch (e) {
-      debugPrint("Error fetching category: $e");
+    } else {
+      debugPrint('❌ HTTP Error: ${response.statusCode}');
+      debugPrint('❌ Error body: ${response.body}');
     }
-    return null;
+  } catch (e, stackTrace) {
+    debugPrint("💥 Exception fetching category: $e");
+    debugPrint("💥 Stack trace: $stackTrace");
   }
+  
+  return null;
+}
 
 ////update category data
   Future<bool> updateCategory({

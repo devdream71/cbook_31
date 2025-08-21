@@ -128,9 +128,11 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
                   ///acount balance
                   AddSalesFormfield(
                     height: 40,
-                    labelText: "Account Balance",
+                    labelText: "Opening Balance",
                     controller: controller.openBlanceController,
                   ),
+
+                  
                   const SizedBox(
                     height: 10,
                   ),

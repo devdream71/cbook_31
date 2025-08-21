@@ -5,11 +5,7 @@ import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/feature/settings/ui/bill_invoice_print.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/bill_person_list.dart';
 import 'package:cbook_dt/feature/settings/ui/company_information/company_infromation.dart';
-import 'package:cbook_dt/feature/settings/ui/company_settings.dart';
-import 'package:cbook_dt/feature/settings/ui/general_settings.dart';
-import 'package:cbook_dt/feature/settings/ui/module_settings.dart';
 import 'package:cbook_dt/feature/settings/ui/user/user_list.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,23 +19,39 @@ class SettingsView extends StatelessWidget {
 
     // List of forms with metadata
     final forms = [
+      // FormSettingMeta(
+      //     name: 'Company Settings',
+      //     iconPath: 'assets/image/setting_one.svg',
+      //     //destination:  const SizedBox(), //SalesFormSetting
+
+      //     onTap: () {
+      //       showDialog(
+      //         context: context,
+      //         builder: (context) => const FeatureNotAvailableDialog(),
+      //       );
+      //     }),
+      // FormSettingMeta(
+      //     name: 'General Setting',
+      //     iconPath: 'assets/image/setting_four.svg',
+      //     //destination: GeneralSettings(), //SalesFormSetting
+      //     onTap: () {
+      //       showDialog(
+      //         context: context,
+      //         builder: (context) => const FeatureNotAvailableDialog(),
+      //       );
+      //     }),
+      // FormSettingMeta(
+      //     name: 'Module Setting',
+      //     iconPath: 'assets/image/settings.svg',
+      //     //destination: ModuleSettings(), //SalesFormSetting
+      //     onTap: () {
+      //       showDialog(
+      //         context: context,
+      //         builder: (context) => const FeatureNotAvailableDialog(),
+      //       );
+      //     }),
       const FormSettingMeta(
-        name: 'Company Settings',
-        iconPath: 'assets/image/setting_one.svg',
-        destination: CompanySettings(), //SalesFormSetting
-      ),
-      const FormSettingMeta(
-        name: 'General Setting',
-        iconPath: 'assets/image/setting_four.svg',
-        destination: GeneralSettings(), //SalesFormSetting
-      ),
-      const FormSettingMeta(
-        name: 'Module Setting',
-        iconPath: 'assets/image/settings.svg',
-        destination: ModuleSettings(), //SalesFormSetting
-      ),
-      const FormSettingMeta(
-        name: 'Bill/Invoice Create Form',
+        name: 'Bill/Invoice Form',
         iconPath: 'assets/image/form.svg',
         destination: BillInvoiceCreateForm(), //SalesFormSetting
       ),
@@ -55,31 +67,33 @@ class SettingsView extends StatelessWidget {
       ),
       const FormSettingMeta(
         name: 'Bill Person',
-        iconPath: 'assets/image/profile.svg',
+        iconPath: 'assets/image/bill.svg', //assets/image/bill.svg
         destination: BillPersonList(), //SalesFormSetting
       ),
       const FormSettingMeta(
-        name: 'Bill Settings',
-        iconPath: 'assets/image/profile.svg',
+        name: 'Bill Number',
+        iconPath:
+            'assets/image/serialization.svg', //assets/image/serialization.svg
         destination: BillSettingsView(), //SalesFormSetting
-      ),
-      const FormSettingMeta(
-        name: 'My Profile',
-        iconPath: 'assets/image/profile.svg',
-        destination: ProfileView(), //SalesFormSetting
       ),
 
       const FormSettingMeta(
         name: 'Company Information',
-        iconPath: 'assets/image/profile.svg',
+        iconPath: 'assets/image/contractor.svg', //assets/image/contractor.svg
         destination: CompanyInfromation(), //SalesFormSetting
       ),
 
-       const FormSettingMeta(
-        name: 'Logout',
-        iconPath: 'assets/image/profile.svg',
-        destination: CompanyInfromation(), //SalesFormSetting
+      const FormSettingMeta(
+        name: 'My Profile',
+        iconPath: 'assets/image/user.svg', //assets/image/resume.png
+        destination: ProfileView(), //SalesFormSetting
       ),
+
+      // const FormSettingMeta(
+      //   name: 'Logout',
+      //   iconPath: 'assets/image/profile.svg',
+      //   destination: CompanyInfromation(), //SalesFormSetting
+      // ),
     ];
 
     return Scaffold(
@@ -136,10 +150,19 @@ class SettingsView extends StatelessWidget {
                 size: 15,
                 color: colorScheme.primary,
               ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => form.destination),
-              ),
+
+              onTap: () {
+                if (form.onTap != null) {
+                  form.onTap!(); // run custom action (like showDialog)
+                } else if (form.destination != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            form.destination!), // safe because checked
+                  );
+                }
+              },
             );
           },
         ));
@@ -149,11 +172,13 @@ class SettingsView extends StatelessWidget {
 class FormSettingMeta {
   final String name;
   final String iconPath;
-  final Widget destination;
+  final Widget? destination;
+  final VoidCallback? onTap;
 
   const FormSettingMeta({
     required this.name,
     required this.iconPath,
-    required this.destination,
+    this.destination,
+    this.onTap,
   });
 }

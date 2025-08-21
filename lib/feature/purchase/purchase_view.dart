@@ -97,8 +97,6 @@ class LayoutState extends State<Layout> {
   int? selectedBillPersonId;
   BillPersonModel? selectedBillPersonData;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -108,6 +106,9 @@ class LayoutState extends State<Layout> {
     debugPrint('Bill controller initialized with: ${billController.text}');
 
     customerNameController.clear();
+
+    Provider.of<CustomerProvider>(context, listen: false)
+        .clearSelectedCustomer();
 
     Future.microtask(() async {
       try {
@@ -162,9 +163,8 @@ class LayoutState extends State<Layout> {
     final settingsProvider =
         Provider.of<BillSettingsProvider>(context, listen: false);
 
-       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-    
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     // Fetch required values from provider (now they should be available)
     final code = settingsProvider.getValue("purchases_code") ?? "";
@@ -187,10 +187,13 @@ class LayoutState extends State<Layout> {
 
     try {
       debugPrint('Making API call...');
-      final response = await http.get(url,  headers: {
+      final response = await http.get(
+        url,
+        headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer $token",
-        },);
+        },
+      );
       debugPrint('API Response Status: ${response.statusCode}');
       debugPrint('API Response Body: ${response.body}');
 
@@ -236,8 +239,6 @@ class LayoutState extends State<Layout> {
 
     final controller = context.watch<PurchaseController>();
     final categoryProvider = Provider.of<ItemCategoryProvider>(context);
-
-    customerNameController.clear();
 
     //String? selectedItemNameInvoice;
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -326,29 +327,34 @@ class LayoutState extends State<Layout> {
                                           },
                                           child: DecoratedBox(
                                             decoration: BoxDecoration(
-                                              color: AppColors.primaryColor,
+                                              color: controller.isCash
+                                                  ? Colors.blue
+                                                      .shade600 // 🔹 Cash background
+                                                  : Colors.orange
+                                                      .shade600, // ✅ Credit background
                                               borderRadius:
                                                   BorderRadius.circular(5),
                                             ),
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 5),
+                                                      horizontal: 5,
+                                                      vertical: 4),
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Text(
-                                                    //context.watch<PurchaseController>().isCash ? "Cash" : "Credit",
                                                     controller.isCash
                                                         ? "Cash"
                                                         : "Credit",
                                                     style: GoogleFonts.lato(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 14),
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 14,
+                                                    ),
                                                   ),
-                                                  const SizedBox(width: 1),
+                                                  const SizedBox(width: 4),
                                                   const Icon(
                                                     Icons.arrow_forward_ios,
                                                     color: Colors.white,
@@ -359,6 +365,47 @@ class LayoutState extends State<Layout> {
                                             ),
                                           ),
                                         ),
+
+                                        // InkWell(
+                                        //   onTap: () {
+                                        //     controller.updateCash();
+                                        //   },
+                                        //   child: DecoratedBox(
+                                        //     decoration: BoxDecoration(
+                                        //       color: AppColors.primaryColor,
+                                        //       borderRadius:
+                                        //           BorderRadius.circular(5),
+                                        //     ),
+                                        //     child: Padding(
+                                        //       padding:
+                                        //           const EdgeInsets.symmetric(
+                                        //               horizontal: 5),
+                                        //       child: Row(
+                                        //         mainAxisSize: MainAxisSize.min,
+                                        //         children: [
+                                        //           Text(
+                                        //             //context.watch<PurchaseController>().isCash ? "Cash" : "Credit",
+                                        //             controller.isCash
+                                        //                 ? "Cash"
+                                        //                 : "Credit",
+                                        //             style: GoogleFonts.lato(
+                                        //                 color: Colors.white,
+                                        //                 fontWeight:
+                                        //                     FontWeight.w600,
+                                        //                 fontSize: 14),
+                                        //           ),
+                                        //           const SizedBox(width: 1),
+                                        //           const Icon(
+                                        //             Icons.arrow_forward_ios,
+                                        //             color: Colors.white,
+                                        //             size: 12,
+                                        //           )
+                                        //         ],
+                                        //       ),
+                                        //     ),
+                                        //   ),
+                                        // ),
+
                                         const SizedBox(
                                           width: 8,
                                         ),
@@ -451,7 +498,8 @@ class LayoutState extends State<Layout> {
                                               : Column(
                                                   children: [
                                                     AddSalesFormfieldTwo(
-                                                        controller: customerNameController,
+                                                        controller:
+                                                            customerNameController,
                                                         //label: "Customer",
                                                         customerorSaleslist:
                                                             "Cus/Sup list",

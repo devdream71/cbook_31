@@ -53,7 +53,7 @@ class _BankState extends State<Bank> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (contex) => AdjustBankCreate()));
+                                  builder: (contex) => const AdjustBankCreate()));
                         },
                         child: const Text(
                           "Adjust Bank",
@@ -71,10 +71,7 @@ class _BankState extends State<Bank> {
                                   builder: (contex) =>
                                       const AccountTypeCreate()));
                         },
-                        child: const Text(
-                          "Add New",
-                          style: TextStyle(color: Colors.yellow, fontSize: 16),
-                        ),
+                        child: const Icon(Icons.add),
                       ),
                     ],
                   )

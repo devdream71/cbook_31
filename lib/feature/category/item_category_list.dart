@@ -52,13 +52,6 @@ class ItemCategoryViewState extends State<ItemCategoryView> {
                         size: 20,
                         color: Colors.green,
                       )),
-                  SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    'Add Categories',
-                    style: TextStyle(color: Colors.yellow, fontSize: 15),
-                  ),
                 ],
               ),
             ),
@@ -95,16 +88,17 @@ class ItemCategoryViewState extends State<ItemCategoryView> {
 
                       return InkWell(
                         onLongPress: () {
+                          debugPrint('categoryId  ${categoryId.toString()}');
                           editDeleteDialog(context, categoryId.toString());
                         },
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                          padding: const EdgeInsets.only(top: 2.0),
                           child: Card(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(0),
                               side: BorderSide(color: Colors.grey.shade300),
                             ),
-                            elevation: 0,
+                            //elevation: 0,
                             child: ListTile(
                               contentPadding: const EdgeInsets.only(left: 16),
                               leading: CircleAvatar(
@@ -249,12 +243,12 @@ class ItemCategoryViewState extends State<ItemCategoryView> {
               if (isDeleted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
+                    content: const Text(
                       'Category deleted successfully!',
-                      style: TextStyle(color: colorScheme.primary),
+                      style: TextStyle(color: Colors.white),
                     ),
                     //backgroundColor: ,
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppColors.primaryColor,
                   ),
                 );
                 await provider.fetchCategories(); // Refresh list

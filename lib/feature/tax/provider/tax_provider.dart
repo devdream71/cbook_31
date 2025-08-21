@@ -19,17 +19,16 @@ class TaxProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     final url = Uri.parse('${AppUrl.baseurl}tax');
 
     try {
       final response = await http.get(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List<dynamic> taxesJson = data['data'];
@@ -56,18 +55,17 @@ class TaxProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     final url = Uri.parse(
         '${AppUrl.baseurl}tax/store?user_id=$userId&name=$name&percent=$percent&status=$status');
 
     try {
       final response = await http.post(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final newTax = TaxModel.fromJson(data['data']);
@@ -88,38 +86,43 @@ class TaxProvider with ChangeNotifier {
   }
 
   ///tax delete ====>
+  //tax delete - CLEAN VERSION (NO UI LOADING STATE)
   Future<bool> deleteTax(int? id) async {
-    _isLoading = true;
-    notifyListeners();
+    debugPrint('🗑️ Provider: Starting delete for tax ID: $id');
 
-    final url = Uri.parse('${AppUrl.baseurl}tax/remove/$id');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final url = Uri.parse('${AppUrl.baseurl}tax/remove?id=$id');
+    debugPrint('🗑️ Provider: Delete URL: $url');
 
     try {
       final response = await http.post(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        }); // or POST if your API requires it
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
+
+      debugPrint('🗑️ Provider: Response Status: ${response.statusCode}');
+      debugPrint('🗑️ Provider: Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // ✅ Remove from local list immediately on success
         _taxList.removeWhere((tax) => tax.id == id);
         notifyListeners();
-        debugPrint("✅ Tax deleted successfully!");
-        _isLoading = false;
+
+        debugPrint(
+            "✅ Provider: Tax deleted successfully and removed from local list");
         return true;
       } else {
-        debugPrint("❌ Failed to delete tax: ${response.body}");
-        _isLoading = false;
+        debugPrint("❌ Provider: HTTP Error: ${response.statusCode}");
+        debugPrint("❌ Provider: Error body: ${response.body}");
         return false;
       }
     } catch (e) {
-      debugPrint("❌ Error deleting tax: $e");
-      _isLoading = false;
+      debugPrint("💥 Provider: Exception deleting tax: $e");
       return false;
-    } finally {
-      notifyListeners();
     }
   }
 
@@ -127,16 +130,14 @@ class TaxProvider with ChangeNotifier {
   Future<TaxModel?> getTaxById(int id) async {
     final url = Uri.parse('${AppUrl.baseurl}tax/edit/$id');
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
       final response = await http.get(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return TaxModel(
@@ -154,6 +155,8 @@ class TaxProvider with ChangeNotifier {
   }
 
   ///tax update===>
+
+  ///tax update - FIXED VERSION
   Future<bool> updateTax({
     required int taxId,
     required String name,
@@ -164,50 +167,75 @@ class TaxProvider with ChangeNotifier {
     errorMessage = '';
     notifyListeners();
 
-    // ✅ Construct query parameters
-    final query = {
-      'id': taxId.toString(),
-      'name': name,
-      'percent': percent,
-      'status': status,
-    };
+    debugPrint('🚀 Starting tax update...');
+    debugPrint('🚀 Tax ID: $taxId');
+    debugPrint('🚀 Name: $name');
+    debugPrint('🚀 Percent: $percent');
+    debugPrint('🚀 Status: $status');
 
-    final uri = Uri.https(
-      AppUrl.baseurl,
-      'tax/update',
-      query,
-    );
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    // ✅ Fixed URL construction
+    final String url =
+        '${AppUrl.baseurl}tax/update?id=$taxId&name=$name&percent=$percent&status=$status';
+    debugPrint('🚀 API URL: $url');
 
     try {
-      final response = await http.post(uri, headers: {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
           "Authorization": "Bearer $token",
           "Accept": "application/json",
-        });
+        },
+      );
 
-      debugPrint("📤 Request URL: $uri");
       debugPrint("📥 Status Code: ${response.statusCode}");
       debugPrint("📥 Response Body: ${response.body}");
 
-      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
 
-      if (response.statusCode == 200 && data['success'] == true) {
-        await fetchTaxes(); // refresh list
-        return true;
+        if (data['success'] == true) {
+          debugPrint('✅ Tax update successful');
+
+          // Update local list
+          final index = _taxList.indexWhere((tax) => tax.id == taxId);
+          if (index != -1) {
+            _taxList[index] = TaxModel(
+              id: taxId,
+              userId: _taxList[index].userId,
+              name: name,
+              percent: double.parse(percent),
+              status: int.parse(status),
+            );
+            debugPrint('✅ Local list updated');
+          }
+
+          _isLoading = false;
+          notifyListeners();
+          return true;
+        } else {
+          errorMessage = data['message'] ?? 'Failed to update tax.';
+          debugPrint('❌ API returned success=false: $errorMessage');
+          _isLoading = false;
+          notifyListeners();
+          return false;
+        }
       } else {
-        errorMessage = data['message'] ?? 'Failed to update tax.';
+        errorMessage = 'HTTP Error: ${response.statusCode}';
+        debugPrint('❌ $errorMessage');
+        debugPrint('❌ Response: ${response.body}');
+        _isLoading = false;
+        notifyListeners();
         return false;
       }
     } catch (e) {
-      errorMessage = '❌ Exception: $e';
-      debugPrint(errorMessage);
-      return false;
-    } finally {
+      errorMessage = 'Exception: $e';
+      debugPrint('💥 $errorMessage');
       _isLoading = false;
       notifyListeners();
+      return false;
     }
   }
 }

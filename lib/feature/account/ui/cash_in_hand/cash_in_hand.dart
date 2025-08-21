@@ -71,10 +71,7 @@ class _CashInHandState extends State<CashInHand> {
                         SizedBox(
                           width: 10,
                         ),
-                        Text(
-                          'Add New',
-                          style: TextStyle(color: Colors.yellow, fontSize: 15),
-                        ),
+                        Icon(Icons.add),
                       ],
                     ),
                   ),

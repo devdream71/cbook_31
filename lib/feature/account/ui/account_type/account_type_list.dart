@@ -29,7 +29,7 @@ class _AccountListPageState extends State<AccountListPage> {
         //centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-          "Account Type List",
+          "Account List",
           style: TextStyle(
               color: Colors.yellow, fontSize: 16, fontWeight: FontWeight.bold),
         ),
@@ -53,16 +53,16 @@ class _AccountListPageState extends State<AccountListPage> {
                         size: 20,
                         color: Colors.green,
                       )),
-                  SizedBox(
-                    width: 2,
-                  ),
-                  Text(
-                    'Add Account',
-                    style: TextStyle(
-                        color: Colors.yellow,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
-                  ),
+                  // SizedBox(
+                  //   width: 2,
+                  // ),
+                  // Text(
+                  //   'Add Account',
+                  //   style: TextStyle(
+                  //       color: Colors.yellow,
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.bold),
+                  // ),
                 ],
               ),
             ),

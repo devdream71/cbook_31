@@ -48,51 +48,40 @@ class _Layout extends StatefulWidget {
 }
 
 class _LayoutState extends State<_Layout> {
-
-
   TextEditingController billController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
-     // Initialize with loading text
-  billController.text = "Loading...";
-  debugPrint('Bill controller initialized with: ${billController.text}');
+    // Initialize with loading text
+    billController.text = "Loading...";
+    debugPrint('Bill controller initialized with: ${billController.text}');
 
-     
-     Future.microtask(() async {
+    Future.microtask(() async {
       // First fetch settings and wait for completion
       await Provider.of<BillSettingsProvider>(context, listen: false)
           .fetchSettings();
       debugPrint('Settings fetched successfully');
       await fetchAndSetBillNumber(context);
     });
-    
 
     Future.microtask(() async {
+      Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
 
-       Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
+      Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
 
-       Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr();
+      Provider.of<ItemCategoryProvider>(context, listen: false)
+          .fetchCategories();
 
-       Provider.of<ItemCategoryProvider>(context, listen: false)
-            .fetchCategories();
+      Provider.of<AddItemProvider>(context, listen: false).fetchItems();
 
-       Provider.of<AddItemProvider>(context, listen: false).fetchItems();
-
-       Provider.of<PaymentVoucherProvider>(context, listen: false)
-            .fetchBillPersons(); 
-
-    } 
-);
-  
+      Provider.of<PaymentVoucherProvider>(context, listen: false)
+          .fetchBillPersons();
+    });
   }
 
-   
-
-
-   Future<void> fetchAndSetBillNumber(BuildContext context) async {
+  Future<void> fetchAndSetBillNumber(BuildContext context) async {
     debugPrint('fetchAndSetBillNumber called');
 
     final settingsProvider =
@@ -103,8 +92,7 @@ class _LayoutState extends State<_Layout> {
 
     // Fetch required values from provider (now they should be available)
     final code = settingsProvider.getValue("sales_return_code") ?? "";
-    final billNumber =
-        settingsProvider.getValue("sales_return_bill_no") ?? "";
+    final billNumber = settingsProvider.getValue("sales_return_bill_no") ?? "";
     final withNickName = settingsProvider.getValue("with_nick_name") ?? "0";
 
     debugPrint(
@@ -168,85 +156,6 @@ class _LayoutState extends State<_Layout> {
       }
     }
   }
-
-
-
-
-
-
-
-
-
-  // Updated fetchAndSetBillNumber with more debugging:
-  // Future<void> fetchAndSetBillNumber() async {
-  //   debugPrint('fetchAndSetBillNumber called');
-
-  //   final url = Uri.parse(
-  //     '${AppUrl.baseurl}app/setting/bill/number?voucher_type=purchase&type=sales_return&code=SALR&bill_number=100&with_nick_name=1',
-  //   );
-
-  //   debugPrint('API URL: $url');
-
-  //   try {
-  //     debugPrint('Making API call...');
-  //     final response = await http.get(url);
-  //     debugPrint('API Response Status: ${response.statusCode}');
-  //     debugPrint('API Response Body: ${response.body}');
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       debugPrint('Parsed data: $data');
-
-  //       if (data['success'] == true && data['data'] != null) {
-  //         // String billFromApi = data['data'].toString(); // Ensure it's a string
-  //          String billFromApi = data['data']['bill_number'].toString();
-  //         debugPrint('Bill from API: $billFromApi');
-
-  //         //String newBill = _incrementBillNumber(billFromApi);
-
-  //         String newBill = billFromApi;
-
-  //         debugPrint('New bill after increment: $newBill');
-
-  //         // Update the controller and trigger UI rebuild
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = newBill;
-  //             debugPrint('Bill controller updated to: ${billController.text}');
-  //           });
-  //         }
-  //       } else {
-  //         debugPrint('API success false or data null');
-  //         // Handle API error
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = "SALR-100"; // Default fallback
-  //             debugPrint('Set fallback bill: ${billController.text}');
-  //           });
-  //         }
-  //       }
-  //     } else {
-  //       debugPrint('Failed to fetch bill number: ${response.statusCode}');
-  //       // Set fallback bill number
-  //       if (mounted) {
-  //         setState(() {
-  //           billController.text = "SALR-100";
-  //           debugPrint(
-  //               'Set fallback bill due to status code: ${billController.text}');
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error fetching bill number: $e');
-  //     // Set fallback bill number
-  //     if (mounted) {
-  //       setState(() {
-  //         billController.text = "SALR-100";
-  //         debugPrint('Set fallback bill due to exception: ${billController.text}');
-  //       });
-  //     }
-  //   }
-  // }
 
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -340,12 +249,16 @@ class _LayoutState extends State<_Layout> {
                                     },
                                     child: DecoratedBox(
                                       decoration: BoxDecoration(
-                                        color: AppColors.primaryColor,
+                                        color: controller.isCash
+                                            ? Colors.blue
+                                                .shade600 // 🔹 Cash background
+                                            : Colors.orange
+                                                .shade600, // ✅ Credit background
                                         borderRadius: BorderRadius.circular(5),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 5),
+                                            horizontal: 5, vertical: 4),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -354,21 +267,58 @@ class _LayoutState extends State<_Layout> {
                                                   ? "Cash"
                                                   : "Credit",
                                               style: GoogleFonts.lato(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14),
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 14,
+                                              ),
                                             ),
-                                            const SizedBox(width: 1),
+                                            const SizedBox(width: 4),
                                             const Icon(
                                               Icons.arrow_forward_ios,
                                               color: Colors.white,
-                                              size: 14,
+                                              size: 12,
                                             )
                                           ],
                                         ),
                                       ),
                                     ),
                                   ),
+
+                                  // InkWell(
+                                  //   onTap: () {
+                                  //     controller.updateCash();
+                                  //   },
+                                  //   child: DecoratedBox(
+                                  //     decoration: BoxDecoration(
+                                  //       color: AppColors.primaryColor,
+                                  //       borderRadius: BorderRadius.circular(5),
+                                  //     ),
+                                  //     child: Padding(
+                                  //       padding: const EdgeInsets.symmetric(
+                                  //           horizontal: 5),
+                                  //       child: Row(
+                                  //         mainAxisSize: MainAxisSize.min,
+                                  //         children: [
+                                  //           Text(
+                                  //             controller.isCash
+                                  //                 ? "Cash"
+                                  //                 : "Credit",
+                                  //             style: GoogleFonts.lato(
+                                  //                 color: Colors.white,
+                                  //                 fontWeight: FontWeight.w600,
+                                  //                 fontSize: 14),
+                                  //           ),
+                                  //           const SizedBox(width: 1),
+                                  //           const Icon(
+                                  //             Icons.arrow_forward_ios,
+                                  //             color: Colors.white,
+                                  //             size: 14,
+                                  //           )
+                                  //         ],
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
                                   vPad5,
                                   const Text(
                                     "Bill To",
@@ -688,15 +638,14 @@ class _LayoutState extends State<_Layout> {
                                   // ),
 
                                   SizedBox(
-                                      height: 30,
-                                      width: 130,
-                                      child: AddSalesFormfield(
-                                        labelText: "Bill No",
-                                        controller: billController,
-                                        readOnly:
-                                            true, // Prevent manual editing
-                                      ),
+                                    height: 30,
+                                    width: 130,
+                                    child: AddSalesFormfield(
+                                      labelText: "Bill No",
+                                      controller: billController,
+                                      readOnly: true, // Prevent manual editing
                                     ),
+                                  ),
 
                                   SizedBox(
                                     height: 30,
@@ -844,17 +793,12 @@ class _LayoutState extends State<_Layout> {
                                   //   selectedItem: controller.seletedItemName,
                                   //   onChanged: (selectedItemName) async {
 
-                                       
-                                  //      debugPrint(' controller  isCash ==> ${controller.isCash }'); 
-
+                                  //      debugPrint(' controller  isCash ==> ${controller.isCash }');
 
                                   //     final String? selectedCustomerID =selectedCustomerId;
 
-
                                   //            //controller.isCash ;
 
-                                          
-                                             
                                   //         debugPrint(' custopmer id ==> ${selectedCustomerID }');
 
                                   //     setState(() {
@@ -880,42 +824,48 @@ class _LayoutState extends State<_Layout> {
                                   //   },
                                   // ),
 
-
                                   CustomDropdownTwo(
-  hint: '',
-  items: itemProvider.items.map((item) => item.name).toList(),
-  width: 200,
-  height: 30,
-  selectedItem: controller.seletedItemName,
-  onChanged: (selectedItemName) async {
-    debugPrint('controller.isCash ==> ${controller.isCash}');
+                                    hint: '',
+                                    items: itemProvider.items
+                                        .map((item) => item.name)
+                                        .toList(),
+                                    width: 200,
+                                    height: 30,
+                                    selectedItem: controller.seletedItemName,
+                                    onChanged: (selectedItemName) async {
+                                      debugPrint(
+                                          'controller.isCash ==> ${controller.isCash}');
 
-    // if isCash then "cash", otherwise the selected customerId
-    final String selectedCustomerID = controller.isCash 
-        ? "cash" 
-        : (selectedCustomerId ?? "");
+                                      // if isCash then "cash", otherwise the selected customerId
+                                      final String selectedCustomerID =
+                                          controller.isCash
+                                              ? "cash"
+                                              : (selectedCustomerId ?? "");
 
-    debugPrint('customer id ==> $selectedCustomerID');
+                                      debugPrint(
+                                          'customer id ==> $selectedCustomerID');
 
-    setState(() {
-      controller.seletedItemName = selectedItemName;
-      for (var e in itemProvider.items) {
-        if (selectedItemName == e.name) {
-          controller.selcetedItemId = e.id.toString();
-        }
-      }
-    });
+                                      setState(() {
+                                        controller.seletedItemName =
+                                            selectedItemName;
+                                        for (var e in itemProvider.items) {
+                                          if (selectedItemName == e.name) {
+                                            controller.selcetedItemId =
+                                                e.id.toString();
+                                          }
+                                        }
+                                      });
 
-    if (controller.selcetedItemId != null && selectedCustomerID.isNotEmpty) {
-      await itemProvider.fetchSaleHistory(
-        int.tryParse(controller.selcetedItemId),
-        selectedCustomerID,
-      );
-    }
-  },
-),
-
-
+                                      if (controller.selcetedItemId != null &&
+                                          selectedCustomerID.isNotEmpty) {
+                                        await itemProvider.fetchSaleHistory(
+                                          int.tryParse(
+                                              controller.selcetedItemId),
+                                          selectedCustomerID,
+                                        );
+                                      }
+                                    },
+                                  ),
                                 ],
                               );
                             },
@@ -959,7 +909,7 @@ class _LayoutState extends State<_Layout> {
                                               salesHistory: itemProvider
                                                   .saleHistory, // Pass data
                                               itemName:
-                                                  controller.seletedItemName!,    
+                                                  controller.seletedItemName!,
                                             ),
                                           ),
                                         );
@@ -982,7 +932,6 @@ class _LayoutState extends State<_Layout> {
                             );
                           },
                         ),
-
 
                         vPad20,
 
@@ -1454,7 +1403,7 @@ class _LayoutState extends State<_Layout> {
 
                         //bottom button portion
                         BottomPortionSaleReturn(
-                          billNo : billController.text,
+                          billNo: billController.text,
                           invoiceItems: invoiceItems,
                           saleType: controller.isCash ? "Cash" : "Credit",
                           customerId: controller.isCash

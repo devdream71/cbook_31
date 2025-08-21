@@ -169,6 +169,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, loginProvider, child) {
         return MaterialApp(
           //useInheritedMediaQuery: true,
+          debugShowCheckedModeBanner: false,
           locale: DevicePreview.locale(context),
           builder: DevicePreview.appBuilder,
           theme: ThemeData(

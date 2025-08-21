@@ -24,43 +24,6 @@ class _ItemSubCategoryViewState extends State<ItemSubCategoryView> {
     });
   }
 
-  // void _confirmDelete(BuildContext context, int subcategoryId) async {
-  //   final confirm = await showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text("Confirm Delete"),
-  //         content: const Text(
-  //           "Are you sure you want to delete this category?",
-  //           style: TextStyle(color: Colors.black),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.pop(context, false),
-  //             child: const Text("Cancel"),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.pop(context, true);
-  //             },
-  //             child: const Text("Delete", style: TextStyle(color: Colors.red)),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-
-  //   if (confirm == true) {
-  //     await context.read<CategoryProvider>().deleteSubCategory(subcategoryId);
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text("Category Delete successfully!"),
-  //         backgroundColor: Colors.green,
-  //       ),
-  //     );
-  //   }
-  // }
-
   String getCategoryName(BuildContext context, int categoryId) {
     final categories = context.read<CategoryProvider>().categories;
     final category = categories.firstWhere(
@@ -104,19 +67,13 @@ class _ItemSubCategoryViewState extends State<ItemSubCategoryView> {
               child: Row(
                 children: [
                   CircleAvatar(
-                      radius: 10,
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        Icons.add,
-                        size: 20,
-                        color: Colors.green,
-                      )),
-                  SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    'Add Sub Cat ',
-                    style: TextStyle(color: Colors.yellow, fontSize: 15),
+                    radius: 10,
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      Icons.add,
+                      size: 20,
+                      color: Colors.green,
+                    ),
                   ),
                 ],
               ),
@@ -181,8 +138,6 @@ class _ItemSubCategoryViewState extends State<ItemSubCategoryView> {
                               style: const TextStyle(
                                   fontSize: 12, color: Colors.black87),
                             ),
-
-                            
                           ),
                         ),
                       );
@@ -313,9 +268,6 @@ class _ItemSubCategoryViewState extends State<ItemSubCategoryView> {
               bool isDeleted =
                   await provider.deleteSubCategory(int.parse(subcategoryID));
 
-              
-    
-
               Navigator.of(context).pop(); // Close confirm dialog
 
               if (isDeleted) {
@@ -324,7 +276,7 @@ class _ItemSubCategoryViewState extends State<ItemSubCategoryView> {
                     content: Text(
                       'sub-Category deleted successfully!',
                       style: TextStyle(color: colorScheme.primary),
-                    ),       
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );

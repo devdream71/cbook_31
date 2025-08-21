@@ -279,79 +279,7 @@ class CustomerProvider extends ChangeNotifier {
     }
   }
 
-  /// Create new customer
-  // Future<void> createCustomer({
-  //   required String name,
-  //   required String email,
-  //   required String phone,
-  //   required String address,
-  //   required String status, // '1' or '0'
-  //   required String proprietorName,
-  //   required String openingBalance,
-  //   String levelType = "",
-  //   String level = "",
-  //   File? imageFile,
-  // }) async {
-  //   isLoading = true;
-  //   errorMessage = "";
-  //   notifyListeners();
 
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String userId = prefs.getInt('user_id')?.toString() ?? '';
-
-  //   final url = Uri.parse('https://commercebook.site/api/v1/customer/store');
-
-  //   try {
-  //     // Build the request body dynamically
-  //     Map<String, dynamic> body = {
-  //       'user_id': userId,
-  //       'name': name,
-  //       'email': email,
-  //       'phone': phone,
-  //       'address': address,
-  //       'status': status, // Ensure it's '1' or '0'
-  //       'proprietor_name': proprietorName,
-  //       'opening_balance': openingBalance,
-  //     };
-
-  //     // Add level_type and level only if levelType is not empty
-  //     if (levelType.isNotEmpty) {
-  //       body['level_type'] = levelType;
-  //       body['level'] = "1";
-  //     }
-
-  //     final response = await http.post(
-  //       url,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Accept': 'application/json',
-  //       },
-  //       body: jsonEncode(body),
-  //     );
-
-  //     // Debugging: Print the raw response
-  //     debugPrint("Response Status: ${response.statusCode}");
-  //     debugPrint("Response Body: ${response.body}");
-
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       final data = jsonDecode(response.body);
-
-  //       if (data["success"] == true) {
-  //         debugPrint("Customer Created: ${data['data']['name']}");
-  //       } else {
-  //         errorMessage = data['message'] ?? "Failed to create customer";
-  //       }
-  //     } else {
-  //       errorMessage = "Unexpected response from the server";
-  //     }
-  //   } catch (e) {
-  //     errorMessage = "Error: $e";
-  //     debugPrint("Error: $e");
-  //   }
-
-  //   isLoading = false;
-  //   notifyListeners();
-  // }
 
   Future<void> createCustomer({
     required String name,
@@ -483,6 +411,145 @@ class CustomerProvider extends ChangeNotifier {
     }
     return null;
   }
+
+
+  ///customer update with image support
+  Future<void> updateCustomerWithImage({
+    required String id,
+    required String name,
+    required String proprietorName,
+    required String email,
+    required String phone,
+    required String address,
+    required String status,
+    required String level, // "0" or "1"
+    required String levelType, // Only used if level is "1"
+    required BuildContext context,
+    File? imageFile, // ✅ New parameter for image
+  }) async {
+    isLoading = true;
+    errorMessage = "";
+    notifyListeners();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getInt('user_id')?.toString();
+    final token = prefs.getString('token');
+
+    if (userId == null || userId.isEmpty) {
+      errorMessage = "User ID is not available. Please login again.";
+      isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    if (id.isEmpty || id == '0') {
+      errorMessage = "Customer ID is not valid!";
+      isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    final url = Uri.parse('${AppUrl.baseurl}customer/update');
+
+    try {
+      http.Response response;
+
+      if (imageFile != null) {
+        // ✅ Use MultipartRequest for image upload
+        final request = http.MultipartRequest('POST', url);
+
+        // Add text fields
+        request.fields.addAll({
+          'user_id': userId,
+          'id': id,
+          'name': name,
+          'proprietor_name': proprietorName,
+          'email': email,
+          'phone': phone,
+          'address': address,
+          'status': status,
+          'level': level,
+        });
+
+        // Only add level_type if level is "1"
+        if (level == "1") {
+          request.fields['level_type'] = levelType;
+        }
+
+        // Add image file
+        request.files.add(
+          await http.MultipartFile.fromPath('avatar', imageFile.path),
+        );
+
+        // Add headers
+        request.headers.addAll({
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        });
+
+        debugPrint('🚀 Updating customer with image...');
+        debugPrint('🚀 Fields: ${request.fields}');
+        debugPrint('🚀 Files: ${request.files.map((f) => f.filename).toList()}');
+
+        final streamed = await request.send();
+        response = await http.Response.fromStream(streamed);
+      } else {
+        // ✅ Use regular POST request if no image
+        Map<String, dynamic> body = {
+          'user_id': userId,
+          'id': id,
+          'name': name,
+          'proprietor_name': proprietorName,
+          'email': email,
+          'phone': phone,
+          'address': address,
+          'status': status,
+          'level': level,
+        };
+
+        // Only add level_type if level is "1"
+        if (level == "1") {
+          body['level_type'] = levelType;
+        }
+
+        debugPrint('🚀 Updating customer without image...');
+        debugPrint('🚀 Body: $body');
+
+        response = await http.post(
+          url,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(body),
+        );
+      }
+
+      debugPrint('📥 Response Status: ${response.statusCode}');
+      debugPrint('📥 Response Body: ${response.body}');
+
+      final data = jsonDecode(response.body);
+      
+      if (response.statusCode == 200 && data["success"] == true) {
+        debugPrint("✅ Customer updated successfully");
+        errorMessage = "";
+        
+        // Optionally refresh customer list
+        await fetchCustomsr();
+      } else {
+        errorMessage = data["message"] ?? "Failed to update customer";
+        debugPrint("❌ Update failed: $errorMessage");
+      }
+    } catch (e) {
+      errorMessage = "Error: $e";
+      debugPrint("💥 Exception during update: $e");
+    }
+
+    isLoading = false;
+    notifyListeners();
+  }
+
 
   ///customer update.
   Future<void> updateCustomer({

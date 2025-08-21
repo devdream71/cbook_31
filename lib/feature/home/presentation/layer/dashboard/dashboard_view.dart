@@ -176,39 +176,6 @@ class LayoutState extends State<Layout> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // Row(
-                            //   children: [
-                            //     Image.asset(
-                            //       "assets/image/cbook_logo.png",
-                            //       height: 40,
-                            //       width: 40,
-                            //     ),
-                            //     const SizedBox(width: 12),
-                            //     const Column(
-                            //       crossAxisAlignment: CrossAxisAlignment.start,
-                            //       children: [
-                            //         Text(
-                            //           "Commerce Book Ltd",
-                            //           style: TextStyle(
-                            //             fontFamily: 'Calibri',
-                            //             color: Colors.white,
-                            //             fontWeight: FontWeight.w700,
-                            //             fontSize: 20,
-                            //           ),
-                            //         ),
-                            //         Text(
-                            //           "Admin",
-                            //           style: TextStyle(
-                            //               fontFamily: 'Calibri',
-                            //               color: Colors.white,
-                            //               fontWeight: FontWeight.w800,
-                            //               fontSize: 12),
-                            //         ),
-                            //       ],
-                            //     ),
-                            //   ],
-                            // ),
-
                             Consumer<ProfileProvider>(
                               builder: (context, provider, child) {
                                 if (provider.isLoading) {
@@ -221,19 +188,6 @@ class LayoutState extends State<Layout> {
                                         horizontal: 8.0),
                                     child: Row(
                                       children: [
-                                        // CircleAvatar(
-                                        //   radius: 15,
-                                        //   backgroundColor: Colors.white,
-                                        //   child: CircleAvatar(
-                                        //     radius: 15,
-                                        //     backgroundImage: user.avatar != null
-                                        //         ? NetworkImage(user.avatar!)
-                                        //         : const AssetImage(
-                                        //                 'assets/image/cbook_logo.png') //assets\image\cbook_logo.png
-                                        //             as ImageProvider,
-                                        //   ),
-                                        // ),
-
                                         CircleAvatar(
                                           radius: 15,
                                           backgroundColor: Colors.white,
@@ -249,7 +203,6 @@ class LayoutState extends State<Layout> {
                                                     as ImageProvider,
                                           ),
                                         ),
-
                                         const SizedBox(width: 4),
                                         Column(
                                           crossAxisAlignment:
@@ -287,9 +240,18 @@ class LayoutState extends State<Layout> {
                               },
                             ),
 
-                            const Icon(
-                              Icons.notification_add,
-                              color: Colors.white,
+                            InkWell(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      const FeatureNotAvailableDialog(),
+                                );
+                              },
+                              child: const Icon(
+                                Icons.notification_add,
+                                color: Colors.white,
+                              ),
                             ),
                             // You can add a button or search icon here
                           ],
@@ -681,40 +643,58 @@ Widget _buildBottomSheetContent(BuildContext context) {
                           "Sales/Bill/\nInvoice", context)),
 
                   //// bulk sales
-                  InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const ItemListPage()));
+                  // InkWell(
+                  //     onTap: () {
+                  //       showDialog(
+                  //           context: context,
+                  //           builder: (context) =>
+                  //               const FeatureNotAvailableDialog());
+                  //       // Navigator.push(
+                  //       //     context,
+                  //       //     MaterialPageRoute(
+                  //       //         builder: (_) => const FeatureNotAvailableDialog())); //ItemListPage
 
-                        // showFeatureNotAvailableDialog(context);
-                      },
-                      child: _buildIconWithLabel(
-                          Icons.apps, "Bulk sales/\nInvoice", context)),
+                  //       // showFeatureNotAvailableDialog(context);
+                  //     },
+                  //     child: _buildIconWithLabel(
+                  //         Icons.apps, "Bulk sales/\nInvoice", context)),
 
                   //// Estimate/\nQuotation
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) =>
-                              const FeatureNotAvailableDialog());
-                    },
-                    child: _buildIconWithLabel(
-                        Icons.view_timeline, "Estimate/\nQuotation", context),
-                  ),
+                  // InkWell(
+                  //   onTap: () {
+                  //     showDialog(
+                  //         context: context,
+                  //         builder: (context) =>
+                  //             const FeatureNotAvailableDialog());
+                  //   },
+                  //   child: _buildIconWithLabel(
+                  //       Icons.view_timeline, "Estimate/\nQuotation", context),
+                  // ),
 
                   //// Challan
+                  // InkWell(
+                  //     onTap: () {
+                  //       showDialog(
+                  //           context: context,
+                  //           builder: (context) =>
+                  //               const FeatureNotAvailableDialog());
+                  //     },
+                  //     child:
+                  //         _buildIconWithLabel(Icons.tab, "Challan", context)),
+
+                  ////Sales\nReturn
                   InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) =>
-                                const FeatureNotAvailableDialog());
-                      },
-                      child:
-                          _buildIconWithLabel(Icons.tab, "Challan", context)),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  const SalesReturnScreen())); //SalesReturnView
+                      //showFeatureNotAvailableDialog(context);
+                    },
+                    child: _buildIconWithLabel(
+                        Icons.redo, "Sales\nReturn", context),
+                  ),
 
                   //// Receipt In
                   InkWell(
@@ -732,30 +712,18 @@ Widget _buildBottomSheetContent(BuildContext context) {
                       child: _buildIconWithLabel(
                           Icons.receipt, "Receipt In", context)),
 
-                  ////Sales\nReturn
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) =>
-                                  const SalesReturnScreen())); //SalesReturnView
-                      //showFeatureNotAvailableDialog(context);
-                    },
-                    child: _buildIconWithLabel(
-                        Icons.redo, "Sales\nReturn", context),
-                  ),
+                  
 
                   ////Delivery
-                  InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) =>
-                                const FeatureNotAvailableDialog());
-                      },
-                      child: _buildIconWithLabel(
-                          Icons.delivery_dining, "Delivery", context)),
+                  // InkWell(
+                  //     onTap: () {
+                  //       showDialog(
+                  //           context: context,
+                  //           builder: (context) =>
+                  //               const FeatureNotAvailableDialog());
+                  //     },
+                  //     child: _buildIconWithLabel(
+                  //         Icons.delivery_dining, "Delivery", context)),
                 ],
               ),
 
@@ -790,15 +758,33 @@ Widget _buildBottomSheetContent(BuildContext context) {
                   ),
 
                   ////  Purchase/\nOrder
+                  // InkWell(
+                  //   onTap: () {
+                  //     showDialog(
+                  //         context: context,
+                  //         builder: (context) =>
+                  //             const FeatureNotAvailableDialog());
+                  //   },
+                  //   child: _buildIconWithLabel(
+                  //       Icons.work_history, "Purchase/\nOrder", context),
+                  // ),
+
+                   ///// Purchase\nReturn
                   InkWell(
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) =>
-                              const FeatureNotAvailableDialog());
-                    },
-                    child: _buildIconWithLabel(
-                        Icons.work_history, "Purchase/\nOrder", context),
+                    onTap: () {},
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const PurchaseReturnList()));
+
+                        //showFeatureNotAvailableDialog(context);
+                      },
+                      child: _buildIconWithLabel(
+                          Icons.redo_rounded, "Purchase\nReturn", context),
+                    ),
                   ),
 
                   //// Payment\nOut
@@ -816,23 +802,7 @@ Widget _buildBottomSheetContent(BuildContext context) {
                       child: _buildIconWithLabel(
                           Icons.tab, "Payment\nOut", context)),
 
-                  ///// Purchase\nReturn
-                  InkWell(
-                    onTap: () {},
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const PurchaseReturnList()));
-
-                        //showFeatureNotAvailableDialog(context);
-                      },
-                      child: _buildIconWithLabel(
-                          Icons.redo_rounded, "Purchase\nReturn", context),
-                    ),
-                  ),
+                 
                 ],
               ),
 
@@ -871,16 +841,16 @@ Widget _buildBottomSheetContent(BuildContext context) {
                   ),
 
                   ////  Purchase/\nOrder
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) =>
-                              const FeatureNotAvailableDialog());
-                    },
-                    child: _buildIconWithLabel(
-                        Icons.work_history, "Contra", context),
-                  ),
+                  // InkWell(
+                  //   onTap: () {
+                  //     showDialog(
+                  //         context: context,
+                  //         builder: (context) =>
+                  //             const FeatureNotAvailableDialog());
+                  //   },
+                  //   child: _buildIconWithLabel(
+                  //       Icons.work_history, "Contra", context),
+                  // ),
 
                   //// Payment\nOut
                   InkWell(
@@ -897,15 +867,15 @@ Widget _buildBottomSheetContent(BuildContext context) {
                       child: _buildIconWithLabel(Icons.tab, "Income", context)),
 
                   //jurnal
-                  InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) =>
-                                const FeatureNotAvailableDialog());
-                      },
-                      child: _buildIconWithLabel(
-                          Icons.article_sharp, "Jurnal", context)),
+                  // InkWell(
+                  //     onTap: () {
+                  //       showDialog(
+                  //           context: context,
+                  //           builder: (context) =>
+                  //               const FeatureNotAvailableDialog());
+                  //     },
+                  //     child: _buildIconWithLabel(
+                  //         Icons.article_sharp, "Jurnal", context)),
                 ],
               ),
               const SizedBox(

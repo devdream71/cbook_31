@@ -203,78 +203,7 @@ class _LayoutState extends State<_Layout> {
     }
   }
 
-  // Future<void> fetchAndSetBillNumber(context) async {
-  //   debugPrint('fetchAndSetBillNumber called');
-
-  //   final url = Uri.parse(
-  //     '${AppUrl.baseurl}app/setting/bill/number?voucher_type=purchase&type=purchase_return&code=PURR&bill_number=100&with_nick_name=1',
-  //   );
-
-  //   debugPrint('API URL: $url');
-
-  //   try {
-  //     debugPrint('Making API call...');
-  //     final response = await http.get(url);
-  //     debugPrint('API Response Status: ${response.statusCode}');
-  //     debugPrint('API Response Body: ${response.body}');
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       debugPrint('Parsed data: $data');
-
-  //       if (data['success'] == true && data['data'] != null) {
-  //         // String billFromApi = data['data'].toString(); // Ensure it's a string
-
-  //         String billFromApi = data['data']['bill_number'].toString();
-  //         debugPrint('Bill from API: $billFromApi');
-
-  //         //String newBill = _incrementBillNumber(billFromApi);
-
-  //         String newBill = billFromApi;
-
-  //         debugPrint('New bill after increment: $newBill');
-
-  //         // Update the controller and trigger UI rebuild
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = newBill;
-  //             debugPrint('Bill controller updated to: ${billController.text}');
-  //           });
-  //         }
-  //       } else {
-  //         debugPrint('API success false or data null');
-  //         // Handle API error
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = "PURR-100"; // Default fallback
-  //             debugPrint('Set fallback bill: ${billController.text}');
-  //           });
-  //         }
-  //       }
-  //     } else {
-  //       debugPrint('Failed to fetch bill number: ${response.statusCode}');
-  //       // Set fallback bill number
-  //       if (mounted) {
-  //         setState(() {
-  //           billController.text = "PURR-100";
-  //           debugPrint(
-  //               'Set fallback bill due to status code: ${billController.text}');
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error fetching bill number: $e');
-  //     // Set fallback bill number
-  //     if (mounted) {
-  //       setState(() {
-  //         billController.text = "PURR-100";
-  //         debugPrint(
-  //             'Set fallback bill due to exception: ${billController.text}');
-  //       });
-  //     }
-  //   }
-  // }
-
+ 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -346,45 +275,90 @@ class _LayoutState extends State<_Layout> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   InkWell(
-                                    onTap: () {
-                                      //////=====>=====>updateCash==========<<<<<<<
-                                      controller.updateCash();
-                                    },
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primaryColor,
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5),
-                                        child:
-
-                                            //PaymentToggle(isCash: true, onToggle: ,)
-
-                                            Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              controller.isCash
-                                                  ? "Cash"
-                                                  : "Credit",
-                                              style: GoogleFonts.lato(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14),
+                                          onTap: () {
+                                            controller.updateCash();
+                                          },
+                                          child: DecoratedBox(
+                                            decoration: BoxDecoration(
+                                              color: controller.isCash
+                                                  ? Colors.blue
+                                                      .shade600 // 🔹 Cash background
+                                                  : Colors.orange
+                                                      .shade600, // ✅ Credit background
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
                                             ),
-                                            const SizedBox(width: 1),
-                                            const Icon(
-                                              Icons.arrow_forward_ios,
-                                              color: Colors.white,
-                                              size: 12,
-                                            )
-                                          ],
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 4),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    controller.isCash
+                                                        ? "Cash"
+                                                        : "Credit",
+                                                    style: GoogleFonts.lato(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  const Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    color: Colors.white,
+                                                    size: 12,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
+                                        
+                                  // InkWell(
+                                  //   onTap: () {
+                                  //     //////=====>=====>updateCash==========<<<<<<<
+                                  //     controller.updateCash();
+                                  //   },
+                                  //   child: DecoratedBox(
+                                  //     decoration: BoxDecoration(
+                                  //       color: AppColors.primaryColor,
+                                  //       borderRadius: BorderRadius.circular(5),
+                                  //     ),
+                                  //     child: Padding(
+                                  //       padding: const EdgeInsets.symmetric(
+                                  //           horizontal: 5),
+                                  //       child:
+
+                                  //           //PaymentToggle(isCash: true, onToggle: ,)
+
+                                  //           Row(
+                                  //         mainAxisSize: MainAxisSize.min,
+                                  //         children: [
+                                  //           Text(
+                                  //             controller.isCash
+                                  //                 ? "Cash"
+                                  //                 : "Credit",
+                                  //             style: GoogleFonts.lato(
+                                  //                 color: Colors.white,
+                                  //                 fontWeight: FontWeight.w600,
+                                  //                 fontSize: 14),
+                                  //           ),
+                                  //           const SizedBox(width: 1),
+                                  //           const Icon(
+                                  //             Icons.arrow_forward_ios,
+                                  //             color: Colors.white,
+                                  //             size: 12,
+                                  //           )
+                                  //         ],
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
                                   vPad2,
                                   const Text(
                                     "Bill To",

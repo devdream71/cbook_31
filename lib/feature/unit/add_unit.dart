@@ -25,7 +25,7 @@ class _AddUnitState extends State<AddUnit> {
     final symbol = symbolController.text.trim();
 
     if (name.isNotEmpty && symbol.isNotEmpty) {
-      unitProvider.addUnit(name, symbol, selectedStatus).then((_) {
+      unitProvider.addUnit(name, symbol, ).then((_) {
         if (!mounted)
           return; // ✅ Check if widget is still active before using context
 
@@ -40,10 +40,6 @@ class _AddUnitState extends State<AddUnit> {
 
         Navigator.pop(context);
 
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const UnitListView()),
-        // );
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,33 +91,7 @@ class _AddUnitState extends State<AddUnit> {
                     const SizedBox(
                       height: 12,
                     ),
-                    // const Text(
-                    //   "Status",
-                    //   style: TextStyle(
-                    //       color: Colors.black,
-                    //       fontWeight: FontWeight.w600,
-                    //       fontSize: 12),
-                    // ),
-                    // SizedBox(
-                    //   width: double.infinity,
-                    //   child: CustomDropdownTwo(
-                    //     items: const ["Active", "Inactive"], // Display labels
-                    //     hint: '', //Select status
-                    //     width: double.infinity,
-                    //     height: 40,
-                    //     value: selectedStatus == "1"
-                    //         ? "Active"
-                    //         : "Inactive", // ✅ reflect selection
-                    //     onChanged: (value) {
-                    //       setState(() {
-                    //         selectedStatus = (value == "Active")
-                    //             ? "1"
-                    //             : "0"; // ✅ Convert label to 1 or 0
-                    //       });
-                    //       debugPrint(selectedStatus);
-                    //     },
-                    //   ),
-                    // ),
+                   
                     const SizedBox(height: 25),
                   ],
                 ),

@@ -27,7 +27,7 @@ class HomeViewState extends State<HomeView> {
     const Party(),
     const ItemView(),
     const Account(),
-    const TransactionView(),
+    //const TransactionView(),
     const ReportView(),
     const SettingsView(),
     //const ProfileView(),
@@ -44,7 +44,7 @@ class HomeViewState extends State<HomeView> {
     'Party'
     "Item",
     "Account"
-    "Transaction",
+    //"Transaction",
     "Report",
     'Settings',
     //"Profile",
@@ -95,10 +95,10 @@ class HomeViewState extends State<HomeView> {
                   icon: Icon(Icons.account_balance_wallet), //
                   label: 'Account',
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.attach_money),
-                  label: 'Transaction',
-                ),
+                // BottomNavigationBarItem(
+                //   icon: Icon(Icons.attach_money),
+                //   label: 'Transaction',
+                // ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.bar_chart),
                   label: 'Report',

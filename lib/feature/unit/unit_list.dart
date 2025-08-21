@@ -22,6 +22,10 @@ class UnitListViewState extends State<UnitListView> {
     });
   }
 
+  void _refreshUnits() {
+    Provider.of<UnitDTProvider>(context, listen: false).refreshUnits();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -36,9 +40,15 @@ class UnitListViewState extends State<UnitListView> {
         ),
         actions: [
           InkWell(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const AddUnit()));
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddUnit())
+              );
+              
+              if (result == 'refresh_needed') {
+                _refreshUnits();
+              }
             },
             child: const Padding(
               padding: EdgeInsets.only(right: 8.0),
@@ -52,13 +62,6 @@ class UnitListViewState extends State<UnitListView> {
                         size: 20,
                         color: Colors.green,
                       )),
-                  SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    'Add Units ',
-                    style: TextStyle(color: Colors.yellow, fontSize: 15),
-                  ),
                 ],
               ),
             ),
@@ -71,60 +74,82 @@ class UnitListViewState extends State<UnitListView> {
           Expanded(
             child: Consumer<UnitDTProvider>(
               builder: (context, provider, child) {
-                if(provider.units.isEmpty) {
-                  return const Center(child:   Text('No Data Fount', style: TextStyle(color:Colors.black),));
-                }
                 if (provider.isLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: provider.units.length,
-                  itemBuilder: (context, index) {
-                    final unit = provider.units[index];
-
-                    
-                    //final unitId = provider.units[index].id;
-                    
-                    return InkWell(
-                      onLongPress: () {
-                        _openUnitEditDeleteDialog(unit);
-                      },
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(0), // 🔁 No rounded corners
-                          side: BorderSide(
-                              color: Colors.grey.shade300), // ✅ Border
+                if (provider.units.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.inventory_2, size: 64, color: Colors.grey),
+                        SizedBox(height: 16),
+                        Text(
+                          'No Units Found',
+                          style: TextStyle(color: Colors.black, fontSize: 16),
                         ),
-                        elevation: 0,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.only(left: 16),
-                          leading: CircleAvatar(
-                            backgroundColor: AppColors.primaryColor,
-                            radius: 15,
-                            child: Text(
-                              "${index + 1}", // Display index
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14),
+                        SizedBox(height: 8),
+                        Text(
+                          'Tap the + button to add a unit',
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await provider.refreshUnits();
+                  },
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: provider.units.length,
+                    itemBuilder: (context, index) {
+                      final unit = provider.units[index];
+                      final unitId = unit.id.toString();
+
+                      return InkWell(
+                        onLongPress: () {
+                          editDeleteDialog(context, unitId, unit);
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                            side: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.only(left: 16),
+                            leading: CircleAvatar(
+                              backgroundColor: AppColors.primaryColor,
+                              radius: 15,
+                              child: Text(
+                                "${index + 1}",
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14),
+                              ),
+                            ),
+                            title: Text(
+                              unit.name,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Symbol: ${unit.symbol}",
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ],
                             ),
                           ),
-                          title: Text(
-                            unit.name,
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          subtitle: Text(
-                            "Symbol: ${unit.symbol}",
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                         
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               },
             ),
@@ -132,10 +157,6 @@ class UnitListViewState extends State<UnitListView> {
         ],
       ),
     );
-  }
-
-  void _openUnitEditDeleteDialog(UnitResponseModel unit) {
-    editDeleteDialog(context, unit.id.toString(), unit);
   }
 
   Future<dynamic> editDeleteDialog(
@@ -185,17 +206,23 @@ class UnitListViewState extends State<UnitListView> {
                 ),
                 const SizedBox(height: 16),
                 InkWell(
-                  onTap: () {
+                  onTap: () async {
                     Navigator.of(context).pop();
 
-                    Future.delayed(const Duration(milliseconds: 100), () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UpdateUnitPage(unit: unit),
-                        ),
-                      );
-                    });
+                    debugPrint('🔄 Before update - Unit exists: ${Provider.of<UnitDTProvider>(context, listen: false).unitExists(unit.id)}');
+
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UpdateUnitPage(unit: unit),
+                      ),
+                    );
+
+                    debugPrint('🔄 After update - Unit exists: ${Provider.of<UnitDTProvider>(context, listen: false).unitExists(unit.id)}');
+
+                    if (result == 'refresh_needed') {
+                      _refreshUnits();
+                    }
                   },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
@@ -223,8 +250,6 @@ class UnitListViewState extends State<UnitListView> {
   }
 
   void _showDeleteDialog(BuildContext context, String unitId) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -243,42 +268,115 @@ class UnitListViewState extends State<UnitListView> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () async {
-              final provider =
-                  Provider.of<UnitDTProvider>(context, listen: false);
-              // bool isDeleted = await provider.deleteUnit(int.parse(unitId));
-
-              bool isDeleted =
-                  await provider.deleteUnit(int.parse(unitId), context);
-
-              Navigator.of(context).pop(); // Close confirm dialog
-
-              if (isDeleted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.green,
-                    content: Text(
-                      'Unit deleted successfully!',
-                      style: TextStyle(color: colorScheme.primary),
-                    ),
-                  ),
-                );
-                await provider.fetchUnits(); // Refresh list
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Failed to delete Unit',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                );
-              }
-            },
+            onPressed: () => _performDelete(context, unitId),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
+
+  // ✅ Separated delete logic for better error handling
+  void _performDelete(BuildContext dialogContext, String unitId) async {
+    // Close the confirmation dialog first
+    Navigator.of(dialogContext).pop();
+
+    // Show loading dialog
+    final loadingContext = context;
+    showDialog(
+      context: loadingContext,
+      barrierDismissible: false,
+      builder: (BuildContext context) => WillPopScope(
+        onWillPop: () async => false, // Prevent back button
+        child: const AlertDialog(
+          content: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  'Deleting unit...',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    try {
+      final provider = Provider.of<UnitDTProvider>(context, listen: false);
+      
+      debugPrint('🗑️ Starting delete operation for unit: $unitId');
+      
+      bool isDeleted = await provider.deleteUnit(int.parse(unitId), context);
+      
+      // ✅ Close loading dialog - check if context is still mounted
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      debugPrint('🗑️ Delete operation completed: $isDeleted');
+
+      // Show result message
+      if (mounted) {
+        if (isDeleted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Text(
+                'Unit deleted successfully!',
+                style: TextStyle(color: Colors.white),
+              ),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          debugPrint('✅ Unit deleted from local list successfully');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text(
+                'Failed to delete unit',
+                style: TextStyle(color: Colors.white),
+              ),
+              duration: Duration(seconds: 3),
+            ),
+          );
+          debugPrint('❌ Delete failed, refreshing list');
+          _refreshUnits();
+        }
+      }
+    } catch (e) {
+      debugPrint('💥 Exception during delete: $e');
+      
+      // ✅ Ensure loading dialog is closed even on error
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+              'Error deleting unit: $e',
+              style: const TextStyle(color: Colors.white),
+            ),
+            duration: const Duration(seconds: 3),
+            action: SnackBarAction(
+              label: 'Refresh',
+              textColor: Colors.white,
+              onPressed: _refreshUnits,
+            ),
+          ),
+        );
+        _refreshUnits();
+      }
+    }
+  }
 }
+
+ 
