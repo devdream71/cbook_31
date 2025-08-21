@@ -287,50 +287,7 @@ class _ExpanseState extends State<Expanse> {
 
                                 const SizedBox(height: 2),
 
-                                /// Paid To
-                                // Text(
-                                //   expense.accountID == 1
-                                //       ? 'Cash'
-                                //       : expense.accountID == 11
-                                //           ? 'Cash A'
-                                //           : '${expense.accountID ?? 'Unknown'}', // fallback text
-                                //   style: const TextStyle(
-                                //     color: Colors.black,
-                                //     fontSize: 12,
-                                //   ),
-                                // ),
-
-                                // Text(
-                                //   expense.accountID == 1
-                                //       ? 'Cash'
-                                //       : expense.accountID == 11
-                                //           ? 'Cash A'
-                                //           : expense.accountID == 2
-                                //               ? 'Bank'
-                                //               : expense.accountID == 13
-                                //                   ? 'Bank A'
-                                //                   : '${expense.accountID ?? 'Unknown'}',
-                                //   style: const TextStyle(
-                                //     color: Colors.black,
-                                //     fontSize: 12,
-                                //   ),
-                                // ),
-
-                                ////======>
-                                // Text(
-                                //   expense.receivedTo.toLowerCase() ==
-                                //               'cash' ||
-                                //           expense.receivedTo
-                                //                   .toLowerCase() ==
-                                //               'bank'
-                                //       ? accountName
-                                //       : expense.accountID
-                                //           .toString(), // fallback
-                                //   style: const TextStyle(
-                                //     color: Colors.black,
-                                //     fontSize: 12,
-                                //   ),
-                                // ),
+                               
 
                                 const SizedBox(height: 2),
                               ],

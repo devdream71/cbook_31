@@ -295,53 +295,56 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
+                         
+                         
                           //bill person
+                          // Padding(
+                          //   padding: const EdgeInsets.only(top: 8.0),
+                          //   child: Consumer<PaymentVoucherProvider>(
+                          //     builder: (context, provider, child) {
+                          //       return SizedBox(
+                          //         height: 30,
+                          //         width: 130,
+                          //         child: provider.isLoading
+                          //             ? const Center(
+                          //                 child: CircularProgressIndicator())
+                          //             : CustomDropdownTwo(
+                          //                 hint: '',
+                          //                 items: provider.billPersonNames,
+                          //                 width: double.infinity,
+                          //                 height: 30,
+                          //                 labelText: 'Bill Person',
+                          //                 selectedItem: selectedBillPerson,
+                          //                 onChanged: (value) {
+                          //                   debugPrint(
+                          //                       '=== Bill Person Selected: $value ===');
+                          //                   setState(() {
+                          //                     selectedBillPerson = value;
+                          //                     selectedBillPersonData = provider
+                          //                         .billPersons
+                          //                         .firstWhere(
+                          //                       (person) =>
+                          //                           person.name == value,
+                          //                     ); // ✅ Save the whole object globally
+                          //                     selectedBillPersonId =
+                          //                         selectedBillPersonData!.id;
+                          //                   });
 
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Consumer<PaymentVoucherProvider>(
-                              builder: (context, provider, child) {
-                                return SizedBox(
-                                  height: 30,
-                                  width: 130,
-                                  child: provider.isLoading
-                                      ? const Center(
-                                          child: CircularProgressIndicator())
-                                      : CustomDropdownTwo(
-                                          hint: '',
-                                          items: provider.billPersonNames,
-                                          width: double.infinity,
-                                          height: 30,
-                                          labelText: 'Bill Person',
-                                          selectedItem: selectedBillPerson,
-                                          onChanged: (value) {
-                                            debugPrint(
-                                                '=== Bill Person Selected: $value ===');
-                                            setState(() {
-                                              selectedBillPerson = value;
-                                              selectedBillPersonData = provider
-                                                  .billPersons
-                                                  .firstWhere(
-                                                (person) =>
-                                                    person.name == value,
-                                              ); // ✅ Save the whole object globally
-                                              selectedBillPersonId =
-                                                  selectedBillPersonData!.id;
-                                            });
+                          //                   debugPrint(
+                          //                       'Selected Bill Person Details:');
+                          //                   debugPrint(
+                          //                       '- ID: ${selectedBillPersonData!.id}');
+                          //                   debugPrint(
+                          //                       '- Name: ${selectedBillPersonData!.name}');
+                          //                   debugPrint(
+                          //                       '- Phone: ${selectedBillPersonData!.phone}');
+                          //                 }),
+                          //       );
+                          //     },
+                          //   ),
+                          // ),
 
-                                            debugPrint(
-                                                'Selected Bill Person Details:');
-                                            debugPrint(
-                                                '- ID: ${selectedBillPersonData!.id}');
-                                            debugPrint(
-                                                '- Name: ${selectedBillPersonData!.name}');
-                                            debugPrint(
-                                                '- Phone: ${selectedBillPersonData!.phone}');
-                                          }),
-                                );
-                              },
-                            ),
-                          ),
+
                           // Bill No Field
 
                           const SizedBox(

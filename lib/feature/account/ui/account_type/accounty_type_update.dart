@@ -107,7 +107,7 @@ class _AccountyTypeUpdateState extends State<AccountyTypeUpdate> {
                         const SizedBox(height: 10),
                         AddSalesFormfield(
                           height: 40,
-                          labelText: "Account Balance",
+                          labelText: "Opening Balance",
                           controller: provider.openBlanceController,
                         ),
                         const SizedBox(height: 10),

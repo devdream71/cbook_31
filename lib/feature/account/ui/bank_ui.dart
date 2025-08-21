@@ -278,24 +278,24 @@ class _BankState extends State<Bank> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    //Navigate to Edit Page
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) =>
-                    //         TaxEdit(taxId: cashID),
-                    //   ),
-                    // );
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('Edit',
-                        style: TextStyle(fontSize: 16, color: Colors.blue)),
-                  ),
-                ),
+                // InkWell(
+                //   onTap: () {
+                //     Navigator.of(context).pop();
+                //     //Navigate to Edit Page
+                //     // Navigator.push(
+                //     //   context,
+                //     //   MaterialPageRoute(
+                //     //     builder: (context) =>
+                //     //         TaxEdit(taxId: cashID),
+                //     //   ),
+                //     // );
+                //   },
+                //   child: const Padding(
+                //     padding: EdgeInsets.symmetric(vertical: 12),
+                //     child: Text('Edit',
+                //         style: TextStyle(fontSize: 16, color: Colors.blue)),
+                //   ),
+                // ),
                 // const Divider(),
                 InkWell(
                   onTap: () {
