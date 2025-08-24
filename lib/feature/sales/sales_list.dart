@@ -723,11 +723,13 @@ class _SalesScreenState extends State<SalesScreen> {
                   onTap: () {
                     Navigator.of(context).pop();
                     //Navigate to Edit Page
+                    debugPrint('sales id == ${salesID}');
+                    debugPrint('sales id == ${salesID}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            salesUpdateScreen(salesId: int.parse(salesID)),
+                            SalesUpdateScreen(salesId: int.parse(salesID)),
                       ),
                     );
                   },

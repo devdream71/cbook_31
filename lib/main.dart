@@ -27,6 +27,7 @@ import 'package:cbook_dt/feature/purchase/purchase_update.dart';
 import 'package:cbook_dt/feature/purchase_return/controller/purchase_return_controller.dart';
 import 'package:cbook_dt/feature/purchase_return/provider/purchase_return_provider.dart';
 import 'package:cbook_dt/feature/sales/provider/sales_provider.dart';
+import 'package:cbook_dt/feature/sales/provider/update_provider.dart';
 import 'package:cbook_dt/feature/sales/sales_update.dart';
 import 'package:cbook_dt/feature/sales_return/controller/sales_return_controller.dart';
 import 'package:cbook_dt/feature/sales_return/provider/sale_return_provider.dart';
@@ -213,3 +214,6 @@ class _MyAppState extends State<MyApp> {
 
 ////key tool for genarate the jks file.  
 ////keytool -genkey -v -keystore "C:\Users\ak_dev\.android\upload-keystore.jks" -alias upload -keyalg RSA -keysize 2048 -validity 10000 -storepass cbook@123 -keypass cbook@123
+
+
+///new working ===>>

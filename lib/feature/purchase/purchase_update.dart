@@ -199,8 +199,15 @@ class PurchaseUpdateProvider extends ChangeNotifier {
 
   ///unit.
   Future<void> fetchUnits() async {
+   
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     const url = "https://commercebook.site/api/v1/units";
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url, ),   headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        }, );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -227,8 +234,15 @@ class PurchaseUpdateProvider extends ChangeNotifier {
 
   ///items
   Future<void> fetchItems() async {
+     
+      final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     const url = "https://commercebook.site/api/v1/items";
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url),   headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -260,8 +274,14 @@ class PurchaseUpdateProvider extends ChangeNotifier {
     await fetchItems();
     await fetchUnits();
 
+     final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     final url = "https://commercebook.site/api/v1/purchase/edit/$id";
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url),   headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -410,7 +430,7 @@ class PurchaseUpdateProvider extends ChangeNotifier {
   }
 
   ///update purchase.
-  Future<void> updatePurchase(context, int billPersonID) async {
+  Future<void> updatePurchase(context, ) async {
     debugPrint(jsonEncode(purchaseUpdateList));
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -423,8 +443,11 @@ class PurchaseUpdateProvider extends ChangeNotifier {
     // ✅ Use calculated discount amount
     double finalDiscountAmount = calculateDiscountAmount();
 
+    
+    final token = prefs.getString('token');
+
     final url =
-        "https://commercebook.site/api/v1/purchase/update?id=${purchaseEditResponse.data!.purchaseDetails![0].purchaseId}&user_id=${prefs.getInt("user_id")}&customer_id=${purchaseEditResponse.data!.customerId}&bill_number=${billNumberController.text}&purchase_date=$formattedDate&details_notes=notes&gross_total=${getGrossTotal()}&discount=${discountAmountController.text}&payment_out=${isCash ? 1 : 0}&payment_amount=${paymentController.text}&bill_person_id=$billPersonID";
+        "https://commercebook.site/api/v1/purchase/update?id=${purchaseEditResponse.data!.purchaseDetails![0].purchaseId}&user_id=${prefs.getInt("user_id")}&customer_id=${purchaseEditResponse.data!.customerId}&bill_number=${billNumberController.text}&purchase_date=$formattedDate&details_notes=notes&gross_total=${getGrossTotal()}&discount=${discountAmountController.text}&payment_out=${isCash ? 1 : 0}&payment_amount=${paymentController.text}"; //&bill_person_id=$billPersonID
 
     debugPrint("url  ===> $url");
 
@@ -437,7 +460,9 @@ class PurchaseUpdateProvider extends ChangeNotifier {
       debugPrint(jsonEncode(requestBody));
       final response = await http.post(
         Uri.parse(url),
-        headers: {"Content-Type": "application/json"},
+        headers: {"Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+        },
         body: jsonEncode(requestBody),
       );
 
@@ -883,100 +908,100 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                           ),
 
                                           // Bill person
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 8.0),
-                                            child: Consumer2<
-                                                PaymentVoucherProvider,
-                                                PurchaseUpdateProvider>(
-                                              builder: (context,
-                                                  paymentProvider,
-                                                  purchaseProvider,
-                                                  child) {
-                                                // ✅ Auto-select bill person from API if not already selected
-                                                if (selectedBillPerson ==
-                                                        null &&
-                                                    purchaseProvider
-                                                            .billPersonId !=
-                                                        null &&
-                                                    paymentProvider.billPersons
-                                                        .isNotEmpty) {
-                                                  WidgetsBinding.instance
-                                                      .addPostFrameCallback(
-                                                          (_) {
-                                                    final billPersonName =
-                                                        purchaseProvider
-                                                            .getBillPersonNameById(
-                                                                purchaseProvider
-                                                                    .billPersonId,
-                                                                paymentProvider);
+                                          // Padding(
+                                          //   padding:
+                                          //       const EdgeInsets.only(top: 8.0),
+                                          //   child: Consumer2<
+                                          //       PaymentVoucherProvider,
+                                          //       PurchaseUpdateProvider>(
+                                          //     builder: (context,
+                                          //         paymentProvider,
+                                          //         purchaseProvider,
+                                          //         child) {
+                                          //       // ✅ Auto-select bill person from API if not already selected
+                                          //       if (selectedBillPerson ==
+                                          //               null &&
+                                          //           purchaseProvider
+                                          //                   .billPersonId !=
+                                          //               null &&
+                                          //           paymentProvider.billPersons
+                                          //               .isNotEmpty) {
+                                          //         WidgetsBinding.instance
+                                          //             .addPostFrameCallback(
+                                          //                 (_) {
+                                          //           final billPersonName =
+                                          //               purchaseProvider
+                                          //                   .getBillPersonNameById(
+                                          //                       purchaseProvider
+                                          //                           .billPersonId,
+                                          //                       paymentProvider);
 
-                                                    if (billPersonName !=
-                                                            null &&
-                                                        mounted) {
-                                                      setState(() {
-                                                        selectedBillPerson =
-                                                            billPersonName;
-                                                        selectedBillPersonData =
-                                                            paymentProvider
-                                                                .billPersons
-                                                                .firstWhere(
-                                                          (person) =>
-                                                              person.id ==
-                                                              purchaseProvider
-                                                                  .billPersonId,
-                                                        );
-                                                        selectedBillPersonId =
-                                                            selectedBillPersonData!
-                                                                .id;
-                                                      });
-                                                    }
-                                                  });
-                                                }
+                                          //           if (billPersonName !=
+                                          //                   null &&
+                                          //               mounted) {
+                                          //             setState(() {
+                                          //               selectedBillPerson =
+                                          //                   billPersonName;
+                                          //               selectedBillPersonData =
+                                          //                   paymentProvider
+                                          //                       .billPersons
+                                          //                       .firstWhere(
+                                          //                 (person) =>
+                                          //                     person.id ==
+                                          //                     purchaseProvider
+                                          //                         .billPersonId,
+                                          //               );
+                                          //               selectedBillPersonId =
+                                          //                   selectedBillPersonData!
+                                          //                       .id;
+                                          //             });
+                                          //           }
+                                          //         });
+                                          //       }
 
-                                                return SizedBox(
-                                                  height: 30,
-                                                  width: double.infinity,
-                                                  child: paymentProvider
-                                                          .isLoading
-                                                      ? const Center(
-                                                          child:
-                                                              CircularProgressIndicator())
-                                                      : CustomDropdownTwo(
-                                                          hint: '',
-                                                          items: paymentProvider
-                                                              .billPersonNames,
-                                                          width:
-                                                              double.infinity,
-                                                          height: 30,
-                                                          labelText:
-                                                              'Bill Person',
-                                                          selectedItem:
-                                                              selectedBillPerson,
-                                                          onChanged: (value) {
-                                                            debugPrint(
-                                                                '=== Bill Person Selected: $value ===');
-                                                            setState(() {
-                                                              selectedBillPerson =
-                                                                  value;
-                                                              selectedBillPersonData =
-                                                                  paymentProvider
-                                                                      .billPersons
-                                                                      .firstWhere(
-                                                                (person) =>
-                                                                    person
-                                                                        .name ==
-                                                                    value,
-                                                              );
-                                                              selectedBillPersonId =
-                                                                  selectedBillPersonData!
-                                                                      .id;
-                                                            });
-                                                          }),
-                                                );
-                                              },
-                                            ),
-                                          ),
+                                          //       return SizedBox(
+                                          //         height: 30,
+                                          //         width: double.infinity,
+                                          //         child: paymentProvider
+                                          //                 .isLoading
+                                          //             ? const Center(
+                                          //                 child:
+                                          //                     CircularProgressIndicator())
+                                          //             : CustomDropdownTwo(
+                                          //                 hint: '',
+                                          //                 items: paymentProvider
+                                          //                     .billPersonNames,
+                                          //                 width:
+                                          //                     double.infinity,
+                                          //                 height: 30,
+                                          //                 labelText:
+                                          //                     'Bill Person',
+                                          //                 selectedItem:
+                                          //                     selectedBillPerson,
+                                          //                 onChanged: (value) {
+                                          //                   debugPrint(
+                                          //                       '=== Bill Person Selected: $value ===');
+                                          //                   setState(() {
+                                          //                     selectedBillPerson =
+                                          //                         value;
+                                          //                     selectedBillPersonData =
+                                          //                         paymentProvider
+                                          //                             .billPersons
+                                          //                             .firstWhere(
+                                          //                       (person) =>
+                                          //                           person
+                                          //                               .name ==
+                                          //                           value,
+                                          //                     );
+                                          //                     selectedBillPersonId =
+                                          //                         selectedBillPersonData!
+                                          //                             .id;
+                                          //                   });
+                                          //                 }),
+                                          //       );
+                                          //     },
+                                          //   ),
+                                          // ),
                                         ],
                                       ),
                                     ),
@@ -1563,20 +1588,24 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                               width: double.maxFinite,
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  if (selectedBillPersonData == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                            'Please select a bill person.'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                    return;
-                                  }
+                                  // if (selectedBillPersonData == null) {
+                                  //   ScaffoldMessenger.of(context).showSnackBar(
+                                  //     const SnackBar(
+                                  //       content: Text(
+                                  //           'Please select a bill person.'),
+                                  //       backgroundColor: Colors.red,
+                                  //     ),
+                                  //   );
+                                  //   return;
+                                  // }
 
-                                  int billPersonID = selectedBillPersonData!.id;
+                                  //int billPersonID = selectedBillPersonData!.id;
                                   await provider.updatePurchase(
-                                      context, billPersonID);
+                                      context
+                                      
+                                      //billPersonID
+                                      
+                                      );
                                   debugPrint(
                                       'bill number ${billController.text}');
                                 },

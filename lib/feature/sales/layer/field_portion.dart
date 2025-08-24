@@ -14,30 +14,78 @@ class _FieldPortionState extends State<FieldPortion> {
 
   String? selectedTaxId;
 
-  @override
+    // ✅ add flags
+  // bool _itemWiseDiscount = false;
+  // bool _itemWiseVatTax = false;
+
+  bool _billWiseVatTax = false;
+  bool _billWiseDiscount = false;
+
+
+  bool _isLoading = true;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   taxAmountController = TextEditingController();
+  //   //totalAmountController = TextEditingController();
+  //   totalAmountController.text = '0.00'; // Initial value
+
+  //   final controller = context.read<SalesController>();
+
+  //   controller.addListener(() {
+  //     taxAmountController.text = controller.taxAmount.toStringAsFixed(2);
+  //     totalAmountController.text = controller.totalAmount;
+  //     setState(() {}); // Rebuild to reflect changes in UI
+  //   });
+
+  //   taxAmountController.text = controller.taxAmount.toStringAsFixed(2);
+  //   totalAmountController.text = controller.totalAmount;
+  // }
+
+  
+    @override
   void initState() {
     super.initState();
     taxAmountController = TextEditingController();
-    //totalAmountController = TextEditingController();
-    totalAmountController.text = '0.00'; // Initial value
+    totalAmountController.text = '0.00';
 
     final controller = context.read<SalesController>();
 
     controller.addListener(() {
       taxAmountController.text = controller.taxAmount.toStringAsFixed(2);
       totalAmountController.text = controller.totalAmount;
-      setState(() {}); // Rebuild to reflect changes in UI
+      setState(() {});
     });
 
     taxAmountController.text = controller.taxAmount.toStringAsFixed(2);
     totalAmountController.text = controller.totalAmount;
+
+    _loadSettings(); // ✅ load switch states
   }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      // _itemWiseDiscount = prefs.getBool('itemWiseDiscount') ?? false;
+      // _itemWiseVatTax = prefs.getBool('itemWiseVatTax') ?? false;
+      _billWiseVatTax = prefs.getBool('billWiseVatTax') ?? false;
+      _billWiseDiscount = prefs.getBool('billWiseDiscount') ?? false;
+      _isLoading = false;
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<SalesController>();
 
     String? selectedTaxName;
+
+    if (_isLoading) {
+    return const Center(child: CircularProgressIndicator());
+  }
 
     //final discoust = controller.receivedMoneyController;
 
@@ -77,7 +125,11 @@ class _FieldPortionState extends State<FieldPortion> {
         /////====> cash discount and percentance.
         controller.isDisocunt &&
                 controller.isCash //controller.isDisocunt == true
-            ? Padding(
+            ? 
+            
+            _billWiseDiscount && controller.isCash
+          ?
+            Padding(
                 padding: const EdgeInsets.only(bottom: 2.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -132,7 +184,7 @@ class _FieldPortionState extends State<FieldPortion> {
                   ],
                 ),
               )
-            : const SizedBox.shrink(),
+            : const SizedBox.shrink() : const SizedBox.shrink(),
 
         // const SizedBox(
         //   height: 5,
@@ -140,7 +192,11 @@ class _FieldPortionState extends State<FieldPortion> {
 
         // //cash ////tax and percentace
         controller.isVatTax && controller.isCash
-            ? Padding(
+            ? 
+            _billWiseVatTax && controller.isCash
+          ? 
+            
+            Padding(
                 padding: const EdgeInsets.only(bottom: 2.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -267,7 +323,7 @@ class _FieldPortionState extends State<FieldPortion> {
                   ],
                 ),
               )
-            : const SizedBox.shrink(),
+            : const SizedBox.shrink()  : SizedBox.shrink(),
 
         // ///cash /// adjust total
         controller.isDisocunt && controller.isCash

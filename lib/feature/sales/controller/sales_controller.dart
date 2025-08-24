@@ -491,7 +491,6 @@ class SalesController extends ChangeNotifier {
   }
 
 
-
   String get totalAmount2 {
     double subtotal =
         double.tryParse(addAmount()) ?? 0.0; // Get credit subtotal

@@ -356,7 +356,7 @@ class _BillInvoiceCreateFormState extends State<BillInvoiceCreateForm> {
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                 title: const Text(
-                  "Bill Wise Discount",
+                  "Item Wise vat tax",
                   style: TextStyle(fontSize: 14),
                 ),
                 trailing: Transform.scale(
