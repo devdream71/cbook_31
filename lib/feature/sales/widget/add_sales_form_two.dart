@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 
 /// customer list dropdown with overlay and search
 
-
 /// Customer list dropdown with overlay and search - Similar to CustomDropdownTwo
 class AddSalesFormfieldTwo extends StatefulWidget {
   final String? label;
@@ -59,7 +58,7 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
   void initState() {
     super.initState();
     selectedCustomer = widget.selectedCustomer;
-    
+
     // Set initial text if customer is selected
     if (selectedCustomer != null) {
       widget.controller.text = selectedCustomer!.name;
@@ -84,7 +83,7 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
   @override
   void didUpdateWidget(covariant AddSalesFormfieldTwo oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // Update selected customer if changed
     if (widget.selectedCustomer != oldWidget.selectedCustomer) {
       setState(() {
@@ -219,14 +218,17 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 6),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    widget.customerorSaleslist ?? "Customer list",
+                                    widget.customerorSaleslist ??
+                                        "Customer list",
                                     style: const TextStyle(
                                         color: Colors.black, fontSize: 12),
                                   ),
-                                  if (widget.customerOrSupplierButtonLavel != null)
+                                  if (widget.customerOrSupplierButtonLavel !=
+                                      null)
                                     InkWell(
                                       onTap: () {
                                         _removeDropdown();
@@ -241,15 +243,16 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
                                 ],
                               ),
                             ),
-                            Divider(color: widget.color ?? Colors.grey, height: 1),
-                            
+                            Divider(
+                                color: widget.color ?? Colors.grey, height: 1),
                             Flexible(
                               child: _filteredCustomers.isEmpty
                                   ? const Padding(
                                       padding: EdgeInsets.all(16.0),
                                       child: Text(
                                         'No customers found',
-                                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.grey),
                                         textAlign: TextAlign.center,
                                       ),
                                     )
@@ -258,25 +261,35 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
                                       padding: EdgeInsets.zero,
                                       itemCount: _filteredCustomers.length,
                                       itemBuilder: (context, index) {
-                                        final customer = _filteredCustomers[index];
-                                        final isSelected = selectedCustomer?.id == customer.id;
+                                        final customer =
+                                            _filteredCustomers[index];
+                                        final isSelected =
+                                            selectedCustomer?.id == customer.id;
 
                                         return Material(
-                                          color: isSelected ? Colors.grey.shade200 : Colors.white,
+                                          color: isSelected
+                                              ? Colors.grey.shade200
+                                              : Colors.white,
                                           child: InkWell(
-                                            onTap: () => _selectCustomer(customer, provider),
+                                            onTap: () => _selectCustomer(
+                                                customer, provider),
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 8),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
                                               child: Row(
                                                 children: [
                                                   Container(
                                                     width: 8,
                                                     height: 8,
-                                                    margin: const EdgeInsets.only(right: 10),
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 10),
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
-                                                      color: customer.type == 'customer'
+                                                      color: customer.type ==
+                                                              'customer'
                                                           ? Colors.green
                                                           : Colors.red,
                                                     ),
@@ -288,7 +301,8 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
                                                         color: Colors.black,
                                                         fontSize: 14,
                                                       ),
-                                                      overflow: TextOverflow.ellipsis,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                     ),
                                                   ),
                                                   Text(
@@ -337,7 +351,8 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
         }
 
         final hasValue = selectedCustomer != null;
-        final isEnabled = customerProvider.customerResponse?.data?.isNotEmpty ?? false;
+        final isEnabled =
+            customerProvider.customerResponse?.data?.isNotEmpty ?? false;
         final verticalPadding = (widget.height - 20) / 2;
 
         return Column(
@@ -350,15 +365,17 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
               ),
               const SizedBox(height: 5),
             ],
-            
+
             CompositedTransformTarget(
               link: _layerLink,
               child: SizedBox(
                 width: widget.width,
                 height: widget.height,
                 child: widget.enableSearch
-                    ? _buildSearchField(customerProvider, isEnabled, verticalPadding)
-                    : _buildDropdownField(customerProvider, isEnabled, verticalPadding, hasValue),
+                    ? _buildSearchField(
+                        customerProvider, isEnabled, verticalPadding)
+                    : _buildDropdownField(
+                        customerProvider, isEnabled, verticalPadding, hasValue),
               ),
             ),
 
@@ -378,13 +395,31 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
                     ),
                   ),
                   Text(
-                    "৳ ${selectedCustomer!.due.toStringAsFixed(2)}",
+                    "${selectedCustomer!.due.toStringAsFixed(2)}",
                     style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {
+                      if (selectedCustomer != null) {
+                        _showCustomerDetailsDialog(context, selectedCustomer!);
+                      }
+                    },
+                    child: const Text(
+                      'View',
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  )
                 ],
               ),
             ],
@@ -394,7 +429,8 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
     );
   }
 
-  Widget _buildSearchField(CustomerProvider provider, bool isEnabled, double verticalPadding) {
+  Widget _buildSearchField(
+      CustomerProvider provider, bool isEnabled, double verticalPadding) {
     return TextFormField(
       controller: widget.controller,
       focusNode: _focusNode,
@@ -460,7 +496,8 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
     );
   }
 
-  Widget _buildDropdownField(CustomerProvider provider, bool isEnabled, double verticalPadding, bool hasValue) {
+  Widget _buildDropdownField(CustomerProvider provider, bool isEnabled,
+      double verticalPadding, bool hasValue) {
     return GestureDetector(
       onTap: isEnabled
           ? () {
@@ -532,6 +569,115 @@ class _AddSalesFormfieldTwoState extends State<AddSalesFormfieldTwo> {
       ),
     );
   }
+
+  // Alternative compact dialog design:
+  void _showCustomerDetailsDialog(BuildContext context, Customer customer) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(6), // 👈 set your desired radius
+          ),
+          title: const Text(
+            'Customer Information',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          content: Container(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Customer Type Indicator
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: customer.type == 'customer'
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: customer.type == 'customer'
+                          ? Colors.green
+                          : Colors.red,
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    customer.type == 'customer' ? 'Customer' : 'Supplier',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: customer.type == 'customer'
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Information Table
+                Table(
+                  columnWidths: const {
+                    0: FlexColumnWidth(2),
+                    1: FlexColumnWidth(3),
+                  },
+                  children: [
+                    _buildTableRow(customer.name),
+                    _buildTableRow(customer.proprietorName ?? 'N/A'),
+                    _buildTableRow(customer.phone ?? 'N/A'),
+                    _buildTableRow(customer.address ?? 'N/A'),
+                    _buildTableRow(
+                      '${customer.type == 'customer' ? 'Receivable:' : 'Payable:'} ৳ ${customer.due.toStringAsFixed(2)}',
+                      valueColor: customer.type == 'customer'
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// Helper method for table rows:
+  TableRow _buildTableRow(String value, {Color? valueColor}) {
+    return TableRow(
+      children: [
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(vertical: 6),
+        //   child: Text(
+        //     label,
+        //     style: const TextStyle(
+        //       fontSize: 12,
+        //       color: Colors.grey,
+        //       fontWeight: FontWeight.w500,
+        //     ),
+        //   ),
+        // ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: valueColor ?? Colors.black,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
-
-

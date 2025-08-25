@@ -116,19 +116,16 @@ class _SalesScreenState extends State<SalesScreen> {
         title: isSearching
             ? Column(
                 children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
                   SizedBox(
-                    height: 35,
+                    height: 45, // Increased from 35 to 45
                     child: TextField(
                       controller: searchController,
                       autofocus: true,
-                      cursorHeight: 15,
+                      cursorHeight: 20, // Increased cursor height proportionally
                       cursorColor: Colors.white,
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                       decoration: InputDecoration(
-                        hintText: ' ',
+                        //hintText: ' ',
                         hintStyle: const TextStyle(color: Colors.black54),
                         enabledBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.white),
@@ -140,7 +137,7 @@ class _SalesScreenState extends State<SalesScreen> {
                           borderRadius: BorderRadius.circular(2),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 0),
+                            horizontal: 8, vertical: 8), // Increased vertical padding
                         fillColor: Colors.grey.shade100,
                         isDense: true,
                       ),
@@ -207,7 +204,7 @@ class _SalesScreenState extends State<SalesScreen> {
             ),
           ),
 
-          // Bill Button
+          // sales create.
           InkWell(
             onTap: () {
               Navigator.push(
@@ -244,6 +241,140 @@ class _SalesScreenState extends State<SalesScreen> {
           ),
         ],
       ),
+      // appBar: AppBar(
+      //   title: isSearching
+      //       ? Column(
+      //           children: [
+      //             const SizedBox(
+      //               height: 10,
+      //             ),
+      //             SizedBox(
+      //               height: 35,
+      //               child: TextField(
+      //                 controller: searchController,
+      //                 autofocus: true,
+      //                 cursorHeight: 15,
+      //                 cursorColor: Colors.white,
+      //                 style: const TextStyle(color: Colors.white, fontSize: 16),
+      //                 decoration: InputDecoration(
+      //                   //hintText: ' ',
+      //                   hintStyle: const TextStyle(color: Colors.black54),
+      //                   enabledBorder: OutlineInputBorder(
+      //                     borderSide: const BorderSide(color: Colors.white),
+      //                     borderRadius: BorderRadius.circular(4),
+      //                   ),
+      //                   focusedBorder: OutlineInputBorder(
+      //                     borderSide:
+      //                         const BorderSide(color: Colors.white, width: 0.5),
+      //                     borderRadius: BorderRadius.circular(2),
+      //                   ),
+      //                   contentPadding: const EdgeInsets.symmetric(
+      //                       horizontal: 8, vertical: 0),
+      //                   fillColor: Colors.grey.shade100,
+      //                   isDense: true,
+      //                 ),
+      //                 onChanged: (value) {
+      //                   Provider.of<SalesProvider>(context, listen: false)
+      //                       .filterSales(value);
+      //                   // Your filter logic
+      //                 },
+      //               ),
+      //             ),
+      //           ],
+      //         )
+      //       : const Text(
+      //           'Sales List',
+      //           style: TextStyle(color: Colors.yellow, fontSize: 16),
+      //         ),
+      //   leading: const BackButton(color: Colors.white),
+      //   backgroundColor: colorScheme.primary,
+      //   actions: [
+      //     // Search or Close Icon with circular background
+      //     Padding(
+      //       padding: const EdgeInsets.only(right: 8.0),
+      //       child: GestureDetector(
+      //         onTap: () {
+      //           setState(() {
+      //             isSearching = !isSearching;
+      //             if (!isSearching) {
+      //               searchController.clear();
+      //             }
+      //           });
+      //         },
+      //         child: Container(
+      //           height: 20,
+      //           width: 20,
+      //           decoration: BoxDecoration(
+      //             color: isSearching ? Colors.red : Colors.green,
+      //             shape: BoxShape.circle,
+      //             border: isSearching
+      //                 ? null
+      //                 : Border.all(color: Colors.white, width: 2),
+      //           ),
+      //           padding: const EdgeInsets.all(0),
+      //           child: InkWell(
+      //             onTap: () {
+      //               setState(() {
+      //                 isSearching = !isSearching;
+      //                 if (!isSearching) {
+      //                   searchController.clear();
+      //                   Provider.of<SalesProvider>(context, listen: false)
+      //                       .resetFilter();
+      //                 }
+      //               });
+      //             },
+      //             child: Align(
+      //               alignment: Alignment.center,
+      //               child: Icon(
+      //                 isSearching ? Icons.close : Icons.search,
+      //                 color: Colors.white,
+      //                 size: 16,
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+
+      //     // Bill Button
+      //     InkWell(
+      //       onTap: () {
+      //         Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //             builder: (context) => const SalesView(),
+      //           ),
+      //         );
+      //       },
+      //       child: const Padding(
+      //         padding: EdgeInsets.only(right: 8.0),
+      //         child: Row(
+      //           children: [
+      //             CircleAvatar(
+      //               radius: 9,
+      //               backgroundColor: Colors.white,
+      //               child: Align(
+      //                 alignment: Alignment.center,
+      //                 child: Icon(
+      //                   Icons.add,
+      //                   size: 18,
+      //                   color: Colors.green,
+      //                 ),
+      //               ),
+      //             ),
+      //             SizedBox(width: 3),
+      //             Text(
+      //               'Sales',
+      //               style: TextStyle(color: Colors.yellow, fontSize: 16),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
+      
+      
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,10 +387,54 @@ class _SalesScreenState extends State<SalesScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+
+                   ///sales, received, due - now shows filtered summary
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Consumer<SalesProvider>(
+                      builder: (context, provider, _) {
+                        final filteredSales =
+                            filterSalesByDateRange(provider.sales);
+                        final summary = calculateFilteredSummary(filteredSales);
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Sales ${summary['totalSales']?.toStringAsFixed(2) ?? '0.00'}",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                //fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            Text(
+                              "Rec. ${summary['totalReceived']?.toStringAsFixed(2) ?? '0.00'}", //
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                //fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            Text(
+                              "Due ${summary['totalDue']?.toStringAsFixed(2) ?? '0.00'}",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                //fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+
+
                   ////date, current date, bill qty
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Row(
                         children: [
@@ -286,7 +461,7 @@ class _SalesScreenState extends State<SalesScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 0.0),
+                                      padding: const EdgeInsets.only(top: 3.0),
                                       child: Text(
                                         "${selectedStartDate.day}/${selectedStartDate.month}/${selectedStartDate.year}",
                                         style: GoogleFonts.notoSansPhagsPa(
@@ -303,7 +478,7 @@ class _SalesScreenState extends State<SalesScreen> {
                           Text("-",
                               style: GoogleFonts.notoSansPhagsPa(
                                   fontSize: 14, color: Colors.black)),
-                          const SizedBox(width: 8),
+                          //const SizedBox(width: 8),
 
                           // to date
                           SizedBox(
@@ -341,13 +516,13 @@ class _SalesScreenState extends State<SalesScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          //const SizedBox(width: 8),
                         ],
                       ),
 
                       ///bill qty - now shows filtered count
                       Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
+                        padding: const EdgeInsets.only(right: 8.0),
                         child: Consumer<SalesProvider>(
                             builder: (context, provider, child) {
                           final filteredSales =
@@ -366,47 +541,7 @@ class _SalesScreenState extends State<SalesScreen> {
                     ],
                   ),
 
-                  ///sales, received, due - now shows filtered summary
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Consumer<SalesProvider>(
-                      builder: (context, provider, _) {
-                        final filteredSales =
-                            filterSalesByDateRange(provider.sales);
-                        final summary = calculateFilteredSummary(filteredSales);
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "Sales: ${summary['totalSales']?.toStringAsFixed(2) ?? '0.00'}",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                                //fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            Text(
-                              "Received: ${summary['totalReceived']?.toStringAsFixed(2) ?? '0.00'}", //
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                                //fontWeight: FontWeight.bold
-                              ),
-                            ),
-                            Text(
-                              "Due: ${summary['totalDue']?.toStringAsFixed(2) ?? '0.00'}",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                                //fontWeight: FontWeight.bold
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  )
+                 
                 ],
               ),
             ),

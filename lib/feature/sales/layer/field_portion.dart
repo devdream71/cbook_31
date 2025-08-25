@@ -459,7 +459,7 @@ class _FieldPortionState extends State<FieldPortion> {
 
         // /////credit discount <==============
 
-        controller.isCash == false && controller.isDisocunt == true
+        controller.isCash == false && controller.isDisocunt == true ? _billWiseDiscount 
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 2.0),
                 child: Row(
@@ -512,14 +512,14 @@ class _FieldPortionState extends State<FieldPortion> {
                   ],
                 ),
               )
-            : const SizedBox.shrink(),
+            : const SizedBox.shrink() : const SizedBox.shrink(),
 
         // const SizedBox(
         //   height: 5,
         // ),
 
         // //controller.isVatTax && controller.isCash
-        controller.isCash == false && controller.isVatTax
+        controller.isCash == false && controller.isVatTax ?  _billWiseVatTax
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 2.0),
                 child: Row(
@@ -632,7 +632,7 @@ class _FieldPortionState extends State<FieldPortion> {
                   ],
                 ),
               )
-            : const SizedBox.shrink(),
+            : const SizedBox.shrink() : const SizedBox.shrink(),
 
         // const SizedBox(
         //   height: 5,

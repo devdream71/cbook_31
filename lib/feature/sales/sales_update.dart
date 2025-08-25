@@ -1,9 +1,11 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/common/give_information_dialog.dart';
 import 'package:cbook_dt/common/item_dropdown_custom.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
+import 'package:cbook_dt/feature/item/model/items_show.dart';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
 import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
@@ -15,13 +17,14 @@ import 'package:cbook_dt/feature/sales/provider/update_provider.dart';
 import 'package:cbook_dt/feature/sales/update_sale_item_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
+import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/feature/suppliers/suppliers_create.dart';
 import 'package:cbook_dt/feature/tax/provider/tax_provider.dart';
 import 'package:cbook_dt/feature/unit/model/demo_unit_model.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart'; 
+import 'package:provider/provider.dart';
 
 ///====>Sales update Screen
 class SalesUpdateScreen extends StatefulWidget {
@@ -101,15 +104,39 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
     return ChangeNotifierProvider(
       create: (_) => SaleUpdateProvider()..fetchSaleData(widget.salesId),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: AppColors.sfWhite,
         appBar: AppBar(
-            backgroundColor: colorScheme.primary,
-            iconTheme: const IconThemeData(color: Colors.white),
-            centerTitle: true,
-            title: const Text(
-              "Update Sale",
-              style: TextStyle(color: Colors.yellow, fontSize: 16),
-            )),
+          backgroundColor: colorScheme.primary,
+          iconTheme: const IconThemeData(color: Colors.white),
+          //centerTitle: true,
+          title: const Text(
+            "Update Sale",
+            style: TextStyle(color: Colors.yellow, fontSize: 16),
+          ),
+
+          actions: [
+            CashCreditToggle(
+              initialCash: true,
+              onChanged: (isCash) {
+                print("Selected: ${isCash ? "Cash" : "Credit"}");
+                controller.updateCash(context);
+                ; // you can hook your logic here
+              },
+            ),
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const BillInvoiceCreateForm()));
+                },
+                icon: const Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                ))
+          ],
+        ),
         body: SingleChildScrollView(
           child: Consumer<SaleUpdateProvider>(
             builder: (context, provider, child) {
@@ -117,51 +144,176 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
               return provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.symmetric(horizontal:  4.0),
                       child: Column(
                         children: [
                           // Cash/Credit Toggle
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: InkWell(
-                              onTap: () {
-                                controller.updateCash(context);
-                              },
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryColor,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        provider.hasCustomer
-                                            ? "Credit"
-                                            : "Cash",
-                                        style: GoogleFonts.lato(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
-                                        ),
+
+                          Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: Container(
+                              color: Color(0xffdddefa),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 4.0, vertical: 4.0),
+                                child: Row(
+                                  children: [
+                                    /// Bill No
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "Bill/Invoice No",
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12),
+                                          ),
+                                          Text(
+                                            provider.billNumberController.text,
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 12),
+                                            overflow: TextOverflow
+                                                .ellipsis, // ✅ Prevent overflow
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(width: 1),
-                                      const Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: Colors.white,
-                                        size: 12,
-                                      )
-                                    ],
-                                  ),
+                                    ),
+
+                                    /// Vertical Divider
+                                    Container(
+                                      width: 1,
+                                      height:
+                                          40, // you can tweak this to match the height of content
+                                      color: Colors.black,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                    ),
+
+                                    /// Bill Date
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text(
+                                                "Date",
+                                                style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 12),
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  controller.pickDate(context);
+                                                },
+                                                child: Icon(
+                                                  Icons.calendar_today,
+                                                  size: 16,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          InkWell(
+                                            onTap: () =>
+                                                controller.pickDate(context),
+                                            child: InputDecorator(
+                                              decoration: InputDecoration(
+                                                fillColor: Colors.white,
+                                                isDense: true,
+                                                //suffixIcon: ,
+                                                suffixIconConstraints:
+                                                    const BoxConstraints(
+                                                  minWidth: 16,
+                                                  minHeight: 16,
+                                                ),
+                                                hintText: "Bill Date",
+                                                hintStyle: TextStyle(
+                                                  color: Colors.grey.shade400,
+                                                  fontSize: 9,
+                                                ),
+                                                enabledBorder:
+                                                    const UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Colors.transparent,
+                                                      width: 0),
+                                                ),
+                                                focusedBorder:
+                                                    const UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color:
+                                                          Colors.transparent),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                controller.formattedDate
+                                                        .isNotEmpty
+                                                    ? controller.formattedDate
+                                                    : "Select Date",
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 5),
-                          
+
+                          // Align(
+                          //   alignment: Alignment.topLeft,
+                          //   child: InkWell(
+                          //     onTap: () {
+                          //       controller.updateCash(context);
+                          //     },
+                          //     child: DecoratedBox(
+                          //       decoration: BoxDecoration(
+                          //         color: AppColors.primaryColor,
+                          //         borderRadius: BorderRadius.circular(5),
+                          //       ),
+                          //       child: Padding(
+                          //         padding:
+                          //             const EdgeInsets.symmetric(horizontal: 5),
+                          //         child: Row(
+                          //           mainAxisSize: MainAxisSize.min,
+                          //           children: [
+                          //             Text(
+                          //               provider.hasCustomer
+                          //                   ? "Credit"
+                          //                   : "Cash",
+                          //               style: GoogleFonts.lato(
+                          //                 color: Colors.white,
+                          //                 fontWeight: FontWeight.w600,
+                          //                 fontSize: 14,
+                          //               ),
+                          //             ),
+                          //             const SizedBox(width: 1),
+                          //             const Icon(
+                          //               Icons.arrow_forward_ios,
+                          //               color: Colors.white,
+                          //               size: 12,
+                          //             )
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                          // const SizedBox(height: 5),
+
                           // Main Form Section
                           Align(
                             alignment: Alignment.bottomRight,
@@ -175,37 +327,43 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                     // Bill To Section
                                     Expanded(
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          const Text(
-                                            "Bill To",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12),
-                                          ),
-                                          vPad5,
-                                          const Text(
-                                            "Supplier",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12),
-                                          ),
+                                          // const Text(
+                                          //   "Bill To",
+                                          //   style: TextStyle(
+                                          //       color: Colors.black,
+                                          //       fontWeight: FontWeight.w600,
+                                          //       fontSize: 12),
+                                          // ),
+                                          // vPad5,
+                                          // const Text(
+                                          //   "Supplier",
+                                          //   style: TextStyle(
+                                          //       color: Colors.black,
+                                          //       fontSize: 12),
+                                          // ),
 
                                           // Customer/Supplier Section
                                           Row(
                                             children: [
                                               SizedBox(
-                                                  height: 58,
-                                                  width: 180,
+                                                  // height: 58,
+                                                  // width: 180,
                                                   child: provider.hasCustomer
                                                       ? Column(
                                                           children: [
                                                             AddSalesFormfieldTwo(
-                                                                controller: controller.codeController,
-                                                                customerorSaleslist: "Showing supplier list",
-                                                                customerOrSupplierButtonLavel: "Add new supplier",
+                                                                controller:
+                                                                    controller
+                                                                        .codeController,
+                                                                customerorSaleslist:
+                                                                    "Showing supplier list",
+                                                                customerOrSupplierButtonLavel:
+                                                                    "Add new supplier",
                                                                 onTap: () {
                                                                   Navigator.push(
                                                                       context,
@@ -257,40 +415,64 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                         )
                                                       : InkWell(
                                                           onTap: () {
-                                                            showDialog(
-                                                              context: context,
-                                                              builder: (context) => Dialog(
-                                                                child: ReusableForm(
-                                                                  nameController: nameController,
-                                                                  phoneController: phoneController,
-                                                                  emailController: emailController,
-                                                                  addressController: addressController,
-                                                                  primaryColor: Theme.of(context).primaryColor,
-                                                                  onCancel: _onCancel,
-                                                                  onSubmit: () {
-                                                                    setState(() {
-                                                                      controller.updatedCustomerInfomation(
-                                                                        nameFrom: nameController.text,
-                                                                        phoneFrom: phoneController.text,
-                                                                        emailFrom: emailController.text,
-                                                                        addressFrom: addressController.text,
-                                                                      );
-                                                                    });
-                                                                    Navigator.pop(context);
-                                                                  },
-                                                                ),
-                                                              ),
-                                                            );
+                                                            // showDialog(
+                                                            //   context: context,
+                                                            //   builder:
+                                                            //       (context) =>
+                                                            //           Dialog(
+                                                            //     child:
+                                                            //         ReusableForm(
+                                                            //       nameController:
+                                                            //           nameController,
+                                                            //       phoneController:
+                                                            //           phoneController,
+                                                            //       emailController:
+                                                            //           emailController,
+                                                            //       addressController:
+                                                            //           addressController,
+                                                            //       primaryColor:
+                                                            //           Theme.of(
+                                                            //                   context)
+                                                            //               .primaryColor,
+                                                            //       onCancel:
+                                                            //           _onCancel,
+                                                            //       onSubmit: () {
+                                                            //         setState(
+                                                            //             () {
+                                                            //           controller
+                                                            //               .updatedCustomerInfomation(
+                                                            //             nameFrom:
+                                                            //                 nameController.text,
+                                                            //             phoneFrom:
+                                                            //                 phoneController.text,
+                                                            //             emailFrom:
+                                                            //                 emailController.text,
+                                                            //             addressFrom:
+                                                            //                 addressController.text,
+                                                            //           );
+                                                            //         });
+                                                            //         Navigator.pop(
+                                                            //             context);
+                                                            //       },
+                                                            //     ),
+                                                            //   ),
+                                                            // );
                                                           },
-                                                          child: const Text(
-                                                            "Cash",
-                                                            style: TextStyle(
-                                                              fontSize: 12,
-                                                              color: Colors.blue,
-                                                              fontWeight: FontWeight.w600,
-                                                            ),
-                                                          ),
-                                                        )),
+                                                          child:
+                                                              SizedBox.shrink()
+
+                                                          // const Text(
+                                                          //   "Cash",
+                                                          //   style: TextStyle(
+                                                          //     fontSize: 12,
+                                                          //     color:
+                                                          //         Colors.blue,
+                                                          //     fontWeight:
+                                                          //         FontWeight
+                                                          //             .w600,
+                                                          //   ),
+                                                          // ),
+                                                          )),
                                               hPad3,
                                             ],
                                           ),
@@ -303,34 +485,38 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                       child: Column(
                                         children: [
                                           // Bill Number
-                                          AddSalesFormfield(
-                                              labelText: 'Bill Number',
-                                              controller: provider.billNumberController),
-                                          const SizedBox(height: 8),
+                                          // AddSalesFormfield(
+                                          //     labelText: 'Bill Number',
+                                          //     controller: provider
+                                          //         .billNumberController),
+                                          // const SizedBox(height: 8),
 
                                           // Date Picker
-                                          GestureDetector(
-                                            onTap: () async {
-                                              DateTime? pickedDate = await showDatePicker(
-                                                context: context,
-                                                initialDate: DateTime.now(),
-                                                firstDate: DateTime(2000),
-                                                lastDate: DateTime(2100),
-                                              );
+                                          // GestureDetector(
+                                          //   onTap: () async {
+                                          //     DateTime? pickedDate =
+                                          //         await showDatePicker(
+                                          //       context: context,
+                                          //       initialDate: DateTime.now(),
+                                          //       firstDate: DateTime(2000),
+                                          //       lastDate: DateTime(2100),
+                                          //     );
 
-                                              if (pickedDate != null) {
-                                                String formattedDate =
-                                                    "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-                                                provider.purchaseDateController.text = formattedDate;
-                                              }
-                                            },
-                                            child: AbsorbPointer(
-                                              child: AddSalesFormfield(
-                                                labelText: 'Purchase Date',
-                                                controller: provider.purchaseDateController,
-                                              ),
-                                            ),
-                                          ),
+                                          //     if (pickedDate != null) {
+                                          //       String formattedDate =
+                                          //           "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                                          //       provider.purchaseDateController
+                                          //           .text = formattedDate;
+                                          //     }
+                                          //   },
+                                          //   child: AbsorbPointer(
+                                          //     child: AddSalesFormfield(
+                                          //       labelText: 'Purchase Date',
+                                          //       controller: provider
+                                          //           .purchaseDateController,
+                                          //     ),
+                                          //   ),
+                                          // ),
                                         ],
                                       ),
                                     ),
@@ -338,30 +524,55 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                 ),
                                 const SizedBox(height: 8),
 
+                                if (controller.isCash == false)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6.0),
+                                    child: AddSalesFormfieldTwo(
+                                        controller: controller.codeController,
+                                        customerorSaleslist:
+                                            "Showing supplier list",
+                                        customerOrSupplierButtonLavel:
+                                            "Add new supplier",
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const SuppliersCreate()));
+                                        }),
+                                  ),
+
                                 // Items List
                                 ListView.builder(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: provider.saleUpdateList.length,
                                   itemBuilder: (context, index) {
-                                    final detail = provider.saleUpdateList[index];
+                                    final detail =
+                                        provider.saleUpdateList[index];
 
                                     return GestureDetector(
                                       onTap: () async {
                                         await Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => UpdateSaleItemView(
+                                            builder: (context) =>
+                                                UpdateSaleItemView(
                                               index: index,
                                               itemDetail: detail,
                                               provider: provider,
                                               itemMap: provider.itemMap,
                                               unitMap: provider.unitMap,
                                               itemList: provider.itemList,
-                                              itemDiscoumtAmount: provider.itemDiscountAmount,
-                                              itemDiscountPercentance: provider.itemDiscountPercentance,
-                                              itemtaxAmount: provider.itemTaxVatAmount,
-                                              itemtaxPercentance: provider.itemTaxVatPercentance,
+                                              itemDiscoumtAmount:
+                                                  provider.itemDiscountAmount,
+                                              itemDiscountPercentance: provider
+                                                  .itemDiscountPercentance,
+                                              itemtaxAmount:
+                                                  provider.itemTaxVatAmount,
+                                              itemtaxPercentance: provider
+                                                  .itemTaxVatPercentance,
                                             ),
                                           ),
                                         );
@@ -369,79 +580,103 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                           provider.notifyListeners();
                                         }
                                       },
-                                      child: Card(
-                                        margin: const EdgeInsets.symmetric(vertical: 8),
-                                        elevation: 3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(12),
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "${index + 1}.   ",
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        child: Card(
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 8),
+                                          elevation: 3,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12),
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "${index + 1}.   ",
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                              ),
-                                              Expanded(
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    // Item Info
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            "Item: ${provider.itemMap[int.tryParse(detail.itemId) ?? 0] ?? "Unknown"}  (${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"})",
-                                                            style: const TextStyle(
-                                                              color: Colors.black,
-                                                              fontSize: 13,
+                                                Expanded(
+                                                  child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      // Item Info
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              "Item: ${provider.itemMap[int.tryParse(detail.itemId) ?? 0] ?? "Unknown"}  (${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"})",
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 13,
+                                                              ),
                                                             ),
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Qty: ${detail.qty}",
-                                                                style: const TextStyle(
-                                                                    color: Colors.black, fontSize: 12),
-                                                              ),
-                                                              const SizedBox(width: 5),
-                                                              Text(
-                                                                "Price: ৳ ${detail.price}",
-                                                                style: const TextStyle(
-                                                                    color: Colors.black, fontSize: 12),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Text(
-                                                            "Discount: ${detail.salesUpdateDiscountAmount}৳ , ${detail.salesUpdateDiscountPercentace} %",
-                                                            style: const TextStyle(
-                                                                color: Colors.black, fontSize: 12),
-                                                          ),
-                                                          Text(
-                                                            "Tax: ${detail.salesUpdateVATTAXAmount}৳, ${detail.salesUpdateVATTAXPercentance} %",
-                                                            style: const TextStyle(
-                                                                color: Colors.black, fontSize: 12),
-                                                          ),
-                                                        ],
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  "Qty: ${detail.qty}",
+                                                                  style: const TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          12),
+                                                                ),
+                                                                const SizedBox(
+                                                                    width: 5),
+                                                                Text(
+                                                                  "Price: ৳ ${detail.price}",
+                                                                  style: const TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          12),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Text(
+                                                              "Discount: ${detail.salesUpdateDiscountAmount}৳ , ${detail.salesUpdateDiscountPercentace} %",
+                                                              style: const TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize: 12),
+                                                            ),
+                                                            Text(
+                                                              "Tax: ${detail.salesUpdateVATTAXAmount}৳, ${detail.salesUpdateVATTAXPercentance} %",
+                                                              style: const TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize: 12),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                    // Subtotal
-                                                    Text(
-                                                      "Subtotal: ৳ ${detail.subTotal}",
-                                                      style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 12,
-                                                        fontWeight: FontWeight.bold,
+                                                      // Subtotal
+                                                      Text(
+                                                        "Subtotal: ৳ ${detail.subTotal}",
+                                                        style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -452,14 +687,19 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                             ),
                           ),
                           const SizedBox(height: 30),
-                          
+
                           // Bottom Section with Totals and Actions
                           Align(
                             alignment: Alignment.centerRight,
                             child: Column(
                               children: [
                                 // Add Item Button
-                                _buildAddItemButton(context, controller, provider, colorScheme),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4.0),
+                                  child: _buildAddItemButton(context,
+                                      controller, provider, colorScheme),
+                                ),
                                 const SizedBox(height: 5),
 
                                 // Note Section
@@ -471,7 +711,8 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                 const SizedBox(height: 5),
 
                                 // Discount Section
-                                _buildDiscountSection(updateController, saleProvider),
+                                _buildDiscountSection(
+                                    updateController, saleProvider),
                                 const SizedBox(height: 4),
 
                                 // Tax Section
@@ -488,7 +729,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          
+
                           // Update Button
                           SizedBox(
                             width: double.maxFinite,
@@ -498,7 +739,8 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 20),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -521,10 +763,10 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
   }
 
   // Helper method to build Add Item Button
-  Widget _buildAddItemButton(BuildContext context, SalesController controller, 
+  Widget _buildAddItemButton(BuildContext context, SalesController controller,
       SaleUpdateProvider provider, ColorScheme colorScheme) {
-    bool showAddButton = controller.isCash 
-        ? controller.itemsCash.isEmpty 
+    bool showAddButton = controller.isCash
+        ? controller.itemsCash.isEmpty
         : controller.itemsCredit.isEmpty;
 
     return showAddButton
@@ -534,39 +776,75 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
             },
             child: Container(
               decoration: BoxDecoration(
-                color: colorScheme.primary,
+                color: Colors.white,
+                border: Border.all(width: 1, color: Colors.grey),
                 borderRadius: BorderRadius.circular(5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Add Item & Service",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        showSalesDialog(context, controller, provider);
-                      },
+                    CircleAvatar(
+                      radius: 14,
+                      backgroundColor: AppColors.primaryColor,
                       child: const Icon(
                         Icons.add,
                         color: Colors.white,
                         size: 18,
                       ),
-                    )
+                    ),
+                    const SizedBox(
+                      width: 6,
+                    ),
+                    Text(
+                      "Add item",
+                      style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14),
+                    ),
                   ],
                 ),
               ),
             ),
+
+            // Container(
+            //   decoration: BoxDecoration(
+            //     color: colorScheme.primary,
+            //     borderRadius: BorderRadius.circular(5),
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.black.withOpacity(0.2),
+            //         blurRadius: 5,
+            //         offset: const Offset(0, 3),
+            //       ),
+            //     ],
+            //   ),
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(4.0),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         const Text(
+            //           "Add Item & Service",
+            //           style: TextStyle(color: Colors.white, fontSize: 14),
+            //         ),
+            //         InkWell(
+            //           onTap: () {
+            //             showSalesDialog(context, controller, provider);
+            //           },
+            //           child: const Icon(
+            //             Icons.add,
+            //             color: Colors.white,
+            //             size: 18,
+            //           ),
+            //         )
+            //       ],
+            //     ),
+            //   ),
+            // ),
           )
         : const SizedBox.shrink();
   }
@@ -657,149 +935,153 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
   }
 
   // Helper method to build Discount Section
-  Widget _buildDiscountSection(SaleUpdateProvider updateController, SaleUpdateProvider saleProvider) {
+  Widget _buildDiscountSection(
+      SaleUpdateProvider updateController, SaleUpdateProvider saleProvider) {
     return Align(
       alignment: Alignment.topRight,
       child: Padding(
         padding: const EdgeInsets.only(left: 8.0),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          // Discount Percentage
+          Column(
             children: [
-              // Discount Percentage
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: SizedBox(
-                      width: 95,
-                      child: AddSalesFormfield(
-                        labelText: 'DIS (%)',
-                        controller: updateController.updateDiscountPercentance,
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          updateController.updateDiscountPercent(value);
-                          saleProvider.grossTotalController.text =
-                              saleProvider.calculateFinalGrossTotalWithTax();
-                          debugPrint("Discount Percent Changed: ${updateController.updateDiscountPercentance.text}");
-                        },
-                      ),
-                    ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: SizedBox(
+                  width: 95,
+                  child: AddSalesFormfield(
+                    labelText: 'DIS (%)',
+                    controller: updateController.updateDiscountPercentance,
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      updateController.updateDiscountPercent(value);
+                      saleProvider.grossTotalController.text =
+                          saleProvider.calculateFinalGrossTotalWithTax();
+                      debugPrint(
+                          "Discount Percent Changed: ${updateController.updateDiscountPercentance.text}");
+                    },
                   ),
-                ],
+                ),
               ),
-              const SizedBox(width: 8),
-              // Discount Amount
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                    child: SizedBox(
-                      width: 95,
-                      child: AddSalesFormfield(
-                        labelText: "DIS AMT",
-                        controller: updateController.updateDiscountAmount,
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          updateController.updateDiscountAmountUpdate2(value);
-                          saleProvider.grossTotalController.text =
-                              saleProvider.calculateFinalGrossTotalWithTax();
-                          debugPrint("Discount Amount Changed: ${updateController.updateDiscountAmount.text}");
-                          debugPrint("Discount Percent Changed: ${updateController.updateDiscountPercentance.text}");
-                        },
-                      ),
-                    ),
+            ],
+          ),
+          const SizedBox(width: 8),
+          // Discount Amount
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                child: SizedBox(
+                  width: 95,
+                  child: AddSalesFormfield(
+                    labelText: "DIS AMT",
+                    controller: updateController.updateDiscountAmount,
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      updateController.updateDiscountAmountUpdate2(value);
+                      saleProvider.grossTotalController.text =
+                          saleProvider.calculateFinalGrossTotalWithTax();
+                      debugPrint(
+                          "Discount Amount Changed: ${updateController.updateDiscountAmount.text}");
+                      debugPrint(
+                          "Discount Percent Changed: ${updateController.updateDiscountPercentance.text}");
+                    },
                   ),
-                ],
+                ),
               ),
-            ]),
+            ],
+          ),
+        ]),
       ),
     );
   }
 
   // Helper method to build Tax Section
   Widget _buildTaxSection(SaleUpdateProvider saleProvider) {
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // VAT Dropdown
-          Consumer2<TaxProvider, SaleUpdateProvider>(
-            builder: (context, taxProvider, saleProvider, _) {
-              if (taxProvider.isLoading) {
-                return const SizedBox();
-              }
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+      // VAT Dropdown
+      Consumer2<TaxProvider, SaleUpdateProvider>(
+        builder: (context, taxProvider, saleProvider, _) {
+          if (taxProvider.isLoading) {
+            return const SizedBox();
+          }
 
-              if (taxProvider.taxList.isEmpty) {
-                return const Text(
-                  'No tax options available.',
-                  style: TextStyle(color: Colors.black),
-                );
-              }
+          if (taxProvider.taxList.isEmpty) {
+            return const Text(
+              'No tax options available.',
+              style: TextStyle(color: Colors.black),
+            );
+          }
 
-              return Padding(
-                padding: const EdgeInsets.only(left: 17.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomDropdownTwo(
-                      labelText: 'VAT/TAX',
-                      items: taxProvider.taxList
-                          .map((tax) => "${tax.name} - (${tax.percent})")
-                          .toList(),
-                      width: 95,
-                      height: 30,
-                      selectedItem: selectedTaxName,
-                      onChanged: (newValue) {
-                        setState(() {
-                          selectedTaxName = newValue;
+          return Padding(
+            padding: const EdgeInsets.only(left: 17.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomDropdownTwo(
+                  labelText: 'VAT/TAX',
+                  items: taxProvider.taxList
+                      .map((tax) => "${tax.name} - (${tax.percent})")
+                      .toList(),
+                  width: 95,
+                  height: 30,
+                  selectedItem: selectedTaxName,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedTaxName = newValue;
 
-                          final nameOnly = newValue?.split(" - ")?.first;
-                          final selected = taxProvider.taxList.firstWhere(
-                            (tax) => tax.name == nameOnly,
-                            orElse: () => taxProvider.taxList.first,
-                          );
+                      final nameOnly = newValue?.split(" - ")?.first;
+                      final selected = taxProvider.taxList.firstWhere(
+                        (tax) => tax.name == nameOnly,
+                        orElse: () => taxProvider.taxList.first,
+                      );
 
-                          selectedTaxId = selected.id.toString();
-                          final selectedPercent = double.tryParse(selected.percent) ?? 0.0;
+                      selectedTaxId = selected.id.toString();
+                      final selectedPercent =
+                          double.tryParse(selected.percent) ?? 0.0;
 
-                          // Update provider values
-                          saleProvider.selectedTaxPercent = selectedPercent;
-                          saleProvider.taxPercent = selectedPercent;
+                      // Update provider values
+                      saleProvider.selectedTaxPercent = selectedPercent;
+                      saleProvider.taxPercent = selectedPercent;
 
-                          saleProvider.updateTaxPaecentId('${selectedTaxId}_${selectedPercent}');
+                      saleProvider.updateTaxPaecentId(
+                          '${selectedTaxId}_${selectedPercent}');
 
-                          // Update Gross Total
-                          saleProvider.grossTotalController.text =
-                              saleProvider.calculateFinalGrossTotalWithTax();
+                      // Update Gross Total
+                      saleProvider.grossTotalController.text =
+                          saleProvider.calculateFinalGrossTotalWithTax();
 
-                          debugPrint('TAX PERCENT VALUE: ${saleProvider.taxPercent}');
-                          debugPrint('Gross: ${saleProvider.grossTotalController.text}');
-                        });
-                      },
-                    ),
-                  ],
+                      debugPrint(
+                          'TAX PERCENT VALUE: ${saleProvider.taxPercent}');
+                      debugPrint(
+                          'Gross: ${saleProvider.grossTotalController.text}');
+                    });
+                  },
                 ),
-              );
-            },
-          ),
-          const SizedBox(width: 8),
+              ],
+            ),
+          );
+        },
+      ),
+      const SizedBox(width: 8),
 
-          // TAX AMOUNT FIELD (ReadOnly)
-          Consumer<SaleUpdateProvider>(
-            builder: (context, controller, _) {
-              return SizedBox(
-                width: 95,
-                child: AddSalesFormfield(
-                  labelText: 'TAX AMT',
-                  controller: TextEditingController(
-                    text: controller.taxAmount.toStringAsFixed(2),
-                  ),
-                  readOnly: true,
-                  keyboardType: TextInputType.number,
-                ),
-              );
-            },
-          ),
-        ]);
+      // TAX AMOUNT FIELD (ReadOnly)
+      Consumer<SaleUpdateProvider>(
+        builder: (context, controller, _) {
+          return SizedBox(
+            width: 95,
+            child: AddSalesFormfield(
+              labelText: 'TAX AMT',
+              controller: TextEditingController(
+                text: controller.taxAmount.toStringAsFixed(2),
+              ),
+              readOnly: true,
+              keyboardType: TextInputType.number,
+            ),
+          );
+        },
+      ),
+    ]);
   }
 
   // Helper method to build Gross Total Section
@@ -856,7 +1138,8 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                           }
                         },
                       )),
-                  const Text("", style: TextStyle(color: Colors.green, fontSize: 12)),
+                  const Text("",
+                      style: TextStyle(color: Colors.green, fontSize: 12)),
                 ],
               ),
               Row(
@@ -929,6 +1212,10 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
     String? selectedCategoryId;
     String? selectedSubCategoryId;
 
+    String? selectedItemName;
+    ItemsModel? selectedItemData;
+    int? selectedItemId;
+
     showDialog(
       context: context,
       builder: (context) {
@@ -966,20 +1253,20 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                   // Dialog Title and Close Button
                   Container(
                     height: 30,
-                    color: const Color(0xff278d46),
+                    color: Colors.white,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(width: 30),
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(width: 5),
                             Text(
-                              "Update Item & service",
+                              "Add Item to edit sales",
                               style: TextStyle(
-                                  color: Colors.yellow,
+                                  color: AppColors.primaryColor,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -1017,97 +1304,249 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                         const SizedBox(height: 8),
 
                         // Item Search Dropdown
-                        ItemCustomDropDownTextField(
-                          controller: itemController,
-                          onItemSelected: (selectedItem) async {
-                            debugPrint(
-                                "=======> Selected Item: ${selectedItem.name} (ID: ${selectedItem.id})");
+                        // ItemCustomDropDownTextField(
+                        //   controller: itemController,
+                        //   onItemSelected: (selectedItem) async {
+                        //     debugPrint(
+                        //         "=======> Selected Item: ${selectedItem.name} (ID: ${selectedItem.id})");
 
-                            // Save selected item name and id in controller
-                            controller.seletedItemName = selectedItem.name;
-                            controller.selcetedItemId =
-                                selectedItem.id.toString();
+                        //     // Save selected item name and id in controller
+                        //     controller.seletedItemName = selectedItem.name;
+                        //     controller.selcetedItemId =
+                        //         selectedItem.id.toString();
 
-                            // Fetch stock quantity
-                            if (controller.selcetedItemId != null) {
-                              fetchStockQuantity.fetchStockQuantity(
-                                  controller.selcetedItemId!);
-                            }
+                        //     // Fetch stock quantity
+                        //     if (controller.selcetedItemId != null) {
+                        //       fetchStockQuantity.fetchStockQuantity(
+                        //           controller.selcetedItemId!);
+                        //     }
 
-                            // Ensure unitProvider is loaded
-                            if (unitProvider.units.isEmpty) {
-                              await unitProvider.fetchUnits();
-                            }
+                        //     // Ensure unitProvider is loaded
+                        //     if (unitProvider.units.isEmpty) {
+                        //       await unitProvider.fetchUnits();
+                        //     }
 
-                            // Clear and reset everything
-                            unitIdsList.clear();
-                            localSelectedUnit = null;
-                            controller.selectedUnit = null;
+                        //     // Clear and reset everything
+                        //     unitIdsList.clear();
+                        //     localSelectedUnit = null;
+                        //     controller.selectedUnit = null;
 
-                            debugPrint(
-                                "Selected item unitId: ${selectedItem.unitId}");
-                            debugPrint(
-                                "Selected item secondaryUnitId: ${selectedItem.secondaryUnitId}");
+                        //     debugPrint(
+                        //         "Selected item unitId: ${selectedItem.unitId}");
+                        //     debugPrint(
+                        //         "Selected item secondaryUnitId: ${selectedItem.secondaryUnitId}");
 
-                            // Add base unit
-                            if (selectedItem.unitId != null &&
-                                selectedItem.unitId != '') {
-                              final unit = unitProvider.units.firstWhere(
-                                (unit) =>
-                                    unit.id.toString() ==
-                                    selectedItem.unitId.toString(),
-                                orElse: () => Unit(
-                                    id: 0,
-                                    name: 'Unknown Unit',
-                                    symbol: '',
-                                    status: 0),
+                        //     // Add base unit
+                        //     if (selectedItem.unitId != null &&
+                        //         selectedItem.unitId != '') {
+                        //       final unit = unitProvider.units.firstWhere(
+                        //         (unit) =>
+                        //             unit.id.toString() ==
+                        //             selectedItem.unitId.toString(),
+                        //         orElse: () => Unit(
+                        //             id: 0,
+                        //             name: 'Unknown Unit',
+                        //             symbol: '',
+                        //             status: 0),
+                        //       );
+                        //       if (unit.id != 0) {
+                        //         unitIdsList.add(unit.name);
+                        //         // Set as default selected unit
+                        //         localSelectedUnit = unit.name;
+                        //         controller.selectedUnit = unit.name;
+
+                        //         String finalUnitString =
+                        //             "${unit.id}_${unit.name}_1";
+                        //         controller.selectedUnitIdWithNameFunction(
+                        //             finalUnitString);
+                        //       }
+                        //     }
+
+                        //     // Add secondary unit
+                        //     if (selectedItem.secondaryUnitId != null &&
+                        //         selectedItem.secondaryUnitId != '') {
+                        //       final secondaryUnit =
+                        //           unitProvider.units.firstWhere(
+                        //         (unit) =>
+                        //             unit.id.toString() ==
+                        //             selectedItem.secondaryUnitId.toString(),
+                        //         orElse: () => Unit(
+                        //             id: 0,
+                        //             name: 'Unknown Unit',
+                        //             symbol: '',
+                        //             status: 0),
+                        //       );
+                        //       if (secondaryUnit.id != 0) {
+                        //         unitIdsList.add(secondaryUnit.name);
+                        //       }
+                        //     }
+
+                        //     isItemSelected = true;
+
+                        //     if (unitIdsList.isEmpty) {
+                        //       debugPrint("No valid units found for this item.");
+                        //     } else {
+                        //       debugPrint("Units Available: $unitIdsList");
+                        //       debugPrint(
+                        //           "Default selected unit: $localSelectedUnit");
+                        //     }
+
+                        //     // Trigger UI rebuild
+                        //     setState(() {});
+                        //   },
+                        // ),
+
+
+                         ////new sales item dropdown.
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Consumer<AddItemProvider>(
+                            builder: (context, itemProvider, child) {
+                              return SizedBox(
+                                height: 30,
+                                width: double.infinity,
+                                child: itemProvider.isLoading
+                                    ? const Center(
+                                        child: CircularProgressIndicator())
+                                    : CustomDropdownTwo(
+                                        enableSearch: true,
+                                        hint: 'Select Item',
+                                        items: itemProvider.items
+                                            .map((item) => item.name)
+                                            .toList(), // List<String>
+                                        width: double.infinity,
+                                        height: 30,
+                                        selectedItem:
+                                            selectedItemName, // Global/state variable
+                                        onChanged: (value) async {
+                                          debugPrint(
+                                              '=== Item Selected: $value ===');
+
+                                          // Find selected item from provider
+                                          final selectedItem =
+                                              itemProvider.items.firstWhere(
+                                            (item) => item.name == value,
+                                          );
+
+                                          setState(() {
+                                            selectedItemName = value;
+                                            selectedItemData = selectedItem;
+                                            selectedItemId = selectedItem.id;
+                                          });
+
+                                          // ✅ Clear previous units
+                                          unitIdsList.clear();
+                                          localSelectedUnit =
+                                              null; // ✅ Reset local unit selection
+
+                                          // ✅ Set sales price first
+                                          controller.salePrice = selectedItem
+                                                  .salesPrice is int
+                                              ? (selectedItem.salesPrice as int)
+                                                  .toDouble()
+                                              : (selectedItem.salesPrice ??
+                                                  0.0);
+
+                                          // ✅ Set unit quantity (default to 1 if null)
+                                          controller.unitQty =
+                                              selectedItem.unitQty ?? 1;
+
+                                          // ✅ Set price initially to sales price
+                                          controller.mrpController.text =
+                                              controller.salePrice
+                                                  .toStringAsFixed(2);
+
+                                          controller.seletedItemName =
+                                              selectedItem.name;
+                                          controller.selcetedItemId =
+                                              selectedItem.id.toString();
+
+                                          // fetch stock quantity
+                                          if (controller.selcetedItemId !=
+                                              null) {
+                                            fetchStockQuantity
+                                                .fetchStockQuantity(
+                                                    controller.selcetedItemId!);
+                                          }
+
+                                          // Ensure unitProvider is loaded
+                                          if (unitProvider.units.isEmpty) {
+                                            await unitProvider.fetchUnits();
+                                          }
+
+                                          // ===> Primary unit
+                                          if (selectedItem.unitId != null) {
+                                            final unit =
+                                                unitProvider.units.firstWhere(
+                                              (unit) =>
+                                                  unit.id.toString() ==
+                                                  selectedItem.unitId
+                                                      .toString(),
+                                              orElse: () => Unit(
+                                                id: 0,
+                                                name: 'Unknown',
+                                                symbol: '',
+                                                status: 0,
+                                              ),
+                                            );
+                                            if (unit.id != 0) {
+                                              unitIdsList.add(unit.name);
+                                              controller.primaryUnitName =
+                                                  unit.name;
+                                              controller.selectedUnit =
+                                                  unit.name;
+                                              localSelectedUnit = unit
+                                                  .name; // ✅ Set local selection
+
+                                              // Set with default quantity "1"
+                                              controller
+                                                  .selectedUnitIdWithNameFunction(
+                                                      "${unit.id}_${unit.name}_1");
+                                            }
+                                          }
+
+                                          // ===> Secondary unit
+                                          if (selectedItem.secondaryUnitId !=
+                                              null) {
+                                            final secondaryUnit =
+                                                unitProvider.units.firstWhere(
+                                              (unit) =>
+                                                  unit.id.toString() ==
+                                                  selectedItem.secondaryUnitId
+                                                      .toString(),
+                                              orElse: () => Unit(
+                                                id: 0,
+                                                name: 'Unknown',
+                                                symbol: '',
+                                                status: 0,
+                                              ),
+                                            );
+                                            if (secondaryUnit.id != 0) {
+                                              unitIdsList
+                                                  .add(secondaryUnit.name);
+                                              controller.secondaryUnitName =
+                                                  secondaryUnit.name;
+                                            }
+                                          }
+
+                                          // ✅ Force UI update after setting units
+                                          setState(() {
+                                            // This triggers the UI rebuild with updated unitIdsList and localSelectedUnit
+                                          });
+
+                                          debugPrint(
+                                              "Units Available: $unitIdsList");
+                                          debugPrint(
+                                              "Selected Unit: $localSelectedUnit");
+                                          debugPrint(
+                                              "sales price ===> ${controller.salePrice}");
+                                        },
+                                      ),
                               );
-                              if (unit.id != 0) {
-                                unitIdsList.add(unit.name);
-                                // Set as default selected unit
-                                localSelectedUnit = unit.name;
-                                controller.selectedUnit = unit.name;
-
-                                String finalUnitString =
-                                    "${unit.id}_${unit.name}_1";
-                                controller.selectedUnitIdWithNameFunction(
-                                    finalUnitString);
-                              }
-                            }
-
-                            // Add secondary unit
-                            if (selectedItem.secondaryUnitId != null &&
-                                selectedItem.secondaryUnitId != '') {
-                              final secondaryUnit =
-                                  unitProvider.units.firstWhere(
-                                (unit) =>
-                                    unit.id.toString() ==
-                                    selectedItem.secondaryUnitId.toString(),
-                                orElse: () => Unit(
-                                    id: 0,
-                                    name: 'Unknown Unit',
-                                    symbol: '',
-                                    status: 0),
-                              );
-                              if (secondaryUnit.id != 0) {
-                                unitIdsList.add(secondaryUnit.name);
-                              }
-                            }
-
-                            isItemSelected = true;
-
-                            if (unitIdsList.isEmpty) {
-                              debugPrint("No valid units found for this item.");
-                            } else {
-                              debugPrint("Units Available: $unitIdsList");
-                              debugPrint(
-                                  "Default selected unit: $localSelectedUnit");
-                            }
-
-                            // Trigger UI rebuild
-                            setState(() {});
-                          },
+                            },
+                          ),
                         ),
+
 
                         // Stock Available Display
                         Consumer<AddItemProvider>(
@@ -1659,7 +2098,7 @@ class ItemModel {
   final String? total;
   final String? price;
   final String? unit;
-  
+
   ItemModel({
     this.category,
     this.subCategory,

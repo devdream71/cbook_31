@@ -42,7 +42,7 @@ class _CustomDropdownTwoState extends State<CustomDropdownTwo> {
     super.initState();
     selectedItem = widget.selectedItem ?? widget.value;
     _filteredItems = widget.items;
-    
+
     if (widget.enableSearch) {
       _searchController.text = selectedItem ?? '';
     }
@@ -198,7 +198,7 @@ class _CustomDropdownTwoState extends State<CustomDropdownTwo> {
                           // ),
                           // Divider(height: 1, color: Colors.grey.shade300),
                         ],
-                        
+
                         // Items list
                         Flexible(
                           child: _filteredItems.isEmpty
@@ -206,7 +206,8 @@ class _CustomDropdownTwoState extends State<CustomDropdownTwo> {
                                   padding: EdgeInsets.all(16.0),
                                   child: Text(
                                     'No items found',
-                                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
                                     textAlign: TextAlign.center,
                                   ),
                                 )
@@ -314,14 +315,16 @@ class _CustomDropdownTwoState extends State<CustomDropdownTwo> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(3),
                 borderSide: BorderSide(
-                  color: isEnabled ? Colors.grey.shade400 : Colors.grey.shade300,
+                  color:
+                      isEnabled ? Colors.grey.shade400 : Colors.grey.shade300,
                   width: 1,
                 ),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(3),
                 borderSide: BorderSide(
-                  color: isEnabled ? Colors.grey.shade400 : Colors.grey.shade300,
+                  color:
+                      isEnabled ? Colors.grey.shade400 : Colors.grey.shade300,
                   width: 1,
                 ),
               ),
@@ -420,4 +423,3 @@ class _CustomDropdownTwoState extends State<CustomDropdownTwo> {
     );
   }
 }
-

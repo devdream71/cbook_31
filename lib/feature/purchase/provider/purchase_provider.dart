@@ -124,23 +124,48 @@ class PurchaseProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   ///filter data
-  void filterPurchases(String query) {
-    if (_purchaseData == null || _purchaseData!.data == null) return;
+  // void filterPurchases(String query) {
+  //   if (_purchaseData == null || _purchaseData!.data == null) return;
 
-    if (query.isEmpty) {
-      _filteredData = _purchaseData;
-    } else {
-      final lowercaseQuery = query.toLowerCase();
-      _filteredData = PurchaseViewModel(
-        data: _purchaseData!.data!.where((purchase) {
-          final supplier = purchase.supplier ?? 'Cash';
-          return supplier.toLowerCase().contains(lowercaseQuery) ||
-              (supplier == 'N/A' && 'cash'.contains(lowercaseQuery));
-        }).toList(),
-      );
-    }
-    notifyListeners();
+  //   if (query.isEmpty) {
+  //     _filteredData = _purchaseData;
+  //   } else {
+  //     final lowercaseQuery = query.toLowerCase();
+  //     _filteredData = PurchaseViewModel(
+  //       data: _purchaseData!.data!.where((purchase) {
+  //         final supplier = purchase.supplier ?? 'Cash';
+  //         return supplier.toLowerCase().contains(lowercaseQuery) ||
+  //             (supplier == 'N/A' && 'cash'.contains(lowercaseQuery));
+  //       }).toList(),
+  //     );
+  //   }
+  //   notifyListeners();
+  // }
+
+
+  void filterPurchases(String query) {
+  if (_purchaseData == null || _purchaseData!.data == null) return;
+
+  if (query.isEmpty) {
+    _filteredData = _purchaseData;
+  } else {
+    final lowercaseQuery = query.toLowerCase();
+    _filteredData = PurchaseViewModel(
+      data: _purchaseData!.data!.where((purchase) {
+        final supplier = purchase.supplier ?? 'Cash';
+        final billNumber = purchase.billNumber ?? '';
+        //final number = purchase.number?.toString() ?? '';
+
+        return supplier.toLowerCase().contains(lowercaseQuery) ||
+            (supplier == 'N/A' && 'cash'.contains(lowercaseQuery)) ||
+            billNumber.toLowerCase().contains(lowercaseQuery) ;
+            //||
+           // number.contains(lowercaseQuery);
+      }).toList(),
+    );
   }
+  notifyListeners();
+}
 
   void resetFilter() {
     _filteredData = _purchaseData;

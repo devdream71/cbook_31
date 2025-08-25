@@ -75,18 +75,55 @@ class SalesProvider with ChangeNotifier {
   }
 
   /// Filter sales by customer name or "cash"
-  void filterSales(String query) {
-    if (query.isEmpty) {
-      _filteredSales = _sales;
-    } else {
-      final lowerQuery = query.toLowerCase();
-      _filteredSales = _sales.where((sale) {
-        final customer = sale.customerName == "N/A" ? "Cash" : sale.customerName;
-        return customer.toLowerCase().contains(lowerQuery);
-      }).toList();
-    }
-    notifyListeners();
+  // void filterSales(String query) {
+  //   if (query.isEmpty) {
+  //     _filteredSales = _sales;
+  //   } else {
+  //     final lowerQuery = query.toLowerCase();
+  //     _filteredSales = _sales.where((sale) {
+  //       final customer = sale.customerName == "N/A" ? "Cash" : sale.customerName;
+  //       return customer.toLowerCase().contains(lowerQuery);
+  //     }).toList();
+  //   }
+  //   notifyListeners();
+  // }
+
+  /// Filter sales by customer name, "cash", bill number, or date
+void filterSales(String query) {
+  if (query.isEmpty) {
+    _filteredSales = _sales;
+  } else {
+    final lowerQuery = query.toLowerCase();
+    _filteredSales = _sales.where((sale) {
+      // Customer name or "Cash" check
+      final customer = sale.customerName == "N/A" ? "Cash" : sale.customerName;
+      final customerMatch = customer.toLowerCase().contains(lowerQuery);
+      
+      // Bill number check (assuming you have a billNumber field)
+      final billNumberMatch = sale.billNumber?.toString().toLowerCase().contains(lowerQuery) ?? false;
+      
+      // Date check (assuming you have a date field - adjust format as needed)
+      // This will match dates in various formats
+      String dateString = '';
+      // if (sale.date != null) {
+      //   // Format date for searching - you can adjust this based on your date format
+      //   dateString = sale.date.toString().toLowerCase(); // Full datetime string
+        
+      //   // Or if you want to format it specifically (uncomment and adjust as needed):
+      //   // dateString = DateFormat('dd/MM/yyyy').format(sale.date).toLowerCase();
+      //   // dateString += ' ' + DateFormat('yyyy-MM-dd').format(sale.date).toLowerCase();
+      // }
+      // final dateMatch = dateString.contains(lowerQuery);
+      
+      // Return true if any field matches
+      return customerMatch || billNumberMatch; //|| dateMatch;
+    }).toList();
   }
+  notifyListeners();
+}
+
+
+  
 
   /// Optional: Reset filter (could be used on clear button)
   void resetFilter() {

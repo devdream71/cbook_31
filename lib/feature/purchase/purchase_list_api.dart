@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-
 class PurchaseListApi extends StatefulWidget {
   const PurchaseListApi({super.key});
 
@@ -18,7 +17,6 @@ class PurchaseListApi extends StatefulWidget {
 }
 
 class _PurchaseListApiState extends State<PurchaseListApi> {
-  
   Future<void> _selectDate(BuildContext context, DateTime initialDate,
       Function(DateTime) onDateSelected) async {
     final DateTime? picked = await showDatePicker(
@@ -32,7 +30,8 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
     }
   }
 
-  DateTime selectedStartDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  DateTime selectedStartDate =
+      DateTime(DateTime.now().year, DateTime.now().month, 1);
 
   DateTime selectedEndDate = DateTime.now();
 
@@ -52,13 +51,17 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
       try {
         DateTime purchaseDate = DateTime.parse(purchase.pruchaseDate);
         // Remove time component for date comparison
-        DateTime purchaseDateOnly = DateTime(purchaseDate.year, purchaseDate.month, purchaseDate.day);
-        DateTime startDateOnly = DateTime(selectedStartDate.year, selectedStartDate.month, selectedStartDate.day);
-        DateTime endDateOnly = DateTime(selectedEndDate.year, selectedEndDate.month, selectedEndDate.day);
-        
-        return purchaseDateOnly.isAtSameMomentAs(startDateOnly) || 
-               purchaseDateOnly.isAtSameMomentAs(endDateOnly) ||
-               (purchaseDateOnly.isAfter(startDateOnly) && purchaseDateOnly.isBefore(endDateOnly));
+        DateTime purchaseDateOnly =
+            DateTime(purchaseDate.year, purchaseDate.month, purchaseDate.day);
+        DateTime startDateOnly = DateTime(selectedStartDate.year,
+            selectedStartDate.month, selectedStartDate.day);
+        DateTime endDateOnly = DateTime(
+            selectedEndDate.year, selectedEndDate.month, selectedEndDate.day);
+
+        return purchaseDateOnly.isAtSameMomentAs(startDateOnly) ||
+            purchaseDateOnly.isAtSameMomentAs(endDateOnly) ||
+            (purchaseDateOnly.isAfter(startDateOnly) &&
+                purchaseDateOnly.isBefore(endDateOnly));
       } catch (e) {
         return false; // Skip invalid dates
       }
@@ -66,7 +69,8 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
   }
 
   // Method to calculate summary for filtered purchases
-  Map<String, double> calculateFilteredSummary(List<dynamic> filteredPurchases) {
+  Map<String, double> calculateFilteredSummary(
+      List<dynamic> filteredPurchases) {
     double totalPurchase = 0.0;
     double totalPayment = 0.0;
     double totalDue = 0.0;
@@ -92,8 +96,6 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
   void initState() {
     super.initState();
     // Fetch the data when the screen is initialized
-     
-     
 
     Future.delayed(Duration.zero, () {
       Provider.of<PurchaseProvider>(context, listen: false).fetchPurchases();
@@ -115,130 +117,244 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
     return Scaffold(
       ///search, in app bar,
       backgroundColor: AppColors.sfWhite,
-      appBar: AppBar(
-        title: isSearching
-            ? Column(
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    height: 35,
-                    child: TextField(
-                      controller: searchController,
-                      autofocus: true,
-                      cursorHeight: 15,
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                      decoration: InputDecoration(
-                        hintText: ' ',
-                        hintStyle: const TextStyle(color: Colors.black54),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.white),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: Colors.white, width: 2),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 0),
-                        isDense: true,
-                      ),
-                      onChanged: (value) {
-                        Provider.of<PurchaseProvider>(context, listen: false)
-                            .filterPurchases(value);
-                        // Your filter logic
-                      },
-                    ),
-                  ),
-                ],
-              )
-            : const Text(
-                'Purchase List',
-                style: TextStyle(color: Colors.yellow, fontSize: 16),
-              ),
-        leading: const BackButton(color: Colors.white),
-        backgroundColor: colorScheme.primary,
-        actions: [
-          // Search or Close Icon with circular background
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  isSearching = !isSearching;
-                  if (!isSearching) {
-                    searchController.clear();
-                  }
-                });
-              },
-              child: Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                  color: isSearching ? Colors.red : Colors.green,
-                  shape: BoxShape.circle,
-                  border: isSearching
-                      ? null
-                      : Border.all(color: Colors.white, width: 2),
-                ),
-                padding: const EdgeInsets.all(6),
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      isSearching = !isSearching;
-                      if (!isSearching) {
-                        searchController.clear();
-                        Provider.of<PurchaseProvider>(context, listen: false)
-                            .filterPurchases(searchController.text);
-                      }
-                    });
-                  },
-                  child: Icon(
-                    isSearching ? Icons.close : Icons.search,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                ),
-              ),
-            ),
-          ),
 
-          // Bill Button
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PurchaseView(),
-                ),
-              );
-            },
-            child: const Padding(
-              padding: EdgeInsets.only(right: 8.0),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 10,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.add,
-                      size: 20,
-                      color: Colors.green,
-                    ),
+      appBar: AppBar(
+  title: isSearching
+      ? Column(
+          children: [
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 40, // increased from 35 to 50
+              child: TextField(
+                controller: searchController,
+                autofocus: true,
+                cursorHeight: 22, // bigger cursor
+                style: const TextStyle(color: Colors.white, fontSize: 18), // larger font
+                decoration: InputDecoration(
+                  //hintText: 'Search by name, number, or bill number',
+                  //hintStyle: const TextStyle(color: Colors.black54, fontSize: 16),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.white),
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  // SizedBox(width: 3),
-                  // Text(
-                  //   'Purchase',
-                  //   style: TextStyle(color: Colors.yellow, fontSize: 16),
-                  // ),
-                ],
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.white, width: 2),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 10), // more vertical padding
+                  isDense: true,
+                ),
+                onChanged: (value) {
+                  Provider.of<PurchaseProvider>(context, listen: false)
+                      .filterPurchases(value);
+                },
               ),
             ),
+          ],
+        )
+      : const Text(
+          'Purchase List',
+          style: TextStyle(color: Colors.yellow, fontSize: 16),
+        ),
+  leading: const BackButton(color: Colors.white),
+  backgroundColor: colorScheme.primary,
+  actions: [
+    // Search or Close Icon with circular background
+    Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            isSearching = !isSearching;
+            if (!isSearching) {
+              searchController.clear();
+            }
+          });
+        },
+        child: Container(
+          height: 30,
+          width: 30,
+          decoration: BoxDecoration(
+            color: isSearching ? Colors.red : Colors.green,
+            shape: BoxShape.circle,
+            border: isSearching ? null : Border.all(color: Colors.white, width: 2),
           ),
-        ],
+          padding: const EdgeInsets.all(6),
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                isSearching = !isSearching;
+                if (!isSearching) {
+                  searchController.clear();
+                  Provider.of<PurchaseProvider>(context, listen: false)
+                      .filterPurchases(searchController.text);
+                }
+              });
+            },
+            child: Icon(
+              isSearching ? Icons.close : Icons.search,
+              color: Colors.white,
+              size: 16,
+            ),
+          ),
+        ),
       ),
+    ),
+
+    // Bill Button
+    InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PurchaseView(),
+          ),
+        );
+      },
+      child: const Padding(
+        padding: EdgeInsets.only(right: 8.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 10,
+              backgroundColor: Colors.white,
+              child: Icon(
+                Icons.add,
+                size: 20,
+                color: Colors.green,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ],
+),
+
+
+
+      // appBar: AppBar(
+      //   title: isSearching
+      //       ? Column(
+      //           children: [
+      //             const SizedBox(
+      //               height: 10,
+      //             ),
+      //             SizedBox(
+      //               height: 35,
+      //               child: TextField(
+      //                 controller: searchController,
+      //                 autofocus: true,
+      //                 cursorHeight: 15,
+      //                 style: const TextStyle(color: Colors.white, fontSize: 16),
+      //                 decoration: InputDecoration(
+      //                   hintText: ' ',
+      //                   hintStyle: const TextStyle(color: Colors.black54),
+      //                   enabledBorder: OutlineInputBorder(
+      //                     borderSide: const BorderSide(color: Colors.white),
+      //                     borderRadius: BorderRadius.circular(4),
+      //                   ),
+      //                   focusedBorder: OutlineInputBorder(
+      //                     borderSide:
+      //                         const BorderSide(color: Colors.white, width: 2),
+      //                     borderRadius: BorderRadius.circular(4),
+      //                   ),
+      //                   contentPadding: const EdgeInsets.symmetric(
+      //                       horizontal: 8, vertical: 0),
+      //                   isDense: true,
+      //                 ),
+      //                 onChanged: (value) {
+      //                   Provider.of<PurchaseProvider>(context, listen: false)
+      //                       .filterPurchases(value);
+      //                   // Your filter logic
+      //                 },
+      //               ),
+      //             ),
+      //           ],
+      //         )
+      //       : const Text(
+      //           'Purchase List',
+      //           style: TextStyle(color: Colors.yellow, fontSize: 16),
+      //         ),
+      //   leading: const BackButton(color: Colors.white),
+      //   backgroundColor: colorScheme.primary,
+      //   actions: [
+      //     // Search or Close Icon with circular background
+      //     Padding(
+      //       padding: const EdgeInsets.only(right: 8.0),
+      //       child: GestureDetector(
+      //         onTap: () {
+      //           setState(() {
+      //             isSearching = !isSearching;
+      //             if (!isSearching) {
+      //               searchController.clear();
+      //             }
+      //           });
+      //         },
+      //         child: Container(
+      //           height: 30,
+      //           width: 30,
+      //           decoration: BoxDecoration(
+      //             color: isSearching ? Colors.red : Colors.green,
+      //             shape: BoxShape.circle,
+      //             border: isSearching
+      //                 ? null
+      //                 : Border.all(color: Colors.white, width: 2),
+      //           ),
+      //           padding: const EdgeInsets.all(6),
+      //           child: InkWell(
+      //             onTap: () {
+      //               setState(() {
+      //                 isSearching = !isSearching;
+      //                 if (!isSearching) {
+      //                   searchController.clear();
+      //                   Provider.of<PurchaseProvider>(context, listen: false)
+      //                       .filterPurchases(searchController.text);
+      //                 }
+      //               });
+      //             },
+      //             child: Icon(
+      //               isSearching ? Icons.close : Icons.search,
+      //               color: Colors.white,
+      //               size: 16,
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+
+      //     // Bill Button
+      //     InkWell(
+      //       onTap: () {
+      //         Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //             builder: (context) => const PurchaseView(),
+      //           ),
+      //         );
+      //       },
+      //       child: const Padding(
+      //         padding: EdgeInsets.only(right: 8.0),
+      //         child: Row(
+      //           children: [
+      //             CircleAvatar(
+      //               radius: 10,
+      //               backgroundColor: Colors.white,
+      //               child: Icon(
+      //                 Icons.add,
+      //                 size: 20,
+      //                 color: Colors.green,
+      //               ),
+      //             ),
+                   
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
+     
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
         child: Column(
@@ -252,10 +368,45 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Consumer<PurchaseProvider>(
+                      builder: (context, provider, child) {
+                        if (provider.purchaseData?.data == null) {
+                          return const SizedBox();
+                        }
+
+                        final filteredPurchases = filterPurchasesByDateRange(
+                            provider.purchaseData!.data!);
+                        final summary =
+                            calculateFilteredSummary(filteredPurchases);
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Purchase: ৳${summary['totalPurchase']?.toStringAsFixed(2) ?? '0.00'}",
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.black),
+                            ),
+                            Text(
+                              "Payment: ৳${summary['totalPayment']?.toStringAsFixed(2) ?? '0.00'}",
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.black),
+                            ),
+                            Text(
+                              "Due: ৳${summary['totalDue']?.toStringAsFixed(2) ?? '0.00'}",
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.black),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+
                     ////date, current date, bill qty
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Row(
                           children: [
@@ -294,11 +445,11 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 2),
+
                             Text("-",
                                 style: GoogleFonts.notoSansPhagsPa(
                                     fontSize: 14, color: Colors.black)),
-                            const SizedBox(width: 8),
+
                             // current date Picker
                             SizedBox(
                               width: MediaQuery.of(context).size.width * 0.25,
@@ -334,13 +485,13 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            
                           ],
                         ),
 
                         ///bill qty - now shows filtered count
                         Padding(
-                          padding: const EdgeInsets.only(left: 4.0),
+                          padding: const EdgeInsets.only(right: 0.0),
                           child: Consumer<PurchaseProvider>(
                               builder: (context, provider, child) {
                             if (provider.purchaseData?.data == null) {
@@ -352,16 +503,21 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                     fontWeight: FontWeight.bold),
                               );
                             }
-                            
-                            final filteredPurchases = filterPurchasesByDateRange(provider.purchaseData!.data!);
+
+                            final filteredPurchases =
+                                filterPurchasesByDateRange(
+                                    provider.purchaseData!.data!);
                             final purchaseCount = filteredPurchases.length;
 
-                            return Text(
-                              "Bill Qty: $purchaseCount",
-                              style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold),
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10.0),
+                              child: Text(
+                                "Bill Qty: $purchaseCount",
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             );
                           }),
                         ),
@@ -369,46 +525,9 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                     ),
 
                     ///purchase, payment, due - now shows filtered summary
-                    Consumer<PurchaseProvider>(
-                      builder: (context, provider, child) {
-                        if (provider.purchaseData?.data == null) {
-                          return const SizedBox();
-                        }
-
-                        final filteredPurchases = filterPurchasesByDateRange(provider.purchaseData!.data!);
-                        final summary = calculateFilteredSummary(filteredPurchases);
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              "Total Purchase: ৳${summary['totalPurchase']?.toStringAsFixed(2) ?? '0.00'}",
-                              style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black),
-                            ),
-                            Text(
-                              "Total Payment: ৳${summary['totalPayment']?.toStringAsFixed(2) ?? '0.00'}",
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.black),
-                            ),
-                            Text(
-                              "Total Due: ৳${summary['totalDue']?.toStringAsFixed(2) ?? '0.00'}",
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.black),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
                   ],
                 ),
               ),
-            ),
-
-            const SizedBox(
-              height: 2,
             ),
 
             // Purchase list with date filtering
@@ -431,13 +550,15 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                   }
 
                   // Filter purchases based on selected date range
-                  List<dynamic> filteredPurchases = filterPurchasesByDateRange(provider.purchaseData!.data!);
+                  List<dynamic> filteredPurchases =
+                      filterPurchasesByDateRange(provider.purchaseData!.data!);
 
                   if (filteredPurchases.isEmpty) {
                     return const Center(
                       child: Text("No purchases found for selected date range",
                           style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold)),
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold)),
                     );
                   }
 
@@ -445,9 +566,11 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 0.0, vertical: 1),
-                    itemCount: filteredPurchases.length, // Use filtered purchases count
+                    itemCount: filteredPurchases
+                        .length, // Use filtered purchases count
                     itemBuilder: (context, index) {
-                      final purchase = filteredPurchases[index]; // Use filtered purchases
+                      final purchase =
+                          filteredPurchases[index]; // Use filtered purchases
 
                       final billCount = filteredPurchases.length;
                       debugPrint('filtered purchase count => $billCount');
@@ -627,8 +750,6 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
     );
   }
 
-
-
   Future<dynamic> editDeleteDiolog(
     BuildContext context,
     String purchaseId,
@@ -745,7 +866,6 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
 
   ////delete recived item from list
   void _showDeleteDialog(BuildContext context, String purchaseId) {
-     
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -792,5 +912,3 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
     );
   }
 }
-
- 
