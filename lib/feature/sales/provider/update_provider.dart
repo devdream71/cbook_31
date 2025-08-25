@@ -451,6 +451,40 @@ class SaleUpdateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  ///updated credit item sales updated
+addCreditItemSaleUpdate(
+  String selectedItemId,
+  String price,
+  String selectedUnitIdWithName,
+  String qty,
+  String discountAmount,
+  String discountpercentace,
+  String taxAmount,
+  String taxPercentace,
+  String dis,
+) {
+  saleUpdateList.add(SaleUpdateModel(
+      itemId: selectedItemId,
+      price: price,
+      qty: qty,
+      subTotal: (double.parse(price) * double.parse(qty)).toString(),
+      unitId: selectedUnitIdWithName ?? '5_Packet_1', // Use the actual unit or fallback
+      salesUpdateDiscountPercentace: discountpercentace,
+      salesUpdateDiscountAmount: discountAmount,
+      salesUpdateVATTAXAmount: taxAmount,
+      salesUpdateVATTAXPercentance: taxPercentace,
+      dis: dis));
+
+  // Recalculate totals after adding item
+  setGrossTotal();
+  calculateTax();
+  
+  debugPrint("✅ Credit item added to saleUpdateList");
+  debugPrint("Total items: ${saleUpdateList.length}");
+  
+  notifyListeners();
+}
+
   ///update sales details.
   void updateSaleDetail(int index) {
     final updatedPrice = double.tryParse(priceController.text);

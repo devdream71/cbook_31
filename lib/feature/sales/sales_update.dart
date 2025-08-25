@@ -144,7 +144,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
               return provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:  4.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: Column(
                         children: [
                           // Cash/Credit Toggle
@@ -273,47 +273,6 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                             ),
                           ),
 
-                          // Align(
-                          //   alignment: Alignment.topLeft,
-                          //   child: InkWell(
-                          //     onTap: () {
-                          //       controller.updateCash(context);
-                          //     },
-                          //     child: DecoratedBox(
-                          //       decoration: BoxDecoration(
-                          //         color: AppColors.primaryColor,
-                          //         borderRadius: BorderRadius.circular(5),
-                          //       ),
-                          //       child: Padding(
-                          //         padding:
-                          //             const EdgeInsets.symmetric(horizontal: 5),
-                          //         child: Row(
-                          //           mainAxisSize: MainAxisSize.min,
-                          //           children: [
-                          //             Text(
-                          //               provider.hasCustomer
-                          //                   ? "Credit"
-                          //                   : "Cash",
-                          //               style: GoogleFonts.lato(
-                          //                 color: Colors.white,
-                          //                 fontWeight: FontWeight.w600,
-                          //                 fontSize: 14,
-                          //               ),
-                          //             ),
-                          //             const SizedBox(width: 1),
-                          //             const Icon(
-                          //               Icons.arrow_forward_ios,
-                          //               color: Colors.white,
-                          //               size: 12,
-                          //             )
-                          //           ],
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          // const SizedBox(height: 5),
-
                           // Main Form Section
                           Align(
                             alignment: Alignment.bottomRight,
@@ -332,21 +291,6 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          // const Text(
-                                          //   "Bill To",
-                                          //   style: TextStyle(
-                                          //       color: Colors.black,
-                                          //       fontWeight: FontWeight.w600,
-                                          //       fontSize: 12),
-                                          // ),
-                                          // vPad5,
-                                          // const Text(
-                                          //   "Supplier",
-                                          //   style: TextStyle(
-                                          //       color: Colors.black,
-                                          //       fontSize: 12),
-                                          // ),
-
                                           // Customer/Supplier Section
                                           Row(
                                             children: [
@@ -371,93 +315,10 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                                           builder: (context) =>
                                                                               const SuppliersCreate()));
                                                                 }),
-                                                            // Consumer<CustomerProvider>(
-                                                            //   builder: (context, customerProvider, child) {
-                                                            //     final customerList = customerProvider.customerResponse?.data ?? [];
-
-                                                            //     return Column(
-                                                            //       crossAxisAlignment: CrossAxisAlignment.start,
-                                                            //       children: [
-                                                            //         if (customerList.isEmpty)
-                                                            //           const SizedBox(height: 2),
-
-                                                            //         if (customerList.isNotEmpty)
-                                                            //           if (customerProvider.selectedCustomer != null &&
-                                                            //               customerProvider.selectedCustomer!.id != -1)
-                                                            //             Row(
-                                                            //               children: [
-                                                            //                 Text(
-                                                            //                   "${customerProvider.selectedCustomer!.type == 'customer' ? 'Receivable' : 'Payable'}: ",
-                                                            //                   style: TextStyle(
-                                                            //                     fontSize: 10,
-                                                            //                     fontWeight: FontWeight.bold,
-                                                            //                     color: customerProvider.selectedCustomer!.type == 'customer' ? Colors.green : Colors.red,
-                                                            //                   ),
-                                                            //                 ),
-                                                            //                 Padding(
-                                                            //                   padding: const EdgeInsets.only(top: 2.0),
-                                                            //                   child: Text(
-                                                            //                     "৳ ${customerProvider.selectedCustomer!.due.toStringAsFixed(2)}",
-                                                            //                     style: const TextStyle(
-                                                            //                       fontSize: 10,
-                                                            //                       fontWeight: FontWeight.bold,
-                                                            //                       color: Colors.black,
-                                                            //                     ),
-                                                            //                   ),
-                                                            //                 ),
-                                                            //               ],
-                                                            //             ),
-                                                            //       ],
-                                                            //     );
-                                                            //   },
-                                                            // ),
                                                           ],
                                                         )
                                                       : InkWell(
-                                                          onTap: () {
-                                                            // showDialog(
-                                                            //   context: context,
-                                                            //   builder:
-                                                            //       (context) =>
-                                                            //           Dialog(
-                                                            //     child:
-                                                            //         ReusableForm(
-                                                            //       nameController:
-                                                            //           nameController,
-                                                            //       phoneController:
-                                                            //           phoneController,
-                                                            //       emailController:
-                                                            //           emailController,
-                                                            //       addressController:
-                                                            //           addressController,
-                                                            //       primaryColor:
-                                                            //           Theme.of(
-                                                            //                   context)
-                                                            //               .primaryColor,
-                                                            //       onCancel:
-                                                            //           _onCancel,
-                                                            //       onSubmit: () {
-                                                            //         setState(
-                                                            //             () {
-                                                            //           controller
-                                                            //               .updatedCustomerInfomation(
-                                                            //             nameFrom:
-                                                            //                 nameController.text,
-                                                            //             phoneFrom:
-                                                            //                 phoneController.text,
-                                                            //             emailFrom:
-                                                            //                 emailController.text,
-                                                            //             addressFrom:
-                                                            //                 addressController.text,
-                                                            //           );
-                                                            //         });
-                                                            //         Navigator.pop(
-                                                            //             context);
-                                                            //       },
-                                                            //     ),
-                                                            //   ),
-                                                            // );
-                                                          },
+                                                          onTap: () {},
                                                           child:
                                                               SizedBox.shrink()
 
@@ -763,90 +624,145 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
   }
 
   // Helper method to build Add Item Button
+  // Widget _buildAddItemButton(BuildContext context, SalesController controller,
+  //     SaleUpdateProvider provider, ColorScheme colorScheme) {
+  //   bool showAddButton = controller.isCash
+  //       ? controller.itemsCash.isEmpty
+  //       : controller.itemsCredit.isEmpty;
+
+  //   return showAddButton
+  //       ? InkWell(
+  //           onTap: () {
+  //             showSalesDialog(context, controller, provider);
+  //           },
+  //           child: Container(
+  //             decoration: BoxDecoration(
+  //               color: Colors.white,
+  //               border: Border.all(width: 1, color: Colors.grey),
+  //               borderRadius: BorderRadius.circular(5),
+  //             ),
+  //             child: Padding(
+  //               padding: const EdgeInsets.all(4.0),
+  //               child: Row(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 crossAxisAlignment: CrossAxisAlignment.center,
+  //                 children: [
+  //                   CircleAvatar(
+  //                     radius: 14,
+  //                     backgroundColor: AppColors.primaryColor,
+  //                     child: const Icon(
+  //                       Icons.add,
+  //                       color: Colors.white,
+  //                       size: 18,
+  //                     ),
+  //                   ),
+  //                   const SizedBox(
+  //                     width: 6,
+  //                   ),
+  //                   Text(
+  //                     "Add item",
+  //                     style: TextStyle(
+  //                         color: AppColors.primaryColor,
+  //                         fontWeight: FontWeight.bold,
+  //                         fontSize: 14),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+
+  //           // Container(
+  //           //   decoration: BoxDecoration(
+  //           //     color: colorScheme.primary,
+  //           //     borderRadius: BorderRadius.circular(5),
+  //           //     boxShadow: [
+  //           //       BoxShadow(
+  //           //         color: Colors.black.withOpacity(0.2),
+  //           //         blurRadius: 5,
+  //           //         offset: const Offset(0, 3),
+  //           //       ),
+  //           //     ],
+  //           //   ),
+  //           //   child: Padding(
+  //           //     padding: const EdgeInsets.all(4.0),
+  //           //     child: Row(
+  //           //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           //       children: [
+  //           //         const Text(
+  //           //           "Add Item & Service",
+  //           //           style: TextStyle(color: Colors.white, fontSize: 14),
+  //           //         ),
+  //           //         InkWell(
+  //           //           onTap: () {
+  //           //             showSalesDialog(context, controller, provider);
+  //           //           },
+  //           //           child: const Icon(
+  //           //             Icons.add,
+  //           //             color: Colors.white,
+  //           //             size: 18,
+  //           //           ),
+  //           //         )
+  //           //       ],
+  //           //     ),
+  //           //   ),
+  //           // ),
+  //         )
+  //       : const SizedBox.shrink();
+  // }
+
+  // Enhanced version with dynamic button text:
   Widget _buildAddItemButton(BuildContext context, SalesController controller,
       SaleUpdateProvider provider, ColorScheme colorScheme) {
-    bool showAddButton = controller.isCash
-        ? controller.itemsCash.isEmpty
-        : controller.itemsCredit.isEmpty;
+    // ✅ Check if items exist to show appropriate text
+    bool hasItems = controller.isCash
+        ? controller.itemsCash.isNotEmpty
+        : controller.itemsCredit.isNotEmpty;
 
-    return showAddButton
-        ? InkWell(
-            onTap: () {
-              showSalesDialog(context, controller, provider);
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(width: 1, color: Colors.grey),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 14,
-                      backgroundColor: AppColors.primaryColor,
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 6,
-                    ),
-                    Text(
-                      "Add item",
-                      style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14),
-                    ),
-                  ],
+    // ✅ Also check provider's sale update list for existing items
+    bool hasExistingItems = provider.saleUpdateList.isNotEmpty;
+
+    String buttonText =
+        (hasItems || hasExistingItems) ? "Add Another Item" : "Add Item";
+
+    return InkWell(
+      onTap: () {
+        showSalesDialog(context, controller, provider);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(width: 1, color: Colors.grey),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 14,
+                backgroundColor: AppColors.primaryColor,
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 18,
                 ),
               ),
-            ),
-
-            // Container(
-            //   decoration: BoxDecoration(
-            //     color: colorScheme.primary,
-            //     borderRadius: BorderRadius.circular(5),
-            //     boxShadow: [
-            //       BoxShadow(
-            //         color: Colors.black.withOpacity(0.2),
-            //         blurRadius: 5,
-            //         offset: const Offset(0, 3),
-            //       ),
-            //     ],
-            //   ),
-            //   child: Padding(
-            //     padding: const EdgeInsets.all(4.0),
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //       children: [
-            //         const Text(
-            //           "Add Item & Service",
-            //           style: TextStyle(color: Colors.white, fontSize: 14),
-            //         ),
-            //         InkWell(
-            //           onTap: () {
-            //             showSalesDialog(context, controller, provider);
-            //           },
-            //           child: const Icon(
-            //             Icons.add,
-            //             color: Colors.white,
-            //             size: 18,
-            //           ),
-            //         )
-            //       ],
-            //     ),
-            //   ),
-            // ),
-          )
-        : const SizedBox.shrink();
+              const SizedBox(width: 6),
+              Text(
+                buttonText,
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   // Helper method to build Note Section
@@ -1396,8 +1312,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                         //   },
                         // ),
 
-
-                         ////new sales item dropdown.
+                        ////new sales item dropdown.
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Consumer<AddItemProvider>(
@@ -1546,7 +1461,6 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                             },
                           ),
                         ),
-
 
                         // Stock Available Display
                         Consumer<AddItemProvider>(
@@ -1934,83 +1848,6 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      // Add & New Button
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Align(
-                          alignment: Alignment.bottomRight,
-                          child: InkWell(
-                            onTap: () async {
-                              debugPrint("Add & New");
-
-                              debugPrint(
-                                  "Selected Unit: ${controller.selectedUnit}");
-                              debugPrint(
-                                  "Selected Unit ID: ${controller.selectedUnitIdWithName}");
-
-                              if (controller.qtyController.text.isEmpty) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                  content: Text('Please entry the QTY'),
-                                  backgroundColor: Colors.red,
-                                ));
-                              } else {
-                                setState(() {
-                                  controller.isCash
-                                      ? controller.addCashItem()
-                                      : controller.addCreditItem();
-
-                                  controller.isCash
-                                      ? controller.addAmount2()
-                                      : controller.addAmount();
-                                });
-
-                                Navigator.pop(context);
-                              }
-
-                              Provider.of<SalesController>(context,
-                                      listen: false)
-                                  .notifyListeners();
-
-                              controller.clearFields();
-
-                              setState(() {
-                                controller.seletedItemName = null;
-
-                                Provider.of<AddItemProvider>(context,
-                                        listen: false)
-                                    .clearPurchaseStockDatasale();
-                                controller.mrpController.clear();
-                                controller.qtyController.clear();
-                              });
-
-                              Provider.of<SalesController>(context,
-                                      listen: false)
-                                  .notifyListeners();
-                            },
-                            child: SizedBox(
-                              width: 90,
-                              child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color: colorScheme.primary,
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 6.0, vertical: 2),
-                                    child: Center(
-                                      child: Text(
-                                        "Add & New",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 14),
-                                      ),
-                                    ),
-                                  )),
-                            ),
-                          ),
-                        ),
-                      ),
-
                       const SizedBox(width: 4),
 
                       // Add Button
@@ -2022,19 +1859,55 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                             onTap: () async {
                               debugPrint("Add Item");
 
-                              controller.isCash
-                                  ? updateProvider.addCashItemSaleUpdate(
-                                      controller.selcetedItemId,
-                                      controller.mrpController.text,
-                                      controller.selectedUnitIdWithName,
-                                      controller.qtyController.text,
-                                      controller.discountAmount.text,
-                                      controller.discountPercentance.text,
-                                      controller.taxPercentValue,
-                                      controller.taxAmount.toString(),
-                                      '',
-                                    )
-                                  : controller.addCreditItem();
+                              // controller.isCash
+                              //     ? updateProvider.addCashItemSaleUpdate(
+                              //         controller.selcetedItemId,
+                              //         controller.mrpController.text,
+                              //         controller.selectedUnitIdWithName,
+                              //         controller.qtyController.text,
+                              //         controller.discountAmount.text,
+                              //         controller.discountPercentance.text,
+                              //         controller.taxPercentValue,
+                              //         controller.taxAmount.toString(),
+                              //         '',
+                              //       )
+                              //     :
+
+                              //     controller.addCreditItem();
+
+                              // ✅ Updated logic for both cash and credit
+                              if (controller.isCash) {
+                                // Add to cash sale
+                                updateProvider.addCashItemSaleUpdate(
+                                  controller.selcetedItemId,
+                                  controller.mrpController.text,
+                                  controller.selectedUnitIdWithName,
+                                  controller.qtyController.text,
+                                  controller.discountAmount.text,
+                                  controller.discountPercentance.text,
+                                  controller.taxPercentValue,
+                                  controller.taxAmount.toString(),
+                                  '',
+                                );
+                                debugPrint("✅ Cash item added");
+                              } else {
+                                // ✅ Add to credit sale using the new method
+                                updateProvider.addCreditItemSaleUpdate(
+                                  controller.selcetedItemId,
+                                  controller.mrpController.text,
+                                  controller.selectedUnitIdWithName,
+                                  controller.qtyController.text,
+                                  controller.discountAmount.text,
+                                  controller.discountPercentance.text,
+                                  controller.taxPercentValue,
+                                  controller.taxAmount.toString(),
+                                  '',
+                                );
+                                debugPrint("✅ Credit item added");
+
+                                // Also call controller's method if it exists
+                                controller.addCreditItem();
+                              }
 
                               controller.addAmount();
 
