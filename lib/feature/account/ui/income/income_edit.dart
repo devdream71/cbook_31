@@ -24,7 +24,6 @@ class IncomeEdit extends StatefulWidget {
 }
 
 class _IncomeEditState extends State<IncomeEdit> {
-
   String? selectedReceivedTo;
 
   String? selectedAccount;
@@ -42,7 +41,7 @@ class _IncomeEditState extends State<IncomeEdit> {
   @override
   void initState() {
     super.initState();
-    
+
     voucherNumberController = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -117,9 +116,9 @@ class _IncomeEditState extends State<IncomeEdit> {
   @override
   void dispose() {
     voucherNumberController.dispose();
-      final providerIncome = Provider.of<IncomeProvider>(context, listen: true);
+    final providerIncome = Provider.of<IncomeProvider>(context, listen: true);
 
-       providerIncome.editIncomeItems = [];
+    providerIncome.editIncomeItems = [];
 
     super.dispose();
   }
@@ -148,7 +147,7 @@ class _IncomeEditState extends State<IncomeEdit> {
       backgroundColor: AppColors.sfWhite,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
-        centerTitle: true,
+        //centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         automaticallyImplyLeading: true,
         title: const Column(
@@ -172,7 +171,113 @@ class _IncomeEditState extends State<IncomeEdit> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            color: Color(0xffdddefa),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  /// Bill No
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Bill/Invoice No",
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                        Text(
+                          voucherNumberController.text,
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 12),
+                          overflow: TextOverflow.ellipsis, // ✅ Prevent overflow
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  /// Vertical Divider
+                  Container(
+                    width: 1,
+                    height:
+                        40, // you can tweak this to match the height of content
+                    color: Colors.black,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
+
+                  /// Bill Date
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Date",
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                controller.pickDate(context);
+                              },
+                              child: Icon(
+                                Icons.calendar_today,
+                                size: 16,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            )
+                          ],
+                        ),
+                        InkWell(
+                          onTap: () => controller.pickDate(context),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              fillColor: Colors.white,
+                              isDense: true,
+                              //suffixIcon: ,
+                              suffixIconConstraints: const BoxConstraints(
+                                minWidth: 16,
+                                minHeight: 16,
+                              ),
+                              hintText: "Bill Date",
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 9,
+                              ),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.transparent, width: 0),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.transparent),
+                              ),
+                            ),
+                            child: Text(
+                              controller.formattedDate.isNotEmpty
+                                  ? controller.formattedDate
+                                  : "Select Date",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           ///1 section
+          ///
+          ///
 
           const SizedBox(
             height: 6,
@@ -281,162 +386,162 @@ class _IncomeEditState extends State<IncomeEdit> {
                         children: [
                           //bill person
 
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Consumer<PaymentVoucherProvider>(
-                              builder: (context, provider, child) {
-                                return SizedBox(
-                                  height: 30,
-                                  width: 130,
-                                  child: provider.isLoading
-                                      ? const Center(
-                                          child: CircularProgressIndicator())
-                                      : CustomDropdownTwo(
-                                          hint: '',
-                                          items: provider.billPersonNames,
-                                          width: double.infinity,
-                                          height: 30,
-                                          labelText: 'Bill Person',
-                                          selectedItem: selectedBillPerson,
-                                          onChanged: (value) {
-                                            debugPrint(
-                                                '=== Bill Person Selected: $value ===');
-                                            setState(() {
-                                              selectedBillPerson = value;
-                                              selectedBillPersonData = provider
-                                                  .billPersons
-                                                  .firstWhere(
-                                                (person) =>
-                                                    person.name == value,
-                                              ); // ✅ Save the whole object globally
-                                              selectedBillPersonId =
-                                                  selectedBillPersonData!.id;
-                                            });
+                          // Padding(
+                          //   padding: const EdgeInsets.only(top: 8.0),
+                          //   child: Consumer<PaymentVoucherProvider>(
+                          //     builder: (context, provider, child) {
+                          //       return SizedBox(
+                          //         height: 30,
+                          //         width: 130,
+                          //         child: provider.isLoading
+                          //             ? const Center(
+                          //                 child: CircularProgressIndicator())
+                          //             : CustomDropdownTwo(
+                          //                 hint: '',
+                          //                 items: provider.billPersonNames,
+                          //                 width: double.infinity,
+                          //                 height: 30,
+                          //                 labelText: 'Bill Person',
+                          //                 selectedItem: selectedBillPerson,
+                          //                 onChanged: (value) {
+                          //                   debugPrint(
+                          //                       '=== Bill Person Selected: $value ===');
+                          //                   setState(() {
+                          //                     selectedBillPerson = value;
+                          //                     selectedBillPersonData = provider
+                          //                         .billPersons
+                          //                         .firstWhere(
+                          //                       (person) =>
+                          //                           person.name == value,
+                          //                     ); // ✅ Save the whole object globally
+                          //                     selectedBillPersonId =
+                          //                         selectedBillPersonData!.id;
+                          //                   });
 
-                                            debugPrint(
-                                                'Selected Bill Person Details:');
-                                            debugPrint(
-                                                '- ID: ${selectedBillPersonData!.id}');
-                                            debugPrint(
-                                                '- Name: ${selectedBillPersonData!.name}');
-                                            debugPrint(
-                                                '- Phone: ${selectedBillPersonData!.phone}');
-                                          }),
-                                );
-                              },
-                            ),
-                          ),
+                          //                   debugPrint(
+                          //                       'Selected Bill Person Details:');
+                          //                   debugPrint(
+                          //                       '- ID: ${selectedBillPersonData!.id}');
+                          //                   debugPrint(
+                          //                       '- Name: ${selectedBillPersonData!.name}');
+                          //                   debugPrint(
+                          //                       '- Phone: ${selectedBillPersonData!.phone}');
+                          //                 }),
+                          //       );
+                          //     },
+                          //   ),
+                          // ),
 
                           const SizedBox(
                             height: 8,
                           ),
 
                           ///bill no, bill person
-                          SizedBox(
-                            height: 30,
-                            width: 130,
-                            child: TextField(
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                              controller: voucherNumberController,
-                              cursorHeight: 12,
-                              onChanged: (value) {
-                                billNo = value;
-                              }, // Match cursor height to text size
-                              decoration: InputDecoration(
-                                isDense: true, // Ensures the field is compact
-                                contentPadding: EdgeInsets
-                                    .zero, // Removes unnecessary padding
-                                hintText: "Bill no",
-                                hintStyle: TextStyle(
-                                    color: Colors.grey.shade400,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.grey.shade400,
-                                    width: 0.5,
-                                  ),
-                                ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.green,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          // SizedBox(
+                          //   height: 30,
+                          //   width: 130,
+                          //   child: TextField(
+                          //     style: const TextStyle(
+                          //       color: Colors.black,
+                          //       fontSize: 12,
+                          //     ),
+                          //     controller: voucherNumberController,
+                          //     cursorHeight: 12,
+                          //     onChanged: (value) {
+                          //       billNo = value;
+                          //     }, // Match cursor height to text size
+                          //     decoration: InputDecoration(
+                          //       isDense: true, // Ensures the field is compact
+                          //       contentPadding: EdgeInsets
+                          //           .zero, // Removes unnecessary padding
+                          //       hintText: "Bill no",
+                          //       hintStyle: TextStyle(
+                          //           color: Colors.grey.shade400,
+                          //           fontSize: 12,
+                          //           fontWeight: FontWeight.w600),
+                          //       enabledBorder: UnderlineInputBorder(
+                          //         borderSide: BorderSide(
+                          //           color: Colors.grey.shade400,
+                          //           width: 0.5,
+                          //         ),
+                          //       ),
+                          //       focusedBorder: const UnderlineInputBorder(
+                          //         borderSide: BorderSide(
+                          //           color: Colors.green,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
 
                           //person
 
                           ///bill date
-                          SizedBox(
-                            height: 30,
-                            width: 130,
-                            child: InkWell(
-                              // onTap: () => controller.pickDate(
-                              //     context), // Trigger the date picker
-                              onTap: () async {
-                                DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(2000),
-                                  lastDate: DateTime(2100),
-                                );
+                          // SizedBox(
+                          //   height: 30,
+                          //   width: 130,
+                          //   child: InkWell(
+                          //     // onTap: () => controller.pickDate(
+                          //     //     context), // Trigger the date picker
+                          //     onTap: () async {
+                          //       DateTime? pickedDate = await showDatePicker(
+                          //         context: context,
+                          //         initialDate: DateTime.now(),
+                          //         firstDate: DateTime(2000),
+                          //         lastDate: DateTime(2100),
+                          //       );
 
-                                if (pickedDate != null) {
-                                  String formattedDate =
-                                      DateFormat('yyyy-MM-dd')
-                                          .format(pickedDate);
+                          //       if (pickedDate != null) {
+                          //         String formattedDate =
+                          //             DateFormat('yyyy-MM-dd')
+                          //                 .format(pickedDate);
 
-                                  setState(() {
-                                    billDate = formattedDate;
-                                  });
+                          //         setState(() {
+                          //           billDate = formattedDate;
+                          //         });
 
-                                  debugPrint(
-                                      'Selected date: $formattedDate'); // ✅ Debug print
-                                }
-                              },
-                              child: InputDecorator(
-                                decoration: InputDecoration(
-                                  isDense: true,
-                                  suffixIcon: Icon(
-                                    Icons.calendar_today,
-                                    size: 16,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  suffixIconConstraints: const BoxConstraints(
-                                    minWidth: 16,
-                                    minHeight: 16,
-                                  ), // Adjust constraints to align icon closely
-                                  hintText: "Bill Date",
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey.shade400,
-                                    fontSize: 9,
-                                  ),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.grey.shade400,
-                                        width: 0.5),
-                                  ),
-                                  focusedBorder: const UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.green),
-                                  ),
-                                ),
-                                child: Text(
-                                  billDate.isNotEmpty
-                                      ? billDate
-                                      : "Select Date", // Default text when no date is selected
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          //         debugPrint(
+                          //             'Selected date: $formattedDate'); // ✅ Debug print
+                          //       }
+                          //     },
+                          //     child: InputDecorator(
+                          //       decoration: InputDecoration(
+                          //         isDense: true,
+                          //         suffixIcon: Icon(
+                          //           Icons.calendar_today,
+                          //           size: 16,
+                          //           color: Theme.of(context).primaryColor,
+                          //         ),
+                          //         suffixIconConstraints: const BoxConstraints(
+                          //           minWidth: 16,
+                          //           minHeight: 16,
+                          //         ), // Adjust constraints to align icon closely
+                          //         hintText: "Bill Date",
+                          //         hintStyle: TextStyle(
+                          //           color: Colors.grey.shade400,
+                          //           fontSize: 9,
+                          //         ),
+                          //         enabledBorder: UnderlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //               color: Colors.grey.shade400,
+                          //               width: 0.5),
+                          //         ),
+                          //         focusedBorder: const UnderlineInputBorder(
+                          //           borderSide: BorderSide(color: Colors.green),
+                          //         ),
+                          //       ),
+                          //       child: Text(
+                          //         billDate.isNotEmpty
+                          //             ? billDate
+                          //             : "Select Date", // Default text when no date is selected
+                          //         style: const TextStyle(
+                          //           color: Colors.black,
+                          //           fontSize: 12,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       )
                     ],
@@ -500,6 +605,7 @@ class _IncomeEditState extends State<IncomeEdit> {
                                 ),
 
                                 const SizedBox(height: 1),
+
                                 ///note.
                                 Text(
                                   item.note,
@@ -511,6 +617,7 @@ class _IncomeEditState extends State<IncomeEdit> {
                               ],
                             ),
                           ),
+
                           ///amount.
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -559,38 +666,75 @@ class _IncomeEditState extends State<IncomeEdit> {
               ); // Pass provider
             },
             child: Container(
+              height: 38,
               decoration: BoxDecoration(
-                color: colorScheme.primary,
+                color: Colors.white,
+                border: Border.all(width: 1, color: Colors.grey),
                 borderRadius: BorderRadius.circular(5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Receipt From",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    InkWell(
-                      onTap: () {},
+                    CircleAvatar(
+                      radius: 14,
+                      backgroundColor: AppColors.primaryColor,
                       child: const Icon(
                         Icons.add,
                         color: Colors.white,
                         size: 18,
                       ),
-                    )
+                    ),
+                    const SizedBox(
+                      width: 6,
+                    ),
+                    Text(
+                      "Receipt From",
+                      style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14),
+                    ),
                   ],
                 ),
               ),
             ),
+
+            // Container(
+            //   decoration: BoxDecoration(
+            //     color: colorScheme.primary,
+            //     borderRadius: BorderRadius.circular(5),
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.black.withOpacity(0.2),
+            //         blurRadius: 5,
+            //         offset: const Offset(0, 3),
+            //       ),
+            //     ],
+            //   ),
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(4.0),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         const Text(
+            //           "Receipt From",
+            //           style: TextStyle(color: Colors.white, fontSize: 14),
+            //         ),
+            //         InkWell(
+            //           onTap: () {},
+            //           child: const Icon(
+            //             Icons.add,
+            //             color: Colors.white,
+            //             size: 18,
+            //           ),
+            //         )
+            //       ],
+            //     ),
+            //   ),
+            // ),
           ),
 
           const Spacer(),
@@ -704,7 +848,6 @@ class _IncomeEditState extends State<IncomeEdit> {
                     debugPrint('Total Amount: $totalAmount');
                     debugPrint('Notes: $notes');
                     debugPrint('Status: $status');
-                   
 
                     final List<IncomeItem> incomeItems =
                         provider.editIncomeItems.map((item) {
@@ -756,7 +899,7 @@ class _IncomeEditState extends State<IncomeEdit> {
           ),
 
           const SizedBox(
-            height: 10,
+            height: 50,
           )
         ]),
       ),
@@ -789,7 +932,7 @@ class _IncomeEditState extends State<IncomeEdit> {
                   children: [
                     Container(
                       height: 30,
-                      color: const Color(0xff278d46),
+                      //color: const Color(0xff278d46),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -799,14 +942,14 @@ class _IncomeEditState extends State<IncomeEdit> {
                                   30), // Placeholder for left spacing (can be removed or adjusted)
 
                           // Centered text and icon
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(width: 5),
                               Text(
                                 "Receipt From",
                                 style: TextStyle(
-                                    color: Colors.yellow,
+                                    color: AppColors.primaryColor,
                                     fontWeight: FontWeight.bold),
                               ),
                             ],
@@ -825,7 +968,7 @@ class _IncomeEditState extends State<IncomeEdit> {
                                   child: const Icon(
                                     Icons.close,
                                     size: 18,
-                                    color: Colors.green,
+                                    color: Colors.red,
                                   )),
                             ),
                           ),
@@ -834,14 +977,14 @@ class _IncomeEditState extends State<IncomeEdit> {
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
-                      height: 30,
+                      height: 38,
                       child: provider.isReceiptLoading
                           ? const Center(child: CircularProgressIndicator())
                           : CustomDropdownTwo(
                               hint: '',
                               items: provider.receiptFromNames,
                               width: double.infinity,
-                              height: 30,
+                              height: 38,
                               labelText: 'Receipt From',
                               selectedItem: selectedReceiptFrom,
                               onChanged: (selectedItem) {
@@ -1053,6 +1196,9 @@ class _IncomeEditState extends State<IncomeEdit> {
                         ),
                       ],
                     ),
+                    // const SizedBox(
+                    //   height: 50,
+                    // )
                   ],
                 ),
               ),

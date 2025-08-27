@@ -38,12 +38,13 @@ class _FieldPortionState extends State<FieldPortion> {
 
   void _updateBalance() {
     final controller = context.read<PurchaseReturnController>();
-    
+
     // ✅ Calculate balance: Total - Discount - Received
     double total = double.tryParse(controller.addAmount()) ?? 0.0;
-    double discount = double.tryParse(controller.discountController.text) ?? 0.0;
+    double discount =
+        double.tryParse(controller.discountController.text) ?? 0.0;
     double received = double.tryParse(receivedControllerCredit.text) ?? 0.0;
-    
+
     setState(() {
       balance = (total - discount) - received;
     });
@@ -64,7 +65,7 @@ class _FieldPortionState extends State<FieldPortion> {
           double.tryParse(controller.discountController.text) ?? 0.0;
       double received = total - discount;
       receivedControllerCredit.text = received.toStringAsFixed(2);
-      
+
       // ✅ Update balance when auto-calculating
       _updateBalance();
     }
@@ -105,7 +106,7 @@ class _FieldPortionState extends State<FieldPortion> {
                       style: TextStyle(fontSize: 12, color: Colors.black)),
                   hPad5,
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: "Total",
@@ -133,7 +134,7 @@ class _FieldPortionState extends State<FieldPortion> {
                       style: TextStyle(fontSize: 12, color: Colors.black)),
                   const SizedBox(width: 5),
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: "Discount",
@@ -186,7 +187,7 @@ class _FieldPortionState extends State<FieldPortion> {
                   ),
                   hPad5,
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: 'Received',
@@ -210,7 +211,7 @@ class _FieldPortionState extends State<FieldPortion> {
                       style: TextStyle(fontSize: 12, color: Colors.black)),
                   hPad5,
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: 'Total',
@@ -245,7 +246,7 @@ class _FieldPortionState extends State<FieldPortion> {
                       style: TextStyle(fontSize: 12, color: Colors.black)),
                   const SizedBox(width: 5),
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: "Discount",
@@ -296,7 +297,7 @@ class _FieldPortionState extends State<FieldPortion> {
                       style: TextStyle(fontSize: 12, color: Colors.black)),
                   const SizedBox(width: 5),
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: "Received",

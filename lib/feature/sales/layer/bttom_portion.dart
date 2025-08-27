@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../widget/custom_box.dart';
 
-class BottomPortion extends StatelessWidget {
+class BottomPortion extends StatefulWidget {
   final String saleType;
   final String? customerId;
   final List<InvoiceItem> invoiceItems;
@@ -23,14 +23,23 @@ class BottomPortion extends StatelessWidget {
   });
 
   @override
+  State<BottomPortion> createState() => _BottomPortionState();
+}
+
+class _BottomPortionState extends State<BottomPortion> {
+
+  bool _isSaving = false;
+
+
+  @override
   Widget build(BuildContext context) {
     final customerProvider =
         Provider.of<CustomerProvider>(context, listen: false);
     final controller = context.watch<SalesController>();
     final colorScheme = Theme.of(context).colorScheme;
     debugPrint("its bottom portion page");
-    debugPrint(saleType);
-    debugPrint(customerId);
+    debugPrint(widget.saleType);
+    debugPrint(widget.customerId);
 
     return SingleChildScrollView(
       child: Padding(
@@ -105,96 +114,96 @@ class BottomPortion extends StatelessWidget {
                 ),
       
                 ///here new view a4 is working.
-                InkWell(
-                  onTap: () {
-                    if (controller.saleItem.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.red,
-                          duration: Duration(seconds: 1),
-                          content: Text("No Item added"),
-                        ),
-                      );
-                    } else {
-                      debugPrint(
-                          "return item length ${controller.saleItem.length}");
+      //           InkWell(
+      //             onTap: () {
+      //               if (controller.saleItem.isEmpty) {
+      //                 ScaffoldMessenger.of(context).showSnackBar(
+      //                   const SnackBar(
+      //                     backgroundColor: Colors.red,
+      //                     duration: Duration(seconds: 1),
+      //                     content: Text("No Item added"),
+      //                   ),
+      //                 );
+      //               } else {
+      //                 debugPrint(
+      //                     "return item length ${controller.saleItem.length}");
       
-                      final String finalCustomerName = controller.isCash
-                          ? 'Cash'
-                          : controller.customerNameController.text;
+      //                 final String finalCustomerName = controller.isCash
+      //                     ? 'Cash'
+      //                     : controller.customerNameController.text;
       
-                      final String billPersion = controller.billPerson.text;
+      //                 final String billPersion = controller.billPerson.text;
       
-                      final String discountPercent =
-                          controller.percentController.text;
-                      final String discountAmount =
-                          controller.discountController.text;
+      //                 final String discountPercent =
+      //                     controller.percentController.text;
+      //                 final String discountAmount =
+      //                     controller.discountController.text;
       
-                      // Get selected tax
-                      final String selectedTaxIdPercent = controller
-                                  .selectedTotalTaxId !=
-                              null
-                          ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
-                          : '';
+      //                 // Get selected tax
+      //                 final String selectedTaxIdPercent = controller
+      //                             .selectedTotalTaxId !=
+      //                         null
+      //                     ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
+      //                     : '';
       
-      // Get tax amount
-                      final String taxAmount =
-                          controller.totalTaxAmountl?.toStringAsFixed(2) ??
-                              '0.00';
+      // // Get tax amount
+      //                 final String taxAmount =
+      //                     controller.totalTaxAmountl?.toStringAsFixed(2) ??
+      //                         '0.00';
       
-                      //helper function
-                      int _toInt(dynamic value) {
-                        if (value is int) return value;
-                        if (value is double) return value.toInt();
-                        if (value is String)
-                          return double.tryParse(value)?.toInt() ?? 0;
-                        return 0;
-                      }
+      //                 //helper function
+      //                 int _toInt(dynamic value) {
+      //                   if (value is int) return value;
+      //                   if (value is double) return value.toInt();
+      //                   if (value is String)
+      //                     return double.tryParse(value)?.toInt() ?? 0;
+      //                   return 0;
+      //                 }
       
-                      List<InvoiceItem> invoiceItems = (controller.isCash
-                              ? controller.itemsCash
-                              : controller.itemsCredit)
-                          .map((item) {
-                        return InvoiceItem(
-                          itemName: item.itemName ?? "",
-                          unit: item.unit ?? "PC",
-                          quantity: int.tryParse(item.quantity ?? "0") ?? 0,
-                          amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
-                              (double.tryParse(item.mrp ?? "0") ?? 0.0),
-                          discount: double.tryParse(
-                                  controller.discountController.text) ??
-                              0.0,
-                          itemDiscountAmount: _toInt(item.discountAmount),
-                          itemDiscountPercentace:
-                              _toInt(item.discountPercentance),
-                          itemVatTaxAmount: _toInt(item.vatAmount),
-                          itemvatTaxPercentace: _toInt(item.vatPerentace),
-                          customerName: _toInt(item.vatPerentace),
-                        );
-                      }).toList();
+      //                 List<InvoiceItem> invoiceItems = (controller.isCash
+      //                         ? controller.itemsCash
+      //                         : controller.itemsCredit)
+      //                     .map((item) {
+      //                   return InvoiceItem(
+      //                     itemName: item.itemName ?? "",
+      //                     unit: item.unit ?? "PC",
+      //                     quantity: int.tryParse(item.quantity ?? "0") ?? 0,
+      //                     amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
+      //                         (double.tryParse(item.mrp ?? "0") ?? 0.0),
+      //                     discount: double.tryParse(
+      //                             controller.discountController.text) ??
+      //                         0.0,
+      //                     itemDiscountAmount: _toInt(item.discountAmount),
+      //                     itemDiscountPercentace:
+      //                         _toInt(item.discountPercentance),
+      //                     itemVatTaxAmount: _toInt(item.vatAmount),
+      //                     itemvatTaxPercentace: _toInt(item.vatPerentace),
+      //                     customerName: _toInt(item.vatPerentace),
+      //                   );
+      //                 }).toList();
       
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NewInvoicePage(
-                            items: invoiceItems,
-                            customerName: finalCustomerName,
-                            billPersion: billPersion,
-                            discountAmount: discountAmount,
-                            discountPercent: discountPercent,
-                            taxAmount: taxAmount,
-                            taxIdPercent: selectedTaxIdPercent,
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                  child: const CustomBox(
-                    color: Colors.white,
-                    textColor: Colors.black,
-                    text: "New View A4",
-                  ),
-                ),
+      //                 Navigator.push(
+      //                   context,
+      //                   MaterialPageRoute(
+      //                     builder: (context) => NewInvoicePage(
+      //                       items: invoiceItems,
+      //                       customerName: finalCustomerName,
+      //                       billPersion: billPersion,
+      //                       discountAmount: discountAmount,
+      //                       discountPercent: discountPercent,
+      //                       taxAmount: taxAmount,
+      //                       taxIdPercent: selectedTaxIdPercent,
+      //                     ),
+      //                   ),
+      //                 );
+      //               }
+      //             },
+      //             child: const CustomBox(
+      //               color: Colors.white,
+      //               textColor: Colors.black,
+      //               text: "New View A4",
+      //             ),
+      //           ),
       
       //               hPad5,
       
@@ -350,89 +359,220 @@ class BottomPortion extends StatelessWidget {
             ),
       
             /// save <=====
+            /// 
+            
+            // Updated save button code
+InkWell(
+  onTap: _isSaving ? null : () async {
+    // Set saving state to true
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      var date = controller.formattedDate;
+
+      String amount = controller.isCash
+          ? controller.addAmount2()
+          : controller.addAmount();
+
+      debugPrint(' cash or credit ===>  ${controller.isCash}');
+
+      String total = controller.isCash
+          ? controller.totalAmount
+          : controller.totalAmount2;
+
+      debugPrint("amount =========>>>>====> $amount");
+      debugPrint("amount =========>>>>====> ${widget.billNo}");
+
+      int paymentOutValue = 0;
+
+      if (controller.isCash) {
+        paymentOutValue = 1;
+      } else if (controller.isReturn && controller.isOnlineMoneyChecked) {
+        paymentOutValue = 1;
+      } else {
+        paymentOutValue = 0;
+      }
+
+      if (controller.saleItem.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('No Item added'),
+          backgroundColor: Colors.red,
+        ));
+      } else {
+        bool isSuccess = await controller.storeSales(
+          context,
+          date: date,
+          amount: amount,
+          customerId: controller.getCustomerId(context),
+          saleType: widget.saleType,
+          billNo: widget.billNo,
+          total: total,
+          discount: controller.discountAmount.text,
+          discountPercent: controller.discountPercentance.text,
+          taxAmount: controller.totalAmount,
+          taxPercent: controller.taxPercent,
+          paymentOut: paymentOutValue,
+        );
+
+        if (isSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 1),
+              content: Text("Sale Successfully Saved"),
+            ),
+          );
+
+          // Clear all controllers and reset state after successful save
+          controller.discountAmount.clear();
+          controller.discountPercentance.clear();
+           
+          controller.saleItem.clear();
+          
+          // Clear other controllers as needed
+          // controller.customerNameController.clear();
+          // controller.billNoController.clear();
+          // Add any other controllers that need to be cleared
+          
+          // Reset any other state variables
+          // billNo = '';
+          // customerId = null;
+          
+          // Update UI
+          setState(() {
+            // Reset any UI state variables if needed
+          });
+
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 1),
+              content: Text("Failed to save sales"),
+            ),
+          );
+        }
+      }
+    } catch (error) {
+      // Handle any errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+          content: Text("Error: $error"),
+        ),
+      );
+    } finally {
+      // Always reset saving state
+      setState(() {
+        _isSaving = false;
+      });
+    }
+  },
+  child: CustomBox(
+    color: _isSaving ? Colors.grey : AppColors.primaryColor,
+    textColor: Colors.white,
+    text: _isSaving ? "Saving..." : "Save",
+  ),
+),
       
-            InkWell(
-              onTap: () async {
-                var date = controller.formattedDate;
+            // InkWell(
+            //   onTap: () async {
+            //     var date = controller.formattedDate;
       
-                String amount = controller.isCash
-                    ? controller.addAmount2()
-                    : controller.addAmount();
+            //     String amount = controller.isCash
+            //         ? controller.addAmount2()
+            //         : controller.addAmount();
       
-                debugPrint(' cash or credit ===>  ${controller.isCash}');  
+            //     debugPrint(' cash or credit ===>  ${controller.isCash}');  
       
                 
       
-                String total = controller.isCash
-                    ? controller.totalAmount
-                    : controller.totalAmount2;
+            //     String total = controller.isCash
+            //         ? controller.totalAmount
+            //         : controller.totalAmount2;
       
-                debugPrint("amount =========>>>>====> $amount");
+            //     debugPrint("amount =========>>>>====> $amount");
       
-                debugPrint(
-                    "amount =========>>>>====> $billNo");
+            //     debugPrint(
+            //         "amount =========>>>>====> $billNo");
       
-                int paymentOutValue = 0;
+            //     int paymentOutValue = 0;
       
-                if (controller.isCash) {
-                  paymentOutValue = 1;
-                } else if (controller.isReturn &&
-                    controller.isOnlineMoneyChecked) {
-                  paymentOutValue = 1;
-                } else {
-                  paymentOutValue = 0;
-                }
+            //     if (controller.isCash) {
+            //       paymentOutValue = 1;
+            //     } else if (controller.isReturn &&
+            //         controller.isOnlineMoneyChecked) {
+            //       paymentOutValue = 1;
+            //     } else {
+            //       paymentOutValue = 0;
+            //     }
       
-                if (controller.saleItem.isEmpty ) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text(
-                      'No Item added',
-                    ),
-                    backgroundColor: Colors.red,
-                  ));
-                } else {
-                  bool isSuccess = await controller.storeSales(
-                    context,
-                    date: date,
-                    amount: amount,
-                    // customerId: customerId ?? "cash",
-                    customerId: controller.getCustomerId(context),
+            //     if (controller.saleItem.isEmpty ) {
+            //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            //         content: Text(
+            //           'No Item added',
+            //         ),
+            //         backgroundColor: Colors.red,
+            //       ));
+            //     } else {
+            //       bool isSuccess = await controller.storeSales(
+            //         context,
+            //         date: date,
+            //         amount: amount,
+            //         // customerId: customerId ?? "cash",
+            //         customerId: controller.getCustomerId(context),
       
-                    saleType: saleType,
-                    billNo: billNo,
-                    total: total,
-                    discount: controller.discountAmount.text,
-                    discountPercent: controller.discountPercentance.text,
-                    taxAmount: controller.totalAmount,
-                    taxPercent: controller.taxPercent,
-                    paymentOut: paymentOutValue,
-                  );
+            //         saleType: saleType,
+            //         billNo: billNo,
+            //         total: total,
+            //         discount: controller.discountAmount.text,
+            //         discountPercent: controller.discountPercentance.text,
+            //         taxAmount: controller.totalAmount,
+            //         taxPercent: controller.taxPercent,
+            //         paymentOut: paymentOutValue,
+            //       );
       
-                  if (isSuccess) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.green,
-                        duration: Duration(seconds: 1),
-                        content: Text("Sale. Successfully Save,"),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.red,
-                        duration: Duration(seconds: 1),
-                        content: Text("Not uloaded Sales"),
-                      ),
-                    );
-                  }
-                }
-              },
-              child: CustomBox(
-                color: AppColors.primaryColor,
-                textColor: Colors.white,
-                text: "Save",
-              ),
-            ),
+            //       if (isSuccess) {
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           const SnackBar(
+            //             backgroundColor: Colors.green,
+            //             duration: Duration(seconds: 1),
+            //             content: Text("Sale. Successfully Save,"),
+            //           ),
+            //         );
+
+            //         controller.discountAmount.clear();
+                    
+
+
+                     
+              
+
+
+
+            //       } else {
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           const SnackBar(
+            //             backgroundColor: Colors.red,
+            //             duration: Duration(seconds: 1),
+            //             content: Text("Not uloaded Sales"),
+            //           ),
+            //         );
+            //       }
+            //     }
+            //   },
+            //   child: CustomBox(
+            //     color: AppColors.primaryColor,
+            //     textColor: Colors.white,
+            //     text: "Save",
+            //   ),
+            // ),
+            
+            
+            
             const SizedBox(
               height: 20,
             ),

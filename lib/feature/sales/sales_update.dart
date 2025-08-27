@@ -1,8 +1,6 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
-import 'package:cbook_dt/common/give_information_dialog.dart';
-import 'package:cbook_dt/common/item_dropdown_custom.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/item/model/items_show.dart';
@@ -20,10 +18,8 @@ import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/feature/suppliers/suppliers_create.dart';
 import 'package:cbook_dt/feature/tax/provider/tax_provider.dart';
-import 'package:cbook_dt/feature/unit/model/demo_unit_model.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 ///====>Sales update Screen
@@ -144,13 +140,13 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
               return provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
                       child: Column(
                         children: [
-                          // Cash/Credit Toggle
+                          
 
                           Padding(
-                            padding: const EdgeInsets.all(6.0),
+                            padding: const EdgeInsets.all(0.0),
                             child: Container(
                               color: Color(0xffdddefa),
                               child: Padding(
@@ -300,21 +296,22 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                   child: provider.hasCustomer
                                                       ? Column(
                                                           children: [
-                                                            AddSalesFormfieldTwo(
-                                                                controller:
-                                                                    controller
-                                                                        .codeController,
-                                                                customerorSaleslist:
-                                                                    "Showing supplier list",
-                                                                customerOrSupplierButtonLavel:
-                                                                    "Add new supplier",
-                                                                onTap: () {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              const SuppliersCreate()));
-                                                                }),
+                                                            SizedBox.shrink()
+                                                            // AddSalesFormfieldTwo(
+                                                            //     controller:
+                                                            //         controller
+                                                            //             .codeController,
+                                                            //     customerorSaleslist:
+                                                            //         "Showing supplier list",
+                                                            //     customerOrSupplierButtonLavel:
+                                                            //         "Add new supplier",
+                                                            //     onTap: () {
+                                                            //       Navigator.push(
+                                                            //           context,
+                                                            //           MaterialPageRoute(
+                                                            //               builder: (context) =>
+                                                            //                   const SuppliersCreate()));
+                                                            //     }),
                                                           ],
                                                         )
                                                       : InkWell(
@@ -561,31 +558,52 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                   child: _buildAddItemButton(context,
                                       controller, provider, colorScheme),
                                 ),
-                                const SizedBox(height: 5),
+                                const SizedBox(height: 8),
 
                                 // Note Section
-                                _buildNoteSection(controller),
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          .45,
+                                      child: _buildNoteSection(controller)),
+                                ),
                                 const SizedBox(height: 3),
 
                                 // Subtotal
-                                _buildSubtotalSection(provider),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4.0),
+                                  child: _buildSubtotalSection(provider),
+                                ),
                                 const SizedBox(height: 5),
 
                                 // Discount Section
-                                _buildDiscountSection(
-                                    updateController, saleProvider),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4.0),
+                                  child: _buildDiscountSection(
+                                      updateController, saleProvider),
+                                ),
                                 const SizedBox(height: 4),
 
                                 // Tax Section
-                                _buildTaxSection(saleProvider),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4.0),
+                                  child: _buildTaxSection(saleProvider),
+                                ),
                                 const SizedBox(height: 8),
 
                                 // Gross Total
-                                _buildGrossTotalSection(),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4.0),
+                                  child: _buildGrossTotalSection(),
+                                ),
                                 const SizedBox(height: 4),
 
                                 // Cash Received Section
-                                _buildCashReceivedSection(controller),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4.0),
+                                  child: _buildCashReceivedSection(controller),
+                                ),
                               ],
                             ),
                           ),
@@ -786,8 +804,8 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 0.0),
               child: Container(
-                height: 40,
-                width: double.infinity,
+                height: 38,
+                width: MediaQuery.of(context).size.width * .40,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(color: Colors.grey.shade400, width: 1),
@@ -940,7 +958,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                       .map((tax) => "${tax.name} - (${tax.percent})")
                       .toList(),
                   width: 95,
-                  height: 30,
+                  height: 38,
                   selectedItem: selectedTaxName,
                   onChanged: (newValue) {
                     setState(() {
@@ -1063,7 +1081,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                 children: [
                   const SizedBox(width: 5),
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 200,
                     child: Consumer<SaleUpdateProvider>(
                       builder: (context, controller, _) {
@@ -1158,7 +1176,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
             backgroundColor: Colors.transparent,
             insetPadding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
-              height: 380,
+              height: 400,
               width: screenWidth,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -1318,7 +1336,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                           child: Consumer<AddItemProvider>(
                             builder: (context, itemProvider, child) {
                               return SizedBox(
-                                height: 30,
+                                height: 38,
                                 width: double.infinity,
                                 child: itemProvider.isLoading
                                     ? const Center(
@@ -1527,7 +1545,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                 children: [
                                   const SizedBox(height: 20),
                                   SizedBox(
-                                    height: 30,
+                                    height: 38,
                                     child: CustomDropdownTwo(
                                       key: ValueKey(
                                           '${unitIdsList.length}_${localSelectedUnit}_$isItemSelected'),
@@ -1538,7 +1556,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                               : 'Select unit',
                                       items: unitIdsList,
                                       width: double.infinity,
-                                      height: 30,
+                                      height: 38,
                                       labelText: 'Unit',
                                       selectedItem: localSelectedUnit,
                                       onChanged: (selectedUnit) {
@@ -1720,7 +1738,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                     children: [
                                       const SizedBox(height: 20),
                                       SizedBox(
-                                        height: 30,
+                                        height: 38,
                                         child: CustomDropdownTwo(
                                           labelText: 'Vat/Tax',
                                           hint: '',
@@ -1729,7 +1747,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                   "${tax.name} - (${tax.percent})")
                                               .toList(),
                                           width: double.infinity,
-                                          height: 30,
+                                          height: 38,
                                           selectedItem: selectedTaxName,
                                           onChanged: (newValue) {
                                             setState(() {

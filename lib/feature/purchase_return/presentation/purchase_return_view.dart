@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/close_button_icon.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
@@ -17,6 +17,7 @@ import 'package:cbook_dt/feature/purchase_return/controller/purchase_return_cont
 import 'package:cbook_dt/feature/purchase_return/layer/bottom_portion_purchase_return.dart';
 import 'package:cbook_dt/feature/purchase_return/purchase_return_item_details.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
+import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
 import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
@@ -203,7 +204,6 @@ class _LayoutState extends State<_Layout> {
     }
   }
 
- 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -246,25 +246,166 @@ class _LayoutState extends State<_Layout> {
                   color: colorScheme.surface,
                 ),
               ),
-              centerTitle: true,
+              //centerTitle: true,
               title: Text(
-                "Purchase Return Invoice",
+                "Purchase Return",
                 style: GoogleFonts.lato(
                   color: Colors.yellow,
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
                 ),
               ),
+              actions: [
+                CashCreditToggle(
+                  initialCash: true,
+                  onChanged: (isCash) {
+                    print("Selected: ${isCash ? "Cash" : "Credit"}");
+                    controller.updateCash();
+                    ; // you can hook your logic here
+                  },
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const BillInvoiceCreateForm()));
+                  },
+                  icon: const Icon(
+                    Icons.settings,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(0.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        ///sectioin 1
+                        Container(
+                          color: Color(0xffdddefa),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 4.0, vertical: 4.0),
+                            child: Row(
+                              children: [
+                                /// Bill No
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Bill/Invoice No",
+                                        style: TextStyle(
+                                            color: Colors.grey, fontSize: 12),
+                                      ),
+                                      Text(
+                                        billController.text,
+                                        style: const TextStyle(
+                                            color: Colors.black, fontSize: 12),
+                                        overflow: TextOverflow
+                                            .ellipsis, // ✅ Prevent overflow
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                /// Vertical Divider
+                                Container(
+                                  width: 1,
+                                  height:
+                                      40, // you can tweak this to match the height of content
+                                  color: Colors.black,
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 8),
+                                ),
+
+                                /// Bill Date
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            "Date",
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              controller.pickDate(context);
+                                            },
+                                            child: Icon(
+                                              Icons.calendar_today,
+                                              size: 16,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      InkWell(
+                                        onTap: () =>
+                                            controller.pickDate(context),
+                                        child: InputDecorator(
+                                          decoration: InputDecoration(
+                                            fillColor: Colors.white,
+                                            isDense: true,
+                                            //suffixIcon: ,
+                                            suffixIconConstraints:
+                                                const BoxConstraints(
+                                              minWidth: 16,
+                                              minHeight: 16,
+                                            ),
+                                            hintText: "Bill Date",
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey.shade400,
+                                              fontSize: 9,
+                                            ),
+                                            enabledBorder:
+                                                const UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.transparent,
+                                                  width: 0),
+                                            ),
+                                            focusedBorder:
+                                                const UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.transparent),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            controller.formattedDate.isNotEmpty
+                                                ? controller.formattedDate
+                                                : "Select Date",
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,51 +415,47 @@ class _LayoutState extends State<_Layout> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  InkWell(
-                                          onTap: () {
-                                            controller.updateCash();
-                                          },
-                                          child: DecoratedBox(
-                                            decoration: BoxDecoration(
-                                              color: controller.isCash
-                                                  ? Colors.blue
-                                                      .shade600 // 🔹 Cash background
-                                                  : Colors.orange
-                                                      .shade600, // ✅ Credit background
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5,
-                                                      vertical: 4),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    controller.isCash
-                                                        ? "Cash"
-                                                        : "Credit",
-                                                    style: GoogleFonts.lato(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  const Icon(
-                                                    Icons.arrow_forward_ios,
-                                                    color: Colors.white,
-                                                    size: 12,
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        
+                                  // InkWell(
+                                  //   onTap: () {
+                                  //     controller.updateCash();
+                                  //   },
+                                  //   child: DecoratedBox(
+                                  //     decoration: BoxDecoration(
+                                  //       color: controller.isCash
+                                  //           ? Colors.blue
+                                  //               .shade600 // 🔹 Cash background
+                                  //           : Colors.orange
+                                  //               .shade600, // ✅ Credit background
+                                  //       borderRadius: BorderRadius.circular(5),
+                                  //     ),
+                                  //     child: Padding(
+                                  //       padding: const EdgeInsets.symmetric(
+                                  //           horizontal: 5, vertical: 4),
+                                  //       child: Row(
+                                  //         mainAxisSize: MainAxisSize.min,
+                                  //         children: [
+                                  //           Text(
+                                  //             controller.isCash
+                                  //                 ? "Cash"
+                                  //                 : "Credit",
+                                  //             style: GoogleFonts.lato(
+                                  //               color: Colors.white,
+                                  //               fontWeight: FontWeight.w600,
+                                  //               fontSize: 14,
+                                  //             ),
+                                  //           ),
+                                  //           const SizedBox(width: 4),
+                                  //           const Icon(
+                                  //             Icons.arrow_forward_ios,
+                                  //             color: Colors.white,
+                                  //             size: 12,
+                                  //           )
+                                  //         ],
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
+
                                   // InkWell(
                                   //   onTap: () {
                                   //     //////=====>=====>updateCash==========<<<<<<<
@@ -359,127 +496,129 @@ class _LayoutState extends State<_Layout> {
                                   //     ),
                                   //   ),
                                   // ),
-                                  vPad2,
-                                  const Text(
-                                    "Bill To",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 12),
-                                  ),
-                                  vPad5,
-                                  const Text(
-                                    "Supplier",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600),
-                                  ),
+                                  // vPad2,
+                                  // const Text(
+                                  //   "Bill To",
+                                  //   style: TextStyle(
+                                  //       color: Colors.black,
+                                  //       fontWeight: FontWeight.w600,
+                                  //       fontSize: 12),
+                                  // ),
+                                  // vPad5,
+                                  // const Text(
+                                  //   "Supplier",
+                                  //   style: TextStyle(
+                                  //       color: Colors.black,
+                                  //       fontSize: 12,
+                                  //       fontWeight: FontWeight.w600),
+                                  // ),
                                   Row(
                                     children: [
                                       SizedBox(
-                                        height: 58,
+                                        // height: 58,
                                         width: 190,
                                         // Adjusted height for cursor visibility
                                         child: controller.isCash
-                                            ? TextField(
-                                                readOnly: true,
-                                                onTap: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        Dialog(
-                                                      child: ReusableForm(
-                                                        nameController:
-                                                            nameController,
-                                                        phoneController:
-                                                            phoneController,
-                                                        emailController:
-                                                            emailController,
-                                                        addressController:
-                                                            addressController,
-                                                        primaryColor:
-                                                            Theme.of(context)
-                                                                .primaryColor,
-                                                        onCancel: _onCancel,
-                                                        onSubmit: () {
-                                                          setState(() {
-                                                            controller
-                                                                .updatedCustomerInfomation(
-                                                              nameFrom:
-                                                                  nameController
-                                                                      .text,
-                                                              phoneFrom:
-                                                                  phoneController
-                                                                      .text,
-                                                              emailFrom:
-                                                                  emailController
-                                                                      .text,
-                                                              addressFrom:
-                                                                  addressController
-                                                                      .text,
-                                                            );
-                                                          });
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
+                                            ? SizedBox.shrink()
 
-                                                controller: controller
-                                                    .controller, // Managing text field content
-                                                style: const TextStyle(
-                                                    color: Colors.blue,
-                                                    fontSize: 12),
-                                                decoration: InputDecoration(
-                                                  // filled: true,
-                                                  fillColor: Colors.white,
-                                                  border: UnderlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            0),
-                                                    borderSide: BorderSide(
-                                                      color: Colors.white
-                                                          .withOpacity(0.2),
-                                                      width: 1,
-                                                    ),
-                                                  ),
-                                                  enabledBorder:
-                                                      UnderlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            0),
-                                                    borderSide: BorderSide(
-                                                      color: Colors.white
-                                                          .withOpacity(0.2),
-                                                      width: 1,
-                                                    ),
-                                                  ),
-                                                  focusedBorder:
-                                                      UnderlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            0),
-                                                    borderSide: BorderSide(
-                                                      color: Colors.white
-                                                          .withOpacity(0.2),
-                                                      width: 1,
-                                                    ),
-                                                  ),
-                                                  contentPadding:
-                                                      const EdgeInsets
-                                                          .symmetric(
-                                                    vertical: 12,
-                                                    horizontal: 2,
-                                                  ),
-                                                ),
-                                                cursorHeight:
-                                                    12, // Adjusted cursor height
-                                                cursorWidth:
-                                                    2, // Adjusted cursor width for visibility
-                                              )
+                                            // TextField(
+                                            //     readOnly: true,
+                                            //     onTap: () {
+                                            //       showDialog(
+                                            //         context: context,
+                                            //         builder: (context) =>
+                                            //             Dialog(
+                                            //           child: ReusableForm(
+                                            //             nameController:
+                                            //                 nameController,
+                                            //             phoneController:
+                                            //                 phoneController,
+                                            //             emailController:
+                                            //                 emailController,
+                                            //             addressController:
+                                            //                 addressController,
+                                            //             primaryColor:
+                                            //                 Theme.of(context)
+                                            //                     .primaryColor,
+                                            //             onCancel: _onCancel,
+                                            //             onSubmit: () {
+                                            //               setState(() {
+                                            //                 controller
+                                            //                     .updatedCustomerInfomation(
+                                            //                   nameFrom:
+                                            //                       nameController
+                                            //                           .text,
+                                            //                   phoneFrom:
+                                            //                       phoneController
+                                            //                           .text,
+                                            //                   emailFrom:
+                                            //                       emailController
+                                            //                           .text,
+                                            //                   addressFrom:
+                                            //                       addressController
+                                            //                           .text,
+                                            //                 );
+                                            //               });
+                                            //               Navigator.pop(
+                                            //                   context);
+                                            //             },
+                                            //           ),
+                                            //         ),
+                                            //       );
+                                            //     },
+
+                                            //     controller: controller
+                                            //         .controller, // Managing text field content
+                                            //     style: const TextStyle(
+                                            //         color: Colors.blue,
+                                            //         fontSize: 12),
+                                            //     decoration: InputDecoration(
+                                            //       // filled: true,
+                                            //       fillColor: Colors.white,
+                                            //       border: UnderlineInputBorder(
+                                            //         borderRadius:
+                                            //             BorderRadius.circular(
+                                            //                 0),
+                                            //         borderSide: BorderSide(
+                                            //           color: Colors.white
+                                            //               .withOpacity(0.2),
+                                            //           width: 1,
+                                            //         ),
+                                            //       ),
+                                            //       enabledBorder:
+                                            //           UnderlineInputBorder(
+                                            //         borderRadius:
+                                            //             BorderRadius.circular(
+                                            //                 0),
+                                            //         borderSide: BorderSide(
+                                            //           color: Colors.white
+                                            //               .withOpacity(0.2),
+                                            //           width: 1,
+                                            //         ),
+                                            //       ),
+                                            //       focusedBorder:
+                                            //           UnderlineInputBorder(
+                                            //         borderRadius:
+                                            //             BorderRadius.circular(
+                                            //                 0),
+                                            //         borderSide: BorderSide(
+                                            //           color: Colors.white
+                                            //               .withOpacity(0.2),
+                                            //           width: 1,
+                                            //         ),
+                                            //       ),
+                                            //       contentPadding:
+                                            //           const EdgeInsets
+                                            //               .symmetric(
+                                            //         vertical: 12,
+                                            //         horizontal: 2,
+                                            //       ),
+                                            //     ),
+                                            //     cursorHeight:
+                                            //         12, // Adjusted cursor height
+                                            //     cursorWidth:
+                                            //         2, // Adjusted cursor width for visibility
+                                            //   )
                                             : Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
@@ -487,40 +626,40 @@ class _LayoutState extends State<_Layout> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   ///show text field search ====>
-                                                  AddSalesFormfieldTwo(
-                                                    controller: controller
-                                                        .customerNameController,
-                                                    customerorSaleslist:
-                                                        "Cus/Sup list",
-                                                    customerOrSupplierButtonLavel:
-                                                        "Add New",
-                                                    color: Colors.grey,
-                                                    onTap: () {
-                                                      final customerProvider =
-                                                          Provider.of<
-                                                                  CustomerProvider>(
-                                                              context,
-                                                              listen: false);
-                                                      final selectedCustomer =
-                                                          customerProvider
-                                                              .selectedCustomer; // Or selectedCustomerRecived
+                                                  // AddSalesFormfieldTwo(
+                                                  //   controller: controller
+                                                  //       .customerNameController,
+                                                  //   customerorSaleslist:
+                                                  //       "Cus/Sup list",
+                                                  //   customerOrSupplierButtonLavel:
+                                                  //       "Add New",
+                                                  //   color: Colors.grey,
+                                                  //   onTap: () {
+                                                  //     final customerProvider =
+                                                  //         Provider.of<
+                                                  //                 CustomerProvider>(
+                                                  //             context,
+                                                  //             listen: false);
+                                                  //     final selectedCustomer =
+                                                  //         customerProvider
+                                                  //             .selectedCustomer; // Or selectedCustomerRecived
 
-                                                      if (selectedCustomer !=
-                                                          null) {
-                                                        debugPrint(
-                                                            "Customer Name: ${selectedCustomer.name}");
-                                                        debugPrint(
-                                                            "Customer ID: ${selectedCustomer.id}");
-                                                      }
+                                                  //     if (selectedCustomer !=
+                                                  //         null) {
+                                                  //       debugPrint(
+                                                  //           "Customer Name: ${selectedCustomer.name}");
+                                                  //       debugPrint(
+                                                  //           "Customer ID: ${selectedCustomer.id}");
+                                                  //     }
 
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const CustomerCreate()));
-                                                    },
-                                                    //label: "Customer",
-                                                  ),
+                                                  //     Navigator.push(
+                                                  //         context,
+                                                  //         MaterialPageRoute(
+                                                  //             builder: (context) =>
+                                                  //                 const CustomerCreate()));
+                                                  //   },
+                                                  //   //label: "Customer",
+                                                  // ),
 
                                                   /// show bottom payable or recivedable.
                                                   // Consumer<CustomerProvider>(
@@ -605,24 +744,24 @@ class _LayoutState extends State<_Layout> {
                                       )
                                     ],
                                   ),
-                                  vPad5,
-                                  nameController.value.text == ""
-                                      ? const SizedBox.shrink()
-                                      : Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                "Name: ${controller.customerName}",
-                                                style: const TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 10)),
-                                            Text("Phone: ${controller.phone}",
-                                                style: const TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 10)),
-                                          ],
-                                        ),
+                                  // vPad5,
+                                  // nameController.value.text == ""
+                                  //     ? const SizedBox.shrink()
+                                  //     : Column(
+                                  //         crossAxisAlignment:
+                                  //             CrossAxisAlignment.start,
+                                  //         children: [
+                                  //           Text(
+                                  //               "Name: ${controller.customerName}",
+                                  //               style: const TextStyle(
+                                  //                   color: Colors.black,
+                                  //                   fontSize: 10)),
+                                  //           Text("Phone: ${controller.phone}",
+                                  //               style: const TextStyle(
+                                  //                   color: Colors.black,
+                                  //                   fontSize: 10)),
+                                  //         ],
+                                  //       ),
                                 ],
                               ),
                             ),
@@ -641,64 +780,64 @@ class _LayoutState extends State<_Layout> {
                                   //   ),
                                   // ),
 
-                                  SizedBox(
-                                    height: 30,
-                                    width: 130,
-                                    child: AddSalesFormfield(
-                                      labelText: "Bill No",
-                                      controller: billController,
-                                      readOnly: true, // Prevent manual editing
-                                    ),
-                                  ),
+                                  // SizedBox(
+                                  //   height: 30,
+                                  //   width: 130,
+                                  //   child: AddSalesFormfield(
+                                  //     labelText: "Bill No",
+                                  //     controller: billController,
+                                  //     readOnly: true, // Prevent manual editing
+                                  //   ),
+                                  // ),
 
-                                  SizedBox(
-                                    height: 25,
-                                    width: 127,
-                                    child: InkWell(
-                                      onTap: () => controller.pickDate(
-                                          context), // Trigger the date picker
-                                      child: InputDecorator(
-                                        decoration: InputDecoration(
-                                          isDense: true,
-                                          suffixIcon: Icon(
-                                            Icons.calendar_today,
-                                            size: 16,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                          suffixIconConstraints:
-                                              const BoxConstraints(
-                                            minWidth: 16,
-                                            minHeight: 16,
-                                          ), // Adjust constraints to align icon closely
-                                          hintText: "Bill Date",
-                                          hintStyle: TextStyle(
-                                            color: Colors.grey.shade400,
-                                            fontSize: 10,
-                                          ),
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.grey.shade400,
-                                                width: 0.5),
-                                          ),
-                                          focusedBorder:
-                                              const UnderlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: Colors.green),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          controller.formattedDate.isNotEmpty
-                                              ? controller.formattedDate
-                                              : "Select Date", // Default text when no date is selected
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  // SizedBox(
+                                  //   height: 25,
+                                  //   width: 127,
+                                  //   child: InkWell(
+                                  //     onTap: () => controller.pickDate(
+                                  //         context), // Trigger the date picker
+                                  //     child: InputDecorator(
+                                  //       decoration: InputDecoration(
+                                  //         isDense: true,
+                                  //         suffixIcon: Icon(
+                                  //           Icons.calendar_today,
+                                  //           size: 16,
+                                  //           color:
+                                  //               Theme.of(context).primaryColor,
+                                  //         ),
+                                  //         suffixIconConstraints:
+                                  //             const BoxConstraints(
+                                  //           minWidth: 16,
+                                  //           minHeight: 16,
+                                  //         ), // Adjust constraints to align icon closely
+                                  //         hintText: "Bill Date",
+                                  //         hintStyle: TextStyle(
+                                  //           color: Colors.grey.shade400,
+                                  //           fontSize: 10,
+                                  //         ),
+                                  //         enabledBorder: UnderlineInputBorder(
+                                  //           borderSide: BorderSide(
+                                  //               color: Colors.grey.shade400,
+                                  //               width: 0.5),
+                                  //         ),
+                                  //         focusedBorder:
+                                  //             const UnderlineInputBorder(
+                                  //           borderSide:
+                                  //               BorderSide(color: Colors.green),
+                                  //         ),
+                                  //       ),
+                                  //       child: Text(
+                                  //         controller.formattedDate.isNotEmpty
+                                  //             ? controller.formattedDate
+                                  //             : "Select Date", // Default text when no date is selected
+                                  //         style: const TextStyle(
+                                  //           color: Colors.black,
+                                  //           fontSize: 12,
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
 
                                   ///bill person
                                   // Padding(
@@ -760,10 +899,45 @@ class _LayoutState extends State<_Layout> {
 
                         vPad10,
 
+                        if (controller.isCash == false)
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: AddSalesFormfieldTwo(
+                              controller: controller.customerNameController,
+                              customerorSaleslist: "Cus/Sup list",
+                              customerOrSupplierButtonLavel: "Add New",
+                              color: Colors.grey,
+                              onTap: () {
+                                final customerProvider =
+                                    Provider.of<CustomerProvider>(context,
+                                        listen: false);
+                                final selectedCustomer = customerProvider
+                                    .selectedCustomer; // Or selectedCustomerRecived
+
+                                if (selectedCustomer != null) {
+                                  debugPrint(
+                                      "Customer Name: ${selectedCustomer.name}");
+                                  debugPrint(
+                                      "Customer ID: ${selectedCustomer.id}");
+                                }
+
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CustomerCreate()));
+                              },
+                              //label: "Customer",
+                            ),
+                          ),
+
+                        vPad2,
+
                         /// Item Dropdown
                         SizedBox(
-                          height: 52,
-                          width: 200,
+                          height: 59,
+                          width: double.infinity,
                           child: Consumer<AddItemProvider>(
                             builder: (context, itemProvider, child) {
                               if (itemProvider.isLoading) {
@@ -781,10 +955,13 @@ class _LayoutState extends State<_Layout> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    "Selected an item",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 14),
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 4.0),
+                                    child: Text(
+                                      "Selected an item",
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 14),
+                                    ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -795,7 +972,7 @@ class _LayoutState extends State<_Layout> {
                                           .map((item) => item.name)
                                           .toList(),
                                       width: double.infinity,
-                                      height: 30,
+                                      height: 38,
                                       selectedItem: controller.seletedItemName,
                                       onChanged: (selectedItemName) async {
                                         setState(() {

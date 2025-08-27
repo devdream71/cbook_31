@@ -18,7 +18,7 @@ class CustomDropdownTwo extends StatefulWidget {
     this.labelText,
     required this.onChanged,
     required this.width,
-    required this.height,
+    this.height = 38,
     this.selectedItem,
     this.value,
     this.enableSearch = false, // Default to false for backward compatibility

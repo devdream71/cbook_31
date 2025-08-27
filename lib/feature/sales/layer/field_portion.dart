@@ -8,19 +8,17 @@ class FieldPortion extends StatefulWidget {
 }
 
 class _FieldPortionState extends State<FieldPortion> {
-  
   late TextEditingController taxAmountController;
   TextEditingController totalAmountController = TextEditingController();
 
   String? selectedTaxId;
 
-    // ✅ add flags
+  // ✅ add flags
   // bool _itemWiseDiscount = false;
   // bool _itemWiseVatTax = false;
 
   bool _billWiseVatTax = false;
   bool _billWiseDiscount = false;
-
 
   bool _isLoading = true;
 
@@ -43,8 +41,7 @@ class _FieldPortionState extends State<FieldPortion> {
   //   totalAmountController.text = controller.totalAmount;
   // }
 
-  
-    @override
+  @override
   void initState() {
     super.initState();
     taxAmountController = TextEditingController();
@@ -75,8 +72,6 @@ class _FieldPortionState extends State<FieldPortion> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<SalesController>();
@@ -84,8 +79,8 @@ class _FieldPortionState extends State<FieldPortion> {
     String? selectedTaxName;
 
     if (_isLoading) {
-    return const Center(child: CircularProgressIndicator());
-  }
+      return const Center(child: CircularProgressIndicator());
+    }
 
     //final discoust = controller.receivedMoneyController;
 
@@ -104,7 +99,7 @@ class _FieldPortionState extends State<FieldPortion> {
                         style: TextStyle(fontSize: 12, color: Colors.black)),
                     hPad5,
                     SizedBox(
-                      height: 30,
+                      height: 38,
                       width: 163,
                       child: AddSalesFormfield(
                         // controller: controller.amountController,
@@ -125,66 +120,59 @@ class _FieldPortionState extends State<FieldPortion> {
         /////====> cash discount and percentance.
         controller.isDisocunt &&
                 controller.isCash //controller.isDisocunt == true
-            ? 
-            
-            _billWiseDiscount && controller.isCash
-          ?
-            Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text("Discount",
-                        style: TextStyle(fontSize: 12, color: Colors.black)),
-                    const SizedBox(width: 5),
-
-                    SizedBox(
-                      height: 30,
-                      width: 80,
-                      child: AddSalesFormfield(
-                        labelText: "%",
-                        controller: controller.percentController,
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          debugPrint("cbook");
-                          // controller.updateDiscountCreditPercent(value);
-                          controller.updateDiscountCashPercent(value);
-                        },
-                        //style: const TextStyle(fontSize: 12, color: Colors.black),
-                        decoration: const InputDecoration(
-                          hintText: "%",
+            ? _billWiseDiscount && controller.isCash
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text("Discount",
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black)),
+                        const SizedBox(width: 5),
+                        SizedBox(
+                          height: 38,
+                          width: 80,
+                          child: AddSalesFormfield(
+                            labelText: "%",
+                            controller: controller.percentController,
+                            keyboardType: TextInputType.number,
+                            onChanged: (value) {
+                              debugPrint("cbook");
+                              // controller.updateDiscountCreditPercent(value);
+                              controller.updateDiscountCashPercent(value);
+                            },
+                            //style: const TextStyle(fontSize: 12, color: Colors.black),
+                            decoration: const InputDecoration(
+                              hintText: "%",
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-
-                     const SizedBox(
-                      width: 3,
-                    ),
-                    
-
-
-                    SizedBox(
-                      height: 30,
-                      width: 80,
-                      child: AddSalesFormfield(
-                        keyboardType: TextInputType.number,
-                        labelText: "৳",
-                        controller: controller.discountController,
-                        onChanged: (value) {
-                          //controller.updateDiscountCreditAmount(value);
-                          controller.updateDiscountCashAmount(value);
-                        },
-                        //style: const TextStyle(fontSize: 12, color: Colors.black),
-                        decoration: const InputDecoration(
-                          hintText: "৳",
+                        const SizedBox(
+                          width: 3,
                         ),
-                      ),
+                        SizedBox(
+                          height: 38,
+                          width: 80,
+                          child: AddSalesFormfield(
+                            keyboardType: TextInputType.number,
+                            labelText: "৳",
+                            controller: controller.discountController,
+                            onChanged: (value) {
+                              //controller.updateDiscountCreditAmount(value);
+                              controller.updateDiscountCashAmount(value);
+                            },
+                            //style: const TextStyle(fontSize: 12, color: Colors.black),
+                            decoration: const InputDecoration(
+                              hintText: "৳",
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                   
-                  ],
-                ),
-              )
-            : const SizedBox.shrink() : const SizedBox.shrink(),
+                  )
+                : const SizedBox.shrink()
+            : const SizedBox.shrink(),
 
         // const SizedBox(
         //   height: 5,
@@ -192,138 +180,144 @@ class _FieldPortionState extends State<FieldPortion> {
 
         // //cash ////tax and percentace
         controller.isVatTax && controller.isCash
-            ? 
-            _billWiseVatTax && controller.isCash
-          ? 
-            
-            Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text("TAX/VAT",
-                        style: TextStyle(fontSize: 12, color: Colors.black)),
-                    const SizedBox(width: 5),
-                    SizedBox(
-                      width: 80,
-                      child: Consumer<TaxProvider>(
-                        builder: (context, taxProvider, child) {
-                          if (taxProvider.isLoading) {
-                            return const Center(
-                                child:
-                                    SizedBox()); //CircularProgressIndicator()
-                          }
+            ? _billWiseVatTax && controller.isCash
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text("TAX/VAT",
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black)),
+                        const SizedBox(width: 5),
+                        SizedBox(
+                          width: 80,
+                          height: 38,
+                          child: Consumer<TaxProvider>(
+                            builder: (context, taxProvider, child) {
+                              if (taxProvider.isLoading) {
+                                return const Center(
+                                    child:
+                                        SizedBox()); //CircularProgressIndicator()
+                              }
 
-                          if (taxProvider.taxList.isEmpty) {
-                            return const Center(
-                              child: Text(
-                                'No tax options available.',
-                                style: TextStyle(color: Colors.black),
+                              if (taxProvider.taxList.isEmpty) {
+                                return const Center(
+                                  child: Text(
+                                    'No tax options available.',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                );
+                              }
+                              return SizedBox(
+                                width: 80,
+                                height: 38,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomDropdownTwo(
+                                      height: 38,
+                                      hint: '', //Select VAT/TAX
+                                      items: taxProvider.taxList
+                                          .map((tax) => tax.percent
+                                              .toString()) //${tax.name} -
+                                          .toList(),
+                                      width: double.infinity,
+                                      selectedItem: selectedTaxName,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          selectedTaxName = newValue;
+
+                                          final nameOnly =
+                                              newValue?.split(" - ").first;
+
+                                          final selected =
+                                              taxProvider.taxList.firstWhere(
+                                            (tax) => tax.name == nameOnly,
+                                            orElse: () =>
+                                                taxProvider.taxList.first,
+                                          );
+
+                                          selectedTaxId =
+                                              selected.id.toString();
+
+                                          controller.selectedTaxPercent =
+                                              double.tryParse(selected.percent);
+
+                                          controller.taxPercent =
+                                              controller.selectedTaxPercent ??
+                                                  0.0;
+
+                                          controller.selectedTaxId =
+                                              selected.id.toString();
+                                          controller.selectedTaxPercent =
+                                              double.tryParse(selected.percent);
+
+                                          // controller.updateTaxPaecentId(
+                                          //     '${selectedTaxId}_${controller.selectedTaxPercent}');
+
+                                          /// ✅ Add these lines for calculation:
+                                          controller.calculateTaxCash();
+                                          controller.calculateTotalCash();
+
+                                          final taxPercent =
+                                              (controller.selectedTaxPercent ??
+                                                      0)
+                                                  .toStringAsFixed(0);
+                                          controller.updateTaxPaecentId(
+                                              '${selectedTaxId}_$taxPercent');
+
+                                          debugPrint(
+                                              'tax_percent: "${controller.taxPercentValue}"');
+                                          debugPrint(
+                                              "Selected Tax ID: $selectedTaxId");
+                                          debugPrint(
+                                              "Selected Tax Percent: ${controller.selectedTaxPercent}");
+
+                                          controller.selectTotalTaxDropdown(
+                                              double.parse(
+                                                  controller.totalAmount),
+                                              newValue);
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(width: 3),
+
+                        ///tax/vat amount ==>
+                        Consumer<SalesController>(
+                          builder: (context, controller, _) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              taxAmountController.text =
+                                  controller.taxAmount.toStringAsFixed(2);
+                            });
+                            return SizedBox(
+                              width: 80,
+                              height: 38,
+                              child: AddSalesFormfield(
+                                // controller: taxAmountController,
+                                controller: TextEditingController(
+                                    text: controller.totalTaxAmountl!
+                                            .toStringAsFixed(2) ??
+                                        ""),
+                                keyboardType: TextInputType.number,
+                                //readOnly: true,
                               ),
                             );
-                          }
-                          return SizedBox(
-                            width: 80,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomDropdownTwo(
-                                  hint: '', //Select VAT/TAX
-                                  items: taxProvider.taxList
-                                      .map((tax) => tax.percent.toString()) //${tax.name} -
-                                      .toList(),
-
-                                  width: double.infinity,
-                                  height: 30,
-                                  selectedItem: selectedTaxName,
-
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      selectedTaxName = newValue;
-
-                                      final nameOnly =
-                                          newValue?.split(" - ").first;
-
-                                      final selected =
-                                          taxProvider.taxList.firstWhere(
-                                        (tax) => tax.name == nameOnly,
-                                        orElse: () => taxProvider.taxList.first,
-                                      );
-
-                                      selectedTaxId = selected.id.toString();
-
-                                      controller.selectedTaxPercent =
-                                          double.tryParse(selected.percent);
-
-                                      controller.taxPercent =
-                                          controller.selectedTaxPercent ?? 0.0;
-
-                                      controller.selectedTaxId =
-                                          selected.id.toString();
-                                      controller.selectedTaxPercent =
-                                          double.tryParse(selected.percent);
-
-                                      // controller.updateTaxPaecentId(
-                                      //     '${selectedTaxId}_${controller.selectedTaxPercent}');
-
-                                      /// ✅ Add these lines for calculation:
-                                      controller.calculateTaxCash();
-                                      controller.calculateTotalCash();
-
-                                      final taxPercent =
-                                          (controller.selectedTaxPercent ?? 0)
-                                              .toStringAsFixed(0);
-                                      controller.updateTaxPaecentId(
-                                          '${selectedTaxId}_$taxPercent');
-
-                                      debugPrint(
-                                          'tax_percent: "${controller.taxPercentValue}"');
-                                      debugPrint(
-                                          "Selected Tax ID: $selectedTaxId");
-                                      debugPrint(
-                                          "Selected Tax Percent: ${controller.selectedTaxPercent}");
-
-                                      controller.selectTotalTaxDropdown(
-                                          double.parse(controller.totalAmount),
-                                          newValue);
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                          },
+                        ),
+                      ],
                     ),
-
-                    const SizedBox(width: 3),
-
-                    ///tax/vat amount ==>
-                    Consumer<SalesController>(
-                      builder: (context, controller, _) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          taxAmountController.text =
-                              controller.taxAmount.toStringAsFixed(2);
-                        });
-                        return SizedBox(
-                          width: 80,
-                          child: AddSalesFormfield(
-                            // controller: taxAmountController,
-                            controller: TextEditingController(
-                                text: controller.totalTaxAmountl!
-                                        .toStringAsFixed(2) ??
-                                    ""),
-                            keyboardType: TextInputType.number,
-                            //readOnly: true,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              )
-            : const SizedBox.shrink()  : SizedBox.shrink(),
+                  )
+                : const SizedBox.shrink()
+            : SizedBox.shrink(),
 
         // ///cash /// adjust total
         controller.isDisocunt && controller.isCash
@@ -346,7 +340,7 @@ class _FieldPortionState extends State<FieldPortion> {
                                     fontSize: 12, color: Colors.black)),
                             const SizedBox(width: 5),
                             SizedBox(
-                              height: 30,
+                              height: 38,
                               width: 163,
                               child: AddSalesFormfield(
                                 readOnly: true,
@@ -372,7 +366,7 @@ class _FieldPortionState extends State<FieldPortion> {
                     Row(
                       children: [
                         SizedBox(
-                            height: 30,
+                            height: 38,
                             child: Checkbox(
                               value: controller.isReceived,
                               onChanged: (bool? value) {
@@ -381,7 +375,8 @@ class _FieldPortionState extends State<FieldPortion> {
                                   if (value == true) {
                                     controller.isReceived = true;
                                     controller.notifyListeners();
-                                    debugPrint("cash recived. ${controller.isReceived}");
+                                    debugPrint(
+                                        "cash recived. ${controller.isReceived}");
                                   }
                                 } else {
                                   // Allow normal toggling when not cash
@@ -403,7 +398,7 @@ class _FieldPortionState extends State<FieldPortion> {
                                 TextStyle(fontSize: 12, color: Colors.black)),
                         const SizedBox(width: 5),
                         SizedBox(
-                          height: 30,
+                          height: 38,
                           width: 163,
                           child: AddSalesFormfield(
                             readOnly: true,
@@ -435,7 +430,7 @@ class _FieldPortionState extends State<FieldPortion> {
                         style: TextStyle(fontSize: 12, color: Colors.black)),
                     hPad5,
                     SizedBox(
-                      height: 30,
+                      height: 38,
                       width: 163,
                       child: AddSalesFormfield(
                         // controller: controller.receivedMoneyController,
@@ -459,180 +454,185 @@ class _FieldPortionState extends State<FieldPortion> {
 
         // /////credit discount <==============
 
-        controller.isCash == false && controller.isDisocunt == true ? _billWiseDiscount 
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text("Discount",
-                        style: TextStyle(fontSize: 12, color: Colors.black)),
-                    const SizedBox(width: 5),
-
-                    SizedBox(
-                      height: 30,
-                      width: 80,
-                      child: AddSalesFormfield(
-                        labelText: "%",
-                        controller: controller.percentController,
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          controller.updateDiscountCreditPercent(value);
-                        },
-                        //style: const TextStyle(fontSize: 12, color: Colors.black),
-                        decoration: const InputDecoration(
-                          hintText: "%",
+        controller.isCash == false && controller.isDisocunt == true
+            ? _billWiseDiscount
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text("Discount",
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black)),
+                        const SizedBox(width: 5),
+                        SizedBox(
+                          height: 38,
+                          width: 80,
+                          child: AddSalesFormfield(
+                            labelText: "%",
+                            controller: controller.percentController,
+                            keyboardType: TextInputType.number,
+                            onChanged: (value) {
+                              controller.updateDiscountCreditPercent(value);
+                            },
+                            //style: const TextStyle(fontSize: 12, color: Colors.black),
+                            decoration: const InputDecoration(
+                              hintText: "%",
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-
-                    const SizedBox(
-                      width: 3,
-                    ),
-
-
-                    SizedBox(
-                      height: 30,
-                      width: 80,
-                      child: AddSalesFormfield(
-                        keyboardType: TextInputType.number,
-                        labelText: "৳",
-                        controller: controller.discountController,
-                        onChanged: (value) {
-                          controller.updateDiscountCreditAmount(value);
-                        },
-                        //style: const TextStyle(fontSize: 12, color: Colors.black),
-                        decoration: const InputDecoration(
-                          hintText: "৳",
+                        const SizedBox(
+                          width: 3,
                         ),
-                      ),
+                        SizedBox(
+                          height: 38,
+                          width: 80,
+                          child: AddSalesFormfield(
+                            keyboardType: TextInputType.number,
+                            labelText: "৳",
+                            controller: controller.discountController,
+                            onChanged: (value) {
+                              controller.updateDiscountCreditAmount(value);
+                            },
+                            //style: const TextStyle(fontSize: 12, color: Colors.black),
+                            decoration: const InputDecoration(
+                              hintText: "৳",
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    
-                    
-                  ],
-                ),
-              )
-            : const SizedBox.shrink() : const SizedBox.shrink(),
+                  )
+                : const SizedBox.shrink()
+            : const SizedBox.shrink(),
 
         // const SizedBox(
         //   height: 5,
         // ),
 
         // //controller.isVatTax && controller.isCash
-        controller.isCash == false && controller.isVatTax ?  _billWiseVatTax
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text("TAX/VAT",
-                        style: TextStyle(fontSize: 12, color: Colors.black)),
-                    const SizedBox(width: 5),
-                    SizedBox(
-                      child: Consumer<TaxProvider>(
-                        builder: (context, taxProvider, child) {
-                          if (taxProvider.isLoading) {
-                            return const Center(
-                                child:
-                                    SizedBox()); //CircularProgressIndicator()
-                          }
+        controller.isCash == false && controller.isVatTax
+            ? _billWiseVatTax
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text("TAX/VAT",
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black)),
+                        const SizedBox(width: 5),
+                        SizedBox(
+                          child: Consumer<TaxProvider>(
+                            builder: (context, taxProvider, child) {
+                              if (taxProvider.isLoading) {
+                                return const Center(
+                                    child:
+                                        SizedBox()); //CircularProgressIndicator()
+                              }
 
-                          if (taxProvider.taxList.isEmpty) {
-                            return const Center(
-                              child: Text(
-                                'No tax options available.',
-                                style: TextStyle(color: Colors.black),
+                              if (taxProvider.taxList.isEmpty) {
+                                return const Center(
+                                  child: Text(
+                                    'No tax options available.',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                );
+                              }
+                              return SizedBox(
+                                width: 80,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomDropdownTwo(
+                                      height: 38,
+                                      hint: '', //Select VAT/TAX
+                                      items: taxProvider.taxList
+                                          .map((tax) => tax.percent
+                                              .toString()) //${tax.name} -
+                                          .toList(),
+
+                                      width: double.infinity,
+                                      selectedItem: selectedTaxName,
+                                      onChanged: (newValue) {
+                                        debugPrint(
+                                            "Selected raw value from dropdown: $newValue");
+                                        setState(() {
+                                          selectedTaxName = newValue;
+
+                                          // Find tax by percent
+                                          final selected =
+                                              taxProvider.taxList.firstWhere(
+                                            (tax) => tax.percent == newValue,
+                                            orElse: () =>
+                                                taxProvider.taxList.first,
+                                          );
+
+                                          // Store ID and Percent
+                                          controller.selectedTotalTaxId =
+                                              selected.id.toString();
+                                          controller.selectedTotalTaxPercent =
+                                              double.tryParse(
+                                                  selected.percent)!;
+
+                                          // Calculate tax/total
+                                          controller.taxPercent = controller
+                                              .selectedTotalTaxPercent;
+                                          controller.calculateTax();
+                                          controller.calculateTotal();
+
+                                          // Print required format: tax_percent: "3_12.0"
+
+                                          controller.updateTotalTaxId(
+                                              '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}');
+                                          debugPrint(
+                                              'tax_percent: "${controller.taxPercentValue}"'); // ✅ This is what you want
+
+                                          controller
+                                              .selectTotalCreditTaxDropdown(
+                                                  double.parse(
+                                                      controller.totalAmount2),
+                                                  newValue);
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 3),
+
+                        ///tax/vat amount ==>
+                        Consumer<SalesController>(
+                          builder: (context, controller, _) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              taxAmountController.text =
+                                  controller.taxAmount.toStringAsFixed(2);
+                            });
+
+                            return SizedBox(
+                              width: 80,
+                              height: 38,
+                              child: AddSalesFormfield(
+                                // controller: taxAmountController,
+                                controller: TextEditingController(
+                                    text: controller.totalTaxAmountl!
+                                            .toStringAsFixed(2) ??
+                                        ""),
+                                keyboardType: TextInputType.number,
+                                //readOnly: true,
                               ),
                             );
-                          }
-                          return SizedBox(
-                            width: 80,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomDropdownTwo(
-                                  hint: '', //Select VAT/TAX
-                                  items: taxProvider.taxList
-                                      .map((tax) => tax.percent.toString()) //${tax.name} -
-                                      .toList(),
-
-                                  width: double.infinity,
-                                  height: 30,
-                                  selectedItem: selectedTaxName,
-
-                                  onChanged: (newValue) {
-                                    debugPrint(
-                                        "Selected raw value from dropdown: $newValue");
-                                    setState(() {
-                                      selectedTaxName = newValue;
-
-                                      // Find tax by percent
-                                      final selected =
-                                          taxProvider.taxList.firstWhere(
-                                        (tax) => tax.percent == newValue,
-                                        orElse: () => taxProvider.taxList.first,
-                                      );
-
-                                      // Store ID and Percent
-                                      controller.selectedTotalTaxId =
-                                          selected.id.toString();
-                                      controller.selectedTotalTaxPercent =
-                                          double.tryParse(selected.percent)!;
-
-                                      // Calculate tax/total
-                                      controller.taxPercent =
-                                          controller.selectedTotalTaxPercent;
-                                      controller.calculateTax();
-                                      controller.calculateTotal();
-
-                                      // Print required format: tax_percent: "3_12.0"
-
-                                      controller.updateTotalTaxId(
-                                          '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}');
-                                      debugPrint(
-                                          'tax_percent: "${controller.taxPercentValue}"'); // ✅ This is what you want
-
-                                      controller.selectTotalCreditTaxDropdown(
-                                          double.parse(controller.totalAmount2),
-                                          newValue);
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                          },
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 3),
-
-                    ///tax/vat amount ==>
-                    Consumer<SalesController>(
-                      builder: (context, controller, _) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          taxAmountController.text =
-                              controller.taxAmount.toStringAsFixed(2);
-                        });
-
-                        return SizedBox(
-                          width: 80,
-                          child: AddSalesFormfield(
-                            // controller: taxAmountController,
-                            controller: TextEditingController(
-                                text: controller.totalTaxAmountl!
-                                        .toStringAsFixed(2) ??
-                                    ""),
-                            keyboardType: TextInputType.number,
-                            //readOnly: true,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              )
-            : const SizedBox.shrink() : const SizedBox.shrink(),
+                  )
+                : const SizedBox.shrink()
+            : const SizedBox.shrink(),
 
         // const SizedBox(
         //   height: 5,
@@ -659,7 +659,7 @@ class _FieldPortionState extends State<FieldPortion> {
                                     fontSize: 12, color: Colors.black)),
                             const SizedBox(width: 5),
                             SizedBox(
-                              height: 30,
+                              height: 38,
                               width: 163,
                               child: AddSalesFormfield(
                                 //readOnly: true,
@@ -707,7 +707,7 @@ class _FieldPortionState extends State<FieldPortion> {
                                 TextStyle(fontSize: 12, color: Colors.black)),
                         const SizedBox(width: 5),
                         SizedBox(
-                          height: 30,
+                          height: 38,
                           width: 163,
                           child: AddSalesFormfield(
                             controller: controller.receivedAmountController,

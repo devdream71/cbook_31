@@ -277,17 +277,18 @@ class _LayoutState extends State<_Layout> {
                   },
                 ),
                 IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const BillInvoiceCreateForm()));
-                    },
-                    icon: const Icon(
-                      Icons.settings,
-                      color: Colors.white,
-                    ))
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const BillInvoiceCreateForm()));
+                  },
+                  icon: const Icon(
+                    Icons.settings,
+                    color: Colors.white,
+                  ),
+                ),
               ],
             ),
 
@@ -412,7 +413,7 @@ class _LayoutState extends State<_Layout> {
                   // ),
 
                   Padding(
-                    padding: const EdgeInsets.all(6.0),
+                    padding: const EdgeInsets.all(0.0),
                     child: Container(
                       color: Color(0xffdddefa),
                       child: Padding(
@@ -969,6 +970,7 @@ class _LayoutState extends State<_Layout> {
                             SizedBox(
                               width: double.infinity,
                               child: AddSalesFormfieldTwo(
+                                height: 38,
                                 controller: controller.customerNameController,
                                 customerorSaleslist: "Showing Customer list",
                                 customerOrSupplierButtonLavel: "Add customer",
@@ -995,6 +997,7 @@ class _LayoutState extends State<_Layout> {
                                         showSalesDialog(context, controller);
                                       },
                                       child: Container(
+                                        height: 38,
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           border: Border.all(
@@ -1043,15 +1046,10 @@ class _LayoutState extends State<_Layout> {
                               controller.itemsCredit.isEmpty
                                   ? InkWell(
                                       onTap: () {
-                                       
-                                       
                                         showSalesDialog(context, controller);
-                                        
-                                        
                                       },
-                                      child: 
-                                      
-                                      Container(
+                                      child: Container(
+                                        height: 38,
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           border: Border.all(
@@ -1306,6 +1304,7 @@ class _LayoutState extends State<_Layout> {
                                                       context, controller);
                                                 },
                                                 child: Container(
+                                                  height: 38,
                                                   decoration: BoxDecoration(
                                                     color: Colors.white,
                                                     border: Border.all(
@@ -1607,6 +1606,7 @@ class _LayoutState extends State<_Layout> {
                                                   //setState(() {});
                                                 },
                                                 child: Container(
+                                                  height: 38,
                                                   decoration: BoxDecoration(
                                                     color: Colors.white,
                                                     border: Border.all(
@@ -1731,7 +1731,9 @@ class _LayoutState extends State<_Layout> {
                                 },
                               ),
                               if (showNoteField)
-                                Expanded(
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * .40,
                                   child: Padding(
                                     padding: const EdgeInsets.only(right: 8.0),
                                     child: Container(
@@ -1937,19 +1939,19 @@ class _LayoutState extends State<_Layout> {
                           child: Consumer<AddItemProvider>(
                             builder: (context, itemProvider, child) {
                               return SizedBox(
-                                height: 30,
+                                height: 38,
                                 width: double.infinity,
                                 child: itemProvider.isLoading
                                     ? const Center(
                                         child: CircularProgressIndicator())
                                     : CustomDropdownTwo(
+                                        height: 38,
                                         enableSearch: true,
                                         hint: 'Select Item',
                                         items: itemProvider.items
                                             .map((item) => item.name)
                                             .toList(), // List<String>
                                         width: double.infinity,
-                                        height: 30,
                                         selectedItem:
                                             selectedItemName, // Global/state variable
                                         onChanged: (value) async {
@@ -1986,6 +1988,9 @@ class _LayoutState extends State<_Layout> {
                                               selectedItem.unitQty ?? 1;
 
                                           // ✅ Set price initially to sales price
+                                          // controller.mrpController.text =
+                                          //     controller.salePrice;
+
                                           controller.mrpController.text =
                                               controller.salePrice
                                                   .toStringAsFixed(2);
@@ -2121,6 +2126,7 @@ class _LayoutState extends State<_Layout> {
                               child: Column(
                                 children: [
                                   AddSalesFormfield(
+                                    height: 38,
                                     label: "",
                                     labelText: "Item Qty",
                                     controller: controller.qtyController,
@@ -2177,23 +2183,25 @@ class _LayoutState extends State<_Layout> {
                                   SizedBox(
                                     //width: 150,
                                     child: CustomDropdownTwo(
+                                      height: 38,
                                       labelText: "Unit",
                                       hint: '',
                                       items: unitIdsList,
                                       width: MediaQuery.of(context).size.width,
-                                      height: 30,
+
                                       selectedItem:
                                           localSelectedUnit, // ✅ Use local variable
                                       onChanged: (selectedUnit) {
                                         debugPrint(
                                             "Selected Unit: $selectedUnit");
-                              
+
                                         setState(() {
                                           localSelectedUnit =
                                               selectedUnit; // ✅ Update local state
-                                          controller.selectedUnit = selectedUnit;
+                                          controller.selectedUnit =
+                                              selectedUnit;
                                         });
-                              
+
                                         final selectedUnitObj =
                                             unitProvider.units.firstWhere(
                                           (unit) => unit.name == selectedUnit,
@@ -2203,23 +2211,25 @@ class _LayoutState extends State<_Layout> {
                                               symbol: "",
                                               status: 0),
                                         );
-                              
-                                        final qtyText =
-                                            controller.qtyController.text.trim();
+
+                                        final qtyText = controller
+                                            .qtyController.text
+                                            .trim();
                                         final qty =
                                             qtyText.isNotEmpty ? qtyText : "1";
-                              
+
                                         controller.selectedUnitIdWithNameFunction(
                                             "${selectedUnitObj.id}_${selectedUnitObj.name}_$qty");
-                              
+
                                         debugPrint(
                                             "🆔 Unit ID: ${selectedUnitObj.id}_${selectedUnitObj.name}");
-                              
+
                                         // ✅ Price update logic
                                         if (selectedUnit ==
                                             controller.secondaryUnitName) {
-                                          double newPrice = controller.salePrice /
-                                              controller.unitQty;
+                                          double newPrice =
+                                              controller.salePrice /
+                                                  controller.unitQty;
                                           controller.mrpController.text =
                                               newPrice.toStringAsFixed(2);
                                         } else if (selectedUnit ==
@@ -2228,7 +2238,7 @@ class _LayoutState extends State<_Layout> {
                                               controller.salePrice
                                                   .toStringAsFixed(2);
                                         }
-                              
+
                                         setState(() {
                                           controller.hasCustomPrice = true;
                                           controller.calculateSubtotal();
@@ -2245,6 +2255,7 @@ class _LayoutState extends State<_Layout> {
                         ///price
                         Container(
                           child: AddSalesFormfield(
+                            height: 38,
                             label: "", // price
                             labelText: "Price",
                             controller: controller.mrpController,
@@ -2279,6 +2290,7 @@ class _LayoutState extends State<_Layout> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 0.0),
                                         child: AddSalesFormfield(
+                                          height: 38,
                                           labelText: "Discount (%)",
                                           label: " ",
                                           controller:
@@ -2309,6 +2321,7 @@ class _LayoutState extends State<_Layout> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 0.0),
                                         child: AddSalesFormfield(
+                                          height: 38,
                                           label: "",
                                           labelText: "Amount",
                                           controller: controller.discountAmount,
@@ -2363,7 +2376,7 @@ class _LayoutState extends State<_Layout> {
                                         children: [
                                           const SizedBox(height: 20),
                                           SizedBox(
-                                            height: 30,
+                                            height: 38,
                                             child: CustomDropdownTwo(
                                               labelText: 'Vat/Tax',
                                               hint: '',
@@ -2372,7 +2385,7 @@ class _LayoutState extends State<_Layout> {
                                                       "${tax.name} - (${tax.percent})")
                                                   .toList(),
                                               width: double.infinity,
-                                              height: 30,
+                                              height: 38,
                                               selectedItem: selectedTaxName,
                                               onChanged: (newValue) {
                                                 setState(() {
@@ -2440,6 +2453,7 @@ class _LayoutState extends State<_Layout> {
                                 Expanded(
                                   flex: 1,
                                   child: AddSalesFormfield(
+                                    height: 38,
                                     readOnly: true,
                                     label: "",
                                     labelText: "Amount",
@@ -2592,49 +2606,51 @@ class _LayoutState extends State<_Layout> {
 
                   // ✅ Show item details after selection
                   if (selectedItemData != null) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 120,
-                          child: Text(
-                              "Sales P.: ${selectedItemData!.salesPrice ?? 'N/A'}",
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.black)),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 120,
+                              child: Text(
+                                  "Sales P.: ${selectedItemData!.salesPrice ?? 'N/A'}",
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.black)),
+                            ),
+                            const SizedBox(
+                              width: 4,
+                            ),
+                            SizedBox(
+                              width: 120,
+                              child: Text(
+                                  "Pur. P.: ${selectedItemData!.purchasePrice ?? 'N/A'}",
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.black)),
+                            ),
+                            SizedBox(
+                              width: 120,
+                              child: Text(
+                                  "MRP P.: ${selectedItemData!.mrp ?? 'N/A'}",
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.black)),
+                            ),
+                            const SizedBox(
+                              width: 6,
+                            ),
+                            SizedBox(
+                              width: 120,
+                              child: Text(
+                                  "Stock: ${selectedItemData!.totalQty ?? 'N/A'}",
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.black)),
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        SizedBox(
-                          width: 120,
-                          child: Text(
-                              "Pur. P.: ${selectedItemData!.purchasePrice ?? 'N/A'}",
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.black)),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 120,
-                          child: Text(
-                              "MRP P.: ${selectedItemData!.mrp ?? 'N/A'}",
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.black)),
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        SizedBox(
-                          width: 120,
-                          child: Text(
-                              "Stock: ${selectedItemData!.totalQty ?? 'N/A'}",
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.black)),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ],

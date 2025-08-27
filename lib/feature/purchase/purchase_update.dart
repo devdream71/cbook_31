@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_close_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
@@ -10,8 +11,10 @@ import 'package:cbook_dt/feature/item/provider/unit_provider.dart';
 import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
 import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/purchase/controller/purchase_controller.dart';
+import 'package:cbook_dt/feature/purchase/purchase_setting.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
+import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/feature/suppliers/suppliers_create.dart';
 import 'package:cbook_dt/feature/unit/model/demo_unit_model.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
@@ -43,7 +46,6 @@ class PurchaseUpdateProvider extends ChangeNotifier {
   TextEditingController discountAmountController = TextEditingController();
 
   TextEditingController paymentController = TextEditingController();
-
 
   // ✅ Track which discount type is being used
   bool isPercentageDiscount = false;
@@ -199,15 +201,19 @@ class PurchaseUpdateProvider extends ChangeNotifier {
 
   ///unit.
   Future<void> fetchUnits() async {
-   
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
     const url = "https://commercebook.site/api/v1/units";
-    final response = await http.get(Uri.parse(url, ),   headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer $token",
-        }, );
+    final response = await http.get(
+      Uri.parse(
+        url,
+      ),
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -234,15 +240,17 @@ class PurchaseUpdateProvider extends ChangeNotifier {
 
   ///items
   Future<void> fetchItems() async {
-     
-      final prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
     const url = "https://commercebook.site/api/v1/items";
-    final response = await http.get(Uri.parse(url),   headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer $token",
-        },);
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -274,14 +282,17 @@ class PurchaseUpdateProvider extends ChangeNotifier {
     await fetchItems();
     await fetchUnits();
 
-     final prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
     final url = "https://commercebook.site/api/v1/purchase/edit/$id";
-    final response = await http.get(Uri.parse(url),   headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer $token",
-        },);
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -430,7 +441,9 @@ class PurchaseUpdateProvider extends ChangeNotifier {
   }
 
   ///update purchase.
-  Future<void> updatePurchase(context, ) async {
+  Future<void> updatePurchase(
+    context,
+  ) async {
     debugPrint(jsonEncode(purchaseUpdateList));
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -443,7 +456,6 @@ class PurchaseUpdateProvider extends ChangeNotifier {
     // ✅ Use calculated discount amount
     double finalDiscountAmount = calculateDiscountAmount();
 
-    
     final token = prefs.getString('token');
 
     final url =
@@ -460,8 +472,9 @@ class PurchaseUpdateProvider extends ChangeNotifier {
       debugPrint(jsonEncode(requestBody));
       final response = await http.post(
         Uri.parse(url),
-        headers: {"Content-Type": "application/json",
-        "Authorization": "Bearer $token",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
         },
         body: jsonEncode(requestBody),
       );
@@ -622,14 +635,37 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
       child: Scaffold(
         backgroundColor: AppColors.sfWhite,
         appBar: AppBar(
-            backgroundColor: colorScheme.primary,
-            centerTitle: true,
-            iconTheme: const IconThemeData(color: Colors.white),
-            automaticallyImplyLeading: true,
-            title: const Text(
-              "Update Purchase",
-              style: TextStyle(color: Colors.yellow, fontSize: 16),
-            )),
+          backgroundColor: colorScheme.primary,
+          //centerTitle: true,
+          iconTheme: const IconThemeData(color: Colors.white),
+          automaticallyImplyLeading: true,
+          title: const Text(
+            "Update Purchase",
+            style: TextStyle(color: Colors.yellow, fontSize: 16),
+          ),
+          actions: [
+            CashCreditToggle(
+              initialCash: true,
+              onChanged: (isCash) {
+                print("Selected: ${isCash ? "Cash" : "Credit"}");
+                // controller.updateCash(context);
+                controller.updateCash();
+                ; // you can hook your logic here
+              },
+            ),
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const BillInvoiceCreateForm()));
+                },
+                icon: const Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                ))
+          ],
+        ),
         body: SingleChildScrollView(
           child: Consumer<PurchaseUpdateProvider>(
             builder: (context, provider, child) {
@@ -643,53 +679,168 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
               return provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(0.0),
                       child: Column(
                         children: [
                           // ✅ Modified Cash/Credit indicator section
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: InkWell(
-                              onTap: () {
-                                controller.updateCash();
-                              },
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: provider.isCashTransaction
-                                      ? AppColors.primaryColor
-                                      : Colors
-                                          .orange, // Different color for credit
-                                  borderRadius: BorderRadius.circular(5),
+                          // Align(
+                          //   alignment: Alignment.topLeft,
+                          //   child: InkWell(
+                          //     onTap: () {
+                          //       controller.updateCash();
+                          //     },
+                          //     child: DecoratedBox(
+                          //       decoration: BoxDecoration(
+                          //         color: provider.isCashTransaction
+                          //             ? AppColors.primaryColor
+                          //             : Colors
+                          //                 .orange, // Different color for credit
+                          //         borderRadius: BorderRadius.circular(5),
+                          //       ),
+                          //       child: Padding(
+                          //         padding: const EdgeInsets.symmetric(
+                          //             horizontal: 8, vertical: 4),
+                          //         child: Row(
+                          //           mainAxisSize: MainAxisSize.min,
+                          //           children: [
+                          //             Text(
+                          //               provider.isCashTransaction
+                          //                   ? "Cash"
+                          //                   : "Credit",
+                          //               style: GoogleFonts.lato(
+                          //                 color: Colors.white,
+                          //                 fontWeight: FontWeight.w600,
+                          //                 fontSize: 14,
+                          //               ),
+                          //             ),
+                          //             const SizedBox(width: 4),
+                          //             const Icon(
+                          //               Icons.arrow_forward_ios,
+                          //               color: Colors.white,
+                          //               size: 12,
+                          //             )
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+
+                          Container(
+                            color: Color(0xffdddefa),
+                            height: 48,
+                            child: Row(
+                              children: [
+                                // Bill number
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 6.0),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Bill/Invoice no',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12),
+                                        ),
+                                        Text(
+                                          provider.billNumberController.text,
+                                          style: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12),
+                                        ),
+                                        // SizedBox(
+                                        //   child: AddSalesFormfield(
+                                        //     labelText: "Bill Number",
+                                        //     controller:
+                                        //         provider.billNumberController,
+                                        //     onChanged: (value) {
+                                        //       provider.customerId;
+                                        //     },
+                                        //   ),
+                                        // ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
+
+                                SizedBox(
+                                  width: 6,
+                                ),
+
+                                //
+                                //
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        provider.isCashTransaction
-                                            ? "Cash"
-                                            : "Credit",
-                                        style: GoogleFonts.lato(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
+                                      const Text(
+                                        "Bill Date",
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 12),
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 6.0),
+                                        child: SizedBox(
+                                          height: 30,
+                                          width: double.infinity,
+                                          child: InkWell(
+                                            onTap: () =>
+                                                controller.pickDate(context),
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 0,
+                                                      vertical: 0),
+                                              // decoration: BoxDecoration(
+                                              //   border: Border.all(
+                                              //       color: Colors.grey.shade400,
+                                              //       width: 1),
+                                              //   borderRadius:
+                                              //       BorderRadius.circular(4),
+                                              // ),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      controller.formattedDate
+                                                              .isNotEmpty
+                                                          ? controller
+                                                              .formattedDate
+                                                          : "Select Date",
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const Icon(
+                                                    Icons.calendar_today,
+                                                    size: 14,
+                                                    color: Colors.blue,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                      const SizedBox(width: 4),
-                                      const Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: Colors.white,
-                                        size: 12,
-                                      )
                                     ],
                                   ),
                                 ),
-                              ),
+                                // Date
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 5),
 
                           Align(
                             alignment: Alignment.bottomRight,
@@ -706,129 +857,16 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          const Text(
-                                            "Bill To",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12),
-                                          ),
-                                          vPad5,
+                                          // const Text(
+                                          //   "Bill To",
+                                          //   style: TextStyle(
+                                          //       color: Colors.black,
+                                          //       fontWeight: FontWeight.w600,
+                                          //       fontSize: 12),
+                                          // ),
+                                          // vPad5,
 
                                           // ✅ Modified customer/supplier section
-                                          Consumer2<PurchaseUpdateProvider,
-                                              CustomerProvider>(
-                                            builder: (context, provider,
-                                                customerProvider, child) {
-                                              // Show customer dropdown for credit transactions
-                                              if (!provider.isCashTransaction) {
-                                                return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Text(
-                                                      "Supplier",
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 12),
-                                                    ),
-                                                    const SizedBox(height: 5),
-                                                    SizedBox(
-                                                      height: 58,
-                                                      width: 180,
-                                                      child: Column(
-                                                        children: [
-                                                          AddSalesFormfieldTwo(
-                                                            controller: controller
-                                                                .codeController,
-                                                            customerorSaleslist:
-                                                                "Supplier list",
-                                                            customerOrSupplierButtonLavel:
-                                                                "Add new",
-                                                            selectedCustomer: provider
-                                                                        .customerId !=
-                                                                    null
-                                                                ? customerProvider
-                                                                    .findCustomerById(
-                                                                        provider
-                                                                            .customerId!)
-                                                                : null,
-                                                            onTap: () {
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          const SuppliersCreate(),
-                                                                ),
-                                                              );
-                                                            },
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              }
-                                              // Show "Cash" for cash transactions
-                                              else {
-                                                return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Text(
-                                                      "Transaction Type",
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 12),
-                                                    ),
-                                                    const SizedBox(height: 5),
-                                                    Container(
-                                                      height: 40,
-                                                      width: 180,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 8),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors
-                                                            .green.shade50,
-                                                        border: Border.all(
-                                                            color: Colors.green
-                                                                .shade300),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          Icon(Icons.money,
-                                                              color: Colors
-                                                                  .green
-                                                                  .shade600,
-                                                              size: 16),
-                                                          const SizedBox(
-                                                              width: 8),
-                                                          Text(
-                                                            "Cash Transaction",
-                                                            style: TextStyle(
-                                                              fontSize: 12,
-                                                              color: Colors
-                                                                  .green
-                                                                  .shade700,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              }
-                                            },
-                                          ),
                                         ],
                                       ),
                                     ),
@@ -840,73 +878,6 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          // Bill number
-                                          SizedBox(
-                                            width: double.infinity,
-                                            child: AddSalesFormfield(
-                                              labelText: "Bill Number",
-                                              controller:
-                                                  provider.billNumberController,
-                                              onChanged: (value) {
-                                                provider.customerId;
-                                              },
-                                            ),
-                                          ),
-
-                                          // Date
-                                          const Text(
-                                            "Bill Date",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12),
-                                          ),
-                                          SizedBox(
-                                            height: 30,
-                                            width: double.infinity,
-                                            child: InkWell(
-                                              onTap: () =>
-                                                  controller.pickDate(context),
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 6),
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color:
-                                                          Colors.grey.shade400,
-                                                      width: 1),
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        controller.formattedDate
-                                                                .isNotEmpty
-                                                            ? controller
-                                                                .formattedDate
-                                                            : "Select Date",
-                                                        style: const TextStyle(
-                                                          fontSize: 12,
-                                                          color: Colors.black,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const Icon(
-                                                      Icons.calendar_today,
-                                                      size: 14,
-                                                      color: Colors.blue,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-
                                           // Bill person
                                           // Padding(
                                           //   padding:
@@ -1008,7 +979,118 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                   ],
                                 ),
 
-                                const SizedBox(height: 5),
+                                const SizedBox(height: 6),
+
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6.0),
+                                  child: Consumer2<PurchaseUpdateProvider,
+                                      CustomerProvider>(
+                                    builder: (context, provider,
+                                        customerProvider, child) {
+                                      // Show customer dropdown for credit transactions
+                                      if (!provider.isCashTransaction) {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // const Text(
+                                            //   "Supplier",
+                                            //   style: TextStyle(
+                                            //       color: Colors.black,
+                                            //       fontSize: 12),
+                                            // ),
+                                            const SizedBox(height: 5),
+                                            SizedBox(
+                                              height: 58,
+                                              width: double.infinity,
+                                              child: Column(
+                                                children: [
+                                                  AddSalesFormfieldTwo(
+                                                    controller: controller
+                                                        .codeController,
+                                                    customerorSaleslist:
+                                                        "Supplier list",
+                                                    customerOrSupplierButtonLavel:
+                                                        "Add new",
+                                                    selectedCustomer: provider
+                                                                .customerId !=
+                                                            null
+                                                        ? customerProvider
+                                                            .findCustomerById(
+                                                                provider
+                                                                    .customerId!)
+                                                        : null,
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const SuppliersCreate(),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                      // Show "Cash" for cash transactions
+                                      else {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              "Transaction Type",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 12),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Container(
+                                              height: 40,
+                                              width: 180,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.green.shade50,
+                                                border: Border.all(
+                                                    color:
+                                                        Colors.green.shade300),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.money,
+                                                      color:
+                                                          Colors.green.shade600,
+                                                      size: 16),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    "Cash Transaction",
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color:
+                                                          Colors.green.shade700,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
 
                                 // Item list
                                 ListView.builder(
@@ -1032,121 +1114,133 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                           provider.itemList,
                                         );
                                       },
-                                      child: Card(
-                                        margin: const EdgeInsets.symmetric(
-                                            vertical: 8),
-                                        elevation: 3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(12),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                "${index + 1}.  ",
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black),
-                                              ),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "Item: ${provider.itemMap[int.tryParse(detail.itemId) ?? 0] ?? "Unknown"}  (${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"})",
-                                                      style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 13,
-                                                      ),
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              "Qty: ${double.parse(detail.qty!).truncate()},",
-                                                              style: const TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize: 12),
-                                                            ),
-                                                            const SizedBox(
-                                                                width: 5),
-                                                            Text(
-                                                              "Price: ৳ ${detail.price}",
-                                                              style: const TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize: 12),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6.0),
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                2), // round border 2
+                                          ),
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 2),
+                                          //elevation: 0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  "${index + 1}.  ",
+                                                  style: const TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black),
                                                 ),
-                                              ),
-                                              Text(
-                                                "Subtotal: ৳ ${detail.subTotal}",
-                                                style: const TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 12,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              const SizedBox(width: 4),
-
-                                              // Delete button
-                                              CloseButtonWidget(
-                                                onPressed: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (BuildContext
-                                                        dialogContext) {
-                                                      return AlertDialog(
-                                                        title: const Text(
-                                                            'Confirm Delete'),
-                                                        content: const Text(
-                                                          'Are you sure you want to delete this item?',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.black),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "Item: ${provider.itemMap[int.tryParse(detail.itemId) ?? 0] ?? "Unknown"}  (${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"})",
+                                                        style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 13,
                                                         ),
-                                                        actions: [
-                                                          TextButton(
-                                                            onPressed: () =>
-                                                                Navigator.of(
-                                                                        dialogContext)
-                                                                    .pop(),
-                                                            child: const Text(
-                                                                'Cancel'),
-                                                          ),
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              provider
-                                                                  .removeItemAt(
-                                                                      index);
-                                                              Navigator.of(
-                                                                      dialogContext)
-                                                                  .pop();
-                                                            },
-                                                            child: const Text(
-                                                              'Delete',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .red),
-                                                            ),
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Text(
+                                                                "Qty: ${double.parse(detail.qty!).truncate()},",
+                                                                style: const TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontSize:
+                                                                        12),
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 5),
+                                                              Text(
+                                                                "Price: ৳ ${detail.price}",
+                                                                style: const TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontSize:
+                                                                        12),
+                                                              ),
+                                                            ],
                                                           ),
                                                         ],
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                              )
-                                            ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "Subtotal: ৳ ${detail.subTotal}",
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                const SizedBox(width: 4),
+
+                                                // Delete button
+                                                CloseButtonWidget(
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          dialogContext) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              'Confirm Delete'),
+                                                          content: const Text(
+                                                            'Are you sure you want to delete this item?',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () =>
+                                                                  Navigator.of(
+                                                                          dialogContext)
+                                                                      .pop(),
+                                                              child: const Text(
+                                                                  'Cancel'),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                provider
+                                                                    .removeItemAt(
+                                                                        index);
+                                                                Navigator.of(
+                                                                        dialogContext)
+                                                                    .pop();
+                                                              },
+                                                              child: const Text(
+                                                                'Delete',
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .red),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -1168,42 +1262,89 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                     showSalesDialog(
                                         context, controller, provider);
                                   },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.primary,
-                                      borderRadius: BorderRadius.circular(5),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 5,
-                                          offset: const Offset(0, 3),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text(
-                                            "Add Item & Service",
-                                            style: TextStyle(
+                                  child:
+
+                                      // Container(
+                                      //   decoration: BoxDecoration(
+                                      //     color: colorScheme.primary,
+                                      //     borderRadius: BorderRadius.circular(5),
+                                      //     boxShadow: [
+                                      //       BoxShadow(
+                                      //         color: Colors.black.withOpacity(0.2),
+                                      //         blurRadius: 5,
+                                      //         offset: const Offset(0, 3),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      //   child: Padding(
+                                      //     padding: const EdgeInsets.all(4.0),
+                                      //     child: Row(
+                                      //       mainAxisAlignment:
+                                      //           MainAxisAlignment.spaceBetween,
+                                      //       children: [
+                                      //         const Text(
+                                      //           "Add Item & Service",
+                                      //           style: TextStyle(
+                                      //               color: Colors.white,
+                                      //               fontSize: 14),
+                                      //         ),
+                                      //         InkWell(
+                                      //           onTap: () {
+                                      //             showSalesDialog(context,
+                                      //                 controller, provider);
+                                      //           },
+                                      //           child: const Icon(
+                                      //             Icons.add,
+                                      //             color: Colors.white,
+                                      //             size: 18,
+                                      //           ),
+                                      //         )
+                                      //       ],
+                                      //     ),
+                                      //   ),
+                                      // ),
+
+                                      Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6.0),
+                                    child: Container(
+                                      height: 38,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            width: 1, color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 14,
+                                              backgroundColor:
+                                                  AppColors.primaryColor,
+                                              child: const Icon(
+                                                Icons.add,
                                                 color: Colors.white,
-                                                fontSize: 14),
-                                          ),
-                                          InkWell(
-                                            onTap: () {
-                                              showSalesDialog(context,
-                                                  controller, provider);
-                                            },
-                                            child: const Icon(
-                                              Icons.add,
-                                              color: Colors.white,
-                                              size: 18,
+                                                size: 18,
+                                              ),
                                             ),
-                                          )
-                                        ],
+                                            const SizedBox(
+                                              width: 6,
+                                            ),
+                                            Text(
+                                              "Add item",
+                                              style: TextStyle(
+                                                  color: AppColors.primaryColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -1212,66 +1353,81 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                 const SizedBox(height: 5),
 
                                 // Note field
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.note_add_outlined,
-                                        color: Colors.blueAccent,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          showNoteField = !showNoteField;
-                                        });
-                                      },
-                                    ),
-                                    if (showNoteField)
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: Container(
-                                            height: 40,
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              border: Border.all(
-                                                  color: Colors.grey.shade400,
-                                                  width: 1),
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8),
-                                            child: Center(
-                                              child: TextField(
-                                                controller: controller
-                                                    .purchaseNoteController,
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 12,
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * .50,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.note_add_outlined,
+                                            color: Colors.blueAccent,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              showNoteField = !showNoteField;
+                                            });
+                                          },
+                                        ),
+                                        if (showNoteField)
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: Container(
+                                                height: 40,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    .45,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  border: Border.all(
+                                                      color:
+                                                          Colors.grey.shade400,
+                                                      width: 1),
                                                 ),
-                                                onChanged: (value) {
-                                                  controller
-                                                      .purchaseNoteController
-                                                      .text = value;
-                                                },
-                                                maxLines: 2,
-                                                cursorHeight: 12,
-                                                decoration: InputDecoration(
-                                                  isDense: true,
-                                                  border: InputBorder.none,
-                                                  hintText: "Note",
-                                                  hintStyle: TextStyle(
-                                                    color: Colors.grey.shade400,
-                                                    fontSize: 10,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8),
+                                                child: Center(
+                                                  child: TextField(
+                                                    controller: controller
+                                                        .purchaseNoteController,
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 12,
+                                                    ),
+                                                    onChanged: (value) {
+                                                      controller
+                                                          .purchaseNoteController
+                                                          .text = value;
+                                                    },
+                                                    maxLines: 2,
+                                                    cursorHeight: 12,
+                                                    decoration: InputDecoration(
+                                                      isDense: true,
+                                                      border: InputBorder.none,
+                                                      hintText: "Note",
+                                                      hintStyle: TextStyle(
+                                                        color: Colors
+                                                            .grey.shade400,
+                                                        fontSize: 10,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                  ],
+                                      ],
+                                    ),
+                                  ),
                                 ),
 
                                 const SizedBox(height: 2),
@@ -1291,14 +1447,18 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                           style: TextStyle(color: Colors.black),
                                         ),
                                         const SizedBox(width: 10),
-                                        SizedBox(
-                                          width: 150,
-                                          height: 30,
-                                          child: AddSalesFormfield(
-                                            labelText: "Subtotal",
-                                            controller: TextEditingController(
-                                                text: provider.getSubTotal()),
-                                            readOnly: true,
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 4.0),
+                                          child: SizedBox(
+                                            width: 150,
+                                            height: 38,
+                                            child: AddSalesFormfield(
+                                              labelText: "Subtotal",
+                                              controller: TextEditingController(
+                                                  text: provider.getSubTotal()),
+                                              readOnly: true,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -1309,69 +1469,89 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                 const SizedBox(height: 8),
 
                                 // Discount
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: SizedBox(
-                                    width: 250,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          "Discount",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                        const SizedBox(width: 10),
-
-                                        // Percentage field
-                                        SizedBox(
-                                          width: 70,
-                                          height: 30,
-                                          child: AddSalesFormfield(
-                                            labelText: "%",
-                                            controller: provider
-                                                .discountPercentageController,
-                                            keyboardType: TextInputType.number,
-                                            onChanged: (value) {
-                                              provider
-                                                  .updateDiscountFromPercentage(
-                                                      value);
-                                              // ✅ Update payment if checkbox is checked
-                                              if (isPaymentReceived) {
-                                                setState(() {
-                                                  provider.paymentController.text =
-                                                      provider.getGrossTotal();
-                                                });
-                                              }
-                                            },
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 3.0),
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: SizedBox(
+                                      width: 250,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          const Text(
+                                            "Discount",
+                                            style:
+                                                TextStyle(color: Colors.black),
                                           ),
-                                        ),
+                                          const SizedBox(width: 10),
 
-                                        const SizedBox(width: 10),
-
-                                        SizedBox(
-                                          width: 70,
-                                          height: 30,
-                                          child: AddSalesFormfield(
-                                            labelText: "tk",
-                                            controller: provider
-                                                .discountAmountController,
-                                            keyboardType: TextInputType.number,
-                                            onChanged: (value) {
-                                              provider.updateDiscountFromAmount(
-                                                  value);
-                                              // ✅ Update payment if checkbox is checked
-                                              if (isPaymentReceived) {
-                                                setState(() {
-                                                  provider.paymentController.text =
-                                                      provider.getGrossTotal();
-                                                });
-                                              }
-                                            },
+                                          // Percentage field
+                                          SizedBox(
+                                            width: 70,
+                                            height: 38,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 4.0),
+                                              child: AddSalesFormfield(
+                                                labelText: "%",
+                                                controller: provider
+                                                    .discountPercentageController,
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                onChanged: (value) {
+                                                  provider
+                                                      .updateDiscountFromPercentage(
+                                                          value);
+                                                  // ✅ Update payment if checkbox is checked
+                                                  if (isPaymentReceived) {
+                                                    setState(() {
+                                                      provider.paymentController
+                                                              .text =
+                                                          provider
+                                                              .getGrossTotal();
+                                                    });
+                                                  }
+                                                },
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ],
+
+                                          const SizedBox(width: 10),
+
+                                          SizedBox(
+                                            width: 70,
+                                            height: 38,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 4.0),
+                                              child: AddSalesFormfield(
+                                                labelText: "tk",
+                                                controller: provider
+                                                    .discountAmountController,
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                onChanged: (value) {
+                                                  provider
+                                                      .updateDiscountFromAmount(
+                                                          value);
+                                                  // ✅ Update payment if checkbox is checked
+                                                  if (isPaymentReceived) {
+                                                    setState(() {
+                                                      provider.paymentController
+                                                              .text =
+                                                          provider
+                                                              .getGrossTotal();
+                                                    });
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1379,36 +1559,45 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                 const SizedBox(height: 8),
 
                                 // Gross total
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: SizedBox(
-                                    width: 250,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text("Gross Total",
-                                            style:
-                                                TextStyle(color: Colors.black)),
-                                        const SizedBox(width: 10),
-                                        SizedBox(
-                                          width: 150,
-                                          height: 30,
-                                          child:
-                                              Consumer<PurchaseUpdateProvider>(
-                                            builder:
-                                                (context, provider, child) {
-                                              return AddSalesFormfield(
-                                                labelText: "Gross Total",
-                                                controller:
-                                                    TextEditingController(
-                                                        text: provider
-                                                            .getGrossTotal()),
-                                                readOnly: true,
-                                              );
-                                            },
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 3.0),
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: SizedBox(
+                                      width: 250,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          const Text("Gross Total",
+                                              style: TextStyle(
+                                                  color: Colors.black)),
+                                          const SizedBox(width: 10),
+                                          SizedBox(
+                                            width: 150,
+                                            height: 38,
+                                            child: Consumer<
+                                                PurchaseUpdateProvider>(
+                                              builder:
+                                                  (context, provider, child) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 4.0),
+                                                  child: AddSalesFormfield(
+                                                    labelText: "Gross Total",
+                                                    controller:
+                                                        TextEditingController(
+                                                            text: provider
+                                                                .getGrossTotal()),
+                                                    readOnly: true,
+                                                  ),
+                                                );
+                                              },
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1416,111 +1605,125 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                 const SizedBox(height: 8),
 
                                 // ✅ Updated Payment Section
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: SizedBox(
-                                    width: 250,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            SizedBox(
-                                              height: 25,
-                                              child: Checkbox(
-                                                value:
-                                                    provider.isCashTransaction
-                                                        ? true
-                                                        : isPaymentReceived,
-                                                onChanged: (bool? value) {
-                                                  updatePaymentReceived(
-                                                      value, provider);
-                                                },
-                                              ),
-                                            ),
-                                            Text(
-                                              provider.isCashTransaction
-                                                  ? ''
-                                                  : "Payment",
-                                              style: TextStyle(
-                                                color:
-                                                    provider.isCashTransaction
-                                                        ? Colors.green
-                                                        : Colors.black,
-                                                fontSize: 12,
-                                                fontWeight:
-                                                    provider.isCashTransaction
-                                                        ? FontWeight.w600
-                                                        : FontWeight.normal,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            const SizedBox(width: 5),
-                                            SizedBox(
-                                              height: 30,
-                                              width: 145,
-                                              child: AddSalesFormfield(
-                                                controller: provider.paymentController,
-                                                readOnly: provider
-                                                        .isCashTransaction ||
-                                                    isPaymentReceived,
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                onChanged: (value) {
-                                                  // Allow manual input only for credit transactions when not auto-filled
-                                                  if (!provider
-                                                          .isCashTransaction &&
-                                                      !isPaymentReceived) {
-                                                    setState(() {
-                                                      provider.paymentController.text =
-                                                          value;
-                                                    });
-                                                  }
-                                                },
-                                                decoration: InputDecoration(
-                                                  filled: true,
-                                                  fillColor: provider
-                                                          .isCashTransaction
-                                                      ? Colors.green.shade50
-                                                      : (isPaymentReceived
-                                                          ? Colors.blue.shade50
-                                                          : Colors.white),
-                                                  border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                      color: provider
-                                                              .isCashTransaction
-                                                          ? Colors
-                                                              .green.shade300
-                                                          : (isPaymentReceived
-                                                              ? Colors
-                                                                  .blue.shade300
-                                                              : Colors.grey
-                                                                  .shade400),
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4),
-                                                  ),
-                                                  contentPadding:
-                                                      const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 10),
-                                                  prefixText: "",
-                                                  prefixStyle: const TextStyle(
-                                                      color: Colors.black87),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 3.0),
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: SizedBox(
+                                      width: 250,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                height: 25,
+                                                child: Checkbox(
+                                                  value:
+                                                      provider.isCashTransaction
+                                                          ? true
+                                                          : isPaymentReceived,
+                                                  onChanged: (bool? value) {
+                                                    updatePaymentReceived(
+                                                        value, provider);
+                                                  },
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                              Text(
+                                                provider.isCashTransaction
+                                                    ? ''
+                                                    : "Payment",
+                                                style: TextStyle(
+                                                  color:
+                                                      provider.isCashTransaction
+                                                          ? Colors.green
+                                                          : Colors.black,
+                                                  fontSize: 12,
+                                                  fontWeight:
+                                                      provider.isCashTransaction
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              const SizedBox(width: 5),
+                                              SizedBox(
+                                                height: 38,
+                                                width: 145,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 4.0),
+                                                  child: AddSalesFormfield(
+                                                    controller: provider
+                                                        .paymentController,
+                                                    readOnly: provider
+                                                            .isCashTransaction ||
+                                                        isPaymentReceived,
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    onChanged: (value) {
+                                                      // Allow manual input only for credit transactions when not auto-filled
+                                                      if (!provider
+                                                              .isCashTransaction &&
+                                                          !isPaymentReceived) {
+                                                        setState(() {
+                                                          provider
+                                                              .paymentController
+                                                              .text = value;
+                                                        });
+                                                      }
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      filled: true,
+                                                      fillColor: provider
+                                                              .isCashTransaction
+                                                          ? Colors.green.shade50
+                                                          : (isPaymentReceived
+                                                              ? Colors
+                                                                  .blue.shade50
+                                                              : Colors.white),
+                                                      border:
+                                                          OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                          color: provider
+                                                                  .isCashTransaction
+                                                              ? Colors
+                                                                  .green.shade300
+                                                              : (isPaymentReceived
+                                                                  ? Colors.blue
+                                                                      .shade300
+                                                                  : Colors.grey
+                                                                      .shade400),
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(4),
+                                                      ),
+                                                      contentPadding:
+                                                          const EdgeInsets
+                                                              .symmetric(
+                                                              horizontal: 12,
+                                                              vertical: 10),
+                                                      prefixText: "",
+                                                      prefixStyle:
+                                                          const TextStyle(
+                                                              color: Colors
+                                                                  .black87),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1536,43 +1739,44 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                             child: Consumer<PurchaseUpdateProvider>(
                               builder: (context, provider, child) {
                                 // Parse payment input safely
-                                double payment =
-                                    double.tryParse(provider.paymentController.text) ??
-                                        0.0;
+                                double payment = double.tryParse(
+                                        provider.paymentController.text) ??
+                                    0.0;
                                 double grossTotal =
                                     double.tryParse(provider.getGrossTotal()) ??
                                         0.0;
                                 double balance = grossTotal - payment;
 
-                                return SizedBox(
-                                  width: 250,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      const Text(
-                                        "Balance",
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12),
-                                      ),
-                                      const SizedBox(width: 10),
-
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 6.0),
-                                        child: Text(
-                                          balance.toStringAsFixed(2),
-                                          style: const TextStyle(
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 4.0),
+                                  child: SizedBox(
+                                    width: 250,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Text(
+                                          "Balance",
+                                          style: TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 12),
                                         ),
-                                      ),
-
-                                      
-                                    ],
+                                        const SizedBox(width: 10),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 6.0),
+                                          child: Text(
+                                            balance.toStringAsFixed(2),
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
@@ -1582,44 +1786,47 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                           const SizedBox(height: 20),
 
                           // Update Purchase button
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: SizedBox(
-                              width: double.maxFinite,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  // if (selectedBillPersonData == null) {
-                                  //   ScaffoldMessenger.of(context).showSnackBar(
-                                  //     const SnackBar(
-                                  //       content: Text(
-                                  //           'Please select a bill person.'),
-                                  //       backgroundColor: Colors.red,
-                                  //     ),
-                                  //   );
-                                  //   return;
-                                  // }
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: SizedBox(
+                                width: double.maxFinite,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    // if (selectedBillPersonData == null) {
+                                    //   ScaffoldMessenger.of(context).showSnackBar(
+                                    //     const SnackBar(
+                                    //       content: Text(
+                                    //           'Please select a bill person.'),
+                                    //       backgroundColor: Colors.red,
+                                    //     ),
+                                    //   );
+                                    //   return;
+                                    // }
 
-                                  //int billPersonID = selectedBillPersonData!.id;
-                                  await provider.updatePurchase(
-                                      context
-                                      
-                                      //billPersonID
-                                      
-                                      );
-                                  debugPrint(
-                                      'bill number ${billController.text}');
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 20),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                    //int billPersonID = selectedBillPersonData!.id;
+                                    await provider.updatePurchase(context
+
+                                        //billPersonID
+
+                                        );
+                                    debugPrint(
+                                        'bill number ${billController.text}');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 20),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
-                                ),
-                                child: const Text(
-                                  "Update Purchase",
-                                  style: TextStyle(color: Colors.white),
+                                  child: const Text(
+                                    "Update Purchase",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                 ),
                               ),
                             ),
@@ -1750,19 +1957,19 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                             child: Consumer<AddItemProvider>(
                               builder: (context, itemProvider, child) {
                                 return SizedBox(
-                                  height: 30,
+                                  height: 38,
                                   width: double.infinity,
                                   child: itemProvider.isLoading
                                       ? const Center(
                                           child: CircularProgressIndicator())
                                       : CustomDropdownTwo(
+                                          width: double.infinity,
+                                          height: 38,
                                           enableSearch: true,
                                           hint: 'Select Item',
                                           items: itemProvider.items
                                               .map((item) => item.name)
                                               .toList(),
-                                          width: double.infinity,
-                                          height: 30,
                                           selectedItem: selectedItemName,
                                           onChanged: (value) async {
                                             debugPrint(
@@ -1919,13 +2126,13 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                   SizedBox(
                                     width: 150,
                                     child: CustomDropdownTwo(
+                                      width: 150,
+                                      height: 38,
                                       key: ValueKey(
                                           'unit_dropdown_${selectedItemId}_${unitIdsList.length}'),
                                       labelText: "Unit",
                                       hint: '',
                                       items: unitIdsList,
-                                      width: 150,
-                                      height: 30,
                                       selectedItem: unitIdsList.isNotEmpty &&
                                               controller.selectedUnit != null &&
                                               unitIdsList.contains(

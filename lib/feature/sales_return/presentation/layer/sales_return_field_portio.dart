@@ -21,7 +21,7 @@ class FieldPortion extends StatelessWidget {
                       style: TextStyle(fontSize: 12, color: Colors.black)),
                   hPad5,
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: 'Amount',
@@ -53,7 +53,7 @@ class FieldPortion extends StatelessWidget {
                       style: TextStyle(fontSize: 12, color: Colors.black)),
                   hPad5,
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: 'Discount',
@@ -128,7 +128,7 @@ class FieldPortion extends StatelessWidget {
                                 TextStyle(fontSize: 12, color: Colors.black)),
                         const SizedBox(width: 5),
                         SizedBox(
-                          height: 30,
+                          height: 38,
                           width: 150,
                           child: AddSalesFormfield(
                             labelText: 'Payment',
@@ -196,7 +196,7 @@ class FieldPortion extends StatelessWidget {
                       onChanged: (value) {
                         // Update discount controller
                         controller.discountController.text = value;
-                        
+
                         // Update credit payment calculation
                         controller.updateCreditPaymentFromDiscount();
                       },
@@ -250,7 +250,8 @@ class FieldPortion extends StatelessWidget {
                             labelText: 'Payment',
                             //readOnly: true,
                             onChanged: (value) {},
-                            controller: TextEditingController(text: controller.getCreditPaymentAmount()),
+                            controller: TextEditingController(
+                                text: controller.getCreditPaymentAmount()),
                           ),
                         ),
                       ],
@@ -263,4 +264,3 @@ class FieldPortion extends StatelessWidget {
     );
   }
 }
-

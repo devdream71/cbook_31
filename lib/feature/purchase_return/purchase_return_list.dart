@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/purchase_return/presentation/purchase_return_view.dart';
 import 'package:cbook_dt/feature/purchase_return/provider/purchase_return_provider.dart';
@@ -425,8 +427,11 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                   },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('Edit',
-                        style: TextStyle(fontSize: 16, color: Colors.blue)),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Text('Edit',
+                          style: TextStyle(fontSize: 16, color: Colors.blue)),
+                    ),
                   ),
                 ),
                 // const Divider(),
@@ -437,8 +442,11 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                   },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('Delete',
-                        style: TextStyle(fontSize: 16, color: Colors.red)),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Text('Delete',
+                          style: TextStyle(fontSize: 16, color: Colors.red)),
+                    ),
                   ),
                 ),
               ],

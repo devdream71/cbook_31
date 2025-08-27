@@ -42,7 +42,6 @@ class UpdateSaleItemView extends StatefulWidget {
 }
 
 class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
-  
   int? selectedItemId;
 
   List<String> getFilteredUnitsForSelectedItem() {
@@ -103,7 +102,7 @@ class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
     final unitIdOnly = int.tryParse(widget.itemDetail.unitId.split("_")[0]);
     selectedUnitName = widget.unitMap[unitIdOnly] ?? 'Select Unit';
 
-    selectedItemId = int.tryParse(widget.itemDetail.itemId);  
+    selectedItemId = int.tryParse(widget.itemDetail.itemId);
 
     widget.provider.saveData(
       itemId: widget.itemDetail != null
@@ -193,6 +192,8 @@ class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
                       child: SizedBox(
                         width: double.infinity,
                         child: CustomDropdownTwo(
+                          height: 38,
+                          width: double.infinity,
                           labelText: 'Item',
                           items: widget.itemMap.isNotEmpty
                               ? widget.itemMap.values.toList()
@@ -202,8 +203,7 @@ class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
                           hint: selectedItemName ??
                               'Select Item', // ✅ Show selected item
                           selectedItem: selectedItemName,
-                          width: double.infinity,
-                          height: 30,
+
                           onChanged: (String? newValue) {
                             setState(() {
                               selectedItemName = newValue;
@@ -276,6 +276,7 @@ class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
                           children: [
                             SizedBox(
                               child: CustomDropdownTwo(
+                                height: 38,
                                 labelText: 'Unit',
                                 // items: widget.unitMap.isNotEmpty
                                 //     ? widget.unitMap.values.toList()
@@ -290,7 +291,7 @@ class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
                                     'Select Unit', // Show selected unit or default hint
                                 width: double.infinity,
                                 selectedItem: selectedUnitName,
-                                height: 30,
+
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     selectedUnitName = newValue;
@@ -327,8 +328,7 @@ class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
                           AddSalesFormfield(
                             labelText: "Discount (%)",
                             //label: "Discount (%)",
-                            controller:
-                                widget.provider.itemDiscountPercentance,
+                            controller: widget.provider.itemDiscountPercentance,
                             keyboardType: TextInputType.number,
                             onChanged: (value) {
                               widget.provider.lastChanged = 'percent';
@@ -394,6 +394,7 @@ class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
                                     ///tax
 
                                     CustomDropdownTwo(
+                                      height: 38,
                                       labelText: 'Vat/Tax',
                                       //hint: 'Select VAT/TAX',
                                       items: taxProvider.taxList
@@ -401,8 +402,11 @@ class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
                                               "${tax.name} - (${tax.percent})")
                                           .toList(),
                                       width: double.infinity,
-                                      height: 30,
-                                      selectedItem: widget.provider.itemTaxVatPercentance.text,  //selectedTaxName,
+
+                                      selectedItem: widget
+                                          .provider
+                                          .itemTaxVatPercentance
+                                          .text, //selectedTaxName,
                                       onChanged: (newValue) {
                                         setState(() {
                                           selectedTaxName = newValue;
@@ -459,7 +463,8 @@ class UpdateSaleItemViewState extends State<UpdateSaleItemView> {
                         child: AddSalesFormfield(
                           labelText: "TAX amount",
                           controller: TextEditingController(
-                            text: widget.provider.itemTaxVatAmount.text, // 👈 show calculated tax
+                            text: widget.provider.itemTaxVatAmount
+                                .text, // 👈 show calculated tax
                           ),
                           keyboardType: TextInputType.number,
                           //readOnly: true, // 👈 prevent manual editing

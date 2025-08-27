@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
 import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
@@ -12,6 +13,7 @@ import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart'
 import 'package:cbook_dt/feature/sales/controller/sales_controller.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
+import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -107,10 +109,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
       Provider.of<PaymentVoucherProvider>(context, listen: false)
           .fetchBillPersons();
 
-          customerNameController.clear();
-
-     
-          
+      customerNameController.clear();
 
       //await fetchAndSetBillNumber();
     });
@@ -126,9 +125,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
       debugPrint('Settings fetched successfully');
       await fetchAndSetBillNumber(context);
     });
-
-
-
   }
 
   @override
@@ -137,7 +133,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
     // ... other disposals
     super.dispose();
   }
-
 
   Future<void> fetchAndSetBillNumber(BuildContext context) async {
     debugPrint('fetchAndSetBillNumber called');
@@ -150,8 +145,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
     // Fetch required values from provider (now they should be available)
     final code = settingsProvider.getValue("payment_code") ?? "";
-    final billNumber =
-        settingsProvider.getValue("payment_bill_no") ?? "";
+    final billNumber = settingsProvider.getValue("payment_bill_no") ?? "";
     final withNickName = settingsProvider.getValue("with_nick_name") ?? "0";
 
     debugPrint(
@@ -215,9 +209,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
       }
     }
   }
-
-
-   
 
   /// Calculate sum of all receipts input
   double get totalReceiptAmount {
@@ -284,7 +275,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
-        centerTitle: true,
+        //centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         automaticallyImplyLeading: true,
         title: const Column(
@@ -298,11 +289,149 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
             ),
           ],
         ),
+        actions: [
+          CashCreditToggle(
+            initialCash: true,
+            onChanged: (isCash) {
+              print("Selected: ${isCash ? "Cash" : "Credit"}");
+              controller.updateCash(context);
+              ; // you can hook your logic here
+            },
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BillInvoiceCreateForm()));
+            },
+            icon: const Icon(
+              Icons.settings,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           ///1 section
+
+          Container(
+            color: Color(0xffdddefa),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+              child: Row(
+                children: [
+                  /// Bill No
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Bill/Invoice No",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                          Text(
+                            billController.text,
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 12),
+                            overflow:
+                                TextOverflow.ellipsis, // ✅ Prevent overflow
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  /// Vertical Divider
+                  Container(
+                    width: 1,
+                    height:
+                        40, // you can tweak this to match the height of content
+                    color: Colors.black,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
+
+                  /// Bill Date
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Date",
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  controller.pickDate(context);
+                                },
+                                child: Icon(
+                                  Icons.calendar_today,
+                                  size: 16,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              )
+                            ],
+                          ),
+                          InkWell(
+                            onTap: () => controller.pickDate(context),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                isDense: true,
+                                //suffixIcon: ,
+                                suffixIconConstraints: const BoxConstraints(
+                                  minWidth: 16,
+                                  minHeight: 16,
+                                ),
+                                hintText: "Bill Date",
+                                hintStyle: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 9,
+                                ),
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.transparent, width: 0),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                ),
+                              ),
+                              child: Text(
+                                controller.formattedDate.isNotEmpty
+                                    ? controller.formattedDate
+                                    : "Select Date",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          SizedBox(
+            height: 4,
+          ),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -311,90 +440,97 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ///payment form
-                  SizedBox(
-                    height: 30,
-                    width: 150,
-                    child: CustomDropdownTwo(
-                      hint: '',
-                      items: const ['Cash in Hand', 'Bank'],
-                      width: double.infinity,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: SizedBox(
                       height: 30,
-                      labelText: 'Payment From',
-                      selectedItem: selectedReceivedTo,
-                      onChanged: (value) async {
-                        // debugPrint('=== Received To Selected: $value ===');
+                      width: 150,
+                      child: CustomDropdownTwo(
+                        hint: '',
+                        items: const ['Cash in Hand', 'Bank'],
+                        width: double.infinity,
+                        height: 30,
+                        labelText: 'Payment From',
+                        selectedItem: selectedReceivedTo,
+                        onChanged: (value) async {
+                          // debugPrint('=== Received To Selected: $value ===');
 
-                        debugPrint('=== Received To Selected: $value ===');
+                          debugPrint('=== Received To Selected: $value ===');
 
-                        setState(() {
-                          selectedReceivedTo = value;
-                          selectedAccount = null;
+                          setState(() {
+                            selectedReceivedTo = value;
+                            selectedAccount = null;
 
-                          internalReceivedTo =
-                              value == 'Cash in Hand' ? 'cash' : 'bank';
-                        });
+                            internalReceivedTo =
+                                value == 'Cash in Hand' ? 'cash' : 'bank';
+                          });
 
-                        if (internalReceivedTo == 'cash') {
-                          debugPrint('Fetching Cash accounts...');
-                          await provider.fetchAccounts('cash');
-                        } else if (internalReceivedTo == 'bank') {
-                          debugPrint('Fetching Bank accounts...');
-                          await provider.fetchAccounts('bank');
-                        }
+                          if (internalReceivedTo == 'cash') {
+                            debugPrint('Fetching Cash accounts...');
+                            await provider.fetchAccounts('cash');
+                          } else if (internalReceivedTo == 'bank') {
+                            debugPrint('Fetching Bank accounts...');
+                            await provider.fetchAccounts('bank');
+                          }
 
-                        debugPrint(
-                            'Fetched Account Names: ${provider.accountNames}');
-                        debugPrint(
-                            'selectedReceivedTo ===> $selectedReceivedTo <======');
-                        debugPrint(
-                            'internalReceivedTo (to use/send) ===> $internalReceivedTo');
-                      },
+                          debugPrint(
+                              'Fetched Account Names: ${provider.accountNames}');
+                          debugPrint(
+                              'selectedReceivedTo ===> $selectedReceivedTo <======');
+                          debugPrint(
+                              'internalReceivedTo (to use/send) ===> $internalReceivedTo');
+                        },
+                      ),
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 4),
 
                   /// Account Dropdown || A/C
-                  SizedBox(
-                    height: 30,
-                    width: 150,
-                    child: provider.isAccountLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : CustomDropdownTwo(
-                            hint: '',
-                            items: provider.accountNames,
-                            width: double.infinity,
-                            height: 30,
-                            labelText: 'A/C',
-                            selectedItem: selectedAccount,
-                            onChanged: (value) {
-                              debugPrint('=== Account Selected: $value ===');
-                              setState(() {
-                                selectedAccount = value;
-                              });
-
-                              if (provider.accountModel != null) {
-                                final selectedAccountData = provider
-                                    .accountModel!.data
-                                    .firstWhere((account) =>
-                                        account.accountName == value);
-
-                                selectedAccountId = selectedAccountData.id;
-
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: SizedBox(
+                      height: 30,
+                      width: 150,
+                      child: provider.isAccountLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : CustomDropdownTwo(
+                              hint: '',
+                              items: provider.accountNames,
+                              width: double.infinity,
+                              height: 30,
+                              labelText: 'A/C',
+                              selectedItem: selectedAccount,
+                              onChanged: (value) {
                                 debugPrint('=== Account Selected: $value ===');
-                                if (selectedAccountId != null) {
-                                  debugPrint(
-                                      'Selected Account ID: $selectedAccountId');
-                                }
+                                setState(() {
+                                  selectedAccount = value;
+                                });
 
-                                debugPrint('Selected Account Details:');
-                                debugPrint('- ID: ${selectedAccountData.id}');
-                                debugPrint(
-                                    '- Name: ${selectedAccountData.accountName}');
-                                debugPrint('- Type: $selectedReceivedTo');
-                              }
-                            },
-                          ),
+                                if (provider.accountModel != null) {
+                                  final selectedAccountData = provider
+                                      .accountModel!.data
+                                      .firstWhere((account) =>
+                                          account.accountName == value);
+
+                                  selectedAccountId = selectedAccountData.id;
+
+                                  debugPrint(
+                                      '=== Account Selected: $value ===');
+                                  if (selectedAccountId != null) {
+                                    debugPrint(
+                                        'Selected Account ID: $selectedAccountId');
+                                  }
+
+                                  debugPrint('Selected Account Details:');
+                                  debugPrint('- ID: ${selectedAccountData.id}');
+                                  debugPrint(
+                                      '- Name: ${selectedAccountData.accountName}');
+                                  debugPrint('- Type: $selectedReceivedTo');
+                                }
+                              },
+                            ),
+                    ),
                   ),
                 ],
               ),
@@ -448,76 +584,76 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
                   // Bill No Field
 
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  // const SizedBox(
+                  //   height: 8,
+                  // ),
 
                   ///bill no, bill person
 
-                  SizedBox(
-                    height: 30,
-                    width: 130,
-                    child: AddSalesFormfield(
-                      labelText: "Bill No",
-                      controller: billController,
-                      readOnly: true, // Prevent manual editing
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: 30,
+                  //   width: 130,
+                  //   child: AddSalesFormfield(
+                  //     labelText: "Bill No",
+                  //     controller: billController,
+                  //     readOnly: true, // Prevent manual editing
+                  //   ),
+                  // ),
 
                   //person
 
                   ///bill date
-                  SizedBox(
-                    height: 30,
-                    width: 130,
-                    child: InkWell(
-                      // onTap: () => controller.pickDate(
-                      //     context), // Trigger the date picker
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          isDense: true,
-                          suffixIcon: Icon(
-                            Icons.calendar_today,
-                            size: 16,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          suffixIconConstraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ), // Adjust constraints to align icon closely
-                          hintText: "Bill Date",
-                          hintStyle: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.grey.shade400, width: 0.5),
-                          ),
-                          focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                        child: Text(
-                          controller.formattedDate.isNotEmpty
-                              ? controller.formattedDate
-                              : "Select Date", // Default text when no date is selected
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: 30,
+                  //   width: 130,
+                  //   child: InkWell(
+                  //     // onTap: () => controller.pickDate(
+                  //     //     context), // Trigger the date picker
+                  //     child: InputDecorator(
+                  //       decoration: InputDecoration(
+                  //         isDense: true,
+                  //         suffixIcon: Icon(
+                  //           Icons.calendar_today,
+                  //           size: 16,
+                  //           color: Theme.of(context).primaryColor,
+                  //         ),
+                  //         suffixIconConstraints: const BoxConstraints(
+                  //           minWidth: 16,
+                  //           minHeight: 16,
+                  //         ), // Adjust constraints to align icon closely
+                  //         hintText: "Bill Date",
+                  //         hintStyle: TextStyle(
+                  //           color: Colors.grey.shade400,
+                  //           fontSize: 9,
+                  //         ),
+                  //         enabledBorder: UnderlineInputBorder(
+                  //           borderSide: BorderSide(
+                  //               color: Colors.grey.shade400, width: 0.5),
+                  //         ),
+                  //         focusedBorder: const UnderlineInputBorder(
+                  //           borderSide: BorderSide(color: Colors.green),
+                  //         ),
+                  //       ),
+                  //       child: Text(
+                  //         controller.formattedDate.isNotEmpty
+                  //             ? controller.formattedDate
+                  //             : "Select Date", // Default text when no date is selected
+                  //         style: const TextStyle(
+                  //           color: Colors.black,
+                  //           fontSize: 12,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               )
             ],
           ),
 
-          const SizedBox(
-            height: 8,
-          ),
+          // const SizedBox(
+          //   height: 8,
+          // ),
 
           const Center(
             child: Text(
@@ -532,14 +668,17 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
           const SizedBox(height: 6),
 
           /// Customer search field
-          AddSalesFormfieldTwo(
-            controller: customerNameController,
-            customerorSaleslist: "Showing Customer list",
-            customerOrSupplierButtonLavel: "",
-            color: Colors.grey,
-            onTap: () {
-              // Add your customer selection logic
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: AddSalesFormfieldTwo(
+              controller: customerNameController,
+              customerorSaleslist: "Showing Customer list",
+              customerOrSupplierButtonLavel: "",
+              color: Colors.grey,
+              onTap: () {
+                // Add your customer selection logic
+              },
+            ),
           ),
 
           /// Show customer payable/receivable if selected
@@ -836,16 +975,19 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                   children: [
                     Text("Total Amount", style: ts),
                     const SizedBox(width: 10),
-                    SizedBox(
-                      height: 30,
-                      width: 163,
-                      child: AddSalesFormfield(
-                        labelText: "Amount",
-                        readOnly: true,
-                        controller: totalAmount,
-                        onChanged: (value) {
-                          debugPrint('Payment Value: ${totalAmount.text}');
-                        },
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: SizedBox(
+                        height: 38,
+                        width: 163,
+                        child: AddSalesFormfield(
+                          labelText: "Amount",
+                          readOnly: true,
+                          controller: totalAmount,
+                          onChanged: (value) {
+                            debugPrint('Payment Value: ${totalAmount.text}');
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -862,7 +1004,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
                     // Percentage field
                     SizedBox(
-                      height: 30,
+                      height: 38,
                       width: 76,
                       child: AddSalesFormfield(
                         keyboardType: TextInputType.number,
@@ -905,50 +1047,54 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                     const SizedBox(width: 10),
 
                     // Amount field
-                    SizedBox(
-                      height: 30,
-                      width: 76,
-                      child: AddSalesFormfield(
-                        labelText: "Amount",
-                        controller: discountAmount,
-                         keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          // ✅ Prevent infinite loops by checking if we're updating from percentage field
-                          if (_isUpdatingFromPercentage) return;
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: SizedBox(
+                        height: 38,
+                        width: 76,
+                        child: AddSalesFormfield(
+                          labelText: "Amount",
+                          controller: discountAmount,
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            // ✅ Prevent infinite loops by checking if we're updating from percentage field
+                            if (_isUpdatingFromPercentage) return;
 
-                          _isUpdatingFromAmount = true;
+                            _isUpdatingFromAmount = true;
 
-                          // Calculate percentage based on amount
-                          if (value.isNotEmpty) {
-                            double amount = double.tryParse(value) ?? 0.0;
-                            double totalAmountValue =
-                                totalReceiptAmount; // ✅ Use your existing variable
+                            // Calculate percentage based on amount
+                            if (value.isNotEmpty) {
+                              double amount = double.tryParse(value) ?? 0.0;
+                              double totalAmountValue =
+                                  totalReceiptAmount; // ✅ Use your existing variable
 
-                            if (totalAmountValue > 0) {
-                              double calculatedPercentage =
-                                  (amount * 100) / totalAmountValue;
+                              if (totalAmountValue > 0) {
+                                double calculatedPercentage =
+                                    (amount * 100) / totalAmountValue;
 
-                              // ✅ Clamp percentage to 0-100
-                              if (calculatedPercentage > 100) {
-                                calculatedPercentage = 100;
-                                amount =
-                                    totalAmountValue; // Set amount to max (100%)
-                                discountAmount.text = amount.toStringAsFixed(2);
+                                // ✅ Clamp percentage to 0-100
+                                if (calculatedPercentage > 100) {
+                                  calculatedPercentage = 100;
+                                  amount =
+                                      totalAmountValue; // Set amount to max (100%)
+                                  discountAmount.text =
+                                      amount.toStringAsFixed(2);
+                                }
+
+                                discountPercentageController.text =
+                                    calculatedPercentage.toStringAsFixed(2);
                               }
 
-                              discountPercentageController.text =
-                                  calculatedPercentage.toStringAsFixed(2);
+                              // ✅ Update selectedDiscountType for your existing logic
+                              selectedDiscountType = '৳';
+                            } else {
+                              discountPercentageController.clear();
                             }
 
-                            // ✅ Update selectedDiscountType for your existing logic
-                            selectedDiscountType = '৳';
-                          } else {
-                            discountPercentageController.clear();
-                          }
-
-                          _isUpdatingFromAmount = false;
-                          _recalculatePayment();
-                        },
+                            _isUpdatingFromAmount = false;
+                            _recalculatePayment();
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -958,210 +1104,218 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
                 const SizedBox(height: 10),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text("Payment", style: ts),
-                    const SizedBox(width: 24),
-                    SizedBox(
-                      height: 30,
-                      width: 163,
-                      child: AddSalesFormfield(
-                        labelText: 'Payment',
-                        controller: paymentAmount,
-                        readOnly:
-                            true, // user should not edit final payment manually
+                Padding(
+                  padding: const EdgeInsets.only(right: 4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text("Payment", style: ts),
+                      const SizedBox(width: 24),
+                      SizedBox(
+                        height: 38,
+                        width: 163,
+                        child: AddSalesFormfield(
+                          labelText: 'Payment',
+                          controller: paymentAmount,
+                          readOnly:
+                              true, // user should not edit final payment manually
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              /// Total Amount Section
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [],
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
-
-                    backgroundColor: Colors.green, // Button background color
-                    foregroundColor: Colors.white, // Button text color
+          Padding(
+            padding: const EdgeInsets.only(right: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                /// Total Amount Section
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [],
                   ),
-                  onPressed: () async {
-                    ///final api call here ====== >>>>>>
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    String? userIdStr = prefs.getInt('user_id')?.toString();
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
 
-                    if (userIdStr == null) {
-                      debugPrint("User ID is null");
-                      return;
-                    }
+                      backgroundColor: Colors.green, // Button background color
+                      foregroundColor: Colors.white, // Button text color
+                    ),
+                    onPressed: () async {
+                      ///final api call here ====== >>>>>>
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      String? userIdStr = prefs.getInt('user_id')?.toString();
 
-                    /// ✅ Get Selected Customer ID
-                    final selectedCustomer =
-                        Provider.of<CustomerProvider>(context, listen: false)
-                            .selectedCustomer;
+                      if (userIdStr == null) {
+                        debugPrint("User ID is null");
+                        return;
+                      }
 
-                    if (selectedCustomer != null) {
-                      debugPrint(
-                          'Selected Customer ID: ${selectedCustomer.id}');
-                      debugPrint(
-                          'Selected Customer Name: ${selectedCustomer.name}');
-                    } else {
-                      debugPrint('No customer selected.');
-                    }
+                      /// ✅ Get Selected Customer ID
+                      final selectedCustomer =
+                          Provider.of<CustomerProvider>(context, listen: false)
+                              .selectedCustomer;
 
-                    String receivedToValue =
-                        getReceivedToValue(selectedReceivedTo!);
+                      if (selectedCustomer != null) {
+                        debugPrint(
+                            'Selected Customer ID: ${selectedCustomer.id}');
+                        debugPrint(
+                            'Selected Customer Name: ${selectedCustomer.name}');
+                      } else {
+                        debugPrint('No customer selected.');
+                      }
 
-                    debugPrint("Send to API: $receivedToValue");
+                      String receivedToValue =
+                          getReceivedToValue(selectedReceivedTo!);
 
-                    int userId = int.parse(userIdStr);
-                    //int customerId = selectedCustomer?.id ??
-                    0; // from your selected customer object
-                    int voucherPerson = selectedBillPersonData?.id ?? 0;
-                    String voucherNumber = billController.text.trim();
-                    String voucherDate =
-                        DateFormat('yyyy-MM-dd').format(DateTime.now());
-                    String voucherTime =
-                        DateFormat('HH:mm:ss').format(DateTime.now());
+                      debugPrint("Send to API: $receivedToValue");
 
-                    ///payment bank or cash
-                    String paymentForm =
-                        receivedToValue; // adapt this accordingly
-                    int accountId = selectedAccountId ?? 0;
-                    int paymentTo = selectedCustomer!
-                        .id; //selectedAccountId ?? 0; // or payment to id
+                      int userId = int.parse(userIdStr);
+                      //int customerId = selectedCustomer?.id ??
+                      0; // from your selected customer object
+                      int voucherPerson = selectedBillPersonData?.id ?? 0;
+                      String voucherNumber = billController.text.trim();
+                      String voucherDate =
+                          DateFormat('yyyy-MM-dd').format(DateTime.now());
+                      String voucherTime =
+                          DateFormat('HH:mm:ss').format(DateTime.now());
 
-                    String percent = discountPercentageController
-                        .text; // "%", "percent", or "flat", adjust as needed
-                    //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
-                    double paymentAmt =
-                        double.tryParse(paymentAmount.text) ?? 0;
-                    double discountAmt =
-                        double.tryParse(discountAmount.text) ?? 0;
-                    String notes = noteController.text; // from your input
+                      ///payment bank or cash
+                      String paymentForm =
+                          receivedToValue; // adapt this accordingly
+                      int accountId = selectedAccountId ?? 0;
+                      int paymentTo = selectedCustomer!
+                          .id; //selectedAccountId ?? 0; // or payment to id
 
-                    // Replace this section in your Save button onPressed method:
+                      String percent = discountPercentageController
+                          .text; // "%", "percent", or "flat", adjust as needed
+                      //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
+                      double paymentAmt =
+                          double.tryParse(paymentAmount.text) ?? 0;
+                      double discountAmt =
+                          double.tryParse(discountAmount.text) ?? 0;
+                      String notes = noteController.text; // from your input
 
-                    final customerProvider =
-                        Provider.of<CustomerProvider>(context, listen: false);
+                      // Replace this section in your Save button onPressed method:
 
-                    List<VoucherItem> voucherItems = [];
+                      final customerProvider =
+                          Provider.of<CustomerProvider>(context, listen: false);
 
-                    // ✅ FIXED: Use paymentVouchers instead of receivedVouchers
-                    for (int i = 0;
-                        i < customerProvider.paymentVouchers.length;
-                        i++) {
-                      final PaymentVoucherCustomer invoice =
-                          customerProvider.paymentVouchers[i];
-                      final TextEditingController? controller =
-                          receiptControllers[i];
+                      List<VoucherItem> voucherItems = [];
 
-                      if (controller != null &&
-                          controller.text.trim().isNotEmpty) {
-                        final double amount =
-                            double.tryParse(controller.text.trim()) ?? 0;
-                        if (amount > 0) {
-                          voucherItems.add(VoucherItem(
-                            salesId: invoice.id.toString(),
-                            amount: amount.toStringAsFixed(2),
-                          ));
+                      // ✅ FIXED: Use paymentVouchers instead of receivedVouchers
+                      for (int i = 0;
+                          i < customerProvider.paymentVouchers.length;
+                          i++) {
+                        final PaymentVoucherCustomer invoice =
+                            customerProvider.paymentVouchers[i];
+                        final TextEditingController? controller =
+                            receiptControllers[i];
 
-                          // ✅ Debug print to verify data
-                          debugPrint(
-                              'Adding Voucher Item → sales_id: ${invoice.id}, amount: ${amount.toStringAsFixed(2)}');
+                        if (controller != null &&
+                            controller.text.trim().isNotEmpty) {
+                          final double amount =
+                              double.tryParse(controller.text.trim()) ?? 0;
+                          if (amount > 0) {
+                            voucherItems.add(VoucherItem(
+                              salesId: invoice.id.toString(),
+                              amount: amount.toStringAsFixed(2),
+                            ));
+
+                            // ✅ Debug print to verify data
+                            debugPrint(
+                                'Adding Voucher Item → sales_id: ${invoice.id}, amount: ${amount.toStringAsFixed(2)}');
+                          }
                         }
                       }
-                    }
 
-// ✅ Add validation before API call
-                    if (voucherItems.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                              "Please enter payment amounts for at least one invoice."),
-                          backgroundColor: Colors.orange,
-                        ),
-                      );
-                      return; // Don't proceed with API call
-                    }
-
-                    final request = PaymentVoucherRequest(
-                      userId: userId,
-                      customerId: selectedCustomer.id,
-                      voucherPerson: voucherPerson,
-                      voucherNumber: voucherNumber,
-                      voucherDate: voucherDate,
-                      voucherTime: voucherTime,
-                      paymentForm: paymentForm, // ✅ FIXED paymentForm,
-                      accountId: accountId,
-                      paymentTo: paymentTo,
-                      percent: percent,
-                      totalAmount: paymentAmt, //totalAmt,
-                      discount: discountAmt,
-                      notes: notes,
-                      voucherItems: voucherItems,
-                    );
-
-                    final provider = Provider.of<PaymentVoucherProvider>(
-                        context,
-                        listen: false);
-                    bool success = await provider.storePaymentVoucher(request);
-
-                    if (success) {
-                      // ✅ Clear payment fields
-                      receiptControllers
-                          .clear(); // Clear all TextEditingControllers
-
-                      customerNameController.clear();    
-
-                      // ✅ Clear selected customer in provider
-                     customerProvider.clearSelectedCustomer();
-                      customerProvider.paymentVouchers
-                          .clear(); // Clear the voucher list
-
-                      // ✅ Notify listeners so UI updates
-                      customerProvider.notifyListeners();
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            backgroundColor: Colors.green,
+                      // ✅ Add validation before API call
+                      if (voucherItems.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
                             content: Text(
-                                "Successfully, Payment voucher saved successfully!")),
+                                "Please enter payment amounts for at least one invoice."),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return; // Don't proceed with API call
+                      }
+
+                      final request = PaymentVoucherRequest(
+                        userId: userId,
+                        customerId: selectedCustomer.id,
+                        voucherPerson: voucherPerson,
+                        voucherNumber: voucherNumber,
+                        voucherDate: voucherDate,
+                        voucherTime: voucherTime,
+                        paymentForm: paymentForm, // ✅ FIXED paymentForm,
+                        accountId: accountId,
+                        paymentTo: paymentTo,
+                        percent: percent,
+                        totalAmount: paymentAmt, //totalAmt,
+                        discount: discountAmt,
+                        notes: notes,
+                        voucherItems: voucherItems,
                       );
 
-                      Navigator.pushReplacement(
+                      final provider = Provider.of<PaymentVoucherProvider>(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const PaymentOutList()));
-                      // Optionally reset form or navigate
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            backgroundColor: Colors.red,
-                            content: Text("Failed, to save payment voucher.")),
-                      );
-                    }
-                  },
-                  child: const Text("Save"),
+                          listen: false);
+                      bool success =
+                          await provider.storePaymentVoucher(request);
+
+                      if (success) {
+                        // ✅ Clear payment fields
+                        receiptControllers
+                            .clear(); // Clear all TextEditingControllers
+
+                        customerNameController.clear();
+
+                        // ✅ Clear selected customer in provider
+                        customerProvider.clearSelectedCustomer();
+                        customerProvider.paymentVouchers
+                            .clear(); // Clear the voucher list
+
+                        // ✅ Notify listeners so UI updates
+                        customerProvider.notifyListeners();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              backgroundColor: Colors.green,
+                              content: Text(
+                                  "Successfully, Payment voucher saved successfully!")),
+                        );
+
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const PaymentOutList()));
+                        // Optionally reset form or navigate
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              backgroundColor: Colors.red,
+                              content:
+                                  Text("Failed, to save payment voucher.")),
+                        );
+                      }
+                    },
+                    child: const Text("Save"),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
           const SizedBox(

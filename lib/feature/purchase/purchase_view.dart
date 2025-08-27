@@ -22,6 +22,7 @@ import 'package:cbook_dt/feature/purchase/purchase_setting.dart';
 import 'package:cbook_dt/feature/sales/sales_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/custom_box.dart';
+import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/feature/suppliers/suppliers_create.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
 import 'package:cbook_dt/utils/url.dart';
@@ -291,7 +292,7 @@ class LayoutState extends State<Layout> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const PurchaseSetting()));
+                              builder: (context) => const BillInvoiceCreateForm()));
                     },
                     icon: const Icon(
                       Icons.settings,
@@ -316,7 +317,7 @@ class LayoutState extends State<Layout> {
                           ///new bill no and date.
 
                           Padding(
-                            padding: const EdgeInsets.all(6.0),
+                            padding: const EdgeInsets.all(0.0),
                             child: Container(
                               color: Color(0xffdddefa),
                               child: Padding(
@@ -803,6 +804,10 @@ class LayoutState extends State<Layout> {
                                 ),
                               )
                             ],
+                          ),
+
+                          const SizedBox(
+                            height: 6,
                           ),
 
                           if (controller.isCash == false)
@@ -1737,13 +1742,16 @@ class LayoutState extends State<Layout> {
                                 },
                               ),
                               if (showNoteField)
-                                Expanded(
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * .45,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8.0),
                                     child: Container(
                                       height: 40,
-                                      width: double.infinity,
+                                      width: MediaQuery.of(context).size.width *
+                                          .45,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         border: Border(
@@ -1818,7 +1826,7 @@ class LayoutState extends State<Layout> {
                                                       color: Colors.black)),
                                               hPad5,
                                               SizedBox(
-                                                height: 30,
+                                                height: 38,
                                                 width: 153,
                                                 child: AddSalesFormfield(
                                                   readOnly: true,
@@ -1859,7 +1867,7 @@ class LayoutState extends State<Layout> {
 
                                               ///discount %.
                                               SizedBox(
-                                                height: 30,
+                                                height: 38,
                                                 width: 75,
                                                 child: AddSalesFormfield(
                                                   keyboardType:
@@ -1887,7 +1895,7 @@ class LayoutState extends State<Layout> {
                                               hPad2,
 
                                               SizedBox(
-                                                height: 30,
+                                                height: 38,
                                                 width: 75,
                                                 child: AddSalesFormfield(
                                                   labelText: "৳",
@@ -1929,7 +1937,7 @@ class LayoutState extends State<Layout> {
                                                       color: Colors.black)),
                                               const SizedBox(width: 5),
                                               SizedBox(
-                                                height: 30,
+                                                height: 38,
                                                 width: 150,
                                                 child: AddSalesFormfield(
                                                   keyboardType:
@@ -1999,22 +2007,18 @@ class LayoutState extends State<Layout> {
                                                         color: Colors.black)),
                                                 const SizedBox(width: 5),
                                                 SizedBox(
-                                                  height: 30,
+                                                  height: 38,
                                                   width: 150,
-                                                  child: SizedBox(
-                                                    height: 25,
-                                                    width: 150,
-                                                    child: AddSalesFormfield(
-                                                      readOnly: true,
-                                                      onChanged: (value) {
-                                                        Provider.of(context)<
-                                                            PurchaseController>();
-                                                      },
-                                                      controller:
-                                                          TextEditingController(
-                                                              text: controller
-                                                                  .totalAmount),
-                                                    ),
+                                                  child: AddSalesFormfield(
+                                                    readOnly: true,
+                                                    onChanged: (value) {
+                                                      Provider.of(context)<
+                                                          PurchaseController>();
+                                                    },
+                                                    controller:
+                                                        TextEditingController(
+                                                            text: controller
+                                                                .totalAmount),
                                                   ),
                                                 ),
                                               ],
@@ -2041,7 +2045,7 @@ class LayoutState extends State<Layout> {
                                                       color: Colors.black)),
                                               hPad5,
                                               SizedBox(
-                                                height: 30,
+                                                height: 38,
                                                 width: 153,
                                                 child: AddSalesFormfield(
                                                   readOnly: true,
@@ -2074,7 +2078,7 @@ class LayoutState extends State<Layout> {
 
                                               ///
                                               SizedBox(
-                                                height: 30,
+                                                height: 38,
                                                 width: 75,
                                                 child: AddSalesFormfield(
                                                   keyboardType:
@@ -2093,7 +2097,7 @@ class LayoutState extends State<Layout> {
                                               hPad2,
 
                                               SizedBox(
-                                                height: 30,
+                                                height: 38,
                                                 width: 75,
                                                 child: AddSalesFormfield(
                                                   keyboardType:
@@ -2135,7 +2139,7 @@ class LayoutState extends State<Layout> {
                                                       color: Colors.black)),
                                               const SizedBox(width: 5),
                                               SizedBox(
-                                                height: 30,
+                                                height: 38,
                                                 width: 150,
                                                 child: AddSalesFormfield(
                                                   readOnly: true,
@@ -2189,7 +2193,7 @@ class LayoutState extends State<Layout> {
                                                         color: Colors.black)),
                                                 const SizedBox(width: 5),
                                                 SizedBox(
-                                                  height: 30,
+                                                  height: 38,
                                                   width: 150,
                                                   child: AddSalesFormfield(
                                                     controller: controller
@@ -2565,19 +2569,19 @@ class LayoutState extends State<Layout> {
                           child: Consumer<AddItemProvider>(
                             builder: (context, itemProvider, child) {
                               return SizedBox(
-                                height: 30,
+                                height: 38,
                                 width: double.infinity,
                                 child: itemProvider.isLoading
                                     ? const Center(
                                         child: CircularProgressIndicator())
                                     : CustomDropdownTwo(
+                                        width: double.infinity,
+                                        height: 38,
                                         enableSearch: true,
                                         hint: 'Select Item',
                                         items: itemProvider.items
                                             .map((item) => item.name)
                                             .toList(),
-                                        width: double.infinity,
-                                        height: 30,
                                         selectedItem: selectedItemName,
                                         onChanged: (value) async {
                                           debugPrint(
@@ -2741,13 +2745,14 @@ class LayoutState extends State<Layout> {
                                   SizedBox(
                                     //width: 150,
                                     child: CustomDropdownTwo(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 38,
                                       key: ValueKey(
                                           'unit_dropdown_${selectedItemId}_${unitIdsList.length}'),
                                       labelText: "Unit",
                                       //hint: 'Select Unit',
                                       items: unitIdsList,
-                                      width: MediaQuery.of(context).size.width,
-                                      height: 30,
+
                                       selectedItem: unitIdsList.isNotEmpty &&
                                               controller.selectedUnit != null &&
                                               unitIdsList.contains(

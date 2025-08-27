@@ -23,7 +23,6 @@ class ExpenseEdit extends StatefulWidget {
 }
 
 class _ExpenseEditState extends State<ExpenseEdit> {
-  
   String? selectedReceivedTo;
   String? selectedAccount;
   int? selectedAccountId;
@@ -165,7 +164,7 @@ class _ExpenseEditState extends State<ExpenseEdit> {
       backgroundColor: AppColors.sfWhite,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
-        centerTitle: true,
+        //centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         automaticallyImplyLeading: true,
         title: const Column(
@@ -187,12 +186,124 @@ class _ExpenseEditState extends State<ExpenseEdit> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 0.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           ///1 section
 
+          // const SizedBox(
+          //   height: 6,
+          // ),
+
+          Container(
+            color: Color(0xffdddefa),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+              child: Row(
+                children: [
+                  /// Bill No
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Bill/Invoice No",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                          Text(
+                            'billController',
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 12),
+                            overflow:
+                                TextOverflow.ellipsis, // ✅ Prevent overflow
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  /// Vertical Divider
+                  Container(
+                    width: 1,
+                    height:
+                        40, // you can tweak this to match the height of content
+                    color: Colors.black,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
+
+                  /// Bill Date
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Date",
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                controller.pickDate(context);
+                              },
+                              child: Icon(
+                                Icons.calendar_today,
+                                size: 16,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            )
+                          ],
+                        ),
+                        InkWell(
+                          onTap: () => controller.pickDate(context),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              fillColor: Colors.white,
+                              isDense: true,
+                              //suffixIcon: ,
+                              suffixIconConstraints: const BoxConstraints(
+                                minWidth: 16,
+                                minHeight: 16,
+                              ),
+                              hintText: "Bill Date",
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 9,
+                              ),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.transparent, width: 0),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.transparent),
+                              ),
+                            ),
+                            child: Text(
+                              controller.formattedDate.isNotEmpty
+                                  ? controller.formattedDate
+                                  : "Select Date",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           const SizedBox(
-            height: 6,
+            height: 4,
           ),
 
           if (providerExpense.editExpenseData != null)
@@ -210,13 +321,13 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                         children: [
                           ///paid to
                           SizedBox(
-                            height: 30,
+                            height: 38,
                             width: 150,
                             child: CustomDropdownTwo(
                               hint: '',
                               items: const ['Cash in Hand', 'Bank'],
                               width: double.infinity,
-                              height: 30,
+                              height: 38,
                               labelText: 'Paid To',
                               selectedItem: selectedReceivedTo,
                               onChanged: (value) async {
@@ -241,11 +352,11 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                             ),
                           ),
 
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 4),
 
                           /// Account Dropdown
                           SizedBox(
-                            height: 30,
+                            height: 38,
                             width: 150,
                             child: provider.isAccountLoading
                                 ? const Center(
@@ -254,11 +365,12 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                                     hint: '',
                                     items: provider.accountNames,
                                     width: double.infinity,
-                                    height: 30,
+                                    height: 38,
                                     labelText: 'Account',
                                     selectedItem: selectedAccount,
                                     onChanged: (value) {
-                                      debugPrint('=== Account Selected: $value ===');
+                                      debugPrint(
+                                          '=== Account Selected: $value ===');
                                       setState(() {
                                         selectedAccount = value;
                                       });
@@ -295,8 +407,6 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                         
-                         
                           //bill person
                           // Padding(
                           //   padding: const EdgeInsets.only(top: 8.0),
@@ -344,7 +454,6 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                           //   ),
                           // ),
 
-
                           // Bill No Field
 
                           const SizedBox(
@@ -352,109 +461,109 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                           ),
 
                           ///bill no, bill person
-                          SizedBox(
-                            height: 30,
-                            width: 130,
-                            child: TextField(
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
-                              ),
-                              controller: voucherNumberController,
-                              cursorHeight: 12,
-                              onChanged: (value) {
-                                billNo = value;
-                              }, // Match cursor height to text size
-                              decoration: InputDecoration(
-                                isDense: true, // Ensures the field is compact
-                                contentPadding: EdgeInsets
-                                    .zero, // Removes unnecessary padding
-                                hintText: "Bill no",
-                                hintStyle: TextStyle(
-                                    color: Colors.grey.shade400,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.grey.shade400,
-                                    width: 0.5,
-                                  ),
-                                ),
-                                focusedBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.green,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          // SizedBox(
+                          //   height: 30,
+                          //   width: 130,
+                          //   child: TextField(
+                          //     style: const TextStyle(
+                          //       color: Colors.black,
+                          //       fontSize: 12,
+                          //     ),
+                          //     controller: voucherNumberController,
+                          //     cursorHeight: 12,
+                          //     onChanged: (value) {
+                          //       billNo = value;
+                          //     }, // Match cursor height to text size
+                          //     decoration: InputDecoration(
+                          //       isDense: true, // Ensures the field is compact
+                          //       contentPadding: EdgeInsets
+                          //           .zero, // Removes unnecessary padding
+                          //       hintText: "Bill no",
+                          //       hintStyle: TextStyle(
+                          //           color: Colors.grey.shade400,
+                          //           fontSize: 12,
+                          //           fontWeight: FontWeight.w600),
+                          //       enabledBorder: UnderlineInputBorder(
+                          //         borderSide: BorderSide(
+                          //           color: Colors.grey.shade400,
+                          //           width: 0.5,
+                          //         ),
+                          //       ),
+                          //       focusedBorder: const UnderlineInputBorder(
+                          //         borderSide: BorderSide(
+                          //           color: Colors.green,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
 
                           //person
 
                           ///bill date
-                          SizedBox(
-                            height: 30,
-                            width: 130,
-                            child: InkWell(
-                              // onTap: () => controller.pickDate(
-                              //     context), // Trigger the date picker
-                              onTap: () async {
-                                DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(2000),
-                                  lastDate: DateTime(2100),
-                                );
+                          // SizedBox(
+                          //   height: 30,
+                          //   width: 130,
+                          //   child: InkWell(
+                          //     // onTap: () => controller.pickDate(
+                          //     //     context), // Trigger the date picker
+                          //     onTap: () async {
+                          //       DateTime? pickedDate = await showDatePicker(
+                          //         context: context,
+                          //         initialDate: DateTime.now(),
+                          //         firstDate: DateTime(2000),
+                          //         lastDate: DateTime(2100),
+                          //       );
 
-                                if (pickedDate != null) {
-                                  // Example: Format the date if needed
-                                  String formattedDate =
-                                      "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                          //       if (pickedDate != null) {
+                          //         // Example: Format the date if needed
+                          //         String formattedDate =
+                          //             "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
 
-                                  setState(() {
-                                    billDate =
-                                        formattedDate; // Update the selected date
-                                  });
-                                }
-                              },
-                              child: InputDecorator(
-                                decoration: InputDecoration(
-                                  isDense: true,
-                                  suffixIcon: Icon(
-                                    Icons.calendar_today,
-                                    size: 16,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  suffixIconConstraints: const BoxConstraints(
-                                    minWidth: 16,
-                                    minHeight: 16,
-                                  ), // Adjust constraints to align icon closely
-                                  hintText: "Bill Date",
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey.shade400,
-                                    fontSize: 9,
-                                  ),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.grey.shade400,
-                                        width: 0.5),
-                                  ),
-                                  focusedBorder: const UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.green),
-                                  ),
-                                ),
-                                child: Text(
-                                  billDate.isNotEmpty
-                                      ? billDate
-                                      : "Select Date", // Default text when no date is selected
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          //         setState(() {
+                          //           billDate =
+                          //               formattedDate; // Update the selected date
+                          //         });
+                          //       }
+                          //     },
+                          //     child: InputDecorator(
+                          //       decoration: InputDecoration(
+                          //         isDense: true,
+                          //         suffixIcon: Icon(
+                          //           Icons.calendar_today,
+                          //           size: 16,
+                          //           color: Theme.of(context).primaryColor,
+                          //         ),
+                          //         suffixIconConstraints: const BoxConstraints(
+                          //           minWidth: 16,
+                          //           minHeight: 16,
+                          //         ), // Adjust constraints to align icon closely
+                          //         hintText: "Bill Date",
+                          //         hintStyle: TextStyle(
+                          //           color: Colors.grey.shade400,
+                          //           fontSize: 9,
+                          //         ),
+                          //         enabledBorder: UnderlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //               color: Colors.grey.shade400,
+                          //               width: 0.5),
+                          //         ),
+                          //         focusedBorder: const UnderlineInputBorder(
+                          //           borderSide: BorderSide(color: Colors.green),
+                          //         ),
+                          //       ),
+                          //       child: Text(
+                          //         billDate.isNotEmpty
+                          //             ? billDate
+                          //             : "Select Date", // Default text when no date is selected
+                          //         style: const TextStyle(
+                          //           color: Colors.black,
+                          //           fontSize: 12,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       )
                     ],
@@ -484,7 +593,7 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 2),
@@ -515,7 +624,6 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                
                                 const SizedBox(height: 1),
                                 Text(
                                   (item.note ?? ''),
@@ -584,39 +692,79 @@ class _ExpenseEditState extends State<ExpenseEdit> {
               await expenseProvider.fetchPaidFormList();
               showExpenseCreateDialog(context, expenseProvider);
             },
-            child: Container(
-              decoration: BoxDecoration(
-                color: colorScheme.primary,
-                borderRadius: BorderRadius.circular(5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Paid From",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    InkWell(
-                      onTap: () {},
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 18,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: Container(
+                height: 38,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(width: 1, color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 14,
+                        backgroundColor: AppColors.primaryColor,
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(
+                        width: 6,
+                      ),
+                      Text(
+                        "Add item",
+                        style: TextStyle(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+
+            // Container(
+            //   decoration: BoxDecoration(
+            //     color: colorScheme.primary,
+            //     borderRadius: BorderRadius.circular(5),
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.black.withOpacity(0.2),
+            //         blurRadius: 5,
+            //         offset: const Offset(0, 3),
+            //       ),
+            //     ],
+            //   ),
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(4.0),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         const Text(
+            //           "Paid From",
+            //           style: TextStyle(color: Colors.white, fontSize: 14),
+            //         ),
+            //         InkWell(
+            //           onTap: () {},
+            //           child: const Icon(
+            //             Icons.add,
+            //             color: Colors.white,
+            //             size: 18,
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
           ),
 
           const Spacer(),
@@ -658,131 +806,135 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                   ],
                 ),
               ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
+              Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
 
-                    backgroundColor: Colors.green, // Button background color
-                    foregroundColor: Colors.white, // Button text color
+                      backgroundColor: Colors.green, // Button background color
+                      foregroundColor: Colors.white, // Button text color
+                    ),
+                    onPressed: () async {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      String? userId = prefs.getInt('user_id')?.toString();
+
+                      if (userId == null) {
+                        debugPrint("User ID is null");
+                        return;
+                      }
+
+                      final invoiceNo = voucherNumberController.text.trim();
+                      //final invoiceNo = billNoController.text.trim();
+                      if (invoiceNo.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Expense No cannot be empty')),
+                        );
+                        return;
+                      }
+
+                      final date = billDate;
+
+                      final paidTo =
+                          (selectedReceivedTo ?? '').toLowerCase().trim() ==
+                                  'cash in hand'
+                              ? 'cash'
+                              : 'bank';
+                      //final account = selectedAccountId.toString();
+                      final String account = providerExpense
+                          .receiptItems.first.purchaseId
+                          .toString(); // ✔️ Use correct account id
+
+                      final expenseId = widget.expenseId;
+
+                      const notes = 'text';
+                      const status = 1;
+                      //final expenseId = "59"; // Pass the correct expense ID
+
+                      final totalAmount =
+                          providerExpense.receiptItems.fold<double>(
+                        0,
+                        (sum, item) =>
+                            sum +
+                            (double.tryParse(item.amount.toString()) ?? 0),
+                      );
+
+                      final List<ExpenseItemPopUp> expenseItems =
+                          providerExpense.receiptItems.map((item) {
+                        return ExpenseItemPopUp(
+                          // accountId: providerExpense.selectedAccountForUpdate?.id
+                          //         .toString() ??
+                          //     '',
+
+                          // narration: item.note,
+
+                          //accountId: item.purchaseId.toString(),
+                          itemAccountId: item.purchaseId.toString(),
+                          narration: item.note ?? '',
+                          amount: item.amount.toString(),
+                        );
+                      }).toList();
+
+                      debugPrint('Sending Data:');
+                      debugPrint('User ID: $userId');
+                      debugPrint('Expense No: $invoiceNo');
+                      debugPrint("Selected date: $billDate");
+                      debugPrint('Paid To: $paidTo');
+                      debugPrint('Account: $account');
+                      debugPrint('Total Amount: $totalAmount');
+                      debugPrint('Notes: $notes');
+                      debugPrint('Status: $status');
+                      debugPrint(
+                          'Expense Items: ${expenseItems.map((e) => e.toJson()).toList()}');
+
+                      bool success = await providerExpense.updateExpense(
+                          expenseId: expenseId,
+                          userId: userId,
+                          invoiceNo: invoiceNo,
+                          date: date,
+                          paidTo: paidTo,
+                          account: account,
+                          totalAmount: totalAmount,
+                          notes: notes,
+                          status: status,
+                          expenseItems: expenseItems,
+                          billPersonId: selectedBillPersonData!.id);
+
+                      if (success) {
+                        providerExpense.receiptItems.clear();
+                        providerExpense.notifyListeners();
+
+                        await providerExpense.fetchExpenseList();
+
+                        resetForm();
+
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Expanse()),
+                          (Route<dynamic> route) => false,
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Failed to update expense.')),
+                        );
+                      }
+                    },
+                    child: const Text("Update"),
                   ),
-                  onPressed: () async {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    String? userId = prefs.getInt('user_id')?.toString();
-
-                    if (userId == null) {
-                      debugPrint("User ID is null");
-                      return;
-                    }
-
-                    final invoiceNo = voucherNumberController.text.trim();
-                    //final invoiceNo = billNoController.text.trim();
-                    if (invoiceNo.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Expense No cannot be empty')),
-                      );
-                      return;
-                    }
-
-                    final date = billDate;
-
-                    final paidTo =
-                        (selectedReceivedTo ?? '').toLowerCase().trim() ==
-                                'cash in hand'
-                            ? 'cash'
-                            : 'bank';
-                    //final account = selectedAccountId.toString();
-                    final String account = providerExpense
-                        .receiptItems.first.purchaseId
-                        .toString(); // ✔️ Use correct account id
-
-                    final expenseId = widget.expenseId;
-
-                    const notes = 'text';
-                    const status = 1;
-                    //final expenseId = "59"; // Pass the correct expense ID
-
-                    final totalAmount =
-                        providerExpense.receiptItems.fold<double>(
-                      0,
-                      (sum, item) =>
-                          sum + (double.tryParse(item.amount.toString()) ?? 0),
-                    );
-
-                    final List<ExpenseItemPopUp> expenseItems =
-                        providerExpense.receiptItems.map((item) {
-                      return ExpenseItemPopUp(
-                        // accountId: providerExpense.selectedAccountForUpdate?.id
-                        //         .toString() ??
-                        //     '',
-
-                        // narration: item.note,
-
-                        //accountId: item.purchaseId.toString(),
-                        itemAccountId: item.purchaseId.toString(),
-                        narration: item.note ?? '',
-                        amount: item.amount.toString(),
-                      );
-                    }).toList();
-
-                    debugPrint('Sending Data:');
-                    debugPrint('User ID: $userId');
-                    debugPrint('Expense No: $invoiceNo');
-                    debugPrint("Selected date: $billDate");
-                    debugPrint('Paid To: $paidTo');
-                    debugPrint('Account: $account');
-                    debugPrint('Total Amount: $totalAmount');
-                    debugPrint('Notes: $notes');
-                    debugPrint('Status: $status');
-                    debugPrint(
-                        'Expense Items: ${expenseItems.map((e) => e.toJson()).toList()}');
-
-                    bool success = await providerExpense.updateExpense(
-                        expenseId: expenseId,
-                        userId: userId,
-                        invoiceNo: invoiceNo,
-                        date: date,
-                        paidTo: paidTo,
-                        account: account,
-                        totalAmount: totalAmount,
-                        notes: notes,
-                        status: status,
-                        expenseItems: expenseItems,
-                        billPersonId: selectedBillPersonData!.id);
-
-                    if (success) {
-                      providerExpense.receiptItems.clear();
-                      providerExpense.notifyListeners();
-
-                      await providerExpense.fetchExpenseList();
-
-                      resetForm();
-
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Expanse()),
-                        (Route<dynamic> route) => false,
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Failed to update expense.')),
-                      );
-                    }
-                  },
-                  child: const Text("Update"),
                 ),
               ),
             ],
           ),
 
           const SizedBox(
-            height: 10,
+            height: 50,
           )
         ]),
       ),
@@ -981,19 +1133,19 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                   children: [
                     Container(
                       height: 30,
-                      color: const Color(0xff278d46),
+                      //color: const Color(0xff278d46),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const SizedBox(width: 30),
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(width: 5),
                               Text(
                                 "Update Paid Form",
                                 style: TextStyle(
-                                  color: Colors.yellow,
+                                  color: AppColors.primaryColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -1008,7 +1160,7 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                                 radius: 10,
                                 backgroundColor: Colors.grey.shade100,
                                 child: const Icon(Icons.close,
-                                    size: 18, color: Colors.green),
+                                    size: 18, color: Colors.red),
                               ),
                             ),
                           ),
@@ -1017,7 +1169,7 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
-                      height: 30,
+                      height: 38,
                       child: provider.isLoading
                           ? const Center(child: CircularProgressIndicator())
                           : CustomDropdownTwo(
@@ -1026,7 +1178,7 @@ class _ExpenseEditState extends State<ExpenseEdit> {
                                   .map((e) => e.accountName)
                                   .toList(),
                               width: double.infinity,
-                              height: 30,
+                              height: 38,
                               labelText: 'Paid To',
                               selectedItem: selectedPaidTo,
                               onChanged: (selectedItem) {

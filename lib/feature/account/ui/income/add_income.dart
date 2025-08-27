@@ -47,7 +47,6 @@ class _IncomeCreateState extends State<IncomeCreate> {
   void initState() {
     super.initState();
 
-    
     // Initialize with loading text
     billController.text = "Loading...";
     debugPrint('Bill controller initialized with: ${billController.text}');
@@ -59,7 +58,6 @@ class _IncomeCreateState extends State<IncomeCreate> {
       debugPrint('Settings fetched successfully');
       await fetchAndSetBillNumber(context);
     });
-
 
     // Fetch bill persons asynchronously
     Future.microtask(() {
@@ -79,15 +77,10 @@ class _IncomeCreateState extends State<IncomeCreate> {
         setState(() {}); // 👈 make sure UI updates
       }
     });
-
- 
   }
 
- 
-
-
-       ////bill number build 
-     Future<void> fetchAndSetBillNumber(BuildContext context) async {
+  ////bill number build
+  Future<void> fetchAndSetBillNumber(BuildContext context) async {
     debugPrint('fetchAndSetBillNumber called');
 
     final settingsProvider =
@@ -168,11 +161,6 @@ class _IncomeCreateState extends State<IncomeCreate> {
     "Bank": "bank",
   };
 
-
-
-
-
-
 //   ///updated bill nunber json respoonse
 //   Future<void> fetchAndSetBillNumber() async {
 //   debugPrint('fetchAndSetBillNumber called');
@@ -228,7 +216,6 @@ class _IncomeCreateState extends State<IncomeCreate> {
 //   }
 // }
 
-
   @override
   void dispose() {
     // Clear receipt items when leaving the page
@@ -257,318 +244,436 @@ class _IncomeCreateState extends State<IncomeCreate> {
       child: Scaffold(
         backgroundColor: AppColors.sfWhite,
         appBar: AppBar(
-          backgroundColor: colorScheme.primary,
-          //centerTitle: true,
-          iconTheme: const IconThemeData(color: Colors.white),
-          automaticallyImplyLeading: true,
-          title: const Column(
-            children: [
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                'Income Create',
-                style: TextStyle(
-                    color: Colors.yellow,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                width: 5,
-              )
-            ],
-          ),
-          actions:  [
+            backgroundColor: colorScheme.primary,
+            //centerTitle: true,
+            iconTheme: const IconThemeData(color: Colors.white),
+            automaticallyImplyLeading: true,
+            title: const Column(
+              children: [
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  'Income Create',
+                  style: TextStyle(
+                      color: Colors.yellow,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  width: 5,
+                )
+              ],
+            ),
+            actions: [
               InkWell(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (_)=> const AccountTypeCreate()));
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const AccountTypeCreate()));
                 },
                 child: const Text(
-                'Account Create',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-                            ),
+                  'Account Create',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
-          ]
-        ),
+            ]),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            ///1 section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            Container(
+              color: Color(0xffdddefa),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+                child: Row(
                   children: [
-                    ///received to
-                     
-                   SizedBox(
-                      height: 30,
-                      width: 150,
-                      child: CustomDropdownTwo(
-                        hint: '',
-                        items: paidToOptions.keys.toList(), // show labels
-                        width: double.infinity,
-                        height: 30,
-                        labelText: 'Paid To',
-                        selectedItem: selectedReceivedTo,
-                        onChanged: (value) async {
-                          debugPrint('=== Received To Selected: $value ===');
-
-                          setState(() {
-                            selectedReceivedTo = value;
-                            selectedAccount = null; // reset account selection
-                          });
-
-                          // get actual API value (cash / bank)
-                          final apiValue = paidToOptions[value];
-                          debugPrint("Sending to API as: $apiValue");
-
-                          //apiValue = selectedReceivedTo;
-
-                          if (apiValue == 'cash') {
-                            debugPrint('Fetching Cash accounts...');
-                            await provider.fetchAccounts('cash');
-                          } else if (apiValue == 'bank') {
-                            debugPrint('Fetching Bank accounts...');
-                            await provider.fetchAccounts('bank');
-                          }
-
-                          debugPrint(
-                              'Fetched Account Names: ${provider.accountNames}');
-                        },
-                      ),
-                    ),
-  
-
-
-                    // SizedBox(
-                    //   height: 30,
-                    //   width: 150,
-                    //   child: CustomDropdownTwo(
-                    //     hint: '',
-                    //     items: const ['Cash in Hand', 'Bank'],
-                    //     width: double.infinity,
-                    //     height: 30,
-                    //     labelText: 'Received to',
-                    //     selectedItem: selectedReceivedTo,
-                    //     onChanged: (value) async {
-                    //       debugPrint('=== Received To Selected: $value ===');
-
-                    //       setState(() {
-                    //         selectedReceivedTo = value;
-                    //         selectedAccount = null; // reset account selection
-                    //       });
-
-                    //       if (value == 'Cash in Hand') {
-                    //         debugPrint('Fetching Cash accounts...');
-                    //         await provider.fetchAccounts('cash');
-                    //       } else if (value == 'Bank') {
-                    //         debugPrint('Fetching Bank accounts...');
-                    //         await provider.fetchAccounts('bank');
-                    //       }
-
-                    //       debugPrint(
-                    //           'Fetched Account Names: ${provider.accountNames}');
-                    //     },
-                    //   ),
-                    // ),
-
-                    const SizedBox(height: 10),
-
-                    /// Account Dropdown
-                    SizedBox(
-                      height: 30,
-                      width: 150,
-                      child: provider.isAccountLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : CustomDropdownTwo(
-                              hint: '',
-                              items: provider.accountNames,
-                              width: double.infinity,
-                              height: 30,
-                              labelText: 'A/C',
-                              selectedItem: selectedAccount,
-                              onChanged: (value) {
-                                debugPrint('=== Account Selected: $value ===');
-                                setState(() {
-                                  selectedAccount = value;
-                                });
-
-                                if (provider.accountModel != null) {
-                                  final selectedAccountData = provider
-                                      .accountModel!.data
-                                      .firstWhere((account) =>
-                                          account.accountName == value);
-
-                                  selectedAccountId = selectedAccountData.id;
-
-                                  debugPrint(
-                                      '=== Account Selected: $value ===');
-                                  if (selectedAccountId != null) {
-                                    debugPrint(
-                                        'Selected Account ID: $selectedAccountId');
-                                  }
-
-                                  debugPrint('Selected Account Details:');
-                                  debugPrint('- ID: ${selectedAccountData.id}');
-                                  debugPrint(
-                                      '- Name: ${selectedAccountData.accountName}');
-                                  debugPrint('- Type: $selectedReceivedTo');
-                                }
-                              },
+                    /// Bill No
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 4.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Bill/Invoice No",
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12),
                             ),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    //bill person
-                    // Padding(
-                    //   padding: const EdgeInsets.only(top: 8.0),
-                    //   child: Consumer<PaymentVoucherProvider>(
-                    //     builder: (context, provider, child) {
-                    //       return SizedBox(
-                    //         height: 30,
-                    //         width: 130,
-                    //         child: provider.isLoading
-                    //             ? const Center(
-                    //                 child: CircularProgressIndicator())
-                    //             : CustomDropdownTwo(
-                    //                 hint: '',
-                    //                 items: provider.billPersonNames,
-                    //                 width: double.infinity,
-                    //                 height: 30,
-                    //                 labelText: 'Bill Person',
-                    //                 selectedItem: selectedBillPerson,
-                    //                 onChanged: (value) {
-                    //                   debugPrint(
-                    //                       '=== Bill Person Selected: $value ===');
-                    //                   setState(() {
-                    //                     selectedBillPerson = value;
-                    //                     selectedBillPersonData =
-                    //                         provider.billPersons.firstWhere(
-                    //                       (person) => person.name == value,
-                    //                     ); // ✅ Save the whole object globally
-                    //                     selectedBillPersonId =
-                    //                         selectedBillPersonData!.id;
-                    //                   });
-
-                    //                   debugPrint(
-                    //                       'Selected Bill Person Details:');
-                    //                   debugPrint(
-                    //                       '- ID: ${selectedBillPersonData!.id}');
-                    //                   debugPrint(
-                    //                       '- Name: ${selectedBillPersonData!.name}');
-                    //                   debugPrint(
-                    //                       '- Phone: ${selectedBillPersonData!.phone}');
-                    //                 }),
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
-
-                    // Bill No Field
-
-                    const SizedBox(
-                      height: 8,
-                    ),
-
-                    ///bill no,
-                    // SizedBox(
-                    //   height: 30,
-                    //   width: 130,
-                    //   child: AddSalesFormfield(
-                    //     labelText: "Bill No",
-                    //     controller: billNoController,
-
-                    //     onChanged: (value) {
-                    //       billNo = value;
-                    //     }, // Match cursor height to text size
-                    //   ),
-                    // ),
-
-                    SizedBox(
-                      height: 30,
-                      width: 130,
-                      child: AddSalesFormfield(
-                        labelText: "Bill No",
-                        controller: billController,
-                        readOnly: true, // Prevent manual editing
-                      ),
-                    ),
-
-                    ///bill date.
-                    SizedBox(
-                      height: 30,
-                      width: 130,
-                      child: InkWell(
-                        onTap: () async {
-                          final DateTime? picked = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2100),
-                          );
-
-                          if (picked != null) {
-                            final formatted =
-                                "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-
-                            setState(() {
-                              controller.formattedDate2 =
-                                  formatted; // ✅ update UI
-                            });
-
-                            debugPrint("📅 Selected Bill Date: $formatted");
-                          }
-                        },
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            isDense: true,
-                            suffixIcon: Icon(
-                              Icons.calendar_today,
-                              size: 16,
-                              color: Theme.of(context).primaryColor,
+                            Text(
+                              billController.text,
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 12),
+                              overflow:
+                                  TextOverflow.ellipsis, // ✅ Prevent overflow
                             ),
-                            suffixIconConstraints: const BoxConstraints(
-                              minWidth: 16,
-                              minHeight: 16,
-                            ),
-                            hintText: "Bill Date",
-                            hintStyle: TextStyle(
-                              color: Colors.grey.shade400,
-                              fontSize: 9,
-                            ),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.grey.shade400, width: 0.5),
-                            ),
-                            focusedBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green),
-                            ),
-                          ),
-                          child: Text(
-                            controller.formattedDate2.isNotEmpty
-                                ? controller.formattedDate2
-                                : "Select Date",
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 12,
-                            ),
-                          ),
+                          ],
                         ),
                       ),
                     ),
+
+                    /// Vertical Divider
+                    Container(
+                      width: 1,
+                      height:
+                          40, // you can tweak this to match the height of content
+                      color: Colors.black,
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+
+                    /// Bill Date
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Date",
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  controller.pickDate(context);
+                                },
+                                child: Icon(
+                                  Icons.calendar_today,
+                                  size: 16,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              )
+                            ],
+                          ),
+                          InkWell(
+                            onTap: () => controller.pickDate(context),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                isDense: true,
+                                //suffixIcon: ,
+                                suffixIconConstraints: const BoxConstraints(
+                                  minWidth: 16,
+                                  minHeight: 16,
+                                ),
+                                hintText: "Bill Date",
+                                hintStyle: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 9,
+                                ),
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.transparent, width: 0),
+                                ),
+                                focusedBorder: const UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                ),
+                              ),
+                              child: Text(
+                                controller.formattedDate.isNotEmpty
+                                    ? controller.formattedDate
+                                    : "Select Date",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
-                )
-              ],
+                ),
+              ),
+            ),
+
+            SizedBox(
+              height: 4,
+            ),
+
+            ///1 section
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ///received to
+
+                      SizedBox(
+                        height: 38,
+                        width: 150,
+                        child: CustomDropdownTwo(
+                          hint: '',
+                          items: paidToOptions.keys.toList(), // show labels
+                          width: double.infinity,
+                          height: 30,
+                          labelText: 'Paid To',
+                          selectedItem: selectedReceivedTo,
+                          onChanged: (value) async {
+                            debugPrint('=== Received To Selected: $value ===');
+
+                            setState(() {
+                              selectedReceivedTo = value;
+                              selectedAccount = null; // reset account selection
+                            });
+
+                            // get actual API value (cash / bank)
+                            final apiValue = paidToOptions[value];
+                            debugPrint("Sending to API as: $apiValue");
+
+                            //apiValue = selectedReceivedTo;
+
+                            if (apiValue == 'cash') {
+                              debugPrint('Fetching Cash accounts...');
+                              await provider.fetchAccounts('cash');
+                            } else if (apiValue == 'bank') {
+                              debugPrint('Fetching Bank accounts...');
+                              await provider.fetchAccounts('bank');
+                            }
+
+                            debugPrint(
+                                'Fetched Account Names: ${provider.accountNames}');
+                          },
+                        ),
+                      ),
+
+                      // SizedBox(
+                      //   height: 30,
+                      //   width: 150,
+                      //   child: CustomDropdownTwo(
+                      //     hint: '',
+                      //     items: const ['Cash in Hand', 'Bank'],
+                      //     width: double.infinity,
+                      //     height: 30,
+                      //     labelText: 'Received to',
+                      //     selectedItem: selectedReceivedTo,
+                      //     onChanged: (value) async {
+                      //       debugPrint('=== Received To Selected: $value ===');
+
+                      //       setState(() {
+                      //         selectedReceivedTo = value;
+                      //         selectedAccount = null; // reset account selection
+                      //       });
+
+                      //       if (value == 'Cash in Hand') {
+                      //         debugPrint('Fetching Cash accounts...');
+                      //         await provider.fetchAccounts('cash');
+                      //       } else if (value == 'Bank') {
+                      //         debugPrint('Fetching Bank accounts...');
+                      //         await provider.fetchAccounts('bank');
+                      //       }
+
+                      //       debugPrint(
+                      //           'Fetched Account Names: ${provider.accountNames}');
+                      //     },
+                      //   ),
+                      // ),
+
+                      const SizedBox(height: 4),
+
+                      /// Account Dropdown
+                      SizedBox(
+                        height: 38,
+                        width: 150,
+                        child: provider.isAccountLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : CustomDropdownTwo(
+                                hint: '',
+                                items: provider.accountNames,
+                                width: double.infinity,
+                                height: 30,
+                                labelText: 'A/C',
+                                selectedItem: selectedAccount,
+                                onChanged: (value) {
+                                  debugPrint(
+                                      '=== Account Selected: $value ===');
+                                  setState(() {
+                                    selectedAccount = value;
+                                  });
+
+                                  if (provider.accountModel != null) {
+                                    final selectedAccountData = provider
+                                        .accountModel!.data
+                                        .firstWhere((account) =>
+                                            account.accountName == value);
+
+                                    selectedAccountId = selectedAccountData.id;
+
+                                    debugPrint(
+                                        '=== Account Selected: $value ===');
+                                    if (selectedAccountId != null) {
+                                      debugPrint(
+                                          'Selected Account ID: $selectedAccountId');
+                                    }
+
+                                    debugPrint('Selected Account Details:');
+                                    debugPrint(
+                                        '- ID: ${selectedAccountData.id}');
+                                    debugPrint(
+                                        '- Name: ${selectedAccountData.accountName}');
+                                    debugPrint('- Type: $selectedReceivedTo');
+                                  }
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      //bill person
+                      // Padding(
+                      //   padding: const EdgeInsets.only(top: 8.0),
+                      //   child: Consumer<PaymentVoucherProvider>(
+                      //     builder: (context, provider, child) {
+                      //       return SizedBox(
+                      //         height: 30,
+                      //         width: 130,
+                      //         child: provider.isLoading
+                      //             ? const Center(
+                      //                 child: CircularProgressIndicator())
+                      //             : CustomDropdownTwo(
+                      //                 hint: '',
+                      //                 items: provider.billPersonNames,
+                      //                 width: double.infinity,
+                      //                 height: 30,
+                      //                 labelText: 'Bill Person',
+                      //                 selectedItem: selectedBillPerson,
+                      //                 onChanged: (value) {
+                      //                   debugPrint(
+                      //                       '=== Bill Person Selected: $value ===');
+                      //                   setState(() {
+                      //                     selectedBillPerson = value;
+                      //                     selectedBillPersonData =
+                      //                         provider.billPersons.firstWhere(
+                      //                       (person) => person.name == value,
+                      //                     ); // ✅ Save the whole object globally
+                      //                     selectedBillPersonId =
+                      //                         selectedBillPersonData!.id;
+                      //                   });
+
+                      //                   debugPrint(
+                      //                       'Selected Bill Person Details:');
+                      //                   debugPrint(
+                      //                       '- ID: ${selectedBillPersonData!.id}');
+                      //                   debugPrint(
+                      //                       '- Name: ${selectedBillPersonData!.name}');
+                      //                   debugPrint(
+                      //                       '- Phone: ${selectedBillPersonData!.phone}');
+                      //                 }),
+                      //       );
+                      //     },
+                      //   ),
+                      // ),
+
+                      // Bill No Field
+
+                      // const SizedBox(
+                      //   height: 8,
+                      // ),
+
+                      ///bill no,
+                      // SizedBox(
+                      //   height: 30,
+                      //   width: 130,
+                      //   child: AddSalesFormfield(
+                      //     labelText: "Bill No",
+                      //     controller: billNoController,
+
+                      //     onChanged: (value) {
+                      //       billNo = value;
+                      //     }, // Match cursor height to text size
+                      //   ),
+                      // ),
+
+                      // SizedBox(
+                      //   height: 30,
+                      //   width: 130,
+                      //   child: AddSalesFormfield(
+                      //     labelText: "Bill No",
+                      //     controller: billController,
+                      //     readOnly: true, // Prevent manual editing
+                      //   ),
+                      // ),
+
+                      ///bill date.
+                      // SizedBox(
+                      //   height: 30,
+                      //   width: 130,
+                      //   child: InkWell(
+                      //     onTap: () async {
+                      //       final DateTime? picked = await showDatePicker(
+                      //         context: context,
+                      //         initialDate: DateTime.now(),
+                      //         firstDate: DateTime(2000),
+                      //         lastDate: DateTime(2100),
+                      //       );
+
+                      //       if (picked != null) {
+                      //         final formatted =
+                      //             "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+
+                      //         setState(() {
+                      //           controller.formattedDate2 =
+                      //               formatted; // ✅ update UI
+                      //         });
+
+                      //         debugPrint("📅 Selected Bill Date: $formatted");
+                      //       }
+                      //     },
+                      //     child: InputDecorator(
+                      //       decoration: InputDecoration(
+                      //         isDense: true,
+                      //         suffixIcon: Icon(
+                      //           Icons.calendar_today,
+                      //           size: 16,
+                      //           color: Theme.of(context).primaryColor,
+                      //         ),
+                      //         suffixIconConstraints: const BoxConstraints(
+                      //           minWidth: 16,
+                      //           minHeight: 16,
+                      //         ),
+                      //         hintText: "Bill Date",
+                      //         hintStyle: TextStyle(
+                      //           color: Colors.grey.shade400,
+                      //           fontSize: 9,
+                      //         ),
+                      //         enabledBorder: UnderlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               color: Colors.grey.shade400, width: 0.5),
+                      //         ),
+                      //         focusedBorder: const UnderlineInputBorder(
+                      //           borderSide: BorderSide(color: Colors.green),
+                      //         ),
+                      //       ),
+                      //       child: Text(
+                      //         controller.formattedDate2.isNotEmpty
+                      //             ? controller.formattedDate2
+                      //             : "Select Date",
+                      //         style: const TextStyle(
+                      //           color: Colors.black,
+                      //           fontSize: 12,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  )
+                ],
+              ),
             ),
 
             const SizedBox(
@@ -679,47 +784,87 @@ class _IncomeCreateState extends State<IncomeCreate> {
             const SizedBox(height: 6),
 
             ///2 section
-            InkWell(
-              onTap: () async {
-                await provider
-                    .fetchReceiptFromList(); // 🔥 Fetch API before showing dialog
-                showIncomeCreateDialog(
-                  context,
-                  provider,
-                ); // Pass provider
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.circular(5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Receipt From",
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ),
-                      InkWell(
-                        onTap: () {},
-                        child: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 18,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: InkWell(
+                onTap: () async {
+                  await provider
+                      .fetchReceiptFromList(); // 🔥 Fetch API before showing dialog
+                  showIncomeCreateDialog(
+                    context,
+                    provider,
+                  ); // Pass provider
+                },
+                child: Container(
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(width: 1, color: Colors.grey),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 14,
+                          backgroundColor: AppColors.primaryColor,
+                          child: const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                         ),
-                      )
-                    ],
+                        const SizedBox(
+                          width: 6,
+                        ),
+                        Text(
+                          "Receipt From",
+                          style: TextStyle(
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+
+                // Container(
+                //   decoration: BoxDecoration(
+                //     color: colorScheme.primary,
+                //     borderRadius: BorderRadius.circular(5),
+                //     boxShadow: [
+                //       BoxShadow(
+                //         color: Colors.black.withOpacity(0.2),
+                //         blurRadius: 5,
+                //         offset: const Offset(0, 3),
+                //       ),
+                //     ],
+                //   ),
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(4.0),
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //       children: [
+                //         const Text(
+                //           "Receipt From",
+                //           style: TextStyle(color: Colors.white, fontSize: 14),
+                //         ),
+                //         InkWell(
+                //           onTap: () {},
+                //           child: const Icon(
+                //             Icons.add,
+                //             color: Colors.white,
+                //             size: 18,
+                //           ),
+                //         )
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ),
             ),
 
@@ -763,119 +908,124 @@ class _IncomeCreateState extends State<IncomeCreate> {
                 ),
 
                 ///save income.
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Colors.green, // Button background color
-                        foregroundColor: Colors.white, // Button text color
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5))),
-                    onPressed: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      String? userId = prefs.getInt('user_id')?.toString();
+                Padding(
+                  padding: const EdgeInsets.only(right: 4.0),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Colors.green, // Button background color
+                          foregroundColor: Colors.white, // Button text color
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5))),
+                      onPressed: () async {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        String? userId = prefs.getInt('user_id')?.toString();
 
-                      if (userId == null) {
-                        debugPrint("User ID is null");
-                        return;
-                      }
+                        if (userId == null) {
+                          debugPrint("User ID is null");
+                          return;
+                        }
 
-                      final invoiceNo = billController.text.trim();
-                      // const date =
-                      //     "2025-06-10"; // your date string like '2025-06-10'
+                        final invoiceNo = billController.text.trim();
+                        // const date =
+                        //     "2025-06-10"; // your date string like '2025-06-10'
 
-                      // final receivedTo =
-                      //     (selectedReceivedTo ?? '').toLowerCase();
+                        // final receivedTo =
+                        //     (selectedReceivedTo ?? '').toLowerCase();
 
-                       final receivedTo = selectedReceivedTo != null
-                          ? paidToOptions[selectedReceivedTo]
-                          : null;
+                        final receivedTo = selectedReceivedTo != null
+                            ? paidToOptions[selectedReceivedTo]
+                            : null;
 
+                        final account = selectedAccountId.toString();
+                        const notes = 'text'; // Or from your input field
+                        //final billPersonID = selectedBillPersonData!.id;
 
-                      final account = selectedAccountId.toString();
-                      const notes = 'text'; // Or from your input field
-                      //final billPersonID = selectedBillPersonData!.id;
+                        const status = 1;
 
-                      const status = 1;
-
-                      final totalAmount = provider.receiptItems.fold<double>(
-                        0,
-                        (sum, item) =>
-                            sum +
-                            (double.tryParse(item.amount.toString()) ?? 0),
-                      );
-
-                      // Prepare income items with correct account_id (use your actual accountId)
-                      final List<IncomeItem> incomeItems =
-                          provider.receiptItems.map((item) {
-                        return IncomeItem(
-                          accountId:
-                              account, // or item-specific account id if different
-                          narration: item.note,
-                          amount: item.amount.toString(),
+                        final totalAmount = provider.receiptItems.fold<double>(
+                          0,
+                          (sum, item) =>
+                              sum +
+                              (double.tryParse(item.amount.toString()) ?? 0),
                         );
-                      }).toList();
 
-                      // 👉 Print all sending data
-                      debugPrint('Sending Data:');
-                      debugPrint('User ID: $userId');
-                      debugPrint('Expense No: $invoiceNo');
-                      //debugPrint('Date: $date');
-                      debugPrint('Paid To: $receivedTo');
-                      debugPrint('Account: $account');
-                      debugPrint('Total Amount: $totalAmount');
-                      debugPrint('Notes: $notes');
-                      debugPrint('Status: $status');
-                      //debugPrint(" bill  person $billPersonID");
-                      debugPrint(
-                          "📅 Selected Bill Date: ${controller.formattedDate2}");
-                      debugPrint(
-                          'income Items: ${incomeItems.map((e) => e.toJson()).toList()}');
+                        // Prepare income items with correct account_id (use your actual accountId)
+                        final List<IncomeItem> incomeItems =
+                            provider.receiptItems.map((item) {
+                          return IncomeItem(
+                            accountId:
+                                account, // or item-specific account id if different
+                            narration: item.note,
+                            amount: item.amount.toString(),
+                          );
+                        }).toList();
 
-                      bool success = await provider.storeIncome(
-                        userId: userId,
-                        invoiceNo: invoiceNo,
-                        date: controller.formattedDate2,
-                        receivedTo: receivedTo ?? "",
-                        account: account,
-                        totalAmount: totalAmount,
-                        notes: notes,
-                        status: status,
-                        incomeItems: incomeItems,
-                        //billPersonID: billPersonID.toString(),
-                      );
+                        // 👉 Print all sending data
+                        debugPrint('Sending Data:');
+                        debugPrint('User ID: $userId');
+                        debugPrint('Expense No: $invoiceNo');
+                        //debugPrint('Date: $date');
+                        debugPrint('Paid To: $receivedTo');
+                        debugPrint('Account: $account');
+                        debugPrint('Total Amount: $totalAmount');
+                        debugPrint('Notes: $notes');
+                        debugPrint('Status: $status');
+                        //debugPrint(" bill  person $billPersonID");
+                        debugPrint(
+                            "📅 Selected Bill Date: ${controller.formattedDate2}");
+                        debugPrint(
+                            'income Items: ${incomeItems.map((e) => e.toJson()).toList()}');
 
-                      if (success) {
-                        provider.receiptItems.clear();
-                        provider.notifyListeners();
-
-                        final listIncome = Provider.of<IncomeProvider>(context, listen: false);
-
-                        await listIncome.fetchIncomeList();
-
-                        Navigator.pop(context);
-
-                        // Navigate to Income page (replace with your actual route)
-                        // Navigator.pushReplacement(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => const Income()));
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              backgroundColor: Colors.green,
-                              content: Text('Successfully. Save  The income.')),
+                        bool success = await provider.storeIncome(
+                          userId: userId,
+                          invoiceNo: invoiceNo,
+                          date: controller.formattedDate2,
+                          receivedTo: receivedTo ?? "",
+                          account: account,
+                          totalAmount: totalAmount,
+                          notes: notes,
+                          status: status,
+                          incomeItems: incomeItems,
+                          //billPersonID: billPersonID.toString(),
                         );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Failed to save income.')),
-                        );
-                      }
-                    },
-                    child: const Text("Save"),
+
+                        if (success) {
+                          provider.receiptItems.clear();
+                          provider.notifyListeners();
+
+                          final listIncome = Provider.of<IncomeProvider>(
+                              context,
+                              listen: false);
+
+                          await listIncome.fetchIncomeList();
+
+                          Navigator.pop(context);
+
+                          // Navigate to Income page (replace with your actual route)
+                          // Navigator.pushReplacement(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => const Income()));
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                backgroundColor: Colors.green,
+                                content:
+                                    Text('Successfully. Save  The income.')),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Failed to save income.')),
+                          );
+                        }
+                      },
+                      child: const Text("Save"),
+                    ),
                   ),
                 ),
               ],
@@ -915,7 +1065,7 @@ class _IncomeCreateState extends State<IncomeCreate> {
                   children: [
                     Container(
                       height: 30,
-                      color: const Color(0xff278d46),
+                      //color: const Color(0xff278d46),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -925,14 +1075,14 @@ class _IncomeCreateState extends State<IncomeCreate> {
                                   30), // Placeholder for left spacing (can be removed or adjusted)
 
                           // Centered text and icon
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(width: 5),
                               Text(
                                 "Receipt From",
                                 style: TextStyle(
-                                    color: Colors.yellow,
+                                    color: AppColors.primaryColor,
                                     fontWeight: FontWeight.bold),
                               ),
                             ],
@@ -951,7 +1101,7 @@ class _IncomeCreateState extends State<IncomeCreate> {
                                   child: const Icon(
                                     Icons.close,
                                     size: 18,
-                                    color: Colors.green,
+                                    color: Colors.red,
                                   )),
                             ),
                           ),
@@ -960,14 +1110,14 @@ class _IncomeCreateState extends State<IncomeCreate> {
                     ),
                     const SizedBox(height: 20),
                     SizedBox(
-                      height: 30,
+                      height: 38,
                       child: provider.isReceiptLoading
                           ? const Center(child: CircularProgressIndicator())
                           : CustomDropdownTwo(
                               hint: '',
                               items: provider.receiptFromNames,
                               width: double.infinity,
-                              height: 30,
+                              height: 38,
                               labelText: 'Receipt From',
                               selectedItem: selectedReceiptFrom,
                               onChanged: (selectedItem) {

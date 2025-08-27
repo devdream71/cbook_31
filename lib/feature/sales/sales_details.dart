@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/sales/model/sales_list_model.dart';
 import 'package:cbook_dt/feature/sales/provider/sales_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SalesDetails extends StatefulWidget {
   final SaleItem sale;
@@ -22,6 +25,7 @@ class _SalesDetailsState extends State<SalesDetails> {
       final saleProvider = Provider.of<SalesProvider>(context, listen: false);
       saleProvider.fetchItems();
       saleProvider.fetchUnits();
+      _loadSettings();
     });
     super.initState();
   }
@@ -34,6 +38,21 @@ class _SalesDetailsState extends State<SalesDetails> {
     } catch (e) {
       return 'Invalid date';
     }
+  }
+
+  bool _billWiseVatTax = false;
+  bool _billWiseDiscount = false;
+  bool _isLoading = true;
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      // _itemWiseDiscount = prefs.getBool('itemWiseDiscount') ?? false;
+      // _itemWiseVatTax = prefs.getBool('itemWiseVatTax') ?? false;
+      _billWiseVatTax = prefs.getBool('billWiseVatTax') ?? false;
+      _billWiseDiscount = prefs.getBool('billWiseDiscount') ?? false;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -53,35 +72,50 @@ class _SalesDetailsState extends State<SalesDetails> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // customRowSales("Customer Name:", widget.sale.customerName, isBlod: true),
-            customRowSales(
-              "Customer Name:",
-              widget.sale.customerName != "N/A"
-                  ? widget.sale.customerName
-                  : "Cash",
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: customRowSales(
+                "Customer Name:",
+                widget.sale.customerName != "N/A"
+                    ? widget.sale.customerName
+                    : "Cash",
+              ),
             ),
-            customRowSales(
-              "Transaction Method:",
-              widget.sale.transactionMethod,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: customRowSales(
+                "Transaction Method:",
+                widget.sale.transactionMethod,
+              ),
             ),
 
-            customRowSales(
-              "Purchase Date:",
-              //widget.sale.purchaseDate.toString(),
-              formatDate(widget.sale.purchaseDate.toString()),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: customRowSales(
+                "Purchase Date:",
+                //widget.sale.purchaseDate.toString(),
+                formatDate(widget.sale.purchaseDate.toString()),
+              ),
             ),
 
-            customRowSales(
-              "Discount:",
-              "৳ ${widget.sale.discount.toString()}",
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: customRowSales(
+                "Discount:",
+                "৳ ${widget.sale.discount.toString()}",
+              ),
             ),
-            customRowSales(
-              "Gross Total:",
-              "৳ ${widget.sale.grossTotal.toString()}",
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: customRowSales(
+                "Gross Total:",
+                "৳ ${widget.sale.grossTotal.toString()}",
+              ),
             ),
             const SizedBox(height: 10),
             const Text('Sales Details:',
@@ -96,10 +130,12 @@ class _SalesDetailsState extends State<SalesDetails> {
                   final detail = widget.sale.purchaseDetails[index];
                   // Get item name from the provider
                   String itemName = saleProvider.getItemName(detail.itemId!);
-                   
+
                   String unitSymbol =
                       saleProvider.getUnitSymbol(detail.unitId!);
                   return Card(
+                    shape: BeveledRectangleBorder(
+                        borderRadius: BorderRadius.circular(3)),
                     child: ListTile(
                       title: Text(
                         'Item : $itemName - $unitSymbol',
@@ -115,16 +151,18 @@ class _SalesDetailsState extends State<SalesDetails> {
                             style: const TextStyle(
                                 color: Colors.black, fontSize: 12),
                           ),
-                          Text(
-                            'Discount: ${detail.discountAmount} ৳,  ${detail.discountPercentage} %',
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 12),
-                          ),
-                          Text(
-                            'Tax: ${detail.taxAmount} ৳,   ${detail.taxPercentage} %',
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 12),
-                          ),
+                          if (_billWiseDiscount == true)
+                            Text(
+                              'Discount: ${detail.discountAmount} ৳,  ${detail.discountPercentage} %',
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 12),
+                            ),
+                          if (_billWiseDiscount == true)
+                            Text(
+                              'Tax: ${detail.taxAmount} ৳,   ${detail.taxPercentage} %',
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 12),
+                            ),
                         ],
                       ),
                       trailing: Text(

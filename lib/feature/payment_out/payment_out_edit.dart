@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
@@ -11,6 +12,7 @@ import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart'
 import 'package:cbook_dt/feature/sales/controller/sales_controller.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
+import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +27,6 @@ class PaymenyOutEdit extends StatefulWidget {
 }
 
 class _PaymenyOutEditState extends State<PaymenyOutEdit> {
-
   TextEditingController billNoController = TextEditingController();
   String billNo = '';
   String billDate = '';
@@ -321,7 +322,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
       backgroundColor: AppColors.sfWhite,
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
-        centerTitle: true,
+        //centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         automaticallyImplyLeading: true,
         title: const Column(
@@ -330,7 +331,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
               width: 5,
             ),
             Text(
-              'Payment out Update',
+              'Payment out Edit',
               style: TextStyle(
                   color: Colors.yellow,
                   fontSize: 16,
@@ -341,11 +342,133 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
             )
           ],
         ),
+        actions: [
+          CashCreditToggle(
+            initialCash: true,
+            onChanged: (isCash) {
+              print("Selected: ${isCash ? "Cash" : "Credit"}");
+              controller.updateCash(context);
+              ; // you can hook your logic here
+            },
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BillInvoiceCreateForm()));
+            },
+            icon: const Icon(
+              Icons.settings,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 0.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           ///1 section
+          ///
+          Container(
+            color: Color(0xffdddefa),
+            child: Row(
+              children: [
+                ///bill no, bill person
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Bill/Invoice No",
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      ),
+                      Text(
+                        voucherNumberController.text,
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 12),
+                        overflow: TextOverflow.ellipsis, // ✅ Prevent overflow
+                      ),
+                    ],
+                  ),
+                ),
+
+                Container(
+                  width: 1,
+                  height:
+                      40, // you can tweak this to match the height of content
+                  color: Colors.black,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                ),
+
+                /// Bill Date
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Date",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              controller.pickDate(context);
+                            },
+                            child: Icon(
+                              Icons.calendar_today,
+                              size: 16,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          )
+                        ],
+                      ),
+                      InkWell(
+                        onTap: () => controller.pickDate(context),
+                        child: InputDecorator(
+                          decoration: InputDecoration(
+                            fillColor: Colors.white,
+                            isDense: true,
+                            //suffixIcon: ,
+                            suffixIconConstraints: const BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            hintText: "Bill Date",
+                            hintStyle: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontSize: 9,
+                            ),
+                            enabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.transparent, width: 0),
+                            ),
+                            focusedBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.transparent),
+                            ),
+                          ),
+                          child: Text(
+                            controller.formattedDate.isNotEmpty
+                                ? controller.formattedDate
+                                : "Select Date",
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                //person
+              ],
+            ),
+          ),
 
           const SizedBox(
             height: 6,
@@ -359,192 +482,138 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 30,
-                    width: 150,
-                    child: CustomDropdownTwo(
-                      hint: '',
-                      items: const ['Cash in Hand', 'Bank'],
-                      width: double.infinity,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: SizedBox(
                       height: 30,
-                      labelText: 'Receipt To',
-                      selectedItem: selectedReceivedTo,
-                      onChanged: (value) async {
-                        debugPrint('=== Received To Selected: $value ===');
+                      width: 150,
+                      child: CustomDropdownTwo(
+                        hint: '',
+                        items: const ['Cash in Hand', 'Bank'],
+                        width: double.infinity,
+                        height: 30,
+                        labelText: 'Receipt To',
+                        selectedItem: selectedReceivedTo,
+                        onChanged: (value) async {
+                          debugPrint('=== Received To Selected: $value ===');
 
-                        setState(() {
-                          selectedReceivedTo = value;
-                          selectedAccount = null;
-                        });
+                          setState(() {
+                            selectedReceivedTo = value;
+                            selectedAccount = null;
+                          });
 
-                        final type = reverseReceivedToMap[value ?? ''] ?? '';
+                          final type = reverseReceivedToMap[value ?? ''] ?? '';
 
-                        if (type == 'cash') {
-                          await provider.fetchAccounts('cash');
-                        } else if (type == 'bank') {
-                          await provider.fetchAccounts('bank');
-                        }
-                      },
+                          if (type == 'cash') {
+                            await provider.fetchAccounts('cash');
+                          } else if (type == 'bank') {
+                            await provider.fetchAccounts('bank');
+                          }
+                        },
+                      ),
                     ),
                   ),
 
                   const SizedBox(height: 10),
 
                   /// Account Dropdown
-                  SizedBox(
-                    height: 30,
-                    width: 150,
-                    child: provider.isAccountLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : CustomDropdownTwo(
-                            hint: '',
-                            items: provider.accountNames,
-                            width: double.infinity,
-                            height: 30,
-                            labelText: 'A/C',
-                            selectedItem: selectedAccount,
-                            onChanged: (value) {
-                              debugPrint('=== Account Selected: $value ===');
-                              setState(() {
-                                selectedAccount = value;
-                              });
-
-                              if (provider.accountModel != null) {
-                                final selectedAccountData = provider
-                                    .accountModel!.data
-                                    .firstWhere((account) =>
-                                        account.accountName == value);
-
-                                selectedAccountId = selectedAccountData.id;
-
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: SizedBox(
+                      height: 30,
+                      width: 150,
+                      child: provider.isAccountLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : CustomDropdownTwo(
+                              hint: '',
+                              items: provider.accountNames,
+                              width: double.infinity,
+                              height: 30,
+                              labelText: 'A/C',
+                              selectedItem: selectedAccount,
+                              onChanged: (value) {
                                 debugPrint('=== Account Selected: $value ===');
-                                if (selectedAccountId != null) {
-                                  debugPrint(
-                                      'Selected Account ID: $selectedAccountId');
-                                }
+                                setState(() {
+                                  selectedAccount = value;
+                                });
 
-                                debugPrint('Selected Account Details:');
-                                debugPrint('- ID: ${selectedAccountData.id}');
-                                debugPrint(
-                                    '- Name: ${selectedAccountData.accountName}');
-                                debugPrint('- Type: $selectedReceivedTo');
-                              }
-                            },
-                          ),
+                                if (provider.accountModel != null) {
+                                  final selectedAccountData = provider
+                                      .accountModel!.data
+                                      .firstWhere((account) =>
+                                          account.accountName == value);
+
+                                  selectedAccountId = selectedAccountData.id;
+
+                                  debugPrint(
+                                      '=== Account Selected: $value ===');
+                                  if (selectedAccountId != null) {
+                                    debugPrint(
+                                        'Selected Account ID: $selectedAccountId');
+                                  }
+
+                                  debugPrint('Selected Account Details:');
+                                  debugPrint('- ID: ${selectedAccountData.id}');
+                                  debugPrint(
+                                      '- Name: ${selectedAccountData.accountName}');
+                                  debugPrint('- Type: $selectedReceivedTo');
+                                }
+                              },
+                            ),
+                    ),
                   ),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Consumer<PaymentVoucherProvider>(
-                      builder: (context, provider, child) {
-                        return SizedBox(
-                          height: 30,
-                          width: 130,
-                          child: provider.isLoading
-                              ? const Center(child: CircularProgressIndicator())
-                              : CustomDropdownTwo(
-                                  hint: '',
-                                  items: provider.billPersonNames,
-                                  width: double.infinity,
-                                  height: 30,
-                                  labelText: 'Bill Person',
-                                  selectedItem: selectedBillPerson,
-                                  onChanged: (value) {
-                                    debugPrint(
-                                        '=== Bill Person Selected: $value ===');
-                                    setState(() {
-                                      selectedBillPerson = value;
-                                      selectedBillPersonData =
-                                          provider.billPersons.firstWhere(
-                                        (person) => person.name == value,
-                                      ); // ✅ Save the whole object globally
-                                      selectedBillPersonId =
-                                          selectedBillPersonData!.id;
-                                    });
+                  // Padding(
+                  //   padding: const EdgeInsets.only(top: 8.0),
+                  //   child: Consumer<PaymentVoucherProvider>(
+                  //     builder: (context, provider, child) {
+                  //       return SizedBox(
+                  //         height: 30,
+                  //         width: 130,
+                  //         child: provider.isLoading
+                  //             ? const Center(child: CircularProgressIndicator())
+                  //             : CustomDropdownTwo(
+                  //                 hint: '',
+                  //                 items: provider.billPersonNames,
+                  //                 width: double.infinity,
+                  //                 height: 30,
+                  //                 labelText: 'Bill Person',
+                  //                 selectedItem: selectedBillPerson,
+                  //                 onChanged: (value) {
+                  //                   debugPrint(
+                  //                       '=== Bill Person Selected: $value ===');
+                  //                   setState(() {
+                  //                     selectedBillPerson = value;
+                  //                     selectedBillPersonData =
+                  //                         provider.billPersons.firstWhere(
+                  //                       (person) => person.name == value,
+                  //                     ); // ✅ Save the whole object globally
+                  //                     selectedBillPersonId =
+                  //                         selectedBillPersonData!.id;
+                  //                   });
 
-                                    debugPrint('Selected Bill Person Details:');
-                                    debugPrint(
-                                        '- ID: ${selectedBillPersonData!.id}');
-                                    debugPrint(
-                                        '- Name: ${selectedBillPersonData!.name}');
-                                    debugPrint(
-                                        '- Phone: ${selectedBillPersonData!.phone}');
-                                  }),
-                        );
-                      },
-                    ),
-                  ),
+                  //                   debugPrint('Selected Bill Person Details:');
+                  //                   debugPrint(
+                  //                       '- ID: ${selectedBillPersonData!.id}');
+                  //                   debugPrint(
+                  //                       '- Name: ${selectedBillPersonData!.name}');
+                  //                   debugPrint(
+                  //                       '- Phone: ${selectedBillPersonData!.phone}');
+                  //                 }),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
 
                   // Bill No Field
 
-                  const SizedBox(
-                    height: 8,
-                  ),
-
-                  ///bill no, bill person
-                  SizedBox(
-                    height: 30,
-                    width: 130,
-                    child: AddSalesFormfield(
-                      labelText: "Bill No",
-                      controller: voucherNumberController, //billNoController,
-
-                      onChanged: (value) {
-                        billNo = value;
-                      }, // Match cursor height to text size
-                    ),
-                  ),
-
-                  //person
-
-                  ///bill date
-                  SizedBox(
-                    height: 30,
-                    width: 130,
-                    child: InkWell(
-                      // onTap: () => controller.pickDate(
-                      //     context), // Trigger the date picker
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          isDense: true,
-                          suffixIcon: Icon(
-                            Icons.calendar_today,
-                            size: 16,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          suffixIconConstraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ), // Adjust constraints to align icon closely
-                          hintText: "Bill Date",
-                          hintStyle: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.grey.shade400, width: 0.5),
-                          ),
-                          focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                        child: Text(
-                          controller.formattedDate.isNotEmpty
-                              ? controller.formattedDate
-                              : "Select Date", // Default text when no date is selected
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // const SizedBox(
+                  //   height: 8,
+                  // ),
                 ],
               )
             ],
@@ -554,48 +623,59 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
             height: 8,
           ),
 
-          ///2 section
-          InkWell(
-            onTap: () async {},
-            child: Container(
-              decoration: BoxDecoration(
-                color: colorScheme.primary,
-                borderRadius: BorderRadius.circular(3),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Received From",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Received From",
+              style: TextStyle(color: Colors.black, fontSize: 14),
             ),
           ),
+
+          ///2 section
+          // InkWell(
+          //   onTap: () async {},
+          //   child: Container(
+          //     decoration: BoxDecoration(
+          //       color: colorScheme.primary,
+          //       borderRadius: BorderRadius.circular(3),
+          //       boxShadow: [
+          //         BoxShadow(
+          //           color: Colors.black.withOpacity(0.2),
+          //           blurRadius: 5,
+          //           offset: const Offset(0, 3),
+          //         ),
+          //       ],
+          //     ),
+          //     child: const Padding(
+          //       padding: EdgeInsets.all(4.0),
+          //       child: Row(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: [
+          //           Text(
+          //             "Received From",
+          //             style: TextStyle(color: Colors.white, fontSize: 14),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
 
           const SizedBox(height: 6),
 
           /// Customer input field for payment vouchers
-          AddSalesFormfieldTwo(
-            controller: controller.customerNameController,
-            customerorSaleslist: "Showing Customer list",
-            customerOrSupplierButtonLavel: "",
-            color: Colors.grey,
-            isForReceivedVoucher: false, // ❗ Set to false for payment
-            onTap: () async {
-              // Call customerProvider.setSelectedCustomerPayment(customer)
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: AddSalesFormfieldTwo(
+              controller: controller.customerNameController,
+              customerorSaleslist: "Showing Customer list",
+              customerOrSupplierButtonLavel: "",
+              color: Colors.grey,
+              isForReceivedVoucher: false, // ❗ Set to false for payment
+              onTap: () async {
+                // Call customerProvider.setSelectedCustomerPayment(customer)
+              },
+            ),
           ),
 
           Consumer<CustomerProvider>(
@@ -781,16 +861,19 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
                   children: [
                     Text("Total Amount", style: ts),
                     const SizedBox(width: 10),
-                    SizedBox(
-                      height: 30,
-                      width: 163,
-                      child: AddSalesFormfield(
-                        labelText: "Amount",
-                        readOnly: true,
-                        controller: totalAmount,
-                        onChanged: (value) {
-                          debugPrint('Payment Value: ${totalAmount.text}');
-                        },
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: SizedBox(
+                        height: 38,
+                        width: 163,
+                        child: AddSalesFormfield(
+                          labelText: "Amount",
+                          readOnly: true,
+                          controller: totalAmount,
+                          onChanged: (value) {
+                            debugPrint('Payment Value: ${totalAmount.text}');
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -804,7 +887,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
                     Text("Discount", style: ts),
                     const SizedBox(width: 10),
                     SizedBox(
-                      height: 30,
+                      height: 38,
                       width: 76,
                       child: CustomDropdownTwo(
                         hint: '',
@@ -826,16 +909,19 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
                     const SizedBox(width: 10),
 
                     ///discount amount
-                    SizedBox(
-                      height: 30,
-                      width: 76,
-                      child: AddSalesFormfield(
-                        labelText: "Amount",
-                        keyboardType: TextInputType.number,
-                        controller: discountAmount,
-                        onChanged: (value) {
-                          _recalculatePayment();
-                        },
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: SizedBox(
+                        height: 38,
+                        width: 76,
+                        child: AddSalesFormfield(
+                          labelText: "Amount",
+                          keyboardType: TextInputType.number,
+                          controller: discountAmount,
+                          onChanged: (value) {
+                            _recalculatePayment();
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -848,14 +934,17 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
                   children: [
                     Text("Payment", style: ts),
                     const SizedBox(width: 24),
-                    SizedBox(
-                      height: 30,
-                      width: 163,
-                      child: AddSalesFormfield(
-                        labelText: "Payment",
-                        controller: paymentAmount,
-                        readOnly:
-                            true, // user should not edit final payment manually
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: SizedBox(
+                        height: 38,
+                        width: 163,
+                        child: AddSalesFormfield(
+                          labelText: "Payment",
+                          controller: paymentAmount,
+                          readOnly:
+                              true, // user should not edit final payment manually
+                        ),
                       ),
                     ),
                   ],
@@ -948,7 +1037,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
                           .clearSelectedCustomer();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          backgroundColor: Colors.green,
+                            backgroundColor: Colors.green,
                             content: Text(
                                 "Payment voucher updated successfully!",
                                 style: TextStyle(color: Colors.green))),
@@ -971,7 +1060,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
           ),
 
           const SizedBox(
-            height: 10,
+            height: 50,
           )
         ]),
       ),

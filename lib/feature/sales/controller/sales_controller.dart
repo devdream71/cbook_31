@@ -140,7 +140,7 @@ class SalesController extends ChangeNotifier {
 
   String primaryUnitName = "";
   String secondaryUnitName = "";
-  double salePrice = 0.0;
+  dynamic salePrice;
   dynamic unitQty = 1.0;
 //bool hasCustomPrice = false;
 
@@ -187,7 +187,6 @@ class SalesController extends ChangeNotifier {
   void calculateTotalCash() {
     double subtotal = double.tryParse(addAmount()) ?? 0.0;
     double discount = double.tryParse(discountController.text) ?? 0.0;
-     
 
     notifyListeners(); // 👈 Important
   }
@@ -490,7 +489,6 @@ class SalesController extends ChangeNotifier {
     return "$finalTotal "; //(${total.toStringAsFixed(2)})
   }
 
-
   String get totalAmount2 {
     double subtotal =
         double.tryParse(addAmount()) ?? 0.0; // Get credit subtotal
@@ -529,12 +527,14 @@ class SalesController extends ChangeNotifier {
     debugPrint("Selected Unit ID: $selectedUnitIdWithName");
 
     // Parse input
-    double price = double.tryParse(mrpController.text) ?? 0.0;
+    double price = double.tryParse(mrpController.text) ?? 0;
     double quantity = double.tryParse(qtyController.text) ?? 0.0;
     double demodiscounAmout = double.tryParse(discountAmount.text) ?? 0.0;
     double itemTotal = ((price * quantity) - demodiscounAmout) + taxAmount;
 
-    double discountAmt = double.tryParse(discountAmount.text) ?? 0.0; ///discountAmount
+    double discountAmt = double.tryParse(discountAmount.text) ?? 0.0;
+
+    ///discountAmount
     double vatAmount = taxAmount;
 
     //   double itemSubTotal = (price * quantity) - discountAmt;
@@ -600,8 +600,6 @@ class SalesController extends ChangeNotifier {
     unitController.clear();
     notifyListeners();
   }
-
-
 
   // 🔥 FIXED: Credit item addition with proper tax calculation
   addCreditItem() {
@@ -693,36 +691,38 @@ class SalesController extends ChangeNotifier {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
-     
-
       DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(date);
       String formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
       String encodedDate = Uri.encodeComponent(formattedDate);
 
       final String note = saleNoteController.text;
-       
-      debugPrint('date $encodedDate'); 
+
+      debugPrint('date $encodedDate');
       debugPrint("cash Subtotal: ${addAmount2()}");
       debugPrint("credit Subtotal: ${addAmount()}");
       debugPrint("Cash Total (after discount): $totalAmount");
-      debugPrint("discountPercent: ${percentController.text}"); //discountController
-      debugPrint("discount amount: ${discountController.text}"); //percentController
-      debugPrint("taxAmount: $totalTaxAmountl ");  ///$taxAmount
+      debugPrint(
+          "discountPercent: ${percentController.text}"); //discountController
+      debugPrint(
+          "discount amount: ${discountController.text}"); //percentController
+      debugPrint("taxAmount: $totalTaxAmountl ");
+
+      ///$taxAmount
       debugPrint("taxPercent: $taxPercent");
-      
+
       debugPrint("note $note");
       debugPrint("total amount $totalAmount");
 
-      final paymentAmount = isCash ? totalAmount.toString() : receivedAmountController.text;
+      final paymentAmount =
+          isCash ? totalAmount.toString() : receivedAmountController.text;
 
       String formattedTaxPercent =
           "${selectedTaxId ?? '0'}_${(selectedTaxPercent ?? 0).toStringAsFixed(0)}";
 
-      debugPrint("payment out  true or false-  $paymentOut"); 
+      debugPrint("payment out  true or false-  $paymentOut");
       debugPrint("payment Amount -  $paymentAmount");
 
-          final token = prefs.getString('token');
-
+      final token = prefs.getString('token');
 
       final url = "${AppUrl.baseurl}sales/store"
           "?user_id=${prefs.getInt("user_id").toString()}"
@@ -730,19 +730,24 @@ class SalesController extends ChangeNotifier {
           "&bill_number=$billNo"
           "&sale_date=$encodedDate"
           "&details_notes=$note"
-
           "&discount=${discountController.text}"
           "&discount_percent=${percentController.text}"
+          "&total_item_discounts=${totalItemDiscounts.toStringAsFixed(2)}"
 
-          "&total_item_discounts=${totalItemDiscounts.toStringAsFixed(2)}"  ///total item discount
-          "&total_item_vats=${totalItemVats.toStringAsFixed(2)}"   ///total item vats (ok)
-          
-          "&tax=${totalTaxAmountl.toStringAsFixed(2)}" ///tax amount
-          "&tax_percents=$formattedTaxPercent" ///tax percentance 
-          
+          ///total item discount
+          "&total_item_vats=${totalItemVats.toStringAsFixed(2)}"
+
+          ///total item vats (ok)
+
+          "&tax=${totalTaxAmountl.toStringAsFixed(2)}"
+
+          ///tax amount
+          "&tax_percents=$formattedTaxPercent"
+
+          ///tax percentance
+
           // "&gross_total=$totalAmount"
           "&gross_total=${isCash ? addAmount2() : addAmount()}"
-          
           "&payment_out=$paymentOut"
           "&payment_amount=$paymentAmount"; // ✅ Only send integer
 
@@ -760,8 +765,9 @@ class SalesController extends ChangeNotifier {
 
       final response = await http.post(
         Uri.parse(url),
-        headers: {"Content-Type": "application/json",
-        "Authorization": "Bearer $token",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
         },
         body: json.encode(requestBody),
       );
@@ -777,9 +783,9 @@ class SalesController extends ChangeNotifier {
         final salesList = Provider.of<SalesProvider>(context, listen: false);
 
         salesList.fetchSales();
-        
+
         Navigator.pop(context);
-        
+
         // Navigator.pushReplacement(
         //   context,
         //   MaterialPageRoute(
@@ -905,10 +911,7 @@ class SalesController extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   DateTime _selectedDate = DateTime.now();
-  
 
   void updateIsAmount() {
     isAmount = !isAmount;
@@ -1086,6 +1089,3 @@ class SalesController extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-
- 

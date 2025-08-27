@@ -21,13 +21,10 @@ class SaleUpdateProvider extends ChangeNotifier {
   TextEditingController itemController = TextEditingController();
   TextEditingController unitController = TextEditingController();
   TextEditingController saleUpdateNoteController = TextEditingController();
-
   TextEditingController updateDiscountAmount = TextEditingController();
   TextEditingController updateDiscountPercentance = TextEditingController();
-
   TextEditingController itemDiscountPercentance = TextEditingController();
   TextEditingController itemDiscountAmount = TextEditingController();
-
   TextEditingController itemTaxVatAmount = TextEditingController();
   TextEditingController itemTaxVatPercentance = TextEditingController();
 

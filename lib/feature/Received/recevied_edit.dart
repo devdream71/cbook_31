@@ -318,9 +318,112 @@ class _ReceviedEditState extends State<ReceviedEdit> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 0.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            color: Color(0xffdddefa),
+            height: 48,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Bill/Invoice No',
+                          style: TextStyle(color: Colors.black, fontSize: 12),
+                        ),
+                        Text(
+                          voucherNumberController.text,
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 12),
+                        ),
+                        // SizedBox(
+                        //   height: 30,
+                        //   width: 130,
+                        //   child: AddSalesFormfield(
+                        //     labelText: "Bill No",
+                        //     controller: voucherNumberController,
+
+                        //     onChanged: (value) {
+                        //       billNo = value;
+                        //     }, // Match cursor height to text size
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                ///bill date
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Date',
+                            style: TextStyle(color: Colors.black, fontSize: 12),
+                          ),
+                          Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 30,
+                        width: 130,
+                        child: InkWell(
+                          // onTap: () => controller.pickDate(
+                          //     context), // Trigger the date picker
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              isDense: true,
+                              //suffixIcon:
+                              suffixIconConstraints: const BoxConstraints(
+                                minWidth: 16,
+                                minHeight: 16,
+                              ), // Adjust constraints to align icon closely
+                              hintText: "Bill Date",
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 9,
+                              ),
+                            ),
+                            child: Text(
+                              controller.formattedDate.isNotEmpty
+                                  ? controller.formattedDate
+                                  : "Select Date", // Default text when no date is selected
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           ///1 section
+
+          const SizedBox(
+            height: 6,
+          ),
 
           ///1 section, receipt to, a/c.
           Row(
@@ -411,116 +514,59 @@ class _ReceviedEditState extends State<ReceviedEdit> {
               ),
 
               ////righ side data
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   ///bill person
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Consumer<PaymentVoucherProvider>(
-                      builder: (context, provider, child) {
-                        return SizedBox(
-                          height: 30,
-                          width: 130,
-                          child: provider.isLoading
-                              ? const Center(child: CircularProgressIndicator())
-                              : CustomDropdownTwo(
-                                  hint: '',
-                                  items: provider.billPersonNames,
-                                  width: double.infinity,
-                                  height: 30,
-                                  labelText: 'Bill Person',
-                                  selectedItem: selectedBillPerson,
-                                  onChanged: (value) {
-                                    debugPrint(
-                                        '=== Bill Person Selected: $value ===');
-                                    setState(() {
-                                      selectedBillPerson = value;
-                                      selectedBillPersonData =
-                                          provider.billPersons.firstWhere(
-                                        (person) => person.name == value,
-                                      ); // ✅ Save the whole object globally
-                                      selectedBillPersonId =
-                                          selectedBillPersonData!.id;
-                                    });
+                  // Padding(
+                  //   padding: const EdgeInsets.only(top: 8.0),
+                  //   child: Consumer<PaymentVoucherProvider>(
+                  //     builder: (context, provider, child) {
+                  //       return SizedBox(
+                  //         height: 30,
+                  //         width: 130,
+                  //         child: provider.isLoading
+                  //             ? const Center(child: CircularProgressIndicator())
+                  //             : CustomDropdownTwo(
+                  //                 hint: '',
+                  //                 items: provider.billPersonNames,
+                  //                 width: double.infinity,
+                  //                 height: 30,
+                  //                 labelText: 'Bill Person',
+                  //                 selectedItem: selectedBillPerson,
+                  //                 onChanged: (value) {
+                  //                   debugPrint(
+                  //                       '=== Bill Person Selected: $value ===');
+                  //                   setState(() {
+                  //                     selectedBillPerson = value;
+                  //                     selectedBillPersonData =
+                  //                         provider.billPersons.firstWhere(
+                  //                       (person) => person.name == value,
+                  //                     ); // ✅ Save the whole object globally
+                  //                     selectedBillPersonId =
+                  //                         selectedBillPersonData!.id;
+                  //                   });
 
-                                    debugPrint('Selected Bill Person Details:');
-                                    debugPrint(
-                                        '- ID: ${selectedBillPersonData!.id}');
-                                    debugPrint(
-                                        '- Name: ${selectedBillPersonData!.name}');
-                                    debugPrint(
-                                        '- Phone: ${selectedBillPersonData!.phone}');
-                                  }),
-                        );
-                      },
-                    ),
-                  ),
+                  //                   debugPrint('Selected Bill Person Details:');
+                  //                   debugPrint(
+                  //                       '- ID: ${selectedBillPersonData!.id}');
+                  //                   debugPrint(
+                  //                       '- Name: ${selectedBillPersonData!.name}');
+                  //                   debugPrint(
+                  //                       '- Phone: ${selectedBillPersonData!.phone}');
+                  //                 }),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
 
                   // Bill No Field
 
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  // const SizedBox(
+                  //   height: 8,
+                  // ),
 
                   ///bill no,
-                  SizedBox(
-                    height: 30,
-                    width: 130,
-                    child: AddSalesFormfield(
-                      labelText: "Bill No",
-                      controller: voucherNumberController,
-
-                      onChanged: (value) {
-                        billNo = value;
-                      }, // Match cursor height to text size
-                    ),
-                  ),
-
-                  ///bill date
-                  SizedBox(
-                    height: 30,
-                    width: 130,
-                    child: InkWell(
-                      // onTap: () => controller.pickDate(
-                      //     context), // Trigger the date picker
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          isDense: true,
-                          suffixIcon: Icon(
-                            Icons.calendar_today,
-                            size: 16,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          suffixIconConstraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ), // Adjust constraints to align icon closely
-                          hintText: "Bill Date",
-                          hintStyle: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.grey.shade400, width: 0.5),
-                          ),
-                          focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                        child: Text(
-                          controller.formattedDate.isNotEmpty
-                              ? controller.formattedDate
-                              : "Select Date", // Default text when no date is selected
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               )
             ],
@@ -530,48 +576,58 @@ class _ReceviedEditState extends State<ReceviedEdit> {
             height: 8,
           ),
 
-          ///customer show
-          InkWell(
-            onTap: () async {},
-            child: Container(
-              decoration: BoxDecoration(
-                color: colorScheme.primary,
-                borderRadius: BorderRadius.circular(3),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Received From",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
+          Center(
+            child: const Text(
+              "Received From",
+              style: TextStyle(color: Colors.black, fontSize: 14),
             ),
           ),
+
+          ///customer show
+          // InkWell(
+          //   onTap: () async {},
+          //   child: Container(
+          //     decoration: BoxDecoration(
+          //       color: colorScheme.primary,
+          //       borderRadius: BorderRadius.circular(3),
+          //       boxShadow: [
+          //         BoxShadow(
+          //           color: Colors.black.withOpacity(0.2),
+          //           blurRadius: 5,
+          //           offset: const Offset(0, 3),
+          //         ),
+          //       ],
+          //     ),
+          //     child: const Padding(
+          //       padding: EdgeInsets.all(4.0),
+          //       child: Row(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: [
+          //           Text(
+          //             "Received From",
+          //             style: TextStyle(color: Colors.white, fontSize: 14),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
 
           const SizedBox(height: 6),
 
           /// Customer search field
-          AddSalesFormfieldTwo(
-            controller: controller.customerNameController,
-            customerorSaleslist: "Showing Customer list",
-            customerOrSupplierButtonLavel: "",
-            color: Colors.grey,
-            isForReceivedVoucher: true,
-            onTap: () async {
-              // Add your customer selection logic
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: AddSalesFormfieldTwo(
+              controller: controller.customerNameController,
+              customerorSaleslist: "Showing Customer list",
+              customerOrSupplierButtonLavel: "",
+              color: Colors.grey,
+              isForReceivedVoucher: true,
+              onTap: () async {
+                // Add your customer selection logic
+              },
+            ),
           ),
 
           /// Show customer payable/receivable if selected
@@ -828,16 +884,19 @@ class _ReceviedEditState extends State<ReceviedEdit> {
                   children: [
                     Text("Total Amount", style: ts),
                     const SizedBox(width: 10),
-                    SizedBox(
-                      height: 30,
-                      width: 163,
-                      child: AddSalesFormfield(
-                        labelText: "Amount",
-                        readOnly: true,
-                        controller: totalAmount,
-                        onChanged: (value) {
-                          debugPrint("recived value ${totalAmount.text}");
-                        },
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: SizedBox(
+                        height: 38,
+                        width: 163,
+                        child: AddSalesFormfield(
+                          labelText: "Amount",
+                          readOnly: true,
+                          controller: totalAmount,
+                          onChanged: (value) {
+                            debugPrint("recived value ${totalAmount.text}");
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -851,35 +910,41 @@ class _ReceviedEditState extends State<ReceviedEdit> {
                     Text("Discount", style: ts),
                     const SizedBox(width: 10),
                     SizedBox(
-                      height: 30,
+                      height: 38,
                       width: 76,
-                      child: CustomDropdownTwo(
-                        hint: '',
-                        items: const ['%', '৳'],
-                        width: double.infinity,
-                        height: 30,
-                        labelText: selectedDiscountType,
-                        selectedItem: selectedDiscountType,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedDiscountType = value ?? '%';
-                            _recalculatePayment();
-                          });
-                          debugPrint(
-                              'Discount type selected: $selectedDiscountType');
-                        },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: CustomDropdownTwo(
+                          hint: '',
+                          items: const ['%', '৳'],
+                          width: double.infinity,
+                          height: 30,
+                          labelText: selectedDiscountType,
+                          selectedItem: selectedDiscountType,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedDiscountType = value ?? '%';
+                              _recalculatePayment();
+                            });
+                            debugPrint(
+                                'Discount type selected: $selectedDiscountType');
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
-                    SizedBox(
-                      height: 30,
-                      width: 76,
-                      child: AddSalesFormfield(
-                        labelText: "Amount",
-                        controller: discountAmount,
-                        onChanged: (value) {
-                          _recalculatePayment();
-                        },
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: SizedBox(
+                        height: 38,
+                        width: 76,
+                        child: AddSalesFormfield(
+                          labelText: "Amount",
+                          controller: discountAmount,
+                          onChanged: (value) {
+                            _recalculatePayment();
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -892,14 +957,17 @@ class _ReceviedEditState extends State<ReceviedEdit> {
                   children: [
                     Text("Receive", style: ts),
                     const SizedBox(width: 24),
-                    SizedBox(
-                      height: 30,
-                      width: 163,
-                      child: AddSalesFormfield(
-                        labelText: "Receive",
-                        controller: paymentAmount,
-                        readOnly: true,
-                        onChanged: (value) {},
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: SizedBox(
+                        height: 38,
+                        width: 163,
+                        child: AddSalesFormfield(
+                          labelText: "Receive",
+                          controller: paymentAmount,
+                          readOnly: true,
+                          onChanged: (value) {},
+                        ),
                       ),
                     ),
                   ],
@@ -968,8 +1036,7 @@ class _ReceviedEditState extends State<ReceviedEdit> {
                     //double totalAmt = double.tryParse(totalAmount.text) ?? 0;
                     double paymentAmt =
                         double.tryParse(paymentAmount.text) ?? 0;
-                    String discountAmt =
-                      discountAmount.text;
+                    String discountAmt = discountAmount.text;
                     String notes = 'notes';
 
                     final customerProvider =
@@ -1056,7 +1123,7 @@ class _ReceviedEditState extends State<ReceviedEdit> {
           ),
 
           const SizedBox(
-            height: 10,
+            height: 50,
           )
         ]),
       ),

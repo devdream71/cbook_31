@@ -19,7 +19,7 @@ class AddSalesFormfield extends StatelessWidget {
     required this.controller,
     this.textStyle = const TextStyle(fontSize: 12, color: Colors.black),
     this.decoration = const InputDecoration(),
-    this.height = 30,
+    this.height = 38,
     //this.width = 150,
     this.validator, // Accept validator
     this.keyboardType,
@@ -52,7 +52,6 @@ class AddSalesFormfield extends StatelessWidget {
             ///unbderline
             autocorrect: false,
             enableSuggestions: false,
-            
 
             ///underline
             decoration: decoration.copyWith(
