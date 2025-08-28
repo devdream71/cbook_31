@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../utils/date_time_helper.dart';
-import '../../item/model/items_show.dart';
+import '../../item/model/items_show_model.dart';
 import '../../sales/sales_view.dart';
 import 'package:http/http.dart' as http;
 

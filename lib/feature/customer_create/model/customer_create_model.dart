@@ -28,6 +28,7 @@ class CustomerData {
   final double openingBalance; // Changed from String to double
   final String address;
   final String? avatar; 
+  final String? logo; 
   final int status;
   final String? createdAt;
   final String? updatedAt;
@@ -44,7 +45,8 @@ class CustomerData {
     required this.phone,
     required this.openingBalance,
     required this.address,
-       this.avatar,
+    this.avatar,
+    this.logo,
     required this.status,
     this.createdAt,
     this.updatedAt,
@@ -63,7 +65,8 @@ class CustomerData {
       phone: json['phone'],
       level: json['level'],
       levelType: json['level_type'],
-            avatar: json['avatar'], 
+      avatar: json['avatar'], 
+      logo: json['logo'], 
       openingBalance: (json['opening_balance'] ?? 0).toDouble(), // Convert to double
       address: json['address'],
       status: json['status'] ?? 0,

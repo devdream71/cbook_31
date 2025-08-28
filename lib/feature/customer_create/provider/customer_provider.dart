@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cbook_dt/feature/customer_create/model/customer_create.dart';
+import 'package:cbook_dt/feature/customer_create/model/customer_create_model.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/model/payment_voicer_model.dart';
 import 'package:cbook_dt/feature/customer_create/model/received_voucher_model.dart';
@@ -283,12 +283,12 @@ class CustomerProvider extends ChangeNotifier {
 
   Future<void> createCustomer({
     required String name,
-    required String email,
-    required String phone,
-    required String address,
+    String  ? email,
+    String ? phone,
+    String ? address,
     required String status, // '1' or '0'
-    required String proprietorName,
-    required String openingBalance,
+    String ? proprietorName,
+    String ? openingBalance,
     String levelType = "",
     String level = "",
     File? imageFile, // pass File(...) from XFile.path
@@ -311,11 +311,11 @@ class CustomerProvider extends ChangeNotifier {
       request.fields.addAll({
         'user_id': userId,
         'name': name,
-        'proprietor_name': proprietorName,
-        'email': email,
-        'phone': phone,
-        'opening_balance': openingBalance,
-        'address': address,
+        'proprietor_name': proprietorName ?? '',
+        'email': email ?? '',
+        'phone': phone ?? '',
+        'opening_balance': openingBalance ?? "",
+        'address': address ?? '',
         'status': status, // '1' or '0'
       });
 
@@ -340,7 +340,7 @@ class CustomerProvider extends ChangeNotifier {
       if (logo != null) {
         // Field name must match backend: 'avatar'
         request.files.add(
-          await http.MultipartFile.fromPath('avatar', logo.path),
+          await http.MultipartFile.fromPath('logo', logo.path),
         );
       }
 
@@ -493,6 +493,11 @@ class CustomerProvider extends ChangeNotifier {
 
         final streamed = await request.send();
         response = await http.Response.fromStream(streamed);
+
+       await fetchCustomsr();
+        
+
+
       } else {
         // ✅ Use regular POST request if no image
         Map<String, dynamic> body = {

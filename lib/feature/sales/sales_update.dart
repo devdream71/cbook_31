@@ -3,7 +3,7 @@ import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
-import 'package:cbook_dt/feature/item/model/items_show.dart';
+import 'package:cbook_dt/feature/item/model/items_show_model.dart';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
 import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
@@ -140,11 +140,9 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
               return provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                      padding:      EdgeInsets.symmetric(horizontal: 0.0),
                       child: Column(
                         children: [
-                          
-
                           Padding(
                             padding: const EdgeInsets.all(0.0),
                             child: Container(
@@ -630,7 +628,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20)
+                          const SizedBox(height: 50)
                         ],
                       ),
                     );

@@ -7,7 +7,7 @@ import 'package:cbook_dt/feature/customer_create/customer_create.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/invoice/invoice_model.dart';
-import 'package:cbook_dt/feature/item/model/items_show.dart';
+import 'package:cbook_dt/feature/item/model/items_show_model.dart';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
 import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
@@ -1873,7 +1873,7 @@ class _LayoutState extends State<_Layout> {
             backgroundColor: Colors.transparent,
             insetPadding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
-              height: 420,
+              height: 488,
               width: screenWidth,
               decoration: BoxDecoration(
                 color: Colors.white,

@@ -21,8 +21,6 @@ class _SalesScreenState extends State<SalesScreen> {
     super.initState();
     // Fetch the data when the screen is initialized
     Future.delayed(Duration.zero, () {
-       
-
       final salesProvider = Provider.of<SalesProvider>(context, listen: false);
 
       salesProvider.fetchSales();
@@ -121,7 +119,8 @@ class _SalesScreenState extends State<SalesScreen> {
                     child: TextField(
                       controller: searchController,
                       autofocus: true,
-                      cursorHeight: 20, // Increased cursor height proportionally
+                      cursorHeight:
+                          20, // Increased cursor height proportionally
                       cursorColor: Colors.white,
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                       decoration: InputDecoration(
@@ -137,7 +136,8 @@ class _SalesScreenState extends State<SalesScreen> {
                           borderRadius: BorderRadius.circular(2),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 8), // Increased vertical padding
+                            horizontal: 8,
+                            vertical: 8), // Increased vertical padding
                         fillColor: Colors.grey.shade100,
                         isDense: true,
                       ),
@@ -373,8 +373,7 @@ class _SalesScreenState extends State<SalesScreen> {
       //     ),
       //   ],
       // ),
-      
-      
+
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,8 +386,7 @@ class _SalesScreenState extends State<SalesScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-
-                   ///sales, received, due - now shows filtered summary
+                  ///sales, received, due - now shows filtered summary
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Consumer<SalesProvider>(
@@ -429,7 +427,6 @@ class _SalesScreenState extends State<SalesScreen> {
                       },
                     ),
                   ),
-
 
                   ////date, current date, bill qty
                   Column(
@@ -540,8 +537,6 @@ class _SalesScreenState extends State<SalesScreen> {
                       ),
                     ],
                   ),
-
-                 
                 ],
               ),
             ),
@@ -595,6 +590,8 @@ class _SalesScreenState extends State<SalesScreen> {
                     itemCount: filteredSales.length, // Use filtered sales count
                     itemBuilder: (context, index) {
                       final sale = filteredSales[index]; // Use filtered sales
+
+                      // Use filtered sales
 
                       final salesInvoiceCount = filteredSales.length;
                       debugPrint('filtered sales count: $salesInvoiceCount');
@@ -760,11 +757,9 @@ class _SalesScreenState extends State<SalesScreen> {
                                                         : 'Unpaid',
                                                 style: TextStyle(
                                                   fontSize: 12,
-                                                  color: sale.paymentStatus ==
-                                                          2
+                                                  color: sale.paymentStatus == 2
                                                       ? Colors.green
-                                                      : sale.paymentStatus ==
-                                                              1
+                                                      : sale.paymentStatus == 1
                                                           ? Colors.amber
                                                           : Colors.red,
                                                 ),
@@ -898,7 +893,6 @@ class _SalesScreenState extends State<SalesScreen> {
 
   ////delete recived item from list
   void _showDeleteDialog(BuildContext context, String salesID) {
-    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -948,4 +942,3 @@ class _SalesScreenState extends State<SalesScreen> {
     );
   }
 }
- 

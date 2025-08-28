@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/sales/model/sales_list_model.dart';
 import 'package:cbook_dt/feature/sales/provider/sales_provider.dart';
@@ -55,6 +54,15 @@ class _SalesDetailsState extends State<SalesDetails> {
     });
   }
 
+  String _formatNumber(dynamic number) {
+    if (number == null) return '0';
+    double value = double.tryParse(number.toString()) ?? 0;
+    if (value == value.toInt()) {
+      return value.toInt().toString(); // Return "0" instead of "0.0"
+    }
+    return value.toString(); // Return with decimals if needed
+  }
+
   @override
   Widget build(BuildContext context) {
     final saleProvider = Provider.of<SalesProvider>(context);
@@ -76,45 +84,72 @@ class _SalesDetailsState extends State<SalesDetails> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // customRowSales("Customer Name:", widget.sale.customerName, isBlod: true),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: customRowSales(
-                "Customer Name:",
-                widget.sale.customerName != "N/A"
-                    ? widget.sale.customerName
-                    : "Cash",
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: customRowSales(
-                "Transaction Method:",
-                widget.sale.transactionMethod,
-              ),
-            ),
+            Container(
+              color: Colors.green.shade100,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // customRowSales("Customer Name:", widget.sale.customerName, isBlod: true),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: customRowSales(
+                          widget.sale.customerName != "N/A"
+                              ? widget.sale.customerName
+                              : "Cash",
+                        ),
+                      ),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: customRowSales(
-                "Purchase Date:",
-                //widget.sale.purchaseDate.toString(),
-                formatDate(widget.sale.purchaseDate.toString()),
-              ),
-            ),
+                      if (widget.sale.transactionMethod == 'customer')
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: customRowSales(
+                              widget.sale.customerDetails!.phone),
+                        ),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: customRowSales(
-                "Discount:",
-                "৳ ${widget.sale.discount.toString()}",
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: customRowSales(
-                "Gross Total:",
-                "৳ ${widget.sale.grossTotal.toString()}",
+                      if (widget.sale.transactionMethod == 'customer')
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: customRowSales(
+                              widget.sale.customerDetails!.address),
+                        ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: customRowSales(
+                          "Bill Amount: ${widget.sale.grossTotal.toString()}",
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  ///right side.
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: customRowSales(
+                          formatDate(widget.sale.purchaseDate.toString()),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: customRowSales(
+                            widget.sale.billNumber), // <-- use the real date
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: customRowSales(widget.sale.purchaseDetails.first
+                            .type), // <-- use the real date
+                      ),
+                    ],
+                  )
+                ],
               ),
             ),
             const SizedBox(height: 10),
@@ -138,7 +173,7 @@ class _SalesDetailsState extends State<SalesDetails> {
                         borderRadius: BorderRadius.circular(3)),
                     child: ListTile(
                       title: Text(
-                        'Item : $itemName - $unitSymbol',
+                        itemName, //- $unitSymbol
                         style:
                             const TextStyle(color: Colors.black, fontSize: 12),
                       ),
@@ -146,30 +181,75 @@ class _SalesDetailsState extends State<SalesDetails> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Quantity: ${detail.qty}, Price: ৳ ${detail.price.toString()}',
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 12),
+                          // Text(
+                          //   '${detail.qty} $unitSymbol x ৳ ${detail.price.toString()}',
+                          //   style: const TextStyle(
+                          //       color: Colors.black, fontSize: 12),
+                          // ),
+                          // if (_billWiseDiscount == true)
+                          //   Text(
+                          //     '(-) Discount: ${detail.discountAmount} ৳,  ${detail.discountPercentage} %',
+                          //     style: const TextStyle(
+                          //         color: Colors.black, fontSize: 12),
+                          //   ),
+                          // if (_billWiseDiscount == true)
+                          //   Text(
+                          //     ' (+) Tax: ${detail.taxAmount} ৳,   ${detail.taxPercentage} %',
+                          //     style: const TextStyle(
+                          //         color: Colors.black, fontSize: 12),
+                          //   ),
+                          // Text(
+                          //   '${detail.qty} $unitSymbol x ৳  ${detail.price.toString()}${_billWiseDiscount ? ' (-) Disc: ${detail.discountPercentage}% (${detail.discountAmount}),' : ''}${_billWiseDiscount ? ' (+) Tax:  ${detail.taxPercentage}% (${detail.taxAmount}), ' : ''}  = ',
+                          //   style: const TextStyle(
+                          //       color: Colors.black, fontSize: 12),
+                          // ),
+
+                          // RichText(
+                          //   text: TextSpan(
+                          //     style: const TextStyle(
+                          //         color: Colors.black, fontSize: 12),
+                          //     children: [
+                          //       TextSpan(
+                          //         text:
+                          //             '${detail.qty} $unitSymbol x ৳ ${detail.price.toString()}${_billWiseDiscount ? ' (-) Disc: ${_formatNumber(detail.discountPercentage)}% (${_formatNumber(detail.discountAmount)}),' : ''}${_billWiseDiscount ? ' (+) Tax: ${_formatNumber(detail.taxPercentage)}% (${_formatNumber(detail.taxAmount)}), ' : ''}  =  ',
+                          //       ),
+                          //       TextSpan(
+                          //         text: '${detail.subTotal.toString()}',
+                          //         style: const TextStyle(
+                          //             color: Colors.red,
+                          //             fontWeight: FontWeight.bold),
+                          //       ),
+                          //     ],
+                          //   ),
+                          //   overflow: TextOverflow.ellipsis,
+                          // ),
+
+                          RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 12),
+                              children: [
+                                TextSpan(
+                                  text:
+                                      '${_formatNumber(detail.qty)} $unitSymbol x ৳ ${_formatNumber(detail.price)}${_billWiseDiscount ? ' (-) Disc: ${_formatNumber(detail.discountPercentage)}% (${_formatNumber(detail.discountAmount)}),' : ''}${_billWiseDiscount ? ' (+) Tax: ${_formatNumber(detail.taxPercentage)}% (${_formatNumber(detail.taxAmount)})' : ''} = ',
+                                ),
+                                TextSpan(
+                                  text: '${_formatNumber(detail.subTotal)}',
+                                  style: const TextStyle(
+                                      color: Colors.purple,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          if (_billWiseDiscount == true)
-                            Text(
-                              'Discount: ${detail.discountAmount} ৳,  ${detail.discountPercentage} %',
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 12),
-                            ),
-                          if (_billWiseDiscount == true)
-                            Text(
-                              'Tax: ${detail.taxAmount} ৳,   ${detail.taxPercentage} %',
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 12),
-                            ),
                         ],
                       ),
-                      trailing: Text(
-                        'Subtotal: ৳ ${detail.subTotal.toString()}',
-                        style:
-                            const TextStyle(color: Colors.green, fontSize: 12),
-                      ),
+                      // trailing: Text(
+                      //   'Subtotal: ৳ ${detail.subTotal.toString()}',
+                      //   style:
+                      //       const TextStyle(color: Colors.green, fontSize: 12),
+                      // ),
                     ),
                   );
                 },
@@ -181,17 +261,17 @@ class _SalesDetailsState extends State<SalesDetails> {
     );
   }
 
-  Widget customRowSales(String text1, dynamic text2, {bool? isBlod}) {
+  Widget customRowSales(dynamic text2, {bool? isBlod}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          text1,
-          style: TextStyle(
-              color: Colors.black,
-              fontWeight: isBlod == true ? FontWeight.bold : FontWeight.normal,
-              fontSize: 12),
-        ),
+        // Text(
+        //   text1,
+        //   style: TextStyle(
+        //       color: Colors.black,
+        //       fontWeight: isBlod == true ? FontWeight.bold : FontWeight.normal,
+        //       fontSize: 12),
+        // ),
         Text(text2,
             style: TextStyle(
                 color: Colors.black,

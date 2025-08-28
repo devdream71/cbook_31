@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:cbook_dt/feature/item/model/items_show.dart';
+import 'package:cbook_dt/feature/item/model/items_show_model.dart';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/unit_provider.dart';
 import 'package:cbook_dt/feature/purchase/model/purchase_item_model.dart';

@@ -5,7 +5,7 @@ import 'package:cbook_dt/feature/account/ui/expense/expense_list.dart';
 import 'package:cbook_dt/feature/account/ui/income/income_list.dart';
 import 'package:cbook_dt/feature/item/add_item.dart';
 import 'package:cbook_dt/feature/item/item_details.dart';
-import 'package:cbook_dt/feature/item/model/items_show.dart';
+import 'package:cbook_dt/feature/item/model/items_show_model.dart';
 import 'package:cbook_dt/feature/item/update_item.dart';
 import 'package:cbook_dt/feature/payment_out/payment_out_list.dart';
 import 'package:cbook_dt/feature/purchase/purchase_list_api.dart';
@@ -257,8 +257,8 @@ class _ItemViewState extends State<ItemView> {
                   // Left (Customer)
                   Row(
                     children: [
-                      const Icon(Icons.handshake, color: Colors.blue),
-                      const SizedBox(width: 8),
+                      // const Icon(Icons.handshake, color: Colors.blue),
+                      // const SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -276,10 +276,10 @@ class _ItemViewState extends State<ItemView> {
                   ),
 
                   // Vertical Divider
-                  SizedBox(
+                  const SizedBox(
                     height: 35,
                     width: 35,
-                    child: Image.asset('assets/image/product.png'),
+                    child: Icon(Icons.menu),
                   ),
 
                   // Right (Supplier)
@@ -872,7 +872,7 @@ class _ItemViewState extends State<ItemView> {
                     //     child:
                     //         _buildIconWithLabel(Icons.tab, "Challan", context)),
 
-                      ////Sales\nReturn
+                    ////Sales\nReturn
                     InkWell(
                       onTap: () {
                         Navigator.push(
@@ -885,7 +885,6 @@ class _ItemViewState extends State<ItemView> {
                       child: _buildIconWithLabel(
                           Icons.redo, "Sales\nReturn", context),
                     ),
-
 
                     //// Receipt In
                     InkWell(
@@ -903,7 +902,6 @@ class _ItemViewState extends State<ItemView> {
                         child: _buildIconWithLabel(
                             Icons.receipt, "Receipt In", context)),
 
-                  
                     // ////Delivery
                     // InkWell(
                     //     onTap: () {
@@ -959,7 +957,7 @@ class _ItemViewState extends State<ItemView> {
                     //       Icons.work_history, "Purchase/\nOrder", context),
                     // ),
 
-                     ///// Purchase\nReturn
+                    ///// Purchase\nReturn
                     InkWell(
                       onTap: () {},
                       child: InkWell(
@@ -993,8 +991,6 @@ class _ItemViewState extends State<ItemView> {
                         },
                         child: _buildIconWithLabel(
                             Icons.tab, "Payment\nOut", context)),
-
-                   
                   ],
                 ),
 

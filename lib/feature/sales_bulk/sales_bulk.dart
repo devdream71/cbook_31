@@ -2,7 +2,7 @@ import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/customer_create/customer_create.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
-import 'package:cbook_dt/feature/item/model/items_show.dart';
+import 'package:cbook_dt/feature/item/model/items_show_model.dart';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
 import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';

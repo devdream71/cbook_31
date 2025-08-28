@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/feature/customer_create/customer_update.dart';
-import 'package:cbook_dt/feature/customer_create/model/customer_create.dart';
+import 'package:cbook_dt/feature/customer_create/model/customer_create_model.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -37,19 +37,17 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
   }
 
   Future<void> fetchSupplierDetails() async {
-    
     final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final token = prefs.getString('token');
 
     final url = Uri.parse(
         'https://commercebook.site/api/v1/customer/edit/${widget.customerId}');
 
     try {
-      final response = await http.get(url,  headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+      final response = await http.get(url, headers: {
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data["success"] == true) {
@@ -164,22 +162,43 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
                   .compact, // further tighten around the icon :contentReference[oaicite:3]{index=3}
               onPressed: () {
                 final c = widget.customer;
-                final customerData = CustomerData(
-                  id: c.id,
-                  userId: c.userId,
-                  name: c.name,
-                  proprietorName: c.proprietorName,
-                  email: "", // or pass real email if available
-                  phone: c.phone ?? "",
-                  address: c.address ?? "",
-                  openingBalance: c.due,
-                  status: 1,
-                  createdAt: "",
-                  updatedAt: "",
-                  type: c.type,
-                  level: null,
-                  levelType: null,
-                );
+                // final customerData = CustomerData(
+                //   id: c.id,
+                //   userId: c.userId,
+                //   name: c.name,
+                //   proprietorName: c.proprietorName,
+                //   email: "", // or pass real email if available
+                //   phone: c.phone ?? "",
+                //   address: c.address ?? "",
+                //   openingBalance: c.due,
+                //   avatar: c.avatar,
+                //   logo: c.logo,
+                //   status: 1,
+                //   createdAt: "",
+                //   updatedAt: "",
+                //   type: c.type,
+                //   level: null,
+                //   levelType: null,
+                // );
+
+                 final customerData = CustomerData(
+    id: c.id,
+    userId: c.userId,
+    name: c.name,
+    proprietorName: c.proprietorName, // This should work correctly
+    email: customerDetails?["email"] ?? "", // Use actual email from API data
+    phone: c.phone ?? "",
+    address: c.address ?? "",
+    openingBalance: c.due,
+    avatar: c.avatar,
+    logo: c.logo, // Make sure your Customer model has logo field
+    status: 1,
+    createdAt: "",
+    updatedAt: "",
+    type: c.type,
+    level: customerDetails?["level"], // Pass actual level from API
+    levelType: customerDetails?["level_type"], // Pass actual levelType from API
+  );
 
                 Navigator.push(
                   context,
@@ -205,105 +224,144 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
                 )
               : Column(children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 8.0, right: 8),
+                    padding: const EdgeInsets.only(left: 0, right: 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ///left text , name, phone, gmail, address, levell
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                //name
-                                Text(
-                                  customerDetails?["name"] ?? "Customer Name",
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                //proprietor_name
-                                Text(
-                                  customerDetails?["proprietor_name"] ??
-                                      "proprietor name",
-                                  style: const TextStyle(
-                                      fontSize: 13, color: Colors.black),
-                                ),
-
-                                //phone
-                                Text(
-                                  customerDetails?["phone"] ?? "phone",
-                                  style: const TextStyle(
-                                      fontSize: 13, color: Colors.black),
-                                ),
-
-                                //gmail
-                                Text(
-                                  customerDetails?["email"] ?? "email",
-                                  style: const TextStyle(
-                                      fontSize: 13, color: Colors.black),
-                                ),
-
-                                //address
-                                SizedBox(
-                                  width: 250,
-                                  child: Text(
-                                    customerDetails?["address"] ?? "address",
-                                    maxLines: 1, // Limit to one line
-                                    overflow: TextOverflow
-                                        .ellipsis, // Show ... if overflow
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  //name
+                                  Text(
+                                    customerDetails?["name"] ?? "Customer Name",
                                     style: const TextStyle(
                                       fontSize: 13,
+                                      fontWeight: FontWeight.bold,
                                       color: Colors.black,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                  //proprietor_name
+                                  Text(
+                                    customerDetails?["proprietor_name"] ??
+                                        "proprietor name",
+                                    style: const TextStyle(
+                                        fontSize: 13, color: Colors.black),
+                                  ),
 
-                            ///edit, value, icon,
-                            ///
-                            ///
+                                  //phone
+                                  Text(
+                                    customerDetails?["phone"] ?? "phone",
+                                    style: const TextStyle(
+                                        fontSize: 13, color: Colors.black),
+                                  ),
 
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                'https://commercebook.site/${widget.customer.avatar ?? ''}',
-                                fit: BoxFit.cover,
-                                height: 50,
-                                width: 50,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.person); // fallback
-                                },
+                                  //gmail
+                                  Text(
+                                    customerDetails?["email"] ?? "email",
+                                    style: const TextStyle(
+                                        fontSize: 13, color: Colors.black),
+                                  ),
+
+                                  //address
+                                  SizedBox(
+                                    width: 250,
+                                    child: Text(
+                                      customerDetails?["address"] ?? "address",
+                                      maxLines: 1, // Limit to one line
+                                      overflow: TextOverflow
+                                          .ellipsis, // Show ... if overflow
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
 
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Text(
-                                  "Receivable",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green,
+                              ///edit, value, icon,
+
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(50),
+                                        child: Image.network(
+                                          'https://commercebook.site/${widget.customer.avatar ?? ''}',
+                                          fit: BoxFit.cover,
+                                          height: 40,
+                                          width: 40,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return const Icon(
+                                                Icons.person); // fallback
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(50),
+                                        child: Image.network(
+                                          'https://commercebook.site/${widget.customer.logo ?? ''}',
+                                          fit: BoxFit.cover,
+                                          height: 25,
+                                          width: 25,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return const Icon(
+                                                Icons.person); // fallback
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                Text(
-                                  "${widget.customer.due}",
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                  const SizedBox(
+                                    height: 8,
                                   ),
-                                ),
-                                
-                              ],
-                            ),
-                          ],
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      const Text(
+                                        "Receivable",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${widget.customer.due}",
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              )
+
+                              // Column(
+                              //   crossAxisAlignment: CrossAxisAlignment.end,
+                              //   children: [
+
+                              //   ],
+                              // ),
+                            ],
+                          ),
                         ),
                         const Divider(
                           height: 10,
@@ -316,7 +374,7 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
 
                   ///Customer Purchase list
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                    padding: const EdgeInsets.only(left: 0.0, right: 0),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,47 +394,153 @@ class _SupplierDetailsScreenState extends State<CustomerDetailsScreen> {
                                 )
                               : ListView.builder(
                                   shrinkWrap: true,
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(0),
                                   itemCount: widget.purchases.length,
                                   itemBuilder: (context, index) {
                                     final purchase = widget.purchases[index];
 
                                     return Card(
                                       shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4)),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
                                       margin: const EdgeInsets.symmetric(
                                           vertical: 2),
-                                      child: ListTile(
-                                        leading: CircleAvatar(
-                                          child: Text('${index + 1}'),
-                                        ),
-                                        title: Text(
-                                          "Bill: ${purchase.billNumber}",
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 13),
-                                        ),
-                                        subtitle: Column(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                                "Date: ${purchase.purchaseDate}",
-                                                style: const TextStyle(
+                                            // Left side content
+                                            SizedBox(
+                                              width: 100,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  // Date (title equivalent)
+                                                  Text(
+                                                    "${purchase.purchaseDate}",
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 13,
+                                                    ),
+                                                  ),
+
+                                                  // Type (subtitle content)
+                                                  Text(
+                                                    "${purchase.type}",
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+
+                                                  // Bill Number
+                                                  Text(
+                                                    "${purchase.billNumber}",
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 13,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+
+                                            Container(
+                                              height: 50,
+                                              width: 2,
+                                              color: Colors.green.shade200,
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6),
+                                            ),
+
+                                            Spacer(),
+
+                                            // Right side content (trailing equivalent)
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                const Text(
+                                                  "Bill Amount",
+                                                  style: TextStyle(
                                                     color: Colors.black,
-                                                    fontSize: 13)),
-                                            Text(
-                                                "Total: ৳ ${purchase.grossTotal}",
-                                                style: const TextStyle(
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  "${purchase.grossTotal} TK",
+                                                  style: const TextStyle(
                                                     color: Colors.black,
-                                                    fontSize: 13)),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ],
                                         ),
-                                        // trailing: const Icon(Icons.receipt_long,
-                                        //     color: Colors.blue),
                                       ),
                                     );
+
+                                    // Card(
+                                    //   shape: RoundedRectangleBorder(
+                                    //       borderRadius:
+                                    //           BorderRadius.circular(4)),
+                                    //   margin: const EdgeInsets.symmetric(
+                                    //       vertical: 2),
+                                    //   child: ListTile(
+
+                                    //       title: Text(
+                                    //           "${purchase.purchaseDate}",
+                                    //           style: const TextStyle(
+                                    //               color: Colors.black,
+                                    //               fontSize: 13)),
+                                    //       subtitle: Column(
+                                    //         crossAxisAlignment:
+                                    //             CrossAxisAlignment.start,
+                                    //         children: [
+                                    //           Text(
+                                    //             "${purchase.type}",
+                                    //             style: const TextStyle(
+                                    //                 color: Colors.black,
+                                    //                 fontSize: 13,
+                                    //                 fontWeight:
+                                    //                     FontWeight.bold),
+                                    //           ),
+                                    //           Text(
+                                    //             "${purchase.billNumber}",
+                                    //             style: const TextStyle(
+                                    //                 color: Colors.black,
+                                    //                 fontSize: 13),
+                                    //           ),
+                                    //         ],
+                                    //       ),
+                                    //       trailing: Column(
+                                    //         mainAxisAlignment:
+                                    //             MainAxisAlignment.end,
+                                    //         crossAxisAlignment:
+                                    //             CrossAxisAlignment.end,
+                                    //         children: [
+                                    //           const Text("Bill Amount",
+                                    //               style: const TextStyle(
+                                    //                   color: Colors.black,
+                                    //                   fontSize: 13)),
+                                    //           Text("${purchase.grossTotal} TK",
+                                    //               style: const TextStyle(
+                                    //                   color: Colors.black,
+                                    //                   fontSize: 13)),
+                                    //         ],
+                                    //       )),
+                                    // );
                                   },
                                 ),
                         ]),

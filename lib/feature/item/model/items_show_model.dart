@@ -120,6 +120,7 @@ class PurchaseDetailModel {
   final dynamic purchaseId;
   final dynamic purchaseDetailsId;
   final String type;
+  final String ? billNumber;
   final String purchaseDate;
   final dynamic itemId;
   final dynamic qty;
@@ -144,6 +145,7 @@ class PurchaseDetailModel {
     required this.purchaseId,
     this.purchaseDetailsId,
     required this.type,
+     this.billNumber,
     required this.purchaseDate,
     required this.itemId,
     required this.qty,
@@ -170,6 +172,8 @@ class PurchaseDetailModel {
       purchaseId: json['purchase_id'],
       purchaseDetailsId: json['purchase_details_id'],
       type: json['type'],
+      billNumber: json['bill_number'],
+
       purchaseDate: json['purchase_date'],
       itemId: json['item_id'],
       qty: json['qty'],

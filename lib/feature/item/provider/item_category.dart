@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/item/model/item_category.dart';
-import 'package:cbook_dt/feature/item/model/item_sub_category.dart';
+import 'package:cbook_dt/feature/item/model/item_sub_category_model.dart';
 import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

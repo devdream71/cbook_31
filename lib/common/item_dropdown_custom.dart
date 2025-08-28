@@ -1,5 +1,5 @@
 import 'package:cbook_dt/feature/item/add_item.dart';
-import 'package:cbook_dt/feature/item/model/items_show.dart';
+import 'package:cbook_dt/feature/item/model/items_show_model.dart';
 import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

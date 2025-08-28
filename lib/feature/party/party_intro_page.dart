@@ -16,7 +16,7 @@ class AddNewPartyIntro extends StatelessWidget {
         color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold);
 
     return Scaffold(
-       backgroundColor: AppColors.sfWhite,
+        backgroundColor: AppColors.sfWhite,
         appBar: AppBar(
           backgroundColor: colorScheme.primary,
           centerTitle: true,
@@ -40,17 +40,15 @@ class AddNewPartyIntro extends StatelessWidget {
               children: [
                 ///Add customer
                 Container(
-                  decoration: const BoxDecoration(
-                  
-                      ),
+                  decoration: const BoxDecoration(),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors
-                                .deepPurple, // 🔹 Set your desired background color
+                            backgroundColor: Color(
+                                0xff5156be), // 🔹 Set your desired background color
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                   2), // 🔹 Border radius 2
@@ -87,8 +85,8 @@ class AddNewPartyIntro extends StatelessWidget {
                       children: [
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors
-                                .deepPurple, // 🔹 Set your desired background color
+                            backgroundColor: Color(
+                                0xff5156be), // 🔹 Set your desired background color
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                   2), // 🔹 Border radius 2

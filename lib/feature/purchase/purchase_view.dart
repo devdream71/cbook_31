@@ -9,7 +9,7 @@ import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/invoice/invoice.dart';
 import 'package:cbook_dt/feature/invoice/invoice_model.dart';
-import 'package:cbook_dt/feature/item/model/items_show.dart';
+import 'package:cbook_dt/feature/item/model/items_show_model.dart';
 import 'package:cbook_dt/feature/item/model/unit_model.dart';
 import 'package:cbook_dt/feature/item/provider/item_category.dart';
 import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
