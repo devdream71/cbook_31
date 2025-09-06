@@ -1,4 +1,3 @@
-
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/no_internet.dart';
 import 'package:cbook_dt/feature/authentication/presentation/comapny_login.dart';
@@ -9,10 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
- 
+
   @override
   SplashScreenState createState() => SplashScreenState();
 }
@@ -34,7 +32,7 @@ class SplashScreenState extends State<SplashScreen> {
     super.dispose();
   }
 
-   Future<void> _checkInternetAndNavigate() async {
+  Future<void> _checkInternetAndNavigate() async {
     await Future.delayed(const Duration(seconds: 2)); // Show splash for 2 sec
 
     // Check internet connectivity with retry approach
@@ -43,14 +41,16 @@ class SplashScreenState extends State<SplashScreen> {
 
     // Keep checking the connectivity for a few seconds before proceeding
     for (int i = 0; i < 5; i++) {
-      connectivityResult = (await Connectivity().checkConnectivity())[0]; // Get the first item from the list
+      connectivityResult = (await Connectivity()
+          .checkConnectivity())[0]; // Get the first item from the list
       debugPrint("Connectivity Status: $connectivityResult");
 
       if (connectivityResult != ConnectivityResult.none) {
         isInternetAvailable = true;
         break; // Stop checking if internet is available
       }
-      await Future.delayed(const Duration(seconds: 1)); // Wait for 1 second before rechecking
+      await Future.delayed(
+          const Duration(seconds: 1)); // Wait for 1 second before rechecking
     }
 
     // If no internet, show the no internet screen
@@ -68,7 +68,8 @@ class SplashScreenState extends State<SplashScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => isLoggedIn ? const HomeView() : const ComapnyLogin(),
+        builder: (context) =>
+            isLoggedIn ? const HomeView() : const ComapnyLogin(),
       ),
     );
   }
@@ -90,7 +91,9 @@ class SplashScreenState extends State<SplashScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/image/splash_screen_nobg.png', width: 150, height: 150), //assets\image\splash_screen_nobg.png
+                  Image.asset('assets/image/logo_new.png',
+                      width: 150,
+                      height: 150), //assets\image\splash_screen_nobg.png
                   const SizedBox(height: 20),
                   const CircularProgressIndicator(),
                 ],
@@ -102,5 +105,3 @@ class SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-
-

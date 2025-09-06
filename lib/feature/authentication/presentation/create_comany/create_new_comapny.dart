@@ -1,4 +1,6 @@
+import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/cutom_text_field.dart';
+import 'package:cbook_dt/feature/authentication/presentation/comapny_login.dart';
 import 'package:cbook_dt/feature/authentication/presentation/create_comany/otp_screen_new_company.dart';
 import 'package:cbook_dt/feature/authentication/provider/reg_provider.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +50,6 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
     FocusManager.instance.primaryFocus?.unfocus();
 
     //////====> this code was working with out validtion.
-  
 
     final registerResponse = await authService.registerUser(
       name: _nameController.text.trim(),
@@ -112,13 +113,13 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
     final countries = authService.countries;
 
     return Scaffold(
-      //backgroundColor: colorScheme.secondary,
+      // backgroundColor: colorScheme.secondary,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: SafeArea(
           child: GestureDetector(
-            onTap: (){
-               FocusScope.of(context).unfocus();
+            onTap: () {
+              FocusScope.of(context).unfocus();
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,41 +146,56 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Center(
+                        child: Image.asset(
+                          // "assets/image/splash_screen_nobg.png",
+                          'assets/image/logo_new.png',
+                          height: 50,
+                          width: 70,
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 10,
+                      ),
+
                       ///company name header
                       _buildFieldLabel("Company Name", textTheme, colorScheme),
                       const SizedBox(height: 8),
-            
+
                       ///company name
                       CustomTextField(
                         hint: "Enter your company name",
                         colorScheme: colorScheme,
                         controller: _nameController,
+                        icon: Icons.info,
                         validator: (value) =>
                             value!.isEmpty ? "Company name is required" : null,
                       ),
                       const SizedBox(height: 20),
-            
+
                       ///email
                       _buildFieldLabel("Email", textTheme, colorScheme),
                       const SizedBox(height: 8),
-            
+
                       CustomTextField(
                         hint: "Enter your email",
                         colorScheme: colorScheme,
                         controller: _emailController,
+                        icon: Icons.email,
                         validator: (value) => value!.isEmpty
                             ? "Email is required"
                             : (!value.contains("@")
                                 ? "Enter a valid email"
                                 : null),
                       ),
-            
+
                       const SizedBox(height: 20),
-            
+
                       _buildFieldLabel("Country", textTheme, colorScheme),
 
                       const SizedBox(height: 8),
-            
+
                       DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
                           hintText: "Select your country",
@@ -197,22 +213,24 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                             (country) => country.id.toString() == value,
                             orElse: () => countries.first,
                           );
-            
+
                           setState(() {
                             _selectedCountryId = value;
                             _countryController.text = value!;
                             _countryCodeController.text =
                                 selected.code; // ✅ update text controller
                           });
-            
+
                           debugPrint('country id - $_selectedCountryId');
                         },
                         validator: (value) =>
                             value == null ? "Please select a country" : null,
                       ),
-            
+
                       const SizedBox(height: 20),
+
                       _buildFieldLabel("Phone", textTheme, colorScheme),
+
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -223,12 +241,24 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                               enabled: false,
                               style: const TextStyle(
                                 color: Colors.black,
-                                fontSize: 16,
+                                fontSize: 14,
                               ),
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
+                              decoration: InputDecoration(
+                                border: const UnderlineInputBorder(),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppColors.primaryColor,
+                                    width: 2.0,
+                                  ),
+                                ),
                                 isDense: true,
-                                contentPadding: EdgeInsets.all(12),
+                                contentPadding: const EdgeInsets.only(
+                                    left: 12, right: 12, top: 4, bottom: 4),
                               ),
                             ),
                           ),
@@ -237,6 +267,7 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                           ),
                           Expanded(
                             child: CustomTextField(
+                              icon: Icons.phone,
                               keyboardType: TextInputType.number,
                               hint: "Enter your phone number",
                               colorScheme: colorScheme,
@@ -248,16 +279,17 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                           ),
                         ],
                       ),
-            
+
                       const SizedBox(height: 20),
                       _buildFieldLabel("Password", textTheme, colorScheme),
-            
+
                       const SizedBox(height: 8),
                       CustomTextField(
                         hint: "Enter your password",
                         colorScheme: colorScheme,
                         controller: _passwordController,
                         isObscure: true,
+                        icon: Icons.more_horiz,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Password is required";
@@ -276,7 +308,8 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                         hint: "Confirm your password",
                         colorScheme: colorScheme,
                         controller: _confirmPasswordController,
-                        isObscure: true, // ✅ Use isObscure instead of isPassword
+                        icon: Icons.more_horiz,
+                        isObscure: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Confirm Password is required";
@@ -309,6 +342,37 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                                 ),
                         ),
                       ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Already have an account? ",
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              // 👉 Navigate to Login Screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const ComapnyLogin()),
+                              );
+                            },
+                            child: Text(
+                              "Sign in",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),
@@ -326,9 +390,12 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
       padding: const EdgeInsets.only(left: 5.0),
       child: Text(
         label,
-        style: textTheme.bodyMedium?.copyWith(
-          color: colorScheme.primary,
-        ),
+
+        style: TextStyle(color: colorScheme.primary, fontSize: 13),
+
+        // style: textTheme.bodyMedium?.copyWith(
+        //   color: colorScheme.primary,
+        // ),
       ),
     );
   }

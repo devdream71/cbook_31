@@ -86,6 +86,27 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
     });
   }
 
+  String formatNumber(dynamic value) {
+    if (value == null) return "0";
+
+    // Convert to double safely
+    double? numValue;
+    if (value is String) {
+      numValue = double.tryParse(value);
+    } else if (value is num) {
+      numValue = value.toDouble();
+    }
+
+    if (numValue == null) return "0";
+
+    // If whole number (e.g. 15.0 → 15)
+    if (numValue % 1 == 0) {
+      return numValue.toInt().toString();
+    }
+
+    return numValue.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<SalesController>();
@@ -140,7 +161,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
               return provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Padding(
-                      padding:      EdgeInsets.symmetric(horizontal: 0.0),
+                      padding: EdgeInsets.symmetric(horizontal: 0.0),
                       child: Column(
                         children: [
                           Padding(
@@ -471,7 +492,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                                   .start,
                                                           children: [
                                                             Text(
-                                                              "Item: ${provider.itemMap[int.tryParse(detail.itemId) ?? 0] ?? "Unknown"}  (${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"})",
+                                                              "${provider.itemMap[int.tryParse(detail.itemId) ?? 0] ?? "Unknown"}", //(${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"})
                                                               style:
                                                                   const TextStyle(
                                                                 color: Colors
@@ -482,7 +503,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                             Row(
                                                               children: [
                                                                 Text(
-                                                                  "Qty: ${detail.qty}",
+                                                                  "${detail.qty}  (${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"})",
                                                                   style: const TextStyle(
                                                                       color: Colors
                                                                           .black,
@@ -492,7 +513,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                                 const SizedBox(
                                                                     width: 5),
                                                                 Text(
-                                                                  "Price: ৳ ${detail.price}",
+                                                                  "x ${detail.price}",
                                                                   style: const TextStyle(
                                                                       color: Colors
                                                                           .black,
@@ -501,15 +522,32 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                                 ),
                                                               ],
                                                             ),
+                                                            // Text(
+                                                            //   "Discount: ${detail.salesUpdateDiscountPercentace} % (${detail.salesUpdateDiscountAmount}) , ",
+                                                            //   style: const TextStyle(
+                                                            //       color: Colors
+                                                            //           .black,
+                                                            //       fontSize: 12),
+                                                            // ),
+                                                            // Text(
+                                                            //   "Tax: ${detail.salesUpdateVATTAXPercentance} % (${detail.salesUpdateVATTAXAmount})",
+                                                            //   style: const TextStyle(
+                                                            //       color: Colors
+                                                            //           .black,
+                                                            //       fontSize: 12),
+                                                            // ),
+
                                                             Text(
-                                                              "Discount: ${detail.salesUpdateDiscountAmount}৳ , ${detail.salesUpdateDiscountPercentace} %",
+                                                              "Discount: ${formatNumber(detail.salesUpdateDiscountPercentace)} % "
+                                                              "(${formatNumber(detail.salesUpdateDiscountAmount)}) , ",
                                                               style: const TextStyle(
                                                                   color: Colors
                                                                       .black,
                                                                   fontSize: 12),
                                                             ),
                                                             Text(
-                                                              "Tax: ${detail.salesUpdateVATTAXAmount}৳, ${detail.salesUpdateVATTAXPercentance} %",
+                                                              "Tax: ${formatNumber(detail.salesUpdateVATTAXPercentance)} % "
+                                                              "(${formatNumber(detail.salesUpdateVATTAXAmount)})",
                                                               style: const TextStyle(
                                                                   color: Colors
                                                                       .black,
@@ -519,14 +557,38 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                         ),
                                                       ),
                                                       // Subtotal
-                                                      Text(
-                                                        "Subtotal: ৳ ${detail.subTotal}",
-                                                        style: const TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          const Text(
+                                                            "Subtotal",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.purple,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            "${detail.subTotal}",
+                                                            style:
+                                                                const TextStyle(
+                                                              color:
+                                                                  Colors.purple,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ],
                                                   ),

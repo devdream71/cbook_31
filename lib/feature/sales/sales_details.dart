@@ -160,6 +160,7 @@ class _SalesDetailsState extends State<SalesDetails> {
                     color: Colors.black)),
             Expanded(
               child: ListView.builder(
+                shrinkWrap: true,
                 itemCount: widget.sale.purchaseDetails.length,
                 itemBuilder: (context, index) {
                   final detail = widget.sale.purchaseDetails[index];
@@ -169,13 +170,15 @@ class _SalesDetailsState extends State<SalesDetails> {
                   String unitSymbol =
                       saleProvider.getUnitSymbol(detail.unitId!);
                   return Card(
+                    margin: const EdgeInsets.only(left: 4, bottom: 2),
                     shape: BeveledRectangleBorder(
                         borderRadius: BorderRadius.circular(3)),
                     child: ListTile(
+                      contentPadding: EdgeInsets.zero,
                       title: Text(
                         itemName, //- $unitSymbol
                         style:
-                            const TextStyle(color: Colors.black, fontSize: 12),
+                            const TextStyle(color: Colors.black, fontSize: 14),
                       ),
                       subtitle: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -230,14 +233,15 @@ class _SalesDetailsState extends State<SalesDetails> {
                                   color: Colors.black, fontSize: 12),
                               children: [
                                 TextSpan(
-                                  text:
-                                      '${_formatNumber(detail.qty)} $unitSymbol x ৳ ${_formatNumber(detail.price)}${_billWiseDiscount ? ' (-) Disc: ${_formatNumber(detail.discountPercentage)}% (${_formatNumber(detail.discountAmount)}),' : ''}${_billWiseDiscount ? ' (+) Tax: ${_formatNumber(detail.taxPercentage)}% (${_formatNumber(detail.taxAmount)})' : ''} = ',
-                                ),
+                                    text:
+                                        '${_formatNumber(detail.qty)} $unitSymbol x ৳ ${_formatNumber(detail.price)}${_billWiseDiscount ? ' (-) Disc: ${_formatNumber(detail.discountPercentage)}% (${_formatNumber(detail.discountAmount)}),' : ''}${_billWiseDiscount ? ' (+) Tax: ${_formatNumber(detail.taxPercentage)}% (${_formatNumber(detail.taxAmount)})' : ''} = ',
+                                    style: const TextStyle(fontSize: 14)),
                                 TextSpan(
                                   text: '${_formatNumber(detail.subTotal)}',
                                   style: const TextStyle(
                                       color: Colors.purple,
-                                      fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14),
                                 ),
                               ],
                             ),
@@ -277,7 +281,7 @@ class _SalesDetailsState extends State<SalesDetails> {
                 color: Colors.black,
                 fontWeight:
                     isBlod == true ? FontWeight.bold : FontWeight.normal,
-                fontSize: 12)),
+                fontSize: 14)),
       ],
     );
   }

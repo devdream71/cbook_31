@@ -5,8 +5,9 @@ class CustomTextField extends StatefulWidget {
   final bool isObscure;
   final ColorScheme colorScheme;
   final TextEditingController? controller;
-  final String? Function(String?)? validator; // ✅ Validator added
+  final String? Function(String?)? validator;
   final TextInputType? keyboardType;
+  final IconData? icon;
 
   const CustomTextField({
     super.key,
@@ -14,8 +15,9 @@ class CustomTextField extends StatefulWidget {
     required this.colorScheme,
     this.isObscure = false,
     this.controller,
-    this.validator, // ✅ Validator parameter
-    this.keyboardType
+    this.validator,
+    this.keyboardType,
+    this.icon,
   });
 
   @override
@@ -36,13 +38,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return TextFormField(
       controller: widget.controller,
       obscureText: _isObscured,
-      validator: widget.validator, // ✅ Corrected usage of validator
-      style: const TextStyle(fontSize: 12, color: Colors.black),
+      validator: widget.validator,
+      style: const TextStyle(fontSize: 14, color: Colors.black),
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(
-        
         hintText: widget.hint,
-        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+        hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
         border: const UnderlineInputBorder(),
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(
@@ -55,22 +56,53 @@ class _CustomTextFieldState extends State<CustomTextField> {
             width: 2.0,
           ),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-        suffixIcon: widget.isObscure
-            ? IconButton(
-                icon: Icon(
-                  _isObscured ? Icons.visibility_off : Icons.visibility,
+        isDense: true,
+        contentPadding:
+            const EdgeInsets.only(left: 12, right: 12, top: 4, bottom: 4),
+
+        // 👇 Prefix icon with consistent padding
+        prefixIcon: widget.icon != null
+            ? Container(
+                width: 48, // Fixed width for consistency
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.only(left: 12, right: 12),
+                child: Icon(
+                  widget.icon,
                   color: widget.colorScheme.primary,
+                  size: 20,
                 ),
-                onPressed: () {
-                  setState(() {
-                    _isObscured = !_isObscured;
-                  });
-                },
               )
             : null,
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: 48, // Match the container width
+          minHeight: 0,
+        ),
+
+        // 👇 Fixed suffix icon with same structure as prefix
+        suffixIcon: widget.isObscure
+            ? Container(
+                width: 48, // Same width as prefix for consistency
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(left: 12, right: 12),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isObscured = !_isObscured;
+                    });
+                  },
+                  child: Icon(
+                    _isObscured ? Icons.visibility_off : Icons.visibility,
+                    color: widget.colorScheme.primary,
+                    size: 20,
+                  ),
+                ),
+              )
+            : null,
+        suffixIconConstraints: const BoxConstraints(
+          minWidth: 48, // Same constraints as prefix
+          minHeight: 0,
+        ),
       ),
     );
   }
 }
-

@@ -23,6 +23,8 @@ class AppColors {
   static const Color _sfWhite = Color(0xffFFFFFF);
   static const Color _purple2 = Color(0xff3A1ECD);
 
+  static const Color _button2Color = Color(0xff5156be);
+
 
   // Getters to access the colors
   static Color get secondaryColor => _secondaryColor;
@@ -34,5 +36,7 @@ class AppColors {
   static Color get cardGrey => _cardGrey;
   static Color get sfWhite => _sfWhite;
   static Color get purple2 => _purple2;
+  static Color get button2Color => _button2Color;
+
 
 }
