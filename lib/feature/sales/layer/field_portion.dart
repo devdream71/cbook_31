@@ -202,12 +202,27 @@ class _FieldPortionState extends State<FieldPortion> {
                               }
 
                               if (taxProvider.taxList.isEmpty) {
-                                return const Center(
-                                  child: Text(
-                                    'No tax options available.',
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                );
+                                return CustomDropdownTwo(
+                                    height: 38,
+                                    hint: taxProvider.taxList.isEmpty
+                                        ? "None"
+                                        : "Select VAT/TAX",
+                                    items: taxProvider.taxList.isEmpty
+                                        ? ["None"] // Show only "None"
+                                        : taxProvider.taxList
+                                            .map((tax) =>
+                                                "${tax.name} - ${tax.percent}")
+                                            .toList(),
+                                    width: double.infinity,
+                                    selectedItem: selectedTaxName,
+                                    onChanged: (newValue) {});
+
+                                // const Center(
+                                //   child: Text(
+                                //     'No tax',
+                                //     style: TextStyle(color: Colors.black),
+                                //   ),
+                                // );
                               }
                               return SizedBox(
                                 width: 80,
@@ -532,15 +547,32 @@ class _FieldPortionState extends State<FieldPortion> {
                               }
 
                               if (taxProvider.taxList.isEmpty) {
-                                return const Center(
-                                  child: Text(
-                                    'No tax options available.',
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                );
+                                return CustomDropdownTwo(
+                                    height: 38,
+                                    hint: taxProvider.taxList.isEmpty
+                                        ? "None"
+                                        : "Select VAT/TAX",
+                                    items: taxProvider.taxList.isEmpty
+                                        ? ["None"] // Show only "None"
+                                        : taxProvider.taxList
+                                            .map((tax) =>
+                                                "${tax.name} - ${tax.percent}")
+                                            .toList(),
+                                    width: 80,
+                                    selectedItem: selectedTaxName,
+                                    onChanged: (newValue) {});
+
+                                // const Center(
+                                //   child: Text(
+                                //     'No tax',
+                                //     style: TextStyle(color: Colors.black),
+                                //   ),
+                                // );
                               }
+
                               return SizedBox(
                                 width: 80,
+                                height: 38,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -165,7 +165,7 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
 
                       ///company name
                       CustomTextField(
-                        hint: "Enter your company name",
+                        //hint: "Enter your company name",
                         colorScheme: colorScheme,
                         controller: _nameController,
                         icon: Icons.info,
@@ -179,7 +179,7 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                       const SizedBox(height: 8),
 
                       CustomTextField(
-                        hint: "Enter your email",
+                        //hint: "Enter your email",
                         colorScheme: colorScheme,
                         controller: _emailController,
                         icon: Icons.email,
@@ -198,7 +198,7 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
 
                       DropdownButtonFormField<String>(
                         decoration: const InputDecoration(
-                          hintText: "Select your country",
+                          //hintText: "Country",
                           hintStyle: TextStyle(fontSize: 14),
                         ),
                         value: _selectedCountryId,
@@ -269,7 +269,7 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                             child: CustomTextField(
                               icon: Icons.phone,
                               keyboardType: TextInputType.number,
-                              hint: "Enter your phone number",
+                              //hint: "Enter your phone number",
                               colorScheme: colorScheme,
                               controller: _phoneController,
                               validator: (value) => value!.isEmpty
@@ -285,11 +285,11 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
 
                       const SizedBox(height: 8),
                       CustomTextField(
-                        hint: "Enter your password",
+                        //hint: "Enter your password",
                         colorScheme: colorScheme,
                         controller: _passwordController,
                         isObscure: true,
-                        icon: Icons.more_horiz,
+                        icon: Icons.password,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Password is required";
@@ -305,10 +305,10 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
                           "Confirm Password", textTheme, colorScheme),
                       const SizedBox(height: 8),
                       CustomTextField(
-                        hint: "Confirm your password",
+                        //hint: "Confirm your password",
                         colorScheme: colorScheme,
                         controller: _confirmPasswordController,
-                        icon: Icons.more_horiz,
+                        icon: Icons.password,
                         isObscure: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {

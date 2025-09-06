@@ -198,7 +198,7 @@ class LayoutState extends State<Layout> {
                                                 ? NetworkImage(
                                                     "https://commercebook.site/${user.avatar}")
                                                 : const AssetImage(
-                                                        'assets/image/cbook_logo.png')
+                                                        'assets/image/logo_new.png')
                                                     as ImageProvider,
                                           ),
                                         ),
@@ -302,36 +302,7 @@ class LayoutState extends State<Layout> {
                       ),
                     ),
 
-                    // Expanded(
-                    //   child: Consumer<DashboardReportProvider>(
-                    //     builder: (context, provider, _) {
-                    //       if (provider.isLoadingCustomerTransaction) {
-                    //         return const Center(child: SizedBox());
-                    //       } else if (provider.errorCustomerTransaction !=
-                    //           null) {
-                    //         return Text(
-                    //             "Error: ${provider.errorCustomerTransaction}");
-                    //       } else {
-                    //         return InkWell(
-                    //           onTap: () {
-                    //             Navigator.push(
-                    //               context,
-                    //               MaterialPageRoute(
-                    //                   builder: (context) => const Party()),
-                    //             );
-                    //           },
-                    //           child: _buildSummaryCard(
-                    //             title: "Customer",
-                    //             amount:
-                    //                 '${provider.customerTransaction ?? 0}', // ✅ Will show 393.55
-                    //             color: Colors.green.shade100,
-                    //             iconColor: Colors.green.shade800,
-                    //           ),
-                    //         );
-                    //       }
-                    //     },
-                    //   ),
-                    // ),
+                     
 
                     const SizedBox(
                       width: 0,

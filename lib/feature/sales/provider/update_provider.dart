@@ -1,5 +1,3 @@
- 
-
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/sales/model/sales_update_by_id_model.dart';
@@ -81,16 +79,19 @@ class SaleUpdateProvider extends ChangeNotifier {
 
   /// fetch unit.
   Future<void> fetchUnits() async {
-
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
-
     const url = "https://commercebook.site/api/v1/units";
-    final response = await http.get(Uri.parse(url,),  headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer $token",
-        },);
+    final response = await http.get(
+      Uri.parse(
+        url,
+      ),
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -106,7 +107,11 @@ class SaleUpdateProvider extends ChangeNotifier {
 
         data['data'].forEach((key, value) {
           unitMap[value['id']] = value['name']; // Store ID → Name
-          unitNames.add(value['name']); // Add name to dropdown
+          unitMap[value['id']] = value['symbol'];
+          
+          unitNames.add(value['name']); 
+          unitNames.add(value['symbol']);
+          // Add name to dropdown
         });
 
         notifyListeners();
@@ -121,16 +126,17 @@ class SaleUpdateProvider extends ChangeNotifier {
 
   ///fetch item
   Future<void> fetchItems() async {
-
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-    
 
     const url = "https://commercebook.site/api/v1/items";
-    final response = await http.get(Uri.parse(url),  headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer $token",
-        },);
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -165,10 +171,13 @@ class SaleUpdateProvider extends ChangeNotifier {
     final token = prefs.getString('token');
 
     final url = "https://commercebook.site/api/v1/sales/edit/$id";
-    final response = await http.get(Uri.parse(url),  headers: {
-          'Accept': 'application/json',
-          "Authorization": "Bearer $token",
-        },);
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
 
     debugPrint("API Response: ${response.body}");
 
@@ -180,43 +189,59 @@ class SaleUpdateProvider extends ChangeNotifier {
 
         // Extract main sale data
         final saleData = data['data'];
-        
+
         // Set form fields with actual API response structure
         billNumberController.text = saleData['bill_number']?.toString() ?? "";
         purchaseDateController.text = saleData['sales_date']?.toString() ?? "";
-        updateDiscountAmount.text = saleData['discount']?.toString() ?? '0.00';
-        updateDiscountPercentance.text = saleData['discount_percent']?.toString() ?? '0.00';
+        // updateDiscountAmount.text = saleData['discount']?.toString() ?? '0.00';
+        // updateDiscountPercentance.text = saleData['discount_percent']?.toString() ?? '0.00';
+        updateDiscountAmount.text = saleData['discount'] != null
+            ? double.parse(saleData['discount'].toString()).toStringAsFixed(2)
+            : '0.00';
+
+        updateDiscountPercentance.text = saleData['discount_percent'] != null
+            ? double.parse(saleData['discount_percent'].toString())
+                .toStringAsFixed(2)
+            : '0.00';
         grossTotalController.text = saleData['gross_total']?.toString() ?? "";
         customerController.text = saleData['customer_id']?.toString() ?? "";
-        
+
         // Set customer flag
-        hasCustomer = saleData['customer_id'] != null && saleData['customer_id'] != 0;
+        hasCustomer =
+            saleData['customer_id'] != null && saleData['customer_id'] != 0;
 
         // Process sales details
         if (saleData['sales_details'] != null) {
           List<dynamic> salesDetails = saleData['sales_details'];
-          
+
           for (var detail in salesDetails) {
             saleUpdateList.add(SaleUpdateModel(
               itemId: detail['item_id']?.toString() ?? "",
               price: detail['price']?.toString() ?? "0",
               qty: detail['qty']?.toString() ?? "0",
               subTotal: detail['sub_total']?.toString() ?? "0",
-              unitId: "${detail['unit_id']?.toString() ?? ""}_${getUnitName(detail['unit_id']?.toString() ?? "")}_${detail['qty']?.toString() ?? "1"}",
-              salesUpdateDiscountPercentace: detail['discount_percentage']?.toString() ?? "0",
-              salesUpdateDiscountAmount: detail['discount_amount']?.toString() ?? "0",
+              unitId:
+                  "${detail['unit_id']?.toString() ?? ""}_${getUnitName(detail['unit_id']?.toString() ?? "")}_${detail['qty']?.toString() ?? "1"}",
+              salesUpdateDiscountPercentace:
+                  detail['discount_percentage']?.toString() ?? "0",
+              salesUpdateDiscountAmount:
+                  detail['discount_amount']?.toString() ?? "0",
               salesUpdateVATTAXAmount: detail['tax_amount']?.toString() ?? "0",
-              salesUpdateVATTAXPercentance: detail['tax_percent']?.toString() ?? "0",
+              salesUpdateVATTAXPercentance:
+                  detail['tax_percent']?.toString() ?? "0",
             ));
           }
 
           // Set item-level discount and tax from first item (if exists)
           if (salesDetails.isNotEmpty) {
             final firstItem = salesDetails.first;
-            itemDiscountAmount.text = firstItem['discount_amount']?.toString() ?? '';
-            itemDiscountPercentance.text = firstItem['discount_percentage']?.toString() ?? '';
+            itemDiscountAmount.text =
+                firstItem['discount_amount']?.toString() ?? '';
+            itemDiscountPercentance.text =
+                firstItem['discount_percentage']?.toString() ?? '';
             itemTaxVatAmount.text = firstItem['tax_amount']?.toString() ?? '';
-            itemTaxVatPercentance.text = firstItem['tax_percent']?.toString() ?? '';
+            itemTaxVatPercentance.text =
+                firstItem['tax_percent']?.toString() ?? '';
           }
         }
 
@@ -246,7 +271,6 @@ class SaleUpdateProvider extends ChangeNotifier {
     errorMessage = "";
     notifyListeners(); // Notify listeners that data is being fetched
 
-
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
@@ -256,10 +280,13 @@ class SaleUpdateProvider extends ChangeNotifier {
         'https://commercebook.site/api/v1/all/customers/'); //api/v1/all/customers/
 
     try {
-      final response = await http.get(url,  headers: {
+      final response = await http.get(
+        url,
+        headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer $token",
-        },);
+        },
+      );
       final data = jsonDecode(response.body);
 
       // Print the entire response in the terminal
@@ -449,38 +476,39 @@ class SaleUpdateProvider extends ChangeNotifier {
   }
 
   ///updated credit item sales updated
-addCreditItemSaleUpdate(
-  String selectedItemId,
-  String price,
-  String selectedUnitIdWithName,
-  String qty,
-  String discountAmount,
-  String discountpercentace,
-  String taxAmount,
-  String taxPercentace,
-  String dis,
-) {
-  saleUpdateList.add(SaleUpdateModel(
-      itemId: selectedItemId,
-      price: price,
-      qty: qty,
-      subTotal: (double.parse(price) * double.parse(qty)).toString(),
-      unitId: selectedUnitIdWithName ?? '5_Packet_1', // Use the actual unit or fallback
-      salesUpdateDiscountPercentace: discountpercentace,
-      salesUpdateDiscountAmount: discountAmount,
-      salesUpdateVATTAXAmount: taxAmount,
-      salesUpdateVATTAXPercentance: taxPercentace,
-      dis: dis));
+  addCreditItemSaleUpdate(
+    String selectedItemId,
+    String price,
+    String selectedUnitIdWithName,
+    String qty,
+    String discountAmount,
+    String discountpercentace,
+    String taxAmount,
+    String taxPercentace,
+    String dis,
+  ) {
+    saleUpdateList.add(SaleUpdateModel(
+        itemId: selectedItemId,
+        price: price,
+        qty: qty,
+        subTotal: (double.parse(price) * double.parse(qty)).toString(),
+        unitId: selectedUnitIdWithName ??
+            '5_Packet_1', // Use the actual unit or fallback
+        salesUpdateDiscountPercentace: discountpercentace,
+        salesUpdateDiscountAmount: discountAmount,
+        salesUpdateVATTAXAmount: taxAmount,
+        salesUpdateVATTAXPercentance: taxPercentace,
+        dis: dis));
 
-  // Recalculate totals after adding item
-  setGrossTotal();
-  calculateTax();
-  
-  debugPrint("✅ Credit item added to saleUpdateList");
-  debugPrint("Total items: ${saleUpdateList.length}");
-  
-  notifyListeners();
-}
+    // Recalculate totals after adding item
+    setGrossTotal();
+    calculateTax();
+
+    debugPrint("✅ Credit item added to saleUpdateList");
+    debugPrint("Total items: ${saleUpdateList.length}");
+
+    notifyListeners();
+  }
 
   ///update sales details.
   void updateSaleDetail(int index) {
@@ -519,7 +547,7 @@ addCreditItemSaleUpdate(
   String? getUnitName(String id) {
     for (var e in unitResponseModel) {
       if (e.id.toString() == id) {
-        return e.name.toString();
+        return e.symbol.toString();
       }
     }
     return null;
@@ -650,7 +678,6 @@ addCreditItemSaleUpdate(
 
   ///update sales
   Future<void> updateSale(BuildContext context) async {
-
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
@@ -661,7 +688,7 @@ addCreditItemSaleUpdate(
       final discountPercent = updateDiscountPercentance.text;
 
       // Get the current sale ID
-      final saleId = currentSaleId?.toString() ;
+      final saleId = currentSaleId?.toString();
 
       final url = "https://commercebook.site/api/v1/sales/update"
           "?id=$saleId"
@@ -670,7 +697,7 @@ addCreditItemSaleUpdate(
           "&bill_number=${billNumberController.text}"
           "&sale_date=${purchaseDateController.text}"
           "&details_notes=notes"
-          "&gross_total=${grossTotalController.text}"
+          "&gross_total=${getSubTotal}" //provider.getSubTotal()
           "&payment_out=1"
           "&payment_amount=${calculateFinalGrossTotalWithTax()}"
           "&discount_percent=$discountPercent"
@@ -692,8 +719,9 @@ addCreditItemSaleUpdate(
 
       final response = await http.post(
         Uri.parse(url),
-        headers: {"Content-Type": "application/json",
-        "Authorization": "Bearer $token",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
         },
         body: jsonEncode(requestBody),
       );
@@ -753,6 +781,3 @@ addCreditItemSaleUpdate(
     }
   }
 }
-
-
- 

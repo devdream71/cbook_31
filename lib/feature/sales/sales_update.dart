@@ -25,8 +25,15 @@ import 'package:provider/provider.dart';
 ///====>Sales update Screen
 class SalesUpdateScreen extends StatefulWidget {
   final int salesId;
+  final String? transactionMethod; // Add this
+  final String? customerName;
 
-  const SalesUpdateScreen({Key? key, required this.salesId}) : super(key: key);
+  const SalesUpdateScreen({
+    Key? key,
+    required this.salesId,
+    this.transactionMethod,
+    this.customerName,
+  }) : super(key: key);
 
   @override
   State<SalesUpdateScreen> createState() => _SalesUpdateScreenState();
@@ -35,11 +42,9 @@ class SalesUpdateScreen extends StatefulWidget {
 class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
   String? selectedTaxName;
   String? selectedTaxId;
-
   String? selectedCustomer;
   String? selectedCustomerId;
   Customer? selectedCustomerObject;
-
   bool showNoteField = false;
 
   TextEditingController nameController = TextEditingController();
@@ -60,8 +65,18 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = Provider.of<SalesController>(context, listen: false);
+
+      // Set initial cash/credit state based on transaction method
+      if (widget.transactionMethod == "cash") {
+        controller.isCash = true;
+      } else if (widget.transactionMethod == "customer") {
+        controller.isCash = false;
+      }
+
       Provider.of<ItemCategoryProvider>(context, listen: false)
           .fetchCategories();
+
       Provider.of<AddItemProvider>(context, listen: false).fetchItems();
 
       Future.microtask(() =>
@@ -78,11 +93,6 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
       // Set the selected customer based on sale data
       final saleUpdateProvider =
           Provider.of<SaleUpdateProvider>(context, listen: false);
-
-      // if (saleUpdateProvider.saleEditResponse.data != null) {
-      //   saleUpdateProvider.setCustomerFromSale(
-      //       saleUpdateProvider.saleEditResponse.data!.customerId ?? 0);
-      // }
     });
   }
 
@@ -109,6 +119,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('customer name ${widget.customerName}');
     final controller = context.watch<SalesController>();
     final updateController = context.watch<SaleUpdateProvider>();
     final categoryProvider =
@@ -134,11 +145,11 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
 
           actions: [
             CashCreditToggle(
-              initialCash: true,
+              initialCash: widget.transactionMethod ==
+                  "cash", // Set based on transaction method
               onChanged: (isCash) {
                 print("Selected: ${isCash ? "Cash" : "Credit"}");
                 controller.updateCash(context);
-                ; // you can hook your logic here
               },
             ),
             IconButton(
@@ -310,90 +321,19 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                           Row(
                                             children: [
                                               SizedBox(
-                                                  // height: 58,
-                                                  // width: 180,
                                                   child: provider.hasCustomer
-                                                      ? Column(
+                                                      ? const Column(
                                                           children: [
                                                             SizedBox.shrink()
-                                                            // AddSalesFormfieldTwo(
-                                                            //     controller:
-                                                            //         controller
-                                                            //             .codeController,
-                                                            //     customerorSaleslist:
-                                                            //         "Showing supplier list",
-                                                            //     customerOrSupplierButtonLavel:
-                                                            //         "Add new supplier",
-                                                            //     onTap: () {
-                                                            //       Navigator.push(
-                                                            //           context,
-                                                            //           MaterialPageRoute(
-                                                            //               builder: (context) =>
-                                                            //                   const SuppliersCreate()));
-                                                            //     }),
                                                           ],
                                                         )
                                                       : InkWell(
                                                           onTap: () {},
-                                                          child:
-                                                              SizedBox.shrink()
-
-                                                          // const Text(
-                                                          //   "Cash",
-                                                          //   style: TextStyle(
-                                                          //     fontSize: 12,
-                                                          //     color:
-                                                          //         Colors.blue,
-                                                          //     fontWeight:
-                                                          //         FontWeight
-                                                          //             .w600,
-                                                          //   ),
-                                                          // ),
-                                                          )),
+                                                          child: const SizedBox
+                                                              .shrink())),
                                               hPad3,
                                             ],
                                           ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    // Bill Number and Date Section
-                                    Expanded(
-                                      child: Column(
-                                        children: [
-                                          // Bill Number
-                                          // AddSalesFormfield(
-                                          //     labelText: 'Bill Number',
-                                          //     controller: provider
-                                          //         .billNumberController),
-                                          // const SizedBox(height: 8),
-
-                                          // Date Picker
-                                          // GestureDetector(
-                                          //   onTap: () async {
-                                          //     DateTime? pickedDate =
-                                          //         await showDatePicker(
-                                          //       context: context,
-                                          //       initialDate: DateTime.now(),
-                                          //       firstDate: DateTime(2000),
-                                          //       lastDate: DateTime(2100),
-                                          //     );
-
-                                          //     if (pickedDate != null) {
-                                          //       String formattedDate =
-                                          //           "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-                                          //       provider.purchaseDateController
-                                          //           .text = formattedDate;
-                                          //     }
-                                          //   },
-                                          //   child: AbsorbPointer(
-                                          //     child: AddSalesFormfield(
-                                          //       labelText: 'Purchase Date',
-                                          //       controller: provider
-                                          //           .purchaseDateController,
-                                          //     ),
-                                          //   ),
-                                          // ),
                                         ],
                                       ),
                                     ),
@@ -401,26 +341,116 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                 ),
                                 const SizedBox(height: 8),
 
+                                // if (controller.isCash == false)
+                                //   Padding(
+                                //     padding: const EdgeInsets.symmetric(
+                                //         horizontal: 6.0),
+                                //     child: Column(
+                                //       crossAxisAlignment:
+                                //           CrossAxisAlignment.start,
+                                //       children: [
+                                //         if (widget.customerName != null &&
+                                //             widget.customerName != "N/A")
+                                //           Padding(
+                                //             padding: const EdgeInsets.symmetric(
+                                //                 horizontal: 8.0, vertical: 4.0),
+                                //             child: Text(
+                                //               "Customer: ${widget.customerName}",
+                                //               style: const TextStyle(
+                                //                 fontSize: 14,
+                                //                 fontWeight: FontWeight.bold,
+                                //                 color: Colors.blue,
+                                //               ),
+                                //             ),
+                                //           ),
+                                //         AddSalesFormfieldTwo(
+                                //             controller:
+                                //                 controller.codeController,
+                                //             customerorSaleslist:
+                                //                 "Showing customer list",
+                                //             customerOrSupplierButtonLavel:
+                                //                 "Add new customer",
+                                //             onTap: () {
+                                //               Navigator.push(
+                                //                   context,
+                                //                   MaterialPageRoute(
+                                //                       builder: (context) =>
+                                //                           const SuppliersCreate()));
+                                //             }),
+                                //       ],
+                                //     ),
+                                //   ),
+
                                 if (controller.isCash == false)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 6.0),
-                                    child: AddSalesFormfieldTwo(
-                                        controller: controller.codeController,
-                                        customerorSaleslist:
-                                            "Showing supplier list",
-                                        customerOrSupplierButtonLavel:
-                                            "Add new supplier",
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const SuppliersCreate()));
-                                        }),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (widget.customerName != null &&
+                                            widget.customerName != "N/A")
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 4.0),
+                                            // child: Text(
+                                            //   "Customer: ",
+                                            //   style:   TextStyle(
+                                            //     fontSize: 14,
+                                            //     fontWeight: FontWeight.bold,
+                                            //     color: Colors.blue,
+                                            //   ),
+                                            // ),
+                                          ),
+                                        Consumer<CustomerProvider>(
+                                          builder: (context, customerProvider,
+                                              child) {
+                                            // Find the customer object that matches the customer name
+                                            Customer? preSelectedCustomer;
+                                            if (widget.customerName != null &&
+                                                widget.customerName != "N/A" &&
+                                                customerProvider
+                                                        .customerResponse
+                                                        ?.data !=
+                                                    null) {
+                                              try {
+                                                preSelectedCustomer =
+                                                    customerProvider
+                                                        .customerResponse!.data!
+                                                        .firstWhere(
+                                                  (customer) =>
+                                                      customer.name ==
+                                                      widget.customerName,
+                                                );
+                                              } catch (e) {
+                                                // Customer not found, preSelectedCustomer remains null
+                                                preSelectedCustomer = null;
+                                              }
+                                            }
+
+                                            return AddSalesFormfieldTwo(
+                                                controller:
+                                                    controller.codeController,
+                                                customerorSaleslist:
+                                                    "Showing customer list",
+                                                customerOrSupplierButtonLavel:
+                                                    "Add new customer",
+                                                selectedCustomer:
+                                                    preSelectedCustomer,
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const SuppliersCreate()));
+                                                });
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
 
-                                // Items List
                                 ListView.builder(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
@@ -462,8 +492,12 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                             horizontal: 4.0),
                                         child: Card(
                                           margin: const EdgeInsets.symmetric(
-                                              vertical: 8),
-                                          elevation: 3,
+                                              vertical: 1),
+                                          elevation: 1,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(3),
+                                          ),
                                           child: Padding(
                                             padding: const EdgeInsets.all(12),
                                             child: Row(
@@ -492,7 +526,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                                   .start,
                                                           children: [
                                                             Text(
-                                                              "${provider.itemMap[int.tryParse(detail.itemId) ?? 0] ?? "Unknown"}", //(${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"})
+                                                              "${provider.itemMap[int.tryParse(detail.itemId) ?? 0] ?? "Unknown"}",
                                                               style:
                                                                   const TextStyle(
                                                                 color: Colors
@@ -503,17 +537,20 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                             Row(
                                                               children: [
                                                                 Text(
-                                                                  "${detail.qty}  (${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"})",
+                                                                  "${formatNumber(detail.qty)} ${provider.unitMap[int.tryParse(detail.unitId.split("_")[0]) ?? 0] ?? "Unknown"}",
                                                                   style: const TextStyle(
                                                                       color: Colors
                                                                           .black,
                                                                       fontSize:
                                                                           12),
                                                                 ),
+
+//
+
                                                                 const SizedBox(
                                                                     width: 5),
                                                                 Text(
-                                                                  "x ${detail.price}",
+                                                                  "x ${formatNumber(detail.price)}",
                                                                   style: const TextStyle(
                                                                       color: Colors
                                                                           .black,
@@ -523,36 +560,67 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                               ],
                                                             ),
                                                             // Text(
-                                                            //   "Discount: ${detail.salesUpdateDiscountPercentace} % (${detail.salesUpdateDiscountAmount}) , ",
+                                                            //   "Discount: ${formatNumber(detail.salesUpdateDiscountPercentace)} % "
+                                                            //   "(${formatNumber(detail.salesUpdateDiscountAmount)}) , ",
                                                             //   style: const TextStyle(
                                                             //       color: Colors
                                                             //           .black,
                                                             //       fontSize: 12),
                                                             // ),
                                                             // Text(
-                                                            //   "Tax: ${detail.salesUpdateVATTAXPercentance} % (${detail.salesUpdateVATTAXAmount})",
+                                                            //   "Tax: ${formatNumber(detail.salesUpdateVATTAXPercentance)} % "
+                                                            //   "(${formatNumber(detail.salesUpdateVATTAXAmount)})",
                                                             //   style: const TextStyle(
                                                             //       color: Colors
                                                             //           .black,
                                                             //       fontSize: 12),
                                                             // ),
 
-                                                            Text(
-                                                              "Discount: ${formatNumber(detail.salesUpdateDiscountPercentace)} % "
-                                                              "(${formatNumber(detail.salesUpdateDiscountAmount)}) , ",
-                                                              style: const TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize: 12),
-                                                            ),
-                                                            Text(
-                                                              "Tax: ${formatNumber(detail.salesUpdateVATTAXPercentance)} % "
-                                                              "(${formatNumber(detail.salesUpdateVATTAXAmount)})",
-                                                              style: const TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize: 12),
-                                                            ),
+                                                            // Show discount only if percentage or amount is not zero
+                                                            if ((detail.salesUpdateDiscountPercentace !=
+                                                                        null &&
+                                                                    double.tryParse(detail
+                                                                            .salesUpdateDiscountPercentace
+                                                                            .toString()) !=
+                                                                        0) ||
+                                                                (detail.salesUpdateDiscountAmount !=
+                                                                        null &&
+                                                                    double.tryParse(detail
+                                                                            .salesUpdateDiscountAmount
+                                                                            .toString()) !=
+                                                                        0))
+                                                              Text(
+                                                                "Discount: ${formatNumber(detail.salesUpdateDiscountPercentace)} % "
+                                                                "(${formatNumber(detail.salesUpdateDiscountAmount)}) , ",
+                                                                style: const TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontSize:
+                                                                        12),
+                                                              ),
+
+// Show tax only if percentage or amount is not zero
+                                                            if ((detail.salesUpdateVATTAXPercentance !=
+                                                                        null &&
+                                                                    double.tryParse(detail
+                                                                            .salesUpdateVATTAXPercentance
+                                                                            .toString()) !=
+                                                                        0) ||
+                                                                (detail.salesUpdateVATTAXAmount !=
+                                                                        null &&
+                                                                    double.tryParse(detail
+                                                                            .salesUpdateVATTAXAmount
+                                                                            .toString()) !=
+                                                                        0))
+                                                              Text(
+                                                                "Tax: ${formatNumber(detail.salesUpdateVATTAXPercentance)} % "
+                                                                "(${formatNumber(detail.salesUpdateVATTAXAmount)})",
+                                                                style: const TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontSize:
+                                                                        12),
+                                                              ),
                                                           ],
                                                         ),
                                                       ),
@@ -577,7 +645,8 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                                             ),
                                                           ),
                                                           Text(
-                                                            "${detail.subTotal}",
+                                                            formatNumber(detail
+                                                                .subTotal),
                                                             style:
                                                                 const TextStyle(
                                                               color:
@@ -655,7 +724,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                 // Gross Total
                                 Padding(
                                   padding: const EdgeInsets.only(right: 4.0),
-                                  child: _buildGrossTotalSection(),
+                                  child: _buildGrossTotalSection(provider),
                                 ),
                                 const SizedBox(height: 4),
 
@@ -700,93 +769,6 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
       ),
     );
   }
-
-  // Helper method to build Add Item Button
-  // Widget _buildAddItemButton(BuildContext context, SalesController controller,
-  //     SaleUpdateProvider provider, ColorScheme colorScheme) {
-  //   bool showAddButton = controller.isCash
-  //       ? controller.itemsCash.isEmpty
-  //       : controller.itemsCredit.isEmpty;
-
-  //   return showAddButton
-  //       ? InkWell(
-  //           onTap: () {
-  //             showSalesDialog(context, controller, provider);
-  //           },
-  //           child: Container(
-  //             decoration: BoxDecoration(
-  //               color: Colors.white,
-  //               border: Border.all(width: 1, color: Colors.grey),
-  //               borderRadius: BorderRadius.circular(5),
-  //             ),
-  //             child: Padding(
-  //               padding: const EdgeInsets.all(4.0),
-  //               child: Row(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 crossAxisAlignment: CrossAxisAlignment.center,
-  //                 children: [
-  //                   CircleAvatar(
-  //                     radius: 14,
-  //                     backgroundColor: AppColors.primaryColor,
-  //                     child: const Icon(
-  //                       Icons.add,
-  //                       color: Colors.white,
-  //                       size: 18,
-  //                     ),
-  //                   ),
-  //                   const SizedBox(
-  //                     width: 6,
-  //                   ),
-  //                   Text(
-  //                     "Add item",
-  //                     style: TextStyle(
-  //                         color: AppColors.primaryColor,
-  //                         fontWeight: FontWeight.bold,
-  //                         fontSize: 14),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-
-  //           // Container(
-  //           //   decoration: BoxDecoration(
-  //           //     color: colorScheme.primary,
-  //           //     borderRadius: BorderRadius.circular(5),
-  //           //     boxShadow: [
-  //           //       BoxShadow(
-  //           //         color: Colors.black.withOpacity(0.2),
-  //           //         blurRadius: 5,
-  //           //         offset: const Offset(0, 3),
-  //           //       ),
-  //           //     ],
-  //           //   ),
-  //           //   child: Padding(
-  //           //     padding: const EdgeInsets.all(4.0),
-  //           //     child: Row(
-  //           //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           //       children: [
-  //           //         const Text(
-  //           //           "Add Item & Service",
-  //           //           style: TextStyle(color: Colors.white, fontSize: 14),
-  //           //         ),
-  //           //         InkWell(
-  //           //           onTap: () {
-  //           //             showSalesDialog(context, controller, provider);
-  //           //           },
-  //           //           child: const Icon(
-  //           //             Icons.add,
-  //           //             color: Colors.white,
-  //           //             size: 18,
-  //           //           ),
-  //           //         )
-  //           //       ],
-  //           //     ),
-  //           //   ),
-  //           // ),
-  //         )
-  //       : const SizedBox.shrink();
-  // }
 
   // Enhanced version with dynamic button text:
   Widget _buildAddItemButton(BuildContext context, SalesController controller,
@@ -1000,11 +982,35 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
             return const SizedBox();
           }
 
+          // if (taxProvider.taxList.isEmpty) {
+          //   return
+
+          //   const Text(
+          //     'No tax options available.',
+          //     style: TextStyle(color: Colors.black),
+          //   );
+
+          // }
+
           if (taxProvider.taxList.isEmpty) {
-            return const Text(
-              'No tax options available.',
-              style: TextStyle(color: Colors.black),
-            );
+            return CustomDropdownTwo(
+                height: 38,
+                hint: taxProvider.taxList.isEmpty ? "None" : "Select VAT/TAX",
+                items: taxProvider.taxList.isEmpty
+                    ? ["None"] // Show only "None"
+                    : taxProvider.taxList
+                        .map((tax) => "${tax.name} - ${tax.percent}")
+                        .toList(),
+                width: 95,
+                selectedItem: selectedTaxName,
+                onChanged: (newValue) {});
+
+            // const Center(
+            //   child: Text(
+            //     'No tax',
+            //     style: TextStyle(color: Colors.black),
+            //   ),
+            // );
           }
 
           return Padding(
@@ -1079,7 +1085,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
   }
 
   // Helper method to build Gross Total Section
-  Widget _buildGrossTotalSection() {
+  Widget _buildGrossTotalSection(SaleUpdateProvider provider) {
     return Align(
       alignment: Alignment.centerRight,
       child: SizedBox(
@@ -1095,7 +1101,9 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                   width: 200,
                   child: AddSalesFormfield(
                     labelText: 'Gross Total',
-                    controller: controller.grossTotalController,
+                    // controller: controller.grossTotalController,
+                    controller:
+                        TextEditingController(text: provider.getSubTotal()),
                     readOnly: true,
                     keyboardType: TextInputType.number,
                   ),
@@ -1236,7 +1244,7 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
             backgroundColor: Colors.transparent,
             insetPadding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
-              height: 400,
+              height: 420,
               width: screenWidth,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -1783,11 +1791,26 @@ class _SalesUpdateScreenState extends State<SalesUpdateScreen> {
                                         child: CircularProgressIndicator());
                                   }
                                   if (taxProvider.taxList.isEmpty) {
-                                    return const Center(
-                                      child: Text(
-                                        'No tax options available.',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
+                                    return Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        CustomDropdownTwo(
+                                            height: 38,
+                                            width: double.infinity,
+                                            hint: taxProvider.taxList.isEmpty
+                                                ? "None"
+                                                : "Select VAT/TAX",
+                                            items: taxProvider.taxList.isEmpty
+                                                ? ["None"] // Show only "None"
+                                                : taxProvider.taxList
+                                                    .map((tax) =>
+                                                        "${tax.name} - ${tax.percent}")
+                                                    .toList(),
+                                            selectedItem: selectedTaxName,
+                                            onChanged: (newValue) {}),
+                                      ],
                                     );
                                   }
 
@@ -2062,18 +2085,6 @@ class ItemModel {
     this.unit,
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import 'package:cbook_dt/app_const/app_colors.dart';
 // import 'package:cbook_dt/common/custome_dropdown_two.dart';
@@ -2783,14 +2794,6 @@ class ItemModel {
 //     }
 //   }
 // }
-
-
-
-
-
-
-
-
 
 // ///=====> Ui
 
@@ -3699,7 +3702,7 @@ class ItemModel {
 //                                   ),
 //                                 ),
 
-//                                 const  SizedBox(height: 
+//                                 const  SizedBox(height:
 //                                 4),
 
 //                                 ////Vat, Tax

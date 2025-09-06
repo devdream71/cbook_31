@@ -598,9 +598,24 @@ class _SalesScreenState extends State<SalesScreen> {
 
                       final salesID = sale.purchaseDetails.first.purchaseId;
 
+                      final transactionMethod = sale.transactionMethod;
+                      final customerName = sale.customerName;
+
                       return InkWell(
                         onLongPress: () {
-                          editDeleteDiolog(context, salesID.toString());
+                          editDeleteDiolog(
+                            context, 
+                          
+                          salesID.toString(),
+                          transactionMethod,
+                          customerName,
+
+
+
+                          
+                          
+                          
+                          );
                         },
                         onTap: () {
                           // Navigator.push(
@@ -628,7 +643,7 @@ class _SalesScreenState extends State<SalesScreen> {
                                 ),
                                 // Left Side Info
                                 Expanded(
-                                  child: InkWell(
+                                  child: GestureDetector(
                                     onTap: () {
                                       Navigator.push(
                                         context,
@@ -798,7 +813,7 @@ class _SalesScreenState extends State<SalesScreen> {
   }
 
   ///show edit and delete list from alart diolog
-  Future<dynamic> editDeleteDiolog(BuildContext context, String salesID) {
+  Future<dynamic> editDeleteDiolog(BuildContext context, String salesID,dynamic transactionMethod, dynamic customerName ) {
     final colorScheme = Theme.of(context).colorScheme;
     return showDialog(
       context: context,
@@ -859,7 +874,15 @@ class _SalesScreenState extends State<SalesScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            SalesUpdateScreen(salesId: int.parse(salesID)),
+                            SalesUpdateScreen(
+                              
+                              salesId: int.parse(salesID,),
+                              transactionMethod: transactionMethod, // Add this
+      customerName: customerName,
+
+                              
+                              
+                              ),
                       ),
                     );
                   },

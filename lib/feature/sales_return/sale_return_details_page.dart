@@ -14,7 +14,7 @@ class SaleReturnDetailsPage extends StatefulWidget {
   final String itemName;
 
   const SaleReturnDetailsPage({
-    super.key, 
+    super.key,
     required this.salesHistory,
     required this.itemName,
   });
@@ -26,7 +26,7 @@ class SaleReturnDetailsPage extends StatefulWidget {
 class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
   final Map<int, TextEditingController> _reductionControllers = {};
   final Map<int, TextEditingController> _unitPriceControllers = {};
-  
+
   double totalReductionQty = 0;
   double totalPrice = 0;
 
@@ -52,7 +52,7 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
         history.salesDetailsID,
         () => TextEditingController(),
       );
-      
+
       _unitPriceControllers[history.salesDetailsID] = TextEditingController(
         text: history.unitPrice.toString(),
       );
@@ -83,7 +83,8 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
       final reductionText = controller.reductionQtyList[i].text.trim();
       double reductionQty = double.tryParse(reductionText) ?? 0;
 
-      double billQty = double.tryParse(history.billQty.split('=').first.trim()) ?? 0;
+      double billQty =
+          double.tryParse(history.billQty.split('=').first.trim()) ?? 0;
       if (reductionQty > billQty) {
         reductionQty = billQty;
       }
@@ -92,8 +93,9 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
       final unitPriceController = _unitPriceControllers[history.salesDetailsID];
       double unitPrice = 0;
       if (unitPriceController != null) {
-        unitPrice = double.tryParse(unitPriceController.text.trim()) ?? 
-                   double.tryParse(history.unitPrice) ?? 0;
+        unitPrice = double.tryParse(unitPriceController.text.trim()) ??
+            double.tryParse(history.unitPrice) ??
+            0;
       } else {
         unitPrice = double.tryParse(history.unitPrice) ?? 0;
       }
@@ -106,10 +108,12 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
     });
   }
 
-  String _getDefaultUnitName(SalesReturnHistoryModel history, UnitDTProvider unitProvider) {
+  String _getDefaultUnitName(
+      SalesReturnHistoryModel history, UnitDTProvider unitProvider) {
     final baseUnit = unitProvider.units.firstWhere(
       (unit) => unit.id == history.salesUnitId,
-      orElse: () => UnitResponseModel(id: 0, name: "Unknown", symbol: "", status: 0),
+      orElse: () =>
+          UnitResponseModel(id: 0, name: "Unknown", symbol: "", status: 0),
     );
     return baseUnit.name;
   }
@@ -127,7 +131,8 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<SalesReturnController>(context, listen: false);
+    final controller =
+        Provider.of<SalesReturnController>(context, listen: false);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Consumer<UnitDTProvider>(
@@ -148,7 +153,8 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
 
           final primaryUnit = unitProvider.units.firstWhere(
             (unit) => unit.id == firstHistory.salesUnitId,
-            orElse: () => UnitResponseModel(id: 0, name: 'Unknown', symbol: '', status: 0),
+            orElse: () => UnitResponseModel(
+                id: 0, name: 'Unknown', symbol: '', status: 0),
           );
           primaryUnitName = primaryUnit.symbol;
 
@@ -177,20 +183,22 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
                   '${widget.itemName} (1 $primaryUnitName)',
                   style: const TextStyle(color: Colors.black, fontSize: 13),
                 ),
-                
+
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: widget.salesHistory.length,
                     itemBuilder: (context, index) {
                       final history = widget.salesHistory[index];
-                      final unitPriceController = _unitPriceControllers[history.salesDetailsID]!;
+                      final unitPriceController =
+                          _unitPriceControllers[history.salesDetailsID]!;
 
                       // Prepare allowed units for dropdown
                       List<String> allowedUnits = [];
                       final primaryUnit = unitProvider.units.firstWhere(
                         (unit) => unit.id == history.salesUnitId,
-                        orElse: () => UnitResponseModel(id: 0, name: 'Unknown', symbol: '', status: 0),
+                        orElse: () => UnitResponseModel(
+                            id: 0, name: 'Unknown', symbol: '', status: 0),
                       );
                       if (primaryUnit.id != 0) {
                         allowedUnits.add(primaryUnit.name);
@@ -208,20 +216,19 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
                             child: Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        "Bill: ${history.billNumber}",
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black
-                                        )
-                                      ),
+                                      Text("Bill: ${history.billNumber}",
+                                          style: const TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black)),
                                       Text(
                                         "Date: ${history.purchaseDate}",
                                         style: const TextStyle(
@@ -260,38 +267,44 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
                                       Text(
                                         "Bill Qty: ${history.billQty.split('=').first.trim()}",
                                         style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold
-                                        ),
+                                            color: Colors.black,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold),
                                       ),
-                                      
                                     ],
                                   ),
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const SizedBox(height: 6),
 
                                       // Unit dropdown
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 0.0),
                                         child: CustomDropdownTwo(
                                           labelText: 'Unit',
                                           hint: 'Choose a unit',
                                           items: allowedUnits,
                                           width: 150,
                                           height: 30,
-                                          selectedItem: controller.getSelectedUnit(index) ??
-                                              _getDefaultUnitName(history, unitProvider),
+                                          selectedItem: controller
+                                                  .getSelectedUnit(index) ??
+                                              _getDefaultUnitName(
+                                                  history, unitProvider),
                                           onChanged: (selectedUnit) {
-                                            debugPrint("Selected Unit: $selectedUnit");
+                                            debugPrint(
+                                                "Selected Unit: $selectedUnit");
 
-                                            controller.setSelectedUnit(index, selectedUnit!);
+                                            controller.setSelectedUnit(
+                                                index, selectedUnit!);
 
-                                            final selectedUnitObj = unitProvider.units.firstWhere(
-                                              (unit) => unit.name == selectedUnit,
+                                            final selectedUnitObj =
+                                                unitProvider.units.firstWhere(
+                                              (unit) =>
+                                                  unit.name == selectedUnit,
                                               orElse: () => UnitResponseModel(
                                                 id: 0,
                                                 name: "Unknown Unit",
@@ -300,23 +313,43 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
                                               ),
                                             );
 
-                                            debugPrint("Selected Unit ID: ${selectedUnitObj.id}_$selectedUnit");
+                                            debugPrint(
+                                                "Selected Unit ID: ${selectedUnitObj.id}_$selectedUnit");
 
                                             if (selectedUnitObj.id != 0) {
-                                              String selectedUnitId = selectedUnitObj.id.toString();
+                                              String selectedUnitId =
+                                                  selectedUnitObj.id.toString();
 
                                               // Calculate price based on unit selection
-                                              double totalPrice = double.tryParse(
-                                                history.rate.toString().split("=")[1].split("(")[0].trim() ?? "0"
-                                              ) ?? 0;
-                                              
-                                              double rawQty = double.tryParse(history.unitQty?.toString() ?? "1") ?? 1;
+                                              double totalPrice =
+                                                  double.tryParse(history.rate
+                                                              .toString()
+                                                              .split("=")[1]
+                                                              .split("(")[0]
+                                                              .trim() ??
+                                                          "0") ??
+                                                      0;
+
+                                              double rawQty = double.tryParse(
+                                                      history.unitQty
+                                                              ?.toString() ??
+                                                          "1") ??
+                                                  1;
 
                                               // Use primary unit
-                                              if (selectedUnitId == history.salesUnitId.toString()) {
-                                                unitPriceController.text = (double.tryParse(history.unitPrice?.toString() ?? "0") ?? 0).toStringAsFixed(2);
-                                                
-                                                controller.selectedUnitIdWithNameFunction(
+                                              if (selectedUnitId ==
+                                                  history.salesUnitId
+                                                      .toString()) {
+                                                unitPriceController.text =
+                                                    (double.tryParse(history
+                                                                    .unitPrice
+                                                                    ?.toString() ??
+                                                                "0") ??
+                                                            0)
+                                                        .toStringAsFixed(2);
+
+                                                controller
+                                                    .selectedUnitIdWithNameFunction(
                                                   "${selectedUnitId}_${selectedUnit}_1",
                                                 );
                                               }
@@ -332,29 +365,42 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
                                       // Reduction quantity input
                                       SizedBox(
                                         width: 150,
-                                        height: 30,
+                                        height: 38,
                                         child: AddSalesFormfield(
                                           labelText: 'Reduction Qty',
-                                          controller: controller.reductionQtyList[index],
+                                          controller: controller
+                                              .reductionQtyList[index],
                                           keyboardType: TextInputType.number,
                                           onChanged: (value) {
-                                            double inputQty = double.tryParse(value) ?? 0;
+                                            double inputQty =
+                                                double.tryParse(value) ?? 0;
                                             double billQty = double.tryParse(
-                                              history.billQty.split('=').first.trim()
-                                            ) ?? 0;
+                                                    history.billQty
+                                                        .split('=')
+                                                        .first
+                                                        .trim()) ??
+                                                0;
 
                                             if (inputQty > billQty) {
                                               // Prevent larger value
-                                              controller.reductionQtyList[index].text = billQty.toStringAsFixed(2);
-                                              controller.reductionQtyList[index].selection = TextSelection.fromPosition(
+                                              controller.reductionQtyList[index]
+                                                      .text =
+                                                  billQty.toStringAsFixed(2);
+                                              controller.reductionQtyList[index]
+                                                      .selection =
+                                                  TextSelection.fromPosition(
                                                 TextPosition(
-                                                  offset: controller.reductionQtyList[index].text.length
-                                                ),
+                                                    offset: controller
+                                                        .reductionQtyList[index]
+                                                        .text
+                                                        .length),
                                               );
 
-                                              ScaffoldMessenger.of(context).showSnackBar(
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
                                                 const SnackBar(
-                                                  content: Text("Reduction Qty cannot be greater than Bill Qty."),
+                                                  content: Text(
+                                                      "Reduction Qty cannot be greater than Bill Qty."),
                                                   backgroundColor: Colors.red,
                                                 ),
                                               );
@@ -366,18 +412,33 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
                                               itemId: history.itemID.toString(),
                                               qty: value,
                                               index: index,
-                                              price: history.unitPrice.toString(),
-                                              purchaseDetailsId: history.salesDetailsID.toString(),
-                                              itemName: Provider.of<AddItemProvider>(context, listen: false)
-                                                  .getItemName(history.itemID),
-                                              unitId: history.salesUnitId.toString(),
-                                              unitName: unitProvider.units.firstWhere(
-                                                (u) => u.id == history.salesUnitId,
-                                                orElse: () => UnitResponseModel(
-                                                  id: 0, name: 'Unknown', symbol: '', status: 0
-                                                )
-                                              ).name,
-                                              unitQty: history.unitQty.toString(),
+                                              price:
+                                                  history.unitPrice.toString(),
+                                              purchaseDetailsId: history
+                                                  .salesDetailsID
+                                                  .toString(),
+                                              itemName:
+                                                  Provider.of<AddItemProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .getItemName(
+                                                          history.itemID),
+                                              unitId: history.salesUnitId
+                                                  .toString(),
+                                              unitName: unitProvider.units
+                                                  .firstWhere(
+                                                      (u) =>
+                                                          u.id ==
+                                                          history.salesUnitId,
+                                                      orElse: () =>
+                                                          UnitResponseModel(
+                                                              id: 0,
+                                                              name: 'Unknown',
+                                                              symbol: '',
+                                                              status: 0))
+                                                  .name,
+                                              unitQty:
+                                                  history.unitQty.toString(),
                                             );
 
                                             setState(() {
@@ -400,27 +461,21 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
                     },
                   ),
                 ),
-                
+
                 // Fixed Total Qty and Price row
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "All QTY: ${controller.getAllQty()}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        )
-                      ),
-                      Text(
-                        "PC: ${controller.getAllQty()}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        )
-                      ),
+                      Text("All QTY: ${controller.getAllQty()}",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
+                      Text("PC: ${controller.getAllQty()}",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
                       Text(
                         "Total Price: ${totalPrice.toStringAsFixed(2)}",
                         style: const TextStyle(
@@ -431,39 +486,39 @@ class SaleReturnDetailsPageState extends State<SaleReturnDetailsPage> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 15),
-                
+
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      debugPrint('selected unit =====> ${controller.selectedUnit}');
-                      debugPrint("sales item return ${controller.itemsCashReuturn.length}");
+                      onPressed: () async {
+                        debugPrint(
+                            'selected unit =====> ${controller.selectedUnit}');
+                        debugPrint(
+                            "sales item return ${controller.itemsCashReuturn.length}");
 
-                      final bool isSuccess = controller.isCash
-                          ? await controller.saveSaleReturnData()
-                          : await controller.saveSaleReturnCreaditData();
+                        final bool isSuccess = controller.isCash
+                            ? await controller.saveSaleReturnData()
+                            : await controller.saveSaleReturnCreaditData();
 
-                      debugPrint("sales item return ${controller.itemsCashReuturn.length}");
+                        debugPrint(
+                            "sales item return ${controller.itemsCashReuturn.length}");
 
-                      if (isSuccess) {
-                        Navigator.pop(context);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
-                      )
-                    ),
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ),
+                        if (isSuccess) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                      child: const Text(
+                        "Save",
+                        style: TextStyle(color: Colors.white),
+                      )),
                 ),
-                
+
                 const SizedBox(height: 20),
               ],
             ),

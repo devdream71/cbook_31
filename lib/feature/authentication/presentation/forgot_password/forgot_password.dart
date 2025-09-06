@@ -4,6 +4,7 @@ import 'package:cbook_dt/feature/authentication/presentation/forgot_password/pro
 import 'package:cbook_dt/feature/authentication/presentation/forgot_password/set_new_password.dart';
 import 'package:cbook_dt/utils/custom_padding.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -77,10 +78,23 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                       vPad20,
                       Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            "Email Address",
+                            style: GoogleFonts.notoSansPhagsPa(
+                              color: AppColors.button2Color,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: CustomTextField(
                           icon: Icons.email,
-                          hint: "Email Address",
+                          //hint: "Email Address",
                           colorScheme: Theme.of(context).colorScheme,
                           controller: emailController,
                           validator: (value) {

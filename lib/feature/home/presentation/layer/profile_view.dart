@@ -62,7 +62,6 @@ class _ProfileViewState extends State<ProfileView> {
       ),
       body: Column(
         children: [
-          
           Consumer<ProfileProvider>(
             builder: (context, provider, child) {
               if (provider.isLoading) {
@@ -79,20 +78,19 @@ class _ProfileViewState extends State<ProfileView> {
                       Column(
                         children: [
                           CircleAvatar(
-                            radius: 15,
+                            radius: 20,
                             backgroundColor: Colors.white,
                             child: CircleAvatar(
-                              radius: 15,
+                              radius: 20,
                               backgroundImage: (user.avatar != null &&
                                       user.avatar!.isNotEmpty)
                                   ? NetworkImage(
                                       "https://commercebook.site/${user.avatar}")
                                   : const AssetImage(
-                                          'assets/image/cbook_logo.png')
+                                          'assets/image/logo_new.png')
                                       as ImageProvider,
                             ),
                           ),
-                          
                           const SizedBox(height: 6),
                           Text(
                             user.email,
@@ -112,7 +110,6 @@ class _ProfileViewState extends State<ProfileView> {
 
                       // User Details
                       _buildInfoCard(Icons.phone, "Phone",
-
                           user.phone ?? "No phone number"),
 
                       GestureDetector(
