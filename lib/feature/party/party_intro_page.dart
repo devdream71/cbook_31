@@ -45,6 +45,8 @@ class AddNewPartyIntro extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
+
+                        ///new customer 
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(

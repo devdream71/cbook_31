@@ -1,6 +1,7 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/app_service_free_premium/controler/app_service_controller.dart';
-import 'package:cbook_dt/feature/app_service_free_premium/screen/app_service.dart'; 
+import 'package:cbook_dt/feature/app_service_free_premium/screen/app_service.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/bill_create.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/edit_bill_person.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/provider/bill_provider.dart';
@@ -22,29 +23,32 @@ class _BillPersonListState extends State<BillPersonList> {
     // ✅ First fetch app service to check if user has premium access
     Future.microtask(() async {
       debugPrint("=== BILL PERSON LIST INIT ===");
-      
-      final appServiceProvider = Provider.of<AppServiceProvider>(context, listen: false);
+
+      final appServiceProvider =
+          Provider.of<AppServiceProvider>(context, listen: false);
       debugPrint("About to fetch app service...");
-      
+
       await appServiceProvider.fetchAppService();
-      
+
       debugPrint("App service fetch completed");
       debugPrint("App Service: '${appServiceProvider.appService}'");
       debugPrint("Is Free: ${appServiceProvider.isFree}");
-      
+
       // ✅ Only fetch bill persons if user has premium access
       if (!appServiceProvider.isFree) {
         debugPrint("User has premium access - fetching bill persons");
-        Provider.of<BillPersonProvider>(context, listen: false).fetchBillPersons();
+        Provider.of<BillPersonProvider>(context, listen: false)
+            .fetchBillPersons();
       } else {
         debugPrint("User has free access - NOT fetching bill persons");
       }
-      
+
       debugPrint("=== END BILL PERSON LIST INIT ===");
     });
   }
 
-  TextStyle ts = const TextStyle(color: Colors.black, fontWeight: FontWeight.bold);
+  TextStyle ts =
+      const TextStyle(color: Colors.black, fontWeight: FontWeight.bold);
   TextStyle ts2 = const TextStyle(color: Colors.black, fontSize: 12);
 
   @override
@@ -108,7 +112,7 @@ class _BillPersonListState extends State<BillPersonList> {
   // ✅ Extract the original BillPersonList content into a separate method
   Widget _buildBillPersonListContent(ColorScheme colorScheme) {
     debugPrint("Building premium bill person list content");
-    
+
     return Scaffold(
       backgroundColor: AppColors.sfWhite,
       appBar: AppBar(
@@ -175,9 +179,14 @@ class _BillPersonListState extends State<BillPersonList> {
                 }
 
                 if (provider.billPersons.isEmpty) {
-                  return Center(
-                    child: Text('No Bill Persons Found', style: ts),
+                  return const NoDataWidget(
+                    message: "No bill records found",
+                    lottieAsset: "assets/animation/no_data.json",
                   );
+
+                  // Center(
+                  //   child: Text('No Bill Persons Found', style: ts),
+                  // );
                 }
 
                 return ListView.separated(
@@ -203,7 +212,8 @@ class _BillPersonListState extends State<BillPersonList> {
                           dense: true, // 🔥 Makes the tile more compact
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 8,
-                              vertical: 0), // 🔥 Minimal padding inside ListTile
+                              vertical:
+                                  0), // 🔥 Minimal padding inside ListTile
                           leading: person.avatar != null
                               ? Image.network(
                                   'https://commercebook.site/${person.avatar}',

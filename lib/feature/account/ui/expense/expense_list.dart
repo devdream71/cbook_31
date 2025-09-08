@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/account/ui/expense/add_expense.dart';
 import 'package:cbook_dt/feature/account/ui/expense/expence_edit.dart';
 import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.dart';
@@ -198,6 +199,8 @@ class _ExpanseState extends State<Expanse> {
               ),
             ],
           ),
+          
+          ///total voucher
           Consumer<ExpenseProvider>(builder: (context, provider, child) {
             final itemCount = provider.expenseList.length;
             return Padding(
@@ -211,6 +214,8 @@ class _ExpanseState extends State<Expanse> {
           const SizedBox(
             height: 5,
           ),
+
+          ///expense list.
           Consumer<ExpenseProvider>(
             builder: (context, provider, child) {
               if (provider.isLoading) {
@@ -218,12 +223,12 @@ class _ExpanseState extends State<Expanse> {
               }
 
               if (provider.expenseList.isEmpty) {
-                return const Center(
-                    child: Text(
-                  'No expenses found.',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ));
+                return const NoDataWidget(
+                  message: "No expenses records found",
+                  lottieAsset: "assets/animation/no_data.json",
+                );
+
+                 
               }
 
               return ListView.builder(
@@ -286,8 +291,6 @@ class _ExpanseState extends State<Expanse> {
                                 ),
 
                                 const SizedBox(height: 2),
-
-                               
 
                                 const SizedBox(height: 2),
                               ],

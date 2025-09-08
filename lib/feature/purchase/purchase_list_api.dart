@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/purchase/provider/purchase_provider.dart';
 import 'package:cbook_dt/feature/purchase/purchase_details_page.dart';
 import 'package:cbook_dt/feature/purchase/purchase_update.dart';
@@ -119,120 +120,123 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
       backgroundColor: AppColors.sfWhite,
 
       appBar: AppBar(
-  title: isSearching
-      ? Column(
-          children: [
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 40, // increased from 35 to 50
-              child: TextField(
-                controller: searchController,
-                autofocus: true,
-                cursorHeight: 22, // bigger cursor
-                style: const TextStyle(color: Colors.white, fontSize: 18), // larger font
-                decoration: InputDecoration(
-                  //hintText: 'Search by name, number, or bill number',
-                  //hintStyle: const TextStyle(color: Colors.black54, fontSize: 16),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white),
-                    borderRadius: BorderRadius.circular(6),
+        title: isSearching
+            ? Column(
+                children: [
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 40, // increased from 35 to 50
+                    child: TextField(
+                      controller: searchController,
+                      autofocus: true,
+                      cursorHeight: 22, // bigger cursor
+                      style: const TextStyle(
+                          color: Colors.white, fontSize: 18), // larger font
+                      decoration: InputDecoration(
+                        //hintText: 'Search by name, number, or bill number',
+                        //hintStyle: const TextStyle(color: Colors.black54, fontSize: 16),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(color: Colors.white, width: 2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10), // more vertical padding
+                        isDense: true,
+                      ),
+                      onChanged: (value) {
+                        Provider.of<PurchaseProvider>(context, listen: false)
+                            .filterPurchases(value);
+                      },
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white, width: 2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10), // more vertical padding
-                  isDense: true,
+                ],
+              )
+            : const Text(
+                'Purchase List',
+                style: TextStyle(color: Colors.yellow, fontSize: 16),
+              ),
+        leading: const BackButton(color: Colors.white),
+        backgroundColor: colorScheme.primary,
+        actions: [
+          // Search or Close Icon with circular background
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  isSearching = !isSearching;
+                  if (!isSearching) {
+                    searchController.clear();
+                  }
+                });
+              },
+              child: Container(
+                height: 30,
+                width: 30,
+                decoration: BoxDecoration(
+                  color: isSearching ? Colors.red : Colors.green,
+                  shape: BoxShape.circle,
+                  border: isSearching
+                      ? null
+                      : Border.all(color: Colors.white, width: 2),
                 ),
-                onChanged: (value) {
-                  Provider.of<PurchaseProvider>(context, listen: false)
-                      .filterPurchases(value);
-                },
+                padding: const EdgeInsets.all(6),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      isSearching = !isSearching;
+                      if (!isSearching) {
+                        searchController.clear();
+                        Provider.of<PurchaseProvider>(context, listen: false)
+                            .filterPurchases(searchController.text);
+                      }
+                    });
+                  },
+                  child: Icon(
+                    isSearching ? Icons.close : Icons.search,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
               ),
             ),
-          ],
-        )
-      : const Text(
-          'Purchase List',
-          style: TextStyle(color: Colors.yellow, fontSize: 16),
-        ),
-  leading: const BackButton(color: Colors.white),
-  backgroundColor: colorScheme.primary,
-  actions: [
-    // Search or Close Icon with circular background
-    Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            isSearching = !isSearching;
-            if (!isSearching) {
-              searchController.clear();
-            }
-          });
-        },
-        child: Container(
-          height: 30,
-          width: 30,
-          decoration: BoxDecoration(
-            color: isSearching ? Colors.red : Colors.green,
-            shape: BoxShape.circle,
-            border: isSearching ? null : Border.all(color: Colors.white, width: 2),
           ),
-          padding: const EdgeInsets.all(6),
-          child: InkWell(
+
+          // Bill Button
+          InkWell(
             onTap: () {
-              setState(() {
-                isSearching = !isSearching;
-                if (!isSearching) {
-                  searchController.clear();
-                  Provider.of<PurchaseProvider>(context, listen: false)
-                      .filterPurchases(searchController.text);
-                }
-              });
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PurchaseView(),
+                ),
+              );
             },
-            child: Icon(
-              isSearching ? Icons.close : Icons.search,
-              color: Colors.white,
-              size: 16,
-            ),
-          ),
-        ),
-      ),
-    ),
-
-    // Bill Button
-    InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const PurchaseView(),
-          ),
-        );
-      },
-      child: const Padding(
-        padding: EdgeInsets.only(right: 8.0),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 10,
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.add,
-                size: 20,
-                color: Colors.green,
+            child: const Padding(
+              padding: EdgeInsets.only(right: 8.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 10,
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      Icons.add,
+                      size: 20,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    ),
-  ],
-),
-
-
 
       // appBar: AppBar(
       //   title: isSearching
@@ -347,14 +351,14 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
       //                 color: Colors.green,
       //               ),
       //             ),
-                   
+
       //           ],
       //         ),
       //       ),
       //     ),
       //   ],
       // ),
-     
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
         child: Column(
@@ -485,7 +489,6 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                 ),
                               ),
                             ),
-                            
                           ],
                         ),
 
@@ -541,12 +544,17 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                   if (provider.purchaseData == null ||
                       provider.purchaseData!.data == null ||
                       provider.purchaseData!.data!.isEmpty) {
-                    return const Center(
-                        child: Text('No Purchase data available',
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold)));
+                    return const NoDataWidget(
+                      message: "No Purchase records found",
+                      lottieAsset: "assets/animation/no_data.json",
+                    );
+
+                    // const Center(
+                    //     child: Text('No Purchase data available',
+                    //         style: TextStyle(
+                    //             fontSize: 18,
+                    //             color: Colors.black,
+                    //             fontWeight: FontWeight.bold)));
                   }
 
                   // Filter purchases based on selected date range

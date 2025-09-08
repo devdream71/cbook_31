@@ -2,9 +2,7 @@ import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_cash/model/adjust_cash.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_cash/provider/adjust_cash_provider.dart';
-import 'package:cbook_dt/feature/account/ui/cash_in_hand/cash_in_hand.dart';
 import 'package:cbook_dt/feature/account/ui/cash_in_hand/provider/cash_in_hand.dart';
-import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -71,29 +69,121 @@ class _AdjustCashCreateState extends State<AdjustCashCreate> {
                 child: Column(
                   children: [
                     ///adjust cash.
-                    SizedBox(
-                      height: 40,
-                      width: double.infinity,
-                      child: CustomDropdownTwo(
-                        hint: '',
-                        items: itemAdjustCash,
-                        width: double.infinity,
-                        height: 40,
-                        labelText: 'Adjust Cash',
-                        selectedItem: selectedAdjustCashType,
-                        onChanged: (value) {
-                          if (mounted) {
-                            setState(() {
-                              selectedAdjustCashType = value;
-                              selectedAdjustCash =
-                                  null; // reset account selection
-                              debugPrint(
-                                  "selectedAdjustCashType: $selectedAdjustCashType");
-                            });
-                          }
-                        },
-                      ),
-                    ),
+                    // SizedBox(
+                    //   height: 40,
+                    //   width: double.infinity,
+                    //   child: CustomDropdownTwo(
+                    //     hint: '',
+                    //     items: itemAdjustCash,
+                    //     width: double.infinity,
+                    //     height: 40,
+                    //     labelText: 'Adjust Cash',
+                    //     selectedItem: selectedAdjustCashType,
+                    //     onChanged: (value) {
+                    //       if (mounted) {
+                    //         setState(() {
+                    //           selectedAdjustCashType = value;
+                    //           selectedAdjustCash =
+                    //               null; // reset account selection
+                    //           debugPrint(
+                    //               "selectedAdjustCashType: $selectedAdjustCashType");
+                    //         });
+                    //       }
+                    //     },
+                    //   ),
+                    // ),
+
+                    // Replace the SizedBox dropdown with this radio button widget
+                    // Container(
+                    //   width: double.infinity,
+                    //   padding: const EdgeInsets.symmetric(
+                    //       vertical: 8, horizontal: 12),
+                     
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                         
+                    //       const SizedBox(height: 4),
+                    //       Row(
+                    //         children: itemAdjustCash.map((option) {
+                    //           return Expanded(
+                    //             child: Row(
+                                 
+                    //               children: [
+                    //                 Radio<String>(
+                    //                   value: option,
+                    //                   groupValue: selectedAdjustCashType,
+                    //                   onChanged: (value) {
+                    //                     if (mounted) {
+                    //                       setState(() {
+                    //                         selectedAdjustCashType = value;
+                    //                         selectedAdjustCash =
+                    //                             null; // reset account selection
+                    //                         debugPrint(
+                    //                             "selectedAdjustCashType: $selectedAdjustCashType");
+                    //                       });
+                    //                     }
+                    //                   },
+                    //                   materialTapTargetSize:
+                    //                       MaterialTapTargetSize.shrinkWrap,
+                    //                   visualDensity: VisualDensity.compact,
+                    //                 ),
+                    //                 Text(
+                    //                   option,
+                    //                   style: const TextStyle(
+                    //                       fontSize: 14, color: Colors.black),
+                    //                 ),
+                    //               ],
+                    //             ),
+                    //           );
+                    //         }).toList(),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+
+
+                    Container(
+  width: double.infinity,
+  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(height: 4),
+      Row(
+        children: itemAdjustCash.map((option) {
+          return Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center, // Center the radio button and text
+              children: [
+                Radio<String>(
+                  value: option,
+                  groupValue: selectedAdjustCashType,
+                  onChanged: (value) {
+                    if (mounted) {
+                      setState(() {
+                        selectedAdjustCashType = value;
+                        selectedAdjustCash = null; // reset account selection
+                        debugPrint("selectedAdjustCashType: $selectedAdjustCashType");
+                      });
+                    }
+                  },
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                ),
+                Text(
+                  option,
+                  style: const TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    ],
+  ),
+),
+
                     const SizedBox(height: 10),
 
                     /// cash account , if not found show default account cash.

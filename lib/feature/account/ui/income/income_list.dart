@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/account/ui/income/add_income.dart';
 import 'package:cbook_dt/feature/account/ui/income/income_details.dart';
 import 'package:cbook_dt/feature/account/ui/income/income_edit.dart';
@@ -21,7 +22,8 @@ class _IncomeState extends State<Income> {
     super.initState();
     // Fixed: Use WidgetsBinding to ensure proper initialization
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final incomeProvider = Provider.of<IncomeProvider>(context, listen: false);
+      final incomeProvider =
+          Provider.of<IncomeProvider>(context, listen: false);
       incomeProvider.fetchIncomeList();
       incomeProvider.fetchAccountNames();
     });
@@ -124,13 +126,15 @@ class _IncomeState extends State<Income> {
                             }),
                             child: Container(
                               height: 30,
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.transparent),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     "${selectedStartDate.day}/${selectedStartDate.month}/${selectedStartDate.year}",
@@ -160,12 +164,14 @@ class _IncomeState extends State<Income> {
                             }),
                             child: Container(
                               height: 30,
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     "${selectedEndDate.day}/${selectedEndDate.month}/${selectedEndDate.year}",
@@ -199,7 +205,7 @@ class _IncomeState extends State<Income> {
                   ],
                 ),
               ),
-              
+
               // Fixed: Expanded widget to prevent overflow
               Expanded(
                 child: _buildIncomeList(incomeProvider),
@@ -219,21 +225,25 @@ class _IncomeState extends State<Income> {
 
     // Fixed: Added null check for incomeModel
     if (provider.incomeModel == null) {
-      return const Center(
-        child: Text(
-          'No Income Data Available',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+      return const NoDataWidget(
+        message: "No Income records found",
+        lottieAsset: "assets/animation/no_data.json",
       );
+
+      // const Center(
+      //   child: Text(
+      //     'No Income Data Available',
+      //     style: TextStyle(
+      //         color: Colors.black, fontWeight: FontWeight.bold),
+      //   ),
+      // );
     }
 
     if (provider.incomeModel!.data.isEmpty) {
       return const Center(
         child: Text(
           'No Income Found',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       );
     }
@@ -249,8 +259,8 @@ class _IncomeState extends State<Income> {
         final incomeId = income.id.toString();
 
         // Fixed: Added null check for accountId
-        final accountName = provider.accountNameMap[income.accountId ?? 0] ?? 
-                           'Account Not Found';
+        final accountName = provider.accountNameMap[income.accountId ?? 0] ??
+            'Account Not Found';
 
         return InkWell(
           onLongPress: () {
@@ -259,8 +269,7 @@ class _IncomeState extends State<Income> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) => const IncomeDetails()),
+              MaterialPageRoute(builder: (context) => const IncomeDetails()),
             );
           },
           child: Container(
@@ -269,8 +278,8 @@ class _IncomeState extends State<Income> {
               borderRadius: BorderRadius.circular(0),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 4.0, vertical: 4.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
               child: Row(
                 children: [
                   // Left side
@@ -310,7 +319,7 @@ class _IncomeState extends State<Income> {
                       ],
                     ),
                   ),
-                  
+
                   // Right side
                   Expanded(
                     flex: 1,
@@ -353,8 +362,7 @@ class _IncomeState extends State<Income> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 16),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
           child: Container(
             width: double.infinity,
@@ -456,7 +464,8 @@ class _IncomeState extends State<Income> {
               final provider =
                   Provider.of<IncomeProvider>(context, listen: false);
               await provider.deleteIncome(incomeId.toString());
-              await provider.fetchIncomeList(); // Fixed: Use correct method name
+              await provider
+                  .fetchIncomeList(); // Fixed: Use correct method name
 
               Navigator.of(context).pop();
 

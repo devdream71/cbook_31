@@ -1,5 +1,6 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/feature_not_available.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/Received/received_list.dart';
 import 'package:cbook_dt/feature/account/ui/expense/expense_list.dart';
 import 'package:cbook_dt/feature/account/ui/income/income_list.dart';
@@ -340,12 +341,17 @@ class _ItemViewState extends State<ItemView> {
                   }
 
                   if (itemProvider.items.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No items available.',
-                        style: TextStyle(color: Colors.black),
-                      ),
+                    return const NoDataWidget(
+                      message: "No items records found.",
+                      lottieAsset: "assets/animation/no_data.json",
                     );
+
+                    // const Center(
+                    //   child: Text(
+                    //     'No items available.',
+                    //     style: TextStyle(color: Colors.black),
+                    //   ),
+                    // );
                   }
 
                   return Column(

@@ -1,9 +1,6 @@
 import 'dart:io';
 import 'package:cbook_dt/app_const/app_colors.dart';
-import 'package:cbook_dt/common/price_option_selector_customer.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
-import 'package:cbook_dt/feature/home/presentation/home_view.dart';
-import 'package:cbook_dt/feature/party/party_list.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:cbook_dt/feature/suppliers/provider/suppliers_list_provider.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +93,6 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
         openingBalance: openingBalance,
         avatarImage: _imageFile,
         logo: _imageFile2,
-
       );
 
       if (supplierProvider.errorMessage.isEmpty) {
@@ -106,18 +102,6 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
 
         Navigator.of(context).pop(); // go back one
         Navigator.of(context).pop(); // go back two
-
-//         int count = 0;
-// Navigator.of(context).popUntil((route) {
-//   return count++ == 2; // pops until 2 screens back
-// });
-
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const Party()),
-        // );
-
-        //Navigator.of(context);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -205,43 +189,174 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 // Radio buttons
+                // Row(
+                //   mainAxisSize: MainAxisSize.min,
+                //   children: [
+
+                //     Expanded(
+                //       child: RadioListTile<String>(
+                //         title: const Text("Individual",
+                //             style: TextStyle(fontSize: 12)),
+                //         value: 'Individual',
+                //         groupValue: _selectedType,
+                //         onChanged: (value) {
+                //           setState(() {
+                //             _selectedType = value!;
+                //           });
+                //         },
+                //       ),
+                //     ),
+
+                //     Expanded(
+                //       child: RadioListTile<String>(
+                //         dense: true,
+                //         title: const Text(
+                //           "Business",
+                //           style: TextStyle(fontSize: 12),
+                //         ),
+                //         value: 'Business',
+                //         groupValue: _selectedType,
+                //         onChanged: (value) {
+                //           setState(() {
+                //             _selectedType = value!;
+                //           });
+                //         },
+                //       ),
+                //     ),
+
+                //   ],
+                // ),
+
+                const SizedBox(
+                  height: 10,
+                ),
+
+                // Radio buttons with center alignment and minimal spacing
+                // Row(
+                //   mainAxisSize: MainAxisSize.min,
+                //   children: [
+                //     Expanded(
+                //       child: RadioListTile<String>(
+                //         title: const Text("Individual",
+                //             style: TextStyle(fontSize: 12)),
+                //         value: 'Individual',
+                //         groupValue: _selectedType,
+                //         onChanged: (value) {
+                //           setState(() {
+                //             _selectedType = value!;
+                //           });
+                //         },
+                //         dense: true,
+                //         contentPadding: EdgeInsets.zero,
+                //         visualDensity:
+                //             const VisualDensity(horizontal: -4, vertical: -4),
+                //         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                //         controlAffinity: ListTileControlAffinity.leading,
+                //       ),
+                //     ),
+                //     Expanded(
+                //       child: RadioListTile<String>(
+                //         title: const Text(
+                //           "Business",
+                //           style: TextStyle(fontSize: 12),
+                //         ),
+                //         value: 'Business',
+                //         groupValue: _selectedType,
+                //         onChanged: (value) {
+                //           setState(() {
+                //             _selectedType = value!;
+                //           });
+                //         },
+                //         dense: true,
+                //         contentPadding: EdgeInsets.zero,
+                //         visualDensity:
+                //             const VisualDensity(horizontal: -4, vertical: -4),
+                //         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                //         controlAffinity: ListTileControlAffinity.leading,
+                //       ),
+                //     ),
+                //   ],
+                // ),
+
                 Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-
+                    // Individual option
                     Expanded(
-                      child: RadioListTile<String>(
-                        title: const Text("Individual",
-                            style: TextStyle(fontSize: 12)),
-                        value: 'Individual',
-                        groupValue: _selectedType,
-                        onChanged: (value) {
+                      child: InkWell(
+                        onTap: () {
                           setState(() {
-                            _selectedType = value!;
+                            _selectedType = 'Individual';
                           });
                         },
-                      ),
-                    ),
-
-
-                    Expanded(
-                      child: RadioListTile<String>(
-                        dense: true,
-                        title: const Text(
-                          "Business",
-                          style: TextStyle(fontSize: 12),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Radio<String>(
+                              value: 'Individual',
+                              groupValue: _selectedType,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedType = value!;
+                                });
+                              },
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              visualDensity: const VisualDensity(
+                                  horizontal: -4, vertical: -4),
+                            ),
+                            const Text(
+                              "Individual",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.black),
+                            ),
+                          ],
                         ),
-                        value: 'Business',
-                        groupValue: _selectedType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedType = value!;
-                          });
-                        },
                       ),
                     ),
-                    
+
+                    //const SizedBox(width: 20), // Space between the two options
+
+                    // Business option
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _selectedType = 'Business';
+                          });
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Radio<String>(
+                              value: 'Business',
+                              groupValue: _selectedType,
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedType = value!;
+                                });
+                              },
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              visualDensity: const VisualDensity(
+                                  horizontal: -4, vertical: -4),
+                            ),
+                            const Text(
+                              "Business",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
+                ),
+
+                const SizedBox(
+                  height: 20,
                 ),
 
                 if (_selectedType == 'Business')
@@ -298,7 +413,6 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
                 //     });
                 //   },
                 // ),
-
 
                 const SizedBox(
                   height: 12,

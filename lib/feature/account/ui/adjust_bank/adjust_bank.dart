@@ -2,8 +2,6 @@ import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/model/adjust_bank_model.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/provider/bank_adjust_provider.dart';
-import 'package:cbook_dt/feature/account/ui/bank_ui.dart';
-import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -61,28 +59,148 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
               Expanded(
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 40,
-                      width: double.infinity,
-                      child: CustomDropdownTwo(
-                        hint: '',
-                        items: itemAdjustCash,
-                        width: double.infinity,
-                        height: 40,
-                        labelText: 'Adjust Cash',
-                        selectedItem: selectedAdjustCashType,
-                        onChanged: (value) async {
-                          setState(() {
-                            selectedAdjustCashType = value;
-                            selectedAdjustCash =
-                                null; // reset account selection
+                    ///adjust cash
+                    // SizedBox(
+                    //   height: 40,
+                    //   width: double.infinity,
+                    //   child: CustomDropdownTwo(
+                    //     hint: '',
+                    //     items: itemAdjustCash,
+                    //     width: double.infinity,
+                    //     height: 40,
+                    //     labelText: 'Adjust Cash',
+                    //     selectedItem: selectedAdjustCashType,
+                    //     onChanged: (value) async {
+                    //       setState(() {
+                    //         selectedAdjustCashType = value;
+                    //         selectedAdjustCash =
+                    //             null; // reset account selection
 
-                            debugPrint(
-                                "selectedAccountType  $selectedAdjustCash");
-                          });
-                        },
+                    //         debugPrint(
+                    //             "selectedAccountType  $selectedAdjustCash");
+                    //       });
+                    //     },
+                    //   ),
+                    // ),
+
+                    // Container(
+                    //   width: double.infinity,
+                    //   padding: const EdgeInsets.symmetric(
+                    //       vertical: 8, horizontal: 12),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       Row(
+                    //         children: itemAdjustCash.map((option) {
+                    //           return Expanded(
+                    //             child: InkWell(
+                    //               onTap: () async {
+                    //                 setState(() {
+                    //                   selectedAdjustCashType = option;
+                    //                   selectedAdjustCash =
+                    //                       null; // reset account selection
+                    //                   debugPrint(
+                    //                       "selectedAccountType  $selectedAdjustCash");
+                    //                 });
+                    //               },
+                    //               child: Row(
+                    //                 mainAxisSize: MainAxisSize.min,
+                    //                 children: [
+                    //                   Radio<String>(
+                    //                     value: option,
+                    //                     groupValue: selectedAdjustCashType,
+                    //                     onChanged: (value) async {
+                    //                       setState(() {
+                    //                         selectedAdjustCashType = value;
+                    //                         selectedAdjustCash =
+                    //                             null; // reset account selection
+                    //                         debugPrint(
+                    //                             "selectedAccountType  $selectedAdjustCash");
+                    //                       });
+                    //                     },
+                    //                     materialTapTargetSize:
+                    //                         MaterialTapTargetSize.shrinkWrap,
+                    //                     visualDensity: const VisualDensity(
+                    //                         horizontal: -4, vertical: -4),
+                    //                   ),
+                    //                   const SizedBox(
+                    //                       width:
+                    //                           2), // Minimal space between radio and text
+                    //                   Text(
+                    //                     option,
+                    //                     style: const TextStyle(
+                    //                         fontSize: 14, color: Colors.black),
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //             ),
+                    //           );
+                    //         }).toList(),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+           
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: itemAdjustCash.map((option) {
+                              return Expanded(
+                                child: InkWell(
+                                  onTap: () async {
+                                    setState(() {
+                                      selectedAdjustCashType = option;
+                                      selectedAdjustCash =
+                                          null; // reset account selection
+                                      debugPrint(
+                                          "selectedAdjustCashType: $selectedAdjustCashType"); // Fixed debug print
+                                    });
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment
+                                        .center, // Center the content
+                                    children: [
+                                      Radio<String>(
+                                        value: option,
+                                        groupValue: selectedAdjustCashType,
+                                        onChanged: (value) async {
+                                          setState(() {
+                                            selectedAdjustCashType = value;
+                                            selectedAdjustCash =
+                                                null; // reset account selection
+                                            debugPrint(
+                                                "selectedAdjustCashType: $selectedAdjustCashType"); // Fixed debug print
+                                          });
+                                        },
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4, vertical: -4),
+                                      ),
+                                      const SizedBox(
+                                          width:
+                                              2), // Minimal space between radio and text
+                                      Text(
+                                        option,
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
                       ),
                     ),
+
                     const SizedBox(
                       height: 10,
                     ),
@@ -139,51 +257,6 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
                         );
                       },
                     ),
-
-                    // Consumer<BankAdjustProvider>(
-                    //   builder: (context, provider, child) {
-                    //     if (provider.isLoading) {
-                    //       return const Center(
-                    //           child: CircularProgressIndicator());
-                    //     }
-
-                    //     if (provider.bankAccounts.isEmpty) {
-                    //       return const Text("No bank accounts found");
-                    //     }
-
-                    //     final itemBankAccounts =
-                    //         provider.bankAccounts.map((e) => e.name).toList();
-
-                    //     return SizedBox(
-                    //       height: 40,
-                    //       width: double.infinity,
-                    //       child: CustomDropdownTwo(
-                    //         hint: '',
-                    //         items: itemBankAccounts,
-                    //         width: double.infinity,
-                    //         height: 40,
-                    //         labelText: 'Account Name',
-                    //         selectedItem: selectedAccountType,
-                    //         onChanged: (value) async {
-                    //           setState(() {
-                    //             selectedAccountType = value;
-
-                    //             final selected =
-                    //                 provider.bankAccounts.firstWhere(
-                    //               (e) => e.name == value,
-                    //               orElse: () => provider.bankAccounts.first,
-                    //             );
-
-                    //             selectedAccount = selected.id.toString();
-
-                    //             debugPrint(
-                    //                 "Selected Bank Account: $value, ID: $selectedAccount");
-                    //           });
-                    //         },
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
 
                     const SizedBox(
                       height: 10,
@@ -307,16 +380,13 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
 
                         ///BankAdjustProvider //BankAdjustProvider //fetchBankAdjustments
 
-                        final listBank = Provider.of<BankAdjustProvider>(context, listen: false);
+                        final listBank = Provider.of<BankAdjustProvider>(
+                            context,
+                            listen: false);
 
                         await listBank.fetchBankAdjustments();
 
                         Navigator.of(context).pop();
-
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => const HomeView()),
-                        // );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

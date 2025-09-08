@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/sales_return/presentation/sales_return_view.dart';
 import 'package:cbook_dt/feature/sales_return/provider/sale_return_provider.dart';
 import 'package:cbook_dt/feature/sales_return/sales_return_detail.dart';
@@ -211,12 +212,9 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
                     return const Center(child: CircularProgressIndicator());
                   })
                 : provider.salesReturns.isEmpty
-                    ? const Center(
-                        child: Text(
-                          "No sales return data available.",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black),
-                        ),
+                    ? const NoDataWidget(
+                        message: "No sales return records found.",
+                        lottieAsset: "assets/animation/no_data.json",
                       )
                     : Padding(
                         padding: const EdgeInsets.all(0.0),

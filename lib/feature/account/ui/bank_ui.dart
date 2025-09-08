@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/adjust_bank.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/provider/bank_adjust_provider.dart';
@@ -20,7 +21,6 @@ class _BankState extends State<Bank> {
     super.initState();
     Provider.of<BankAdjustProvider>(context, listen: false)
         .fetchBankAdjustments();
-        
   }
 
   @override
@@ -48,12 +48,14 @@ class _BankState extends State<Bank> {
                   ),
                   Row(
                     children: [
+                      ///adjust bank.
                       InkWell(
                         onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (contex) => const AdjustBankCreate()));
+                                  builder: (contex) =>
+                                      const AdjustBankCreate()));
                         },
                         child: const Text(
                           "Adjust Bank",
@@ -89,12 +91,17 @@ class _BankState extends State<Bank> {
             final dataList = provider.bankAdjustmentModel?.data ?? [];
 
             if (dataList.isEmpty) {
-              return const Center(
-                  child: Text(
-                "No Data Found",
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ));
+              return const NoDataWidget(
+                message: "No bank records found.",
+                lottieAsset: "assets/animation/no_data.json",
+              );
+
+              // const Center(
+              //     child: Text(
+              //   "No Data Found",
+              //   style:
+              //       TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              // ));
             }
 
             return Column(
@@ -137,27 +144,22 @@ class _BankState extends State<Bank> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      
-                                      item.billType == '' ? 
-                                      
-                                      Text(
-                                       
-                                        
-                                         item.billNumber ?? '',
-                                        style: GoogleFonts.lato(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: Colors.black87,
-                                        ),
-                                      ) :
-                                      Text(
-                                        item.billType ?? '',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 14,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                       
+                                      item.billType == ''
+                                          ? Text(
+                                              item.billNumber ?? '',
+                                              style: GoogleFonts.lato(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: Colors.black87,
+                                              ),
+                                            )
+                                          : Text(
+                                              item.billType ?? '',
+                                              style: GoogleFonts.lato(
+                                                fontSize: 14,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
                                       const SizedBox(height: 4),
                                       Text(
                                         item.date ?? '',

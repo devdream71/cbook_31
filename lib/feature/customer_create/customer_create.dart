@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/price_option_selector_customer.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
-import 'package:cbook_dt/feature/home/presentation/home_view.dart';
-import 'package:cbook_dt/feature/party/party_list.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -171,94 +169,6 @@ class _CustomerCreateState extends State<CustomerCreate> {
     }
   }
 
-  // void _saveCustomer() async {
-  //   // FocusManager.instance.primaryFocus?.unfocus();
-  //   FocusScope.of(context).unfocus();
-
-  //   final customerProvider =
-  //       Provider.of<CustomerProvider>(context, listen: false);
-
-  //   final name = _nameController.text.trim();
-  //   final email = _emailController.text.trim();
-  //   final phone = _phoneController.text.trim();
-  //   final address = _addressController.text.trim();
-  //   final status = selectedStatus;
-  //   final proprietorName = _proprietorController.text.trim();
-  //   final openingBalance = _opiningBanglaceController.text.trim();
-  //   final levelType = _isChecked ? _selectedPrice : "";
-  //   final level = _isChecked ? "1" : "";
-
-  //   if (name.isNotEmpty && proprietorName.isNotEmpty
-
-  //       // &&
-  //       // phone.isNotEmpty &&
-  //       // address.isNotEmpty &&
-  //       // openingBalance.isNotEmpty
-
-  //       ) {
-  //     setState(() {
-  //       isLoading = true;
-  //     });
-
-  //     await customerProvider.createCustomer(
-  //       name: name,
-  //       email: email,
-  //       phone: phone ?? '',
-  //       address: address ?? '',
-  //       status: status,
-  //       proprietorName: proprietorName,
-  //       openingBalance: openingBalance ?? '',
-  //       levelType: levelType,
-  //       level: level,
-  //       imageFile: _imageFile != null ? File(_imageFile!.path) : null,
-  //       logo: _imageFile2 != null ? File(_imageFile2!.path) : null,
-  //     );
-
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-
-  //     if (customerProvider.errorMessage.isEmpty) {
-  //       final customerProvider =
-  //           Provider.of<CustomerProvider>(context, listen: false);
-
-  //       customerProvider.fetchCustomsr();
-
-  //       ///back to 2 step back.
-  //       Navigator.pop(context);
-  //       Navigator.pop(context);
-
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content:
-  //               Text("Customer Created", style: TextStyle(color: Colors.white)),
-  //           backgroundColor: Colors.green,
-  //         ),
-  //       );
-
-  //       // Clear all fields
-  //       _nameController.clear();
-  //       _proprietorController.clear();
-  //       _emailController.clear();
-  //       _phoneController.clear();
-  //       _addressController.clear();
-  //       _statusController.clear();
-  //       _opiningBanglaceController.clear();
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text(customerProvider.errorMessage)),
-  //       );
-  //     }
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         backgroundColor: Colors.red,
-  //         content: Text("Please fill all required fields."),
-  //       ),
-  //     );
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final customerProvider = Provider.of<CustomerProvider>(context);
@@ -291,39 +201,121 @@ class _CustomerCreateState extends State<CustomerCreate> {
               // _buildFieldLabel("Customer Name", textTheme, colorScheme),
 
               // Radio buttons
+              // Row(
+              //   mainAxisSize: MainAxisSize.min,
+              //   children: [
+              //     Expanded(
+              //       child: RadioListTile<String>(
+              //         title: const Text("Individual",
+              //             style: TextStyle(fontSize: 12)),
+              //         value: 'Individual',
+              //         groupValue: _selectedType,
+              //         onChanged: (value) {
+              //           setState(() {
+              //             _selectedType = value!;
+              //           });
+              //         },
+              //       ),
+              //     ),
+              //     Expanded(
+              //       child: RadioListTile<String>(
+              //         dense: true,
+              //         title: const Text(
+              //           "Business",
+              //           style: TextStyle(fontSize: 12),
+              //         ),
+              //         value: 'Business',
+              //         groupValue: _selectedType,
+              //         onChanged: (value) {
+              //           setState(() {
+              //             _selectedType = value!;
+              //           });
+              //         },
+              //       ),
+              //     ),
+              //   ],
+              // ),
+
+              SizedBox(
+                height: 10,
+              ),
+
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Expanded(
-                    child: RadioListTile<String>(
-                      title: const Text("Individual",
-                          style: TextStyle(fontSize: 12)),
-                      value: 'Individual',
-                      groupValue: _selectedType,
-                      onChanged: (value) {
+                    child: InkWell(
+                      onTap: () {
                         setState(() {
-                          _selectedType = value!;
+                          _selectedType = 'Individual';
                         });
                       },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment:
+                            MainAxisAlignment.center, // Center the content
+                        children: [
+                          Radio<String>(
+                            value: 'Individual',
+                            groupValue: _selectedType,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedType = value!;
+                              });
+                            },
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: const VisualDensity(
+                                horizontal: -4, vertical: -4),
+                          ),
+                          const SizedBox(width: 0),
+                          const Text(
+                            "Individual",
+                            style: TextStyle(fontSize: 12, color: Colors.black),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Expanded(
-                    child: RadioListTile<String>(
-                      dense: true,
-                      title: const Text(
-                        "Business",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      value: 'Business',
-                      groupValue: _selectedType,
-                      onChanged: (value) {
+                    child: InkWell(
+                      onTap: () {
                         setState(() {
-                          _selectedType = value!;
+                          _selectedType = 'Business';
                         });
                       },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment:
+                            MainAxisAlignment.center, // Center the content
+                        children: [
+                          Radio<String>(
+                            value: 'Business',
+                            groupValue: _selectedType,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedType = value!;
+                              });
+                            },
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: const VisualDensity(
+                                horizontal: -4, vertical: -4),
+                          ),
+                          const SizedBox(width: 0),
+                          const Text(
+                            "Business",
+                            style: TextStyle(fontSize: 12, color: Colors.black),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
+              ),
+
+              const SizedBox(
+                height: 20,
               ),
 
               if (_selectedType == 'Business')

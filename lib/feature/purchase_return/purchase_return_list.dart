@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/purchase_return/presentation/purchase_return_view.dart';
 import 'package:cbook_dt/feature/purchase_return/provider/purchase_return_provider.dart';
 import 'package:cbook_dt/feature/purchase_return/purchase_return_details.dart';
@@ -224,12 +225,17 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                             style: const TextStyle(color: Colors.red)));
                   }
                   if (provider.purchaseReturns.isEmpty) {
-                    return const Center(
-                        child: Text(
-                      "No purchase returns found.",
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
-                    ));
+                    return const NoDataWidget(
+                      message: "No purchase returns records found",
+                      lottieAsset: "assets/animation/no_data.json",
+                    );
+
+                    // const Center(
+                    //     child: Text(
+                    //   "No purchase returns found.",
+                    //   style: TextStyle(
+                    //       color: Colors.black, fontWeight: FontWeight.bold),
+                    // ));
                   }
 
                   return ListView.builder(

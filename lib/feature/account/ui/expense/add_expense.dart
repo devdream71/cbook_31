@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
-import 'package:cbook_dt/feature/account/ui/expense/expense_list.dart';
 import 'package:cbook_dt/feature/account/ui/expense/model/expence_item.dart';
 import 'package:cbook_dt/feature/account/ui/expense/model/expense_item_list_popup.dart';
 import 'package:cbook_dt/feature/account/ui/expense/model/expense_paid_form_list.dart';
@@ -159,62 +158,6 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
     "Cash in Hand": "cash",
     "Bank": "bank",
   };
-
-  ///updated bill nunber json respoonse
-  // Future<void> fetchAndSetBillNumber() async {
-  //   debugPrint('fetchAndSetBillNumber called');
-
-  //   final url = Uri.parse(
-  //     '${AppUrl.baseurl}app/setting/bill/number?voucher_type=voucher&type=indirect_expense&code=EX&bill_number=100&with_nick_name=1',
-  //   );
-
-  //   try {
-  //     debugPrint('Making API call...');
-  //     final response = await http.get(url);
-  //     debugPrint('API Response Status: ${response.statusCode}');
-  //     debugPrint('API Response Body: ${response.body}');
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       debugPrint('Parsed data: $data');
-
-  //       if (data['success'] == true && data['data'] != null) {
-  //         final billFromApi =
-  //             data['data']['bill_number']?.toString().trim() ?? "";
-
-  //         debugPrint('Bill from API: $billFromApi');
-
-  //         // Optional: extract only number from "EX-100"
-  //         final billOnlyNumber = billFromApi;
-
-  //         if (mounted) {
-  //           setState(() {
-  //             billController.text = billOnlyNumber;
-  //             debugPrint('Bill controller updated to: ${billController.text}');
-  //           });
-  //         }
-  //       } else {
-  //         debugPrint('API success false or data missing');
-  //         _setFallback();
-  //       }
-  //     } else {
-  //       debugPrint('Failed to fetch bill number: ${response.statusCode}');
-  //       _setFallback();
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error fetching bill number: $e');
-  //     _setFallback();
-  //   }
-  // }
-
-  // void _setFallback() {
-  //   if (mounted) {
-  //     setState(() {
-  //       billController.text = "100"; // or any default you want
-  //       debugPrint('Fallback bill set: ${billController.text}');
-  //     });
-  //   }
-  // }
 
   void resetForm() {
     setState(() {
@@ -437,132 +380,94 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ///cash in hand or bank
-
-                      SizedBox(
+                  Expanded(
+                    child: SizedBox(
+                      height: 38,
+                      //width: 150,
+                      child: CustomDropdownTwo(
+                        hint: '',
+                        items: paidToOptions.keys.toList(), // show labels
+                        width: double.infinity,
                         height: 38,
-                        width: 150,
-                        child: CustomDropdownTwo(
-                          hint: '',
-                          items: paidToOptions.keys.toList(), // show labels
-                          width: double.infinity,
-                          height: 38,
-                          labelText: 'Paid To',
-                          selectedItem: selectedReceivedTo,
-                          onChanged: (value) async {
-                            debugPrint('=== Received To Selected: $value ===');
+                        labelText: 'Paid To',
+                        selectedItem: selectedReceivedTo,
+                        onChanged: (value) async {
+                          debugPrint('=== Received To Selected: $value ===');
 
-                            setState(() {
-                              selectedReceivedTo = value;
-                              selectedAccount = null; // reset account selection
-                            });
+                          setState(() {
+                            selectedReceivedTo = value;
+                            selectedAccount = null; // reset account selection
+                          });
 
-                            // get actual API value (cash / bank)
-                            final apiValue = paidToOptions[value];
-                            debugPrint("Sending to API as: $apiValue");
+                          // get actual API value (cash / bank)
+                          final apiValue = paidToOptions[value];
+                          debugPrint("Sending to API as: $apiValue");
 
-                            //apiValue = selectedReceivedTo;
+                          //apiValue = selectedReceivedTo;
 
-                            if (apiValue == 'cash') {
-                              debugPrint('Fetching Cash accounts...');
-                              await provider.fetchAccounts('cash');
-                            } else if (apiValue == 'bank') {
-                              debugPrint('Fetching Bank accounts...');
-                              await provider.fetchAccounts('bank');
-                            }
+                          if (apiValue == 'cash') {
+                            debugPrint('Fetching Cash accounts...');
+                            await provider.fetchAccounts('cash');
+                          } else if (apiValue == 'bank') {
+                            debugPrint('Fetching Bank accounts...');
+                            await provider.fetchAccounts('bank');
+                          }
 
-                            debugPrint(
-                                'Fetched Account Names: ${provider.accountNames}');
-                          },
-                        ),
+                          debugPrint(
+                              'Fetched Account Names: ${provider.accountNames}');
+                        },
                       ),
+                    ),
+                  ),
 
-                      // SizedBox(
-                      //   height: 30,
-                      //   width: 150,
-                      //   child: CustomDropdownTwo(
-                      //     hint: '',
-                      //     items: const ['Cash in Hand', 'Bank'],
-                      //     width: double.infinity,
-                      //     height: 30,
-                      //     labelText: 'Paid To',
-                      //     selectedItem: selectedReceivedTo,
-                      //     onChanged: (value) async {
-                      //       debugPrint('=== Received To Selected: $value ===');
+                  const SizedBox(width: 4),
 
-                      //       setState(() {
-                      //         selectedReceivedTo = value;
-                      //         selectedAccount = null; // reset account selection
-                      //       });
+                  /// Account Dropdown
+                  Expanded(
+                    child: SizedBox(
+                      height: 38,
+                      //width: 150,
+                      child: provider.isAccountLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : CustomDropdownTwo(
+                              hint: '',
+                              items: provider.accountNames,
+                              width: double.infinity,
+                              height: 38,
+                              labelText: 'A/C',
+                              selectedItem: selectedAccount,
+                              onChanged: (value) {
+                                debugPrint('=== Account Selected: $value ===');
+                                setState(() {
+                                  selectedAccount = value;
+                                });
 
-                      //       if (value == 'Cash in Hand') {
-                      //         debugPrint('Fetching Cash accounts...');
-                      //         await provider.fetchAccounts('cash');
-                      //       } else if (value == 'Bank') {
-                      //         debugPrint('Fetching Bank accounts...');
-                      //         await provider.fetchAccounts('bank');
-                      //       }
+                                if (provider.accountModel != null) {
+                                  final selectedAccountData = provider
+                                      .accountModel!.data
+                                      .firstWhere((account) =>
+                                          account.accountName == value);
 
-                      //       debugPrint(
-                      //           'Fetched Account Names: ${provider.accountNames}');
-                      //     },
-                      //   ),
-                      // ),
+                                  selectedAccountId = selectedAccountData.id;
 
-                      const SizedBox(height: 10),
-
-                      /// Account Dropdown
-                      SizedBox(
-                        height: 38,
-                        width: 150,
-                        child: provider.isAccountLoading
-                            ? const Center(child: CircularProgressIndicator())
-                            : CustomDropdownTwo(
-                                hint: '',
-                                items: provider.accountNames,
-                                width: double.infinity,
-                                height: 38,
-                                labelText: 'A/C',
-                                selectedItem: selectedAccount,
-                                onChanged: (value) {
                                   debugPrint(
                                       '=== Account Selected: $value ===');
-                                  setState(() {
-                                    selectedAccount = value;
-                                  });
-
-                                  if (provider.accountModel != null) {
-                                    final selectedAccountData = provider
-                                        .accountModel!.data
-                                        .firstWhere((account) =>
-                                            account.accountName == value);
-
-                                    selectedAccountId = selectedAccountData.id;
-
+                                  if (selectedAccountId != null) {
                                     debugPrint(
-                                        '=== Account Selected: $value ===');
-                                    if (selectedAccountId != null) {
-                                      debugPrint(
-                                          'Selected Account ID: $selectedAccountId');
-                                    }
-
-                                    debugPrint('Selected Account Details:');
-                                    debugPrint(
-                                        '- ID: ${selectedAccountData.id}');
-                                    debugPrint(
-                                        '- Name: ${selectedAccountData.accountName}');
-                                    debugPrint('- Type: $selectedReceivedTo');
+                                        'Selected Account ID: $selectedAccountId');
                                   }
-                                },
-                              ),
-                      ),
-                    ],
+
+                                  debugPrint('Selected Account Details:');
+                                  debugPrint('- ID: ${selectedAccountData.id}');
+                                  debugPrint(
+                                      '- Name: ${selectedAccountData.accountName}');
+                                  debugPrint('- Type: $selectedReceivedTo');
+                                }
+                              },
+                            ),
+                    ),
                   ),
-                  Column(
+                  const Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       //bill person

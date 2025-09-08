@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/accounty_type_update.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/provider/account_type_provider.dart';
@@ -78,11 +79,16 @@ class _AccountListPageState extends State<AccountListPage> {
           //   return Center(child: Text(provider.error!, style: const TextStyle(color: Colors.black),));
           // }
           else if (provider.accounts.isEmpty) {
-            return const Center(
-                child: Text(
-              "No accounts found.",
-              style: TextStyle(color: Colors.black),
-            ));
+            return const NoDataWidget(
+              message: "No acount records found",
+              lottieAsset: "assets/animation/no_data.json",
+            );
+
+            // const Center(
+            //     child: Text(
+            //   "No accounts found.",
+            //   style: TextStyle(color: Colors.black),
+            // ));
           }
 
           return Consumer<AccountTypeProvider>(
@@ -150,8 +156,6 @@ class _AccountListPageState extends State<AccountListPage> {
               );
             },
           );
-
-        
         },
       ),
     );

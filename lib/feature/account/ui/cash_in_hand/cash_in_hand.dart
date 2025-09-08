@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_cash/adjust_cash_create.dart';
 import 'package:cbook_dt/feature/account/ui/cash_in_hand/provider/cash_in_hand.dart';
@@ -24,7 +25,6 @@ class _CashInHandState extends State<CashInHand> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
- 
 
     return Scaffold(
         backgroundColor: AppColors.sfWhite,
@@ -43,9 +43,10 @@ class _CashInHandState extends State<CashInHand> {
           actions: [
             Row(
               children: [
+                ///adjust cash.
                 InkWell(
-                  onTap: ()   {
-                   Navigator.push(
+                  onTap: () {
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const AdjustCashCreate()));
@@ -55,6 +56,7 @@ class _CashInHandState extends State<CashInHand> {
                     style: TextStyle(color: Colors.yellow, fontSize: 15),
                   ),
                 ),
+                ///account.
                 InkWell(
                   onTap: () {
                     Navigator.push(
@@ -66,8 +68,6 @@ class _CashInHandState extends State<CashInHand> {
                     padding: EdgeInsets.only(right: 8.0),
                     child: Row(
                       children: [
-                         
-
                         SizedBox(
                           width: 10,
                         ),
@@ -89,12 +89,12 @@ class _CashInHandState extends State<CashInHand> {
             final dataList = provider.cashInHandModel?.data ?? [];
 
             if (dataList.isEmpty) {
-              return const Center(
-                  child: Text(
-                "No Data Found",
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ));
+              return const NoDataWidget(
+                message: "No cash in hand records found.",
+                lottieAsset: "assets/animation/no_data.json",
+              );
+
+              
             }
 
             return Column(
@@ -139,24 +139,22 @@ class _CashInHandState extends State<CashInHand> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      
-                                      item.billNumber == '' ? Text(
-                                        item.billType ?? '',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 14,
-                                          color: Colors.black87,
-                                        ),
-                                      ) : 
-                                      
-                                      Text(
-                                        item.billNumber ?? '',
-                                        style: GoogleFonts.lato(
-                                          //fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      
+                                      item.billNumber == ''
+                                          ? Text(
+                                              item.billType ?? '',
+                                              style: GoogleFonts.lato(
+                                                fontSize: 14,
+                                                color: Colors.black87,
+                                              ),
+                                            )
+                                          : Text(
+                                              item.billNumber ?? '',
+                                              style: GoogleFonts.lato(
+                                                //fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
                                       const SizedBox(height: 4),
                                       Text(
                                         item.date ?? '',
@@ -374,5 +372,3 @@ class _CashInHandState extends State<CashInHand> {
     );
   }
 }
-
-

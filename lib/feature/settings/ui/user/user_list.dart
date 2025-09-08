@@ -1,7 +1,8 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/app_service_free_premium/controler/app_service_controller.dart';
 import 'package:cbook_dt/feature/app_service_free_premium/screen/app_service.dart';
- import 'package:cbook_dt/feature/settings/ui/user/user_add.dart';
+import 'package:cbook_dt/feature/settings/ui/user/user_add.dart';
 import 'package:cbook_dt/feature/settings/ui/user/user_details.dart';
 import 'package:cbook_dt/feature/settings/ui/user/user_provider/user_provider.dart';
 import 'package:cbook_dt/feature/settings/ui/user/user_update.dart';
@@ -23,16 +24,17 @@ class _UserCeateState extends State<UserCeate> {
     // ✅ First fetch app service to check if user has premium access
     Future.microtask(() async {
       debugPrint("=== USER CREATE INIT ===");
-      
-      final appServiceProvider = Provider.of<AppServiceProvider>(context, listen: false);
+
+      final appServiceProvider =
+          Provider.of<AppServiceProvider>(context, listen: false);
       debugPrint("About to fetch app service...");
-      
+
       await appServiceProvider.fetchAppService();
-      
+
       debugPrint("App service fetch completed");
       debugPrint("App Service: '${appServiceProvider.appService}'");
       debugPrint("Is Free: ${appServiceProvider.isFree}");
-      
+
       // ✅ Only fetch users if user has premium access
       if (!appServiceProvider.isFree) {
         debugPrint("User has premium access - fetching users");
@@ -40,7 +42,7 @@ class _UserCeateState extends State<UserCeate> {
       } else {
         debugPrint("User has free access - NOT fetching users");
       }
-      
+
       debugPrint("=== END USER CREATE INIT ===");
     });
   }
@@ -106,7 +108,7 @@ class _UserCeateState extends State<UserCeate> {
   // ✅ Extract the original User content into a separate method
   Widget _buildUserContent(ColorScheme colorScheme) {
     debugPrint("Building premium user content");
-    
+
     return Scaffold(
       backgroundColor: AppColors.sfWhite,
       appBar: AppBar(
@@ -165,15 +167,20 @@ class _UserCeateState extends State<UserCeate> {
           }
 
           if (userSettingProvider.users.isEmpty) {
-            return const Center(
-              child: Text(
-                "No user found.",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            return const NoDataWidget(
+              message: "No user records found",
+              lottieAsset: "assets/animation/no_data.json",
             );
+
+            // const Center(
+            //   child: Text(
+            //     "No user found.",
+            //     style: TextStyle(
+            //       color: Colors.black,
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            // );
           }
 
           return ListView.builder(
@@ -205,8 +212,11 @@ class _UserCeateState extends State<UserCeate> {
                       padding: const EdgeInsets.only(left: 4.0),
                       child: CircleAvatar(
                         backgroundImage: user.avatar != null
-                            ? NetworkImage('https://commercebook.site/${user.avatar}')
-                            : const AssetImage('assets/images/avatar_placeholder.png') as ImageProvider,
+                            ? NetworkImage(
+                                'https://commercebook.site/${user.avatar}')
+                            : const AssetImage(
+                                    'assets/images/avatar_placeholder.png')
+                                as ImageProvider,
                       ),
                     ),
                     title: Text(

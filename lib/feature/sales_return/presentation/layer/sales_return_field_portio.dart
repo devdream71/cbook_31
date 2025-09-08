@@ -159,7 +159,7 @@ class FieldPortion extends StatelessWidget {
                       style: TextStyle(fontSize: 12, color: Colors.black)),
                   hPad5,
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: 'Amount',
@@ -188,7 +188,7 @@ class FieldPortion extends StatelessWidget {
                       style: TextStyle(fontSize: 12, color: Colors.black)),
                   const SizedBox(width: 5),
                   SizedBox(
-                    height: 30,
+                    height: 38,
                     width: 150,
                     child: AddSalesFormfield(
                       labelText: 'Discount',
@@ -244,7 +244,7 @@ class FieldPortion extends StatelessWidget {
                                 TextStyle(fontSize: 12, color: Colors.black)),
                         const SizedBox(width: 5),
                         SizedBox(
-                          height: 30,
+                          height: 38,
                           width: 150,
                           child: AddSalesFormfield(
                             labelText: 'Payment',
