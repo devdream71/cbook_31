@@ -1,7 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/no_data_fount.dart';
-import 'package:cbook_dt/feature/app_service_free_premium/controler/app_service_controller.dart';
-import 'package:cbook_dt/feature/app_service_free_premium/screen/app_service.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/bill_create.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/edit_bill_person.dart';
 import 'package:cbook_dt/feature/settings/ui/bill/provider/bill_provider.dart';
@@ -20,30 +18,12 @@ class _BillPersonListState extends State<BillPersonList> {
   void initState() {
     super.initState();
 
-    // ✅ First fetch app service to check if user has premium access
     Future.microtask(() async {
-      debugPrint("=== BILL PERSON LIST INIT ===");
-
       final appServiceProvider =
-          Provider.of<AppServiceProvider>(context, listen: false);
+          Provider.of<BillPersonProvider>(context, listen: false);
       debugPrint("About to fetch app service...");
 
-      await appServiceProvider.fetchAppService();
-
-      debugPrint("App service fetch completed");
-      debugPrint("App Service: '${appServiceProvider.appService}'");
-      debugPrint("Is Free: ${appServiceProvider.isFree}");
-
-      // ✅ Only fetch bill persons if user has premium access
-      if (!appServiceProvider.isFree) {
-        debugPrint("User has premium access - fetching bill persons");
-        Provider.of<BillPersonProvider>(context, listen: false)
-            .fetchBillPersons();
-      } else {
-        debugPrint("User has free access - NOT fetching bill persons");
-      }
-
-      debugPrint("=== END BILL PERSON LIST INIT ===");
+      await appServiceProvider.fetchBillPersons();
     });
   }
 
@@ -54,64 +34,6 @@ class _BillPersonListState extends State<BillPersonList> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
-    return Scaffold(
-      backgroundColor: AppColors.sfWhite,
-      body: Consumer<AppServiceProvider>(
-        builder: (context, appServiceProvider, child) {
-          // ✅ Add debugging in build method
-          debugPrint("=== BUILD METHOD DEBUG ===");
-          debugPrint("isLoading: ${appServiceProvider.isLoading}");
-          debugPrint("appService: '${appServiceProvider.appService}'");
-          debugPrint("isFree: ${appServiceProvider.isFree}");
-
-          // ✅ Show loading while checking app service
-          if (appServiceProvider.isLoading) {
-            debugPrint("Showing loading screen");
-            return Scaffold(
-              backgroundColor: AppColors.sfWhite,
-              appBar: AppBar(
-                backgroundColor: colorScheme.primary,
-                iconTheme: const IconThemeData(color: Colors.white),
-                title: const Text(
-                  'Bill Person',
-                  style: TextStyle(
-                    color: Colors.yellow,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              body: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text("Checking app service..."),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          // ✅ If app service is free, show AppServiceUI
-          if (appServiceProvider.isFree) {
-            debugPrint("Showing AppServiceUI (free version)");
-            return const AppServiceUI();
-          }
-
-          // ✅ If app service is premium, show BillPersonList content
-          debugPrint("Showing premium BillPersonList content");
-          return _buildBillPersonListContent(colorScheme);
-        },
-      ),
-    );
-  }
-
-  // ✅ Extract the original BillPersonList content into a separate method
-  Widget _buildBillPersonListContent(ColorScheme colorScheme) {
-    debugPrint("Building premium bill person list content");
 
     return Scaffold(
       backgroundColor: AppColors.sfWhite,
@@ -168,73 +90,73 @@ class _BillPersonListState extends State<BillPersonList> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Consumer<BillPersonProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+            Expanded(
+              child: Consumer<BillPersonProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                if (provider.errorMessage.isNotEmpty) {
-                  return Center(child: Text(provider.errorMessage));
-                }
+                  if (provider.errorMessage.isNotEmpty) {
+                    return Center(child: Text(provider.errorMessage));
+                  }
 
-                if (provider.billPersons.isEmpty) {
-                  return const NoDataWidget(
-                    message: "No bill records found",
-                    lottieAsset: "assets/animation/no_data.json",
-                  );
+                  if (provider.billPersons.isEmpty) {
+                    return const NoDataWidget(
+                      message: "No bill records found",
+                      lottieAsset: "assets/animation/no_data.json",
+                    );
+                  }
 
-                  // Center(
-                  //   child: Text('No Bill Persons Found', style: ts),
-                  // );
-                }
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero, // 🔥 Zero padding
+                    itemCount: provider.billPersons.length,
+                    separatorBuilder: (context, index) => const SizedBox(
+                        height: 1), // 🔥 Zero space between items
+                    itemBuilder: (context, index) {
+                      final person = provider.billPersons[index];
+                      final billPersonId = provider.billPersons[index].id;
 
-                return ListView.separated(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero, // 🔥 Zero padding
-                  itemCount: provider.billPersons.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 1), // 🔥 Zero space between items
-                  itemBuilder: (context, index) {
-                    final person = provider.billPersons[index];
-                    final billPersonId = provider.billPersons[index].id;
-
-                    return InkWell(
-                      onLongPress: () {
-                        editDeleteDiolog(context, billPersonId.toString());
-                      },
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(
-                              255, 241, 240, 240), // Optional: background color
-                        ),
-                        child: ListTile(
-                          dense: true, // 🔥 Makes the tile more compact
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical:
-                                  0), // 🔥 Minimal padding inside ListTile
-                          leading: person.avatar != null
-                              ? Image.network(
-                                  'https://commercebook.site/${person.avatar}',
-                                  width: 40,
-                                  height: 40,
-                                  fit: BoxFit.cover)
-                              : const Icon(Icons.person),
-                          title: Text(person.name, style: ts2),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(person.phone, style: ts2),
-                              Text(person.email ?? 'N/A', style: ts2),
-                            ],
+                      return InkWell(
+                        onLongPress: () {
+                          editDeleteDiolog(context, billPersonId.toString());
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 241, 240,
+                                240), // Optional: background color
+                          ),
+                          child: ListTile(
+                            dense: true, // 🔥 Makes the tile more compact
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical:
+                                    0), // 🔥 Minimal padding inside ListTile
+                            leading: person.avatar != null
+                                ? Image.network(
+                                    'https://commercebook.site/${person.avatar}',
+                                    width: 40,
+                                    height: 40,
+                                    fit: BoxFit.cover)
+                                : const Icon(Icons.person),
+                            title: Text(person.name, style: ts2),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(person.phone ?? '', style: ts2),
+                                Text(person.email ?? 'N/A',
+                                    style:
+                                        const TextStyle(color: Colors.black)),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

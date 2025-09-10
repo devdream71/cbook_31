@@ -3,7 +3,7 @@ class BillPersonModel {
   final String name;
   final String nickName;
   final String? email;
-  final String phone;
+  final String ? phone;
   final int? designationId;
   final dynamic avatar;
   final dynamic date;
@@ -14,7 +14,7 @@ class BillPersonModel {
     required this.name,
     required this.nickName,
     this.email,
-    required this.phone,
+      this.phone,
     this.designationId,
      this.avatar,
      this.date,

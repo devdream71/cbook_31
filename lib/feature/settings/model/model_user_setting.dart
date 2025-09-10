@@ -1,7 +1,7 @@
 // models/user_model.dart
 class SetingsUserModel {
   final int id;
-  final String name;
+  final String ? name;
   final String? nickName;
   final String email;
   final String phone;
@@ -12,7 +12,7 @@ class SetingsUserModel {
 
   SetingsUserModel({
     required this.id,
-    required this.name,
+    this.name,
     this.nickName,
     required this.email,
     required this.phone,
