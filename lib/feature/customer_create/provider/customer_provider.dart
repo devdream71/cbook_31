@@ -13,7 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomerProvider extends ChangeNotifier {
 
-
   DateTime _selectedDate = DateTime.now();
 
   String get formattedDate => DateTimeHelper.formatDate(_selectedDate);
@@ -62,7 +61,7 @@ class CustomerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ✅ ADD: Payment customer selection (if you need separate payment customer tracking)
+  // ADD: Payment customer selection (if you need separate payment customer tracking)
   Customer? _selectedCustomerPayment;
   Customer? get selectedCustomerPayment => _selectedCustomerPayment;
 
@@ -78,7 +77,7 @@ class CustomerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ✅ ADD: Set selected payment customer by ID
+  // ADD: Set selected payment customer by ID
   void setSelectedCustomerPaymentById(int customerId) {
     final customer = findCustomerById(customerId);
     if (customer != null) {
@@ -135,7 +134,7 @@ class CustomerProvider extends ChangeNotifier {
     notifyListeners(); // Notify after data fetch is completed
   }
 
-  // ✅ ADD THIS METHOD - Find customer by ID
+  // ADD THIS METHOD - Find customer by ID
   Customer? findCustomerById(int customerId) {
     if (customerResponse?.data == null) return null;
 
@@ -148,7 +147,7 @@ class CustomerProvider extends ChangeNotifier {
     }
   }
 
-  // ✅ ADD THIS METHOD - Set selected customer for received voucher by ID
+  // ADD THIS METHOD - Set selected customer for received voucher by ID
   void setSelectedCustomerRecivedById(int customerId) {
     final customer = findCustomerById(customerId);
     if (customer != null) {
@@ -156,7 +155,7 @@ class CustomerProvider extends ChangeNotifier {
     }
   }
 
-  // ✅ ADD THIS METHOD - Set selected customer by ID (for regular customer selection)
+  // ADD THIS METHOD - Set selected customer by ID (for regular customer selection)
   void setSelectedCustomerById(int customerId) {
     final customer = findCustomerById(customerId);
     if (customer != null) {
@@ -517,8 +516,8 @@ class CustomerProvider extends ChangeNotifier {
           body['level_type'] = levelType;
         }
 
-        debugPrint('🚀 Updating customer without image...');
-        debugPrint('🚀 Body: $body');
+        debugPrint(' Updating customer without image...');
+        debugPrint(' Body: $body');
 
         response = await http.post(
           url,
@@ -531,24 +530,24 @@ class CustomerProvider extends ChangeNotifier {
         );
       }
 
-      debugPrint('📥 Response Status: ${response.statusCode}');
-      debugPrint('📥 Response Body: ${response.body}');
+      debugPrint(' Response Status: ${response.statusCode}');
+      debugPrint(' Response Body: ${response.body}');
 
       final data = jsonDecode(response.body);
       
       if (response.statusCode == 200 && data["success"] == true) {
-        debugPrint("✅ Customer updated successfully");
+        debugPrint(" Customer updated successfully");
         errorMessage = "";
         
         // Optionally refresh customer list
         await fetchCustomsr();
       } else {
         errorMessage = data["message"] ?? "Failed to update customer";
-        debugPrint("❌ Update failed: $errorMessage");
+        debugPrint(" Update failed: $errorMessage");
       }
     } catch (e) {
       errorMessage = "Error: $e";
-      debugPrint("💥 Exception during update: $e");
+      debugPrint(" Exception during update: $e");
     }
 
     isLoading = false;

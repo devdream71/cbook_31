@@ -96,12 +96,7 @@ class _BankState extends State<Bank> {
                 lottieAsset: "assets/animation/no_data.json",
               );
 
-              // const Center(
-              //     child: Text(
-              //   "No Data Found",
-              //   style:
-              //       TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              // ));
+              
             }
 
             return Column(

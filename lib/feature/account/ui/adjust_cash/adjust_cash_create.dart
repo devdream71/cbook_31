@@ -98,17 +98,17 @@ class _AdjustCashCreateState extends State<AdjustCashCreate> {
                     //   width: double.infinity,
                     //   padding: const EdgeInsets.symmetric(
                     //       vertical: 8, horizontal: 12),
-                     
+
                     //   child: Column(
                     //     crossAxisAlignment: CrossAxisAlignment.start,
                     //     children: [
-                         
+
                     //       const SizedBox(height: 4),
                     //       Row(
                     //         children: itemAdjustCash.map((option) {
                     //           return Expanded(
                     //             child: Row(
-                                 
+
                     //               children: [
                     //                 Radio<String>(
                     //                   value: option,
@@ -142,47 +142,52 @@ class _AdjustCashCreateState extends State<AdjustCashCreate> {
                     //   ),
                     // ),
 
-
                     Container(
-  width: double.infinity,
-  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const SizedBox(height: 4),
-      Row(
-        children: itemAdjustCash.map((option) {
-          return Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center, // Center the radio button and text
-              children: [
-                Radio<String>(
-                  value: option,
-                  groupValue: selectedAdjustCashType,
-                  onChanged: (value) {
-                    if (mounted) {
-                      setState(() {
-                        selectedAdjustCashType = value;
-                        selectedAdjustCash = null; // reset account selection
-                        debugPrint("selectedAdjustCashType: $selectedAdjustCashType");
-                      });
-                    }
-                  },
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  visualDensity: VisualDensity.compact,
-                ),
-                Text(
-                  option,
-                  style: const TextStyle(fontSize: 14, color: Colors.black),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    ],
-  ),
-),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 4),
+                          Row(
+                            children: itemAdjustCash.map((option) {
+                              return Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment
+                                      .center, // Center the radio button and text
+                                  children: [
+                                    Radio<String>(
+                                      value: option,
+                                      groupValue: selectedAdjustCashType,
+                                      onChanged: (value) {
+                                        if (mounted) {
+                                          setState(() {
+                                            selectedAdjustCashType = value;
+                                            selectedAdjustCash =
+                                                null; // reset account selection
+                                            debugPrint(
+                                                "selectedAdjustCashType: $selectedAdjustCashType");
+                                          });
+                                        }
+                                      },
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                    ),
+                                    Text(
+                                      option,
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ),
 
                     const SizedBox(height: 10),
 

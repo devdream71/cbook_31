@@ -42,17 +42,7 @@ required this.rightText,
                         fontSize: 12)),
               ),
             ),
-            // SizedBox(
-            //   //color: Colors.red,
-            //   child: SizedBox(
-            //     width: 70,
-            //     child: Text(" $last",
-            //         style: TextStyle(
-            //             fontWeight: fontWeight,
-            //             color: Colors.black,
-            //             fontSize: 12)),
-            //   ),
-            // ),
+           
             const SizedBox(height: 3),
           ]),
     );

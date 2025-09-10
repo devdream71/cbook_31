@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class CustomDropdownThree extends StatefulWidget {
   final List<String> items;
-  // final List<Customer> items; 
+
   final String hint;
   final Function(String) onChanged;
   final double width;
@@ -14,7 +14,7 @@ class CustomDropdownThree extends StatefulWidget {
   final void Function()? onTap;
 
   const CustomDropdownThree({
-    Key? key,
+    super.key,
     required this.items,
     required this.hint,
     required this.onChanged,
@@ -24,27 +24,23 @@ class CustomDropdownThree extends StatefulWidget {
     this.value,
     required this.addCustomerOrSupplier,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
-  _CustomDropdownThreeState createState() => _CustomDropdownThreeState();
+  CustomDropdownThreeState createState() => CustomDropdownThreeState();
 }
 
-class _CustomDropdownThreeState extends State<CustomDropdownThree> {
+class CustomDropdownThreeState extends State<CustomDropdownThree> {
   OverlayEntry? _overlayEntry;
   final LayerLink _layerLink = LayerLink();
   bool isDropdownOpen = false;
   String? selectedItem;
-
-   
 
   late List<String> filteredItems;
   final TextEditingController searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
   Timer? _debounce;
-  
-  
 
   @override
   void initState() {
@@ -170,23 +166,12 @@ class _CustomDropdownThreeState extends State<CustomDropdownThree> {
                                   TextStyle(color: Colors.black, fontSize: 12),
                             ),
                             InkWell(
-                              onTap: 
-                              widget.onTap,
-                              // () 
-                              // {
-                              //   Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //       builder: (context) =>
-                              //           const CustomerCreate(),
-                              //     ),
-                              //   );
-                              //   _removeDropdown();
-                              // },
+                              onTap: widget.onTap,
+                              
                               child: Text(
                                 widget.addCustomerOrSupplier,
-                                style:
-                                    const TextStyle(color: Colors.blue, fontSize: 12),
+                                style: const TextStyle(
+                                    color: Colors.blue, fontSize: 12),
                               ),
                             ),
                           ],
@@ -276,7 +261,7 @@ class _CustomDropdownThreeState extends State<CustomDropdownThree> {
     _debounce?.cancel();
     searchController.dispose();
     _searchFocusNode.dispose();
-    
+
     super.dispose();
   }
 

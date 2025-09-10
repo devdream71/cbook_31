@@ -47,35 +47,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app_const/app_colors.dart';
 import 'feature/sales/controller/sales_controller.dart';
 
-//  ===> 13/04.25
-
-//  DevicePreview(
-//       enabled: !kReleaseMode,
-//       builder: (context) => MultiProvider(
-//         providers: [
-//           ChangeNotifierProvider(create: (_) => SalesController()),
-//           ChangeNotifierProvider(create: (_) => PurchaseController()),
-//           ChangeNotifierProvider(create: (_) => SalesReturnController()),
-//           ChangeNotifierProvider(create: (_) => PurchaseReturnController()),
-//           ChangeNotifierProvider(create: (context) => AuthService()),
-//           ChangeNotifierProvider(create: (context) => VerificationProvider()),
-//           ChangeNotifierProvider(create: (context) => LoginProvider()),
-//           ChangeNotifierProvider(create: (context) => ProfileProvider()),
-//           ChangeNotifierProvider(create: (context) => ItemProvider()),
-//           ChangeNotifierProvider(create: (context) => AddItemProvider()..fetchItems()),
-//           ChangeNotifierProvider(create: (context) => ItemUpdateProvider()),
-//           ChangeNotifierProvider(create: (context) => UnitProvider()),
-//           ChangeNotifierProvider(create: (context) => SupplierProvider()),
-//           ChangeNotifierProvider(create: (context) => CustomerProvider()),
-//           ChangeNotifierProvider(create: (context) => ItemCategoryProvider()),
-//           ChangeNotifierProvider(create: (context) => PurchaseProvider()),
-//           ChangeNotifierProvider(create: (context) => UnitDTProvider()),
-//           ChangeNotifierProvider(create: (context) => PurchaseUpdateProvider()),
-//           ChangeNotifierProvider(create: (context) => SalesProvider()),
-//           ChangeNotifierProvider(create: (context) => SaleUpdateProvider()),
-//           ChangeNotifierProvider(create: (_) => PurchaseReturnProvider()),
-//         ],
-//         child: const MyApp(),
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

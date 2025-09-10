@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/item/model/item_deatils_model.dart';
 import 'package:cbook_dt/utils/url.dart';
 import 'package:flutter/material.dart';
@@ -237,7 +236,7 @@ class ItemProvider with ChangeNotifier {
       // request.headers['Content-Type'] = 'multipart/form-data';
 
       request.headers.addAll({
-        "Authorization": "Bearer $token", // ✅ Bearer prefix
+        "Authorization": "Bearer $token", // Bearer prefix
         "Accept": "application/json",
         "Content-Type":
             "multipart/form-data", // optional, MultipartRequest sets this automatically
@@ -260,9 +259,9 @@ class ItemProvider with ChangeNotifier {
         },
       );
 
-      debugPrint("🔗 Sending URL (Postman style): $debugUri");
+      debugPrint(" Sending URL (Postman style): $debugUri");
 
-      debugPrint("📝 Request Fields:");
+      debugPrint(" Request Fields:");
       request.fields.forEach((key, value) {
         debugPrint("  $key: $value");
       });
@@ -276,10 +275,10 @@ class ItemProvider with ChangeNotifier {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      debugPrint("📨 Raw Response: ${response.body}");
+      debugPrint(" Raw Response: ${response.body}");
 
       if (response.body.startsWith('<!DOCTYPE html>')) {
-        debugPrint("❌ HTML error page received instead of JSON.");
+        debugPrint(" HTML error page received instead of JSON.");
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -294,7 +293,7 @@ class ItemProvider with ChangeNotifier {
       final message = responseData['message']?.toString() ?? "No message";
 
       if (response.statusCode == 200) {
-        debugPrint("✅ Success: $message");
+        debugPrint(" Success: $message");
         if (!context.mounted) return;
 
 
@@ -308,7 +307,7 @@ class ItemProvider with ChangeNotifier {
         
 
       } else {
-        debugPrint("❌ API Error (${response.statusCode}): $message");
+        debugPrint(" API Error (${response.statusCode}): $message");
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -318,7 +317,7 @@ class ItemProvider with ChangeNotifier {
         );
       }
     } catch (error, stackTrace) {
-      debugPrint("❌ Exception occurred:");
+      debugPrint(" Exception occurred:");
       debugPrint("Error: $error");
       debugPrint("StackTrace: $stackTrace");
 

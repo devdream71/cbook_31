@@ -4,7 +4,6 @@ import 'package:cbook_dt/feature/item/provider/items_show_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-///item dropdown to show item list new one.
 
 class ItemCustomDropDownTextField extends StatefulWidget {
   final String? label;
@@ -14,7 +13,6 @@ class ItemCustomDropDownTextField extends StatefulWidget {
 
   final void Function()? onTap;
 
-  // New callback to send selected item to parent
   final void Function(ItemsModel selectedItem)? onItemSelected;
 
   const ItemCustomDropDownTextField({

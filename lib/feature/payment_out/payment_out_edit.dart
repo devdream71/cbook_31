@@ -27,6 +27,7 @@ class PaymenyOutEdit extends StatefulWidget {
 }
 
 class _PaymenyOutEditState extends State<PaymenyOutEdit> {
+
   TextEditingController billNoController = TextEditingController();
   String billNo = '';
   String billDate = '';
@@ -125,39 +126,39 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
 
       if (data != null) {
         setState(() {
-          // ✅ Correct field mappings based on API response
+          //  Correct field mappings based on API response
           voucherNumberController.text = data['voucher_number'] ?? '';
 
-          // ✅ Map received_to correctly using the existing mapping
+          //  Map received_to correctly using the existing mapping
           selectedReceivedTo = receivedToMap[data['received_to']] ?? '';
 
-          // ✅ bill_person_id mapping
+          //  bill_person_id mapping
           selectedBillPersonId = data['bill_person_id'];
 
-          // ✅ account_type mapping
+          //  account_type mapping
           selectedAccountId = data['account_type'];
 
-          // ✅ Handle null discount_type from API
+          //  Handle null discount_type from API
           selectedDiscountType = data['discount_type'] ?? '%';
 
-          // ✅ Use discount_amount from API
+          //  Use discount_amount from API
           discountAmount.text = (data['discount_amount'] ?? 0).toString();
 
-          // ✅ Use total_amount from API
+          //  Use total_amount from API
           totalAmount.text = (data['total_amount'] ?? 0).toString();
 
-          // ✅ Date mapping
+          //  Date mapping
           selectedStartDate =
               DateTime.tryParse(data['voucher_date']) ?? DateTime.now();
           selectedEndDate =
               DateTime.tryParse(data['voucher_date']) ?? DateTime.now();
 
-          // ✅ Set customer_id if available
+          //  Set customer_id if available
           if (data['customer_id'] != null) {
             _setSelectedCustomer(data['customer_id']);
           }
 
-          // ✅ Fill voucher details list - CORRECTED spelling
+          //  Fill voucher details list - CORRECTED spelling
           if (data['voucher_detaiuls'] is List) {
             final List details = data['voucher_detaiuls'];
             receiptControllers.clear(); // Clear existing controllers
@@ -181,13 +182,13 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
           debugPrint('Customer ID: ${data['customer_id']}');
         });
 
-        // ✅ MOVED THESE OUTSIDE setState - Load account dropdown AFTER state is set
+        //  MOVED THESE OUTSIDE setState - Load account dropdown AFTER state is set
         await _loadAccountDropdown();
 
-        // ✅ Set bill person if ID is available
+        //  Set bill person if ID is available
         _setBillPerson();
 
-        // ✅ Recalculate after everything is loaded
+        //  Recalculate after everything is loaded
         _recalculatePayment();
       }
     });
@@ -564,7 +565,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
                   ),
                 ],
               ),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   // Padding(
@@ -623,7 +624,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
             height: 8,
           ),
 
-          Align(
+          const Align(
             alignment: Alignment.center,
             child: Text(
               "Received From",
@@ -671,7 +672,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
               customerorSaleslist: "Showing Customer list",
               customerOrSupplierButtonLavel: "",
               color: Colors.grey,
-              isForReceivedVoucher: false, // ❗ Set to false for payment
+              isForReceivedVoucher: false, //  Set to false for payment
               onTap: () async {
                 // Call customerProvider.setSelectedCustomerPayment(customer)
               },
@@ -853,7 +854,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
             alignment: Alignment.centerRight,
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.end, // 🔥 Right align labels + fields
+                  CrossAxisAlignment.end, // Right align labels + fields
               children: [
                 // Total Amount
                 Row(
@@ -1007,7 +1008,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
 
                     List<VoucherItem> voucherItems = [];
 
-                    // ✅ Create the request object using the correct model
+                    // Create the request object using the correct model
                     final request = PaymentVoucherRequest(
                       userId: userId,
                       customerId: customerId,
@@ -1016,7 +1017,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
                       voucherDate: voucherDate,
                       voucherTime: voucherTime,
                       paymentForm: (selectedReceivedTo ?? "cash")
-                          .toLowerCase(), // ✅ FIXED paymentForm,
+                          .toLowerCase(), // FIXED paymentForm,
                       accountId: accountId,
                       paymentTo: paymentTo,
                       percent: percent,

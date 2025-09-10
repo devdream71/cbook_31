@@ -17,49 +17,6 @@ class ReceiveVoucherProvider with ChangeNotifier {
 
   ///recived voucher item show all
 
-  // Future<void> fetchReceiveVouchers() async {
-  //   isLoading = true;
-  //   notifyListeners();
-
-  //   final url = Uri.parse('https://commercebook.site/api/v1/receive-vouchers');
-
-  //   try {
-  //     final response = await http.get(url);
-  //     debugPrint('Receive Voucher API Response: ${response.body}');
-
-  //     if (response.statusCode == 200) {
-  //       final extractedData = json.decode(response.body);
-  //       final List<dynamic> data = extractedData['data'];
-
-  //       // Check for total_received in last item
-  //       final lastItem = data.last;
-  //       if (lastItem is Map<String, dynamic> &&
-  //           lastItem.containsKey('total_received')) {
-  //         _totalReceived =
-  //             double.tryParse(lastItem['total_received'].toString()) ?? 0.0;
-  //         data.removeLast(); // Remove from list so it's not parsed as a voucher
-  //       } else {
-  //         _totalReceived = 0.0;
-  //       }
-
-  //       _vouchers =
-  //           data.map((item) => ReceiveVoucherModel.fromJson(item)).toList();
-  //     } else {
-  //       _vouchers = [];
-  //       _totalReceived = 0.0;
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Receive Voucher API Error: $e');
-  //     _vouchers = [];
-  //     _totalReceived = 0.0;
-  //   } finally {
-  //     isLoading = false;
-  //     notifyListeners();
-  //   }
-  // }
-
-
-
 Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) async {
   isLoading = true;
   notifyListeners();
@@ -131,8 +88,6 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
   }
 }
 
-
-
   ///delete payment voucher
   Future<bool> deleteRecivedVoucher(String id) async {
      
@@ -151,7 +106,7 @@ Future<void> fetchReceiveVouchers({DateTime? startDate, DateTime? endDate}) asyn
       if (response.statusCode == 200) {
         final result = json.decode(response.body);
         if (result['success'] == true) {
-          await fetchReceiveVouchers(); // ✅ Refresh the list after deletion
+          await fetchReceiveVouchers(); //  Refresh the list after deletion
           return true;
         }
       }

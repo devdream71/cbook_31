@@ -1,20 +1,10 @@
 import 'package:flutter/painting.dart';
 
-///sir grey color  = f4f6ff
-
-//old primary color
-//static const Color _primaryColor = Color(0xff057abd);
-
-//   desktop primary color
-//   Color mainPrimaryColor = Color(0xff06b363);
-//   Color mainSecondaryColor = Color(0xffc2eacb);
-
-///dream tech color code //278d46 //green
 
 class AppColors {
   // Private color fields
   static const Color _secondaryColor = Color(0xffc2eacb);
-  static const Color _primaryColor = Color(0xff278d46); //278d46  //old color 06b363
+  static const Color _primaryColor = Color(0xff278d46); 
   static const Color _textColor = Color.fromARGB(0, 0, 0, 0);
   static const Color _iconColor = Color(0xff004AAD);
   static const Color _tableHeaderColor = Color(0xffdddefa);

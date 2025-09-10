@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ExpenseProvider with ChangeNotifier {
+
   List<PaidFormData> paidFormList = [];
 
   List<ExpenseItem> receiptItems = [];
@@ -192,7 +193,7 @@ class ExpenseProvider with ChangeNotifier {
           "Accept": "application/json",
         } );
       if (response.statusCode == 200) {
-        // ✅ Correct: remove from the list you are displaying
+        // Correct: remove from the list you are displaying
         expenseList.removeWhere((expense) => expense.id.toString() == id);
         notifyListeners(); // This will refresh the UI
       } else {
@@ -203,7 +204,7 @@ class ExpenseProvider with ChangeNotifier {
     }
   }
 
-  // ✅ API Fetch Method ///expense Paid From list
+  // API Fetch Method ///expense Paid From list
   Future<void> fetchPaidFormList() async {
     isLoading = true;
     notifyListeners();
@@ -315,7 +316,7 @@ class ExpenseProvider with ChangeNotifier {
       'expense_items': expenseItems.map((e) => e.toJson()).toList(),
     });
 
-    debugPrint('Sending Body: $body'); // ✅ Add this to see the payload
+    debugPrint('Sending Body: $body'); // Add this to see the payload
 
     try {
       final response = await http.post(
@@ -328,8 +329,8 @@ class ExpenseProvider with ChangeNotifier {
       );
 
       debugPrint(
-          'Response Status: ${response.statusCode}'); // ✅ Log status code
-      debugPrint('Response Body: ${response.body}'); // ✅ Log response body
+          'Response Status: ${response.statusCode}'); //  Log status code
+      debugPrint('Response Body: ${response.body}'); //  Log response body
 
       if (response.statusCode == 200) {
         debugPrint('Expense updated successfully.');

@@ -57,12 +57,12 @@ class CustomBorderButton extends StatelessWidget {
         ),
         if (isDeleted && onDelete != null)
           Positioned(
-            top: -4, // Move the icon above the button
-            right: -4, // Move the icon to the right of the button
+            top: -4,  
+            right: -4,  
             child: GestureDetector(
               onTap: onDelete,
               child: const CircleAvatar(
-                radius: 8, // Adjust size if necessary
+                radius: 8,  
                 backgroundColor: Colors.red,
                 child: Icon(
                   Icons.close,

@@ -220,9 +220,15 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (provider.errorMessage.isNotEmpty) {
-                    return Center(
-                        child: Text(provider.errorMessage,
-                            style: const TextStyle(color: Colors.red)));
+                    return
+                        //Center(
+                        //     child: Text(provider.errorMessage,
+                        //         style: const TextStyle(color: Colors.red)));
+
+                        const NoDataWidget(
+                      message: "No purchase returns records found",
+                      lottieAsset: "assets/animation/no_data.json",
+                    );
                   }
                   if (provider.purchaseReturns.isEmpty) {
                     return const NoDataWidget(

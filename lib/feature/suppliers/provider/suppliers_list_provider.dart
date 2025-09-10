@@ -67,6 +67,8 @@ class SupplierProvider extends ChangeNotifier {
     notifyListeners(); // Notify after data fetch is completed
   }
 
+
+
   /// **Delete Supplier**
   Future<void> deleteSupplier(int supplierId) async {
          
@@ -203,7 +205,7 @@ class SupplierProvider extends ChangeNotifier {
           'Accept': 'application/json',
           "Authorization": "Bearer $token",
         },);
-      debugPrint("API Response: ${response.body}"); // 🔍 Debugging Step
+      debugPrint("API Response: ${response.body}"); 
 
       final data = jsonDecode(response.body);
 

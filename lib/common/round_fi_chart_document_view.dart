@@ -151,9 +151,6 @@ class DonutChartViewRoundState extends State<DonutChartViewRound>
               ),
             ],
           ),
-         
-        
-      
         ],
       ),
     );

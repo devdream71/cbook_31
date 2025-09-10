@@ -166,8 +166,8 @@ class BillPersonProvider with ChangeNotifier {
       }
     } catch (e, stacktrace) {
       errorMessage = 'Exception: $e';
-      debugPrint("❌ Exception: $e");
-      debugPrint("📍 Stacktrace:\n$stacktrace");
+      debugPrint(" Exception: $e");
+      debugPrint(" Stacktrace:\n$stacktrace");
       return false;
     } finally {
       isLoading = false;
@@ -226,23 +226,23 @@ class BillPersonProvider with ChangeNotifier {
           .map((e) => "${e.key}=${Uri.encodeComponent(e.value)}")
           .join("&");
       debugPrint(
-          "🔗 FULL API URL: https://commercebook.site/api/v1/bill/person/update?id=$id&$debugUrlParams");
+          " FULL API URL: https://commercebook.site/api/v1/bill/person/update?id=$id&$debugUrlParams");
 
-      debugPrint("📦 Fields Sent:");
+      debugPrint(" Fields Sent:");
       fields.forEach((key, value) => debugPrint("  $key: $value"));
 
       if (request.files.isNotEmpty) {
         for (var file in request.files) {
-          debugPrint("📁 File Sent: ${file.field} → ${file.filename}");
+          debugPrint(" File Sent: ${file.field} → ${file.filename}");
         }
       } else {
-        debugPrint("📁 No image file sent.");
+        debugPrint(" No image file sent.");
       }
 
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
-      debugPrint("📥 Status Code: ${response.statusCode}");
-      debugPrint("📥 Response Body: $responseBody");
+      debugPrint(" Status Code: ${response.statusCode}");
+      debugPrint(" Response Body: $responseBody");
 
       final data = json.decode(responseBody);
 
@@ -251,12 +251,12 @@ class BillPersonProvider with ChangeNotifier {
         return true;
       } else {
         errorMessage =
-            data['message']?.toString() ?? '❌ Failed to update bill person.';
-        debugPrint("❗ Error Message: $errorMessage");
+            data['message']?.toString() ?? ' Failed to update bill person.';
+        debugPrint(" Error Message: $errorMessage");
         return false;
       }
     } catch (e) {
-      errorMessage = '❌ Exception: $e';
+      errorMessage = ' Exception: $e';
       debugPrint(errorMessage);
       return false;
     } finally {

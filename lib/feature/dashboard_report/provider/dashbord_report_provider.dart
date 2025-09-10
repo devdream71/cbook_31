@@ -22,42 +22,8 @@ class DashboardReportProvider extends ChangeNotifier {
   int? customerTransactionCountTotal;
   bool isLoadingCustomerCount = false;
   String? errorCustomerCount;
-
-  /// Fetch customer transaction amount
-  // Future<void> fetchCustomerTransaction() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final token = prefs.getString('token');
-
-  //   isLoadingCustomerTransaction = true;
-  //   errorCustomerTransaction = null;
-  //   notifyListeners();
-
-  //   try {
-  //     final url = Uri.parse(
-  //         '${AppUrl.baseurl}dashboard/transection/customer?type=customer');
-  //     final response = await http.post(
-  //       url,
-  //       headers: {
-  //         'Accept': 'application/json',
-  //         "Authorization": "Bearer $token",
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final decoded = json.decode(response.body);
-  //       customerTransaction = decoded['data'] ?? 0;
-  //     } else {
-  //       errorCustomerTransaction = "Server error: ${response.statusCode}";
-  //     }
-  //   } catch (e) {
-  //     errorCustomerTransaction = e.toString();
-  //   } finally {
-  //     isLoadingCustomerTransaction = false;
-  //     notifyListeners();
-  //   }
-  // }
-
-    Future<void> fetchCustomerTransaction() async {
+ 
+  Future<void> fetchCustomerTransaction() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
@@ -79,7 +45,7 @@ class DashboardReportProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
 
-        // ✅ Parse and format
+        // Parse and format
         double rawData = (decoded['data'] ?? 0).toDouble();
         customerTransaction =
             double.parse(rawData.abs().toStringAsFixed(2)); // 393.55
@@ -111,7 +77,7 @@ class DashboardReportProvider extends ChangeNotifier {
         ),
       );
 
-      // ✅ Add headers here
+      // Add headers here
       request.headers.addAll({
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',

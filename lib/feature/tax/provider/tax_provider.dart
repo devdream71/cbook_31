@@ -88,13 +88,13 @@ class TaxProvider with ChangeNotifier {
   ///tax delete ====>
   //tax delete - CLEAN VERSION (NO UI LOADING STATE)
   Future<bool> deleteTax(int? id) async {
-    debugPrint('🗑️ Provider: Starting delete for tax ID: $id');
+    debugPrint(' Provider: Starting delete for tax ID: $id');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
     final url = Uri.parse('${AppUrl.baseurl}tax/remove?id=$id');
-    debugPrint('🗑️ Provider: Delete URL: $url');
+    debugPrint(' Provider: Delete URL: $url');
 
     try {
       final response = await http.post(url, headers: {
@@ -102,26 +102,26 @@ class TaxProvider with ChangeNotifier {
         "Accept": "application/json",
       });
 
-      debugPrint('🗑️ Provider: Response Status: ${response.statusCode}');
-      debugPrint('🗑️ Provider: Response Body: ${response.body}');
+      debugPrint(' Provider: Response Status: ${response.statusCode}');
+      debugPrint(' Provider: Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // ✅ Remove from local list immediately on success
+        //  Remove from local list immediately on success
         _taxList.removeWhere((tax) => tax.id == id);
         notifyListeners();
 
         debugPrint(
-            "✅ Provider: Tax deleted successfully and removed from local list");
+            " Provider: Tax deleted successfully and removed from local list");
         return true;
       } else {
-        debugPrint("❌ Provider: HTTP Error: ${response.statusCode}");
-        debugPrint("❌ Provider: Error body: ${response.body}");
+        debugPrint(" Provider: HTTP Error: ${response.statusCode}");
+        debugPrint(" Provider: Error body: ${response.body}");
         return false;
       }
     } catch (e) {
-      debugPrint("💥 Provider: Exception deleting tax: $e");
+      debugPrint(" Provider: Exception deleting tax: $e");
       return false;
     }
   }
@@ -167,19 +167,19 @@ class TaxProvider with ChangeNotifier {
     errorMessage = '';
     notifyListeners();
 
-    debugPrint('🚀 Starting tax update...');
-    debugPrint('🚀 Tax ID: $taxId');
-    debugPrint('🚀 Name: $name');
-    debugPrint('🚀 Percent: $percent');
-    debugPrint('🚀 Status: $status');
+    debugPrint(' Starting tax update...');
+    debugPrint(' Tax ID: $taxId');
+    debugPrint(' Name: $name');
+    debugPrint(' Percent: $percent');
+    debugPrint(' Status: $status');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
-    // ✅ Fixed URL construction
+    //  Fixed URL construction
     final String url =
         '${AppUrl.baseurl}tax/update?id=$taxId&name=$name&percent=$percent&status=$status';
-    debugPrint('🚀 API URL: $url');
+    debugPrint(' API URL: $url');
 
     try {
       final response = await http.post(
@@ -190,14 +190,14 @@ class TaxProvider with ChangeNotifier {
         },
       );
 
-      debugPrint("📥 Status Code: ${response.statusCode}");
-      debugPrint("📥 Response Body: ${response.body}");
+      debugPrint(" Status Code: ${response.statusCode}");
+      debugPrint(" Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
         if (data['success'] == true) {
-          debugPrint('✅ Tax update successful');
+          debugPrint(' Tax update successful');
 
           // Update local list
           final index = _taxList.indexWhere((tax) => tax.id == taxId);
@@ -209,7 +209,7 @@ class TaxProvider with ChangeNotifier {
               percent: double.parse(percent),
               status: int.parse(status),
             );
-            debugPrint('✅ Local list updated');
+            debugPrint(' Local list updated');
           }
 
           _isLoading = false;
@@ -217,22 +217,22 @@ class TaxProvider with ChangeNotifier {
           return true;
         } else {
           errorMessage = data['message'] ?? 'Failed to update tax.';
-          debugPrint('❌ API returned success=false: $errorMessage');
+          debugPrint(' API returned success=false: $errorMessage');
           _isLoading = false;
           notifyListeners();
           return false;
         }
       } else {
         errorMessage = 'HTTP Error: ${response.statusCode}';
-        debugPrint('❌ $errorMessage');
-        debugPrint('❌ Response: ${response.body}');
+        debugPrint(' $errorMessage');
+        debugPrint(' Response: ${response.body}');
         _isLoading = false;
         notifyListeners();
         return false;
       }
     } catch (e) {
       errorMessage = 'Exception: $e';
-      debugPrint('💥 $errorMessage');
+      debugPrint(' $errorMessage');
       _isLoading = false;
       notifyListeners();
       return false;

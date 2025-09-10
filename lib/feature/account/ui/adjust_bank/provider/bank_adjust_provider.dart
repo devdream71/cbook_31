@@ -69,7 +69,7 @@ class BankAdjustProvider with ChangeNotifier {
   }
 
   ///bank adjust added.
-  // ✅ POST Adjust Bank
+  ///POST Adjust Bank
   Future<AdjustBankResponse?> submitBankAdjustment({
     required String userId,
     required String adjustType, // 'cash_add' or 'cash_reduce'

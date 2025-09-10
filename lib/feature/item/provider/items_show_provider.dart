@@ -11,15 +11,15 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddItemProvider extends ChangeNotifier {
+
   List<ItemsModel> _items = [];
   bool _isLoading = false;
   StockData? _stockData;
   StockDataPurchase? _purchaseStockData;
 
-  final Map<int, String> _unitNames = {}; // Unit ID -> name
-  final Map<int, String> _unitSymbols = {}; // Unit ID -> symbol
-  final Map<String, String> _stockQuantities =
-      {}; // Item ID -> Quantity (if needed)
+  final Map<int, String> _unitNames = {};  
+  final Map<int, String> _unitSymbols = {}; 
+  final Map<String, String> _stockQuantities = {};  
 
   List<ItemModel> itemsCash = [];
   List<PurchaseHistoryModel> purchaseHistory = [];
@@ -312,7 +312,7 @@ class AddItemProvider extends ChangeNotifier {
 
         if (data['data'].isNotEmpty) {
           _stockData = StockData.fromJson(
-              data['data'][0]); // ✅ Update _stockData instead of stockData
+              data['data'][0]); // Update _stockData instead of stockData
           debugPrint(
               "Stock Loaded: ${_stockData!.stocks} (${_stockData!.unitStocks}) ${_stockData!.price} ");
         } else {
@@ -327,7 +327,7 @@ class AddItemProvider extends ChangeNotifier {
       debugPrint("Exception fetching stock: $e");
     }
 
-    notifyListeners(); // ✅ Notify UI about the update
+    notifyListeners(); // Notify UI about the update
   }
 
   ///====> purchase stoke quantity

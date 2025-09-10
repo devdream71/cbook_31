@@ -122,10 +122,7 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
         _opiningBanglaceController.clear();
         _statusController.clear();
 
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const HomeView()),
-        // );
+      
       } else {
         if (!mounted) return;
 

@@ -81,21 +81,14 @@ class CustomBarChartState extends State<CustomBarChart>
       return const Center(child: SizedBox());
     }
 
-    // if (provider.salesList.isEmpty) {
-    //   return const Center(
-    //     child: Text(
-    //       'No sales data available.',
-    //       style: TextStyle(color: Colors.black),
-    //     ),
-    //   );
-    // }
+   
 
     if (provider.salesList.isEmpty) {
   return Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Lottie or SVG illustration placeholder (optional)
+        // Lottie or SVG illustration placeholder 
         Icon(
           Icons.bar_chart,
           size: 60,
@@ -121,9 +114,7 @@ class CustomBarChartState extends State<CustomBarChart>
         const SizedBox(height: 16),
         ElevatedButton.icon(
           onPressed: () {
-            // Trigger provider refresh manually
-            // Provider.of<DashboardReportProvider>(context, listen: false)
-            //     .fetchDashboardReport();
+            
           },
           icon: const Icon(Icons.refresh),
           label: const Text('Retry'),

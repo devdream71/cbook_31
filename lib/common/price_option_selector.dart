@@ -6,7 +6,7 @@ class PriceOptionSelector extends StatelessWidget {
   final String groupValue;
   final Function(String) onChanged;
   final TextEditingController controller;
-  final bool showBlankOption; // New parameter to control "Blank Price" visibility
+  final bool showBlankOption; 
 
   const  PriceOptionSelector({
     super.key,
@@ -14,7 +14,7 @@ class PriceOptionSelector extends StatelessWidget {
     required this.groupValue,
     required this.onChanged,
     required this.controller,
-    this.showBlankOption = true, // Default to true, MRP will set it to false
+    this.showBlankOption = true, 
   });
 
   @override

@@ -1,9 +1,4 @@
-
-
-
-
 import 'dart:convert';
-
 import 'package:cbook_dt/feature/account/ui/adjust_cash/model/adjust_cash.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_cash/model/create_adjust_cash_model.dart';
 import 'package:cbook_dt/utils/date_time_helper.dart';
@@ -12,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class AdjustCashProvider with ChangeNotifier {
   final TextEditingController accountNameController = TextEditingController();
@@ -69,79 +63,71 @@ class AdjustCashProvider with ChangeNotifier {
     }
   }
 
-   
-
-
   /// Store cash adjustment
-Future<AdjustCashResponse?> adjustCashStore({
-  required String adjustCashType,
-  required String accountId,
-  required String amount,
-  required String date,
-  String? details,
-  required String userId,
-}) async {
-  _isLoading = true;
-  notifyListeners();
-
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-
-    // Build URL with query parameters
-    final uri = Uri.parse('${AppUrl.baseurl}account/cash/adjustment/store').replace(
-      queryParameters: {
-        'adjust_cash': adjustCashType,
-        'account_id': accountId,
-        'amount': amount,
-        'date': date,
-        'details': details ?? '',
-        'user_id': userId,
-      },
-    );
-
-    debugPrint("Request URL: $uri");
-
-    final response = await http.post(
-      uri,
-      headers: {
-        "Authorization": "Bearer $token",
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      },
-    );
-
-    debugPrint("Response status: ${response.statusCode}");
-    debugPrint("Response body: ${response.body}");
-
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      final result = AdjustCashResponse.fromJson(jsonData);
-      
-      // Clear form data after successful operation
-      accountNameController.clear();
-      detailsController.clear();
-      _selectedDate = DateTime.now();
-      
-      return result;
-    } else {
-      debugPrint("Adjustment failed: ${response.body}");
-      return null;
-    }
-  } catch (e) {
-    debugPrint("API error: $e");
-    return null;
-  } finally {
-    _isLoading = false;
+  Future<AdjustCashResponse?> adjustCashStore({
+    required String adjustCashType,
+    required String accountId,
+    required String amount,
+    required String date,
+    String? details,
+    required String userId,
+  }) async {
+    _isLoading = true;
     notifyListeners();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      // Build URL with query parameters
+      final uri =
+          Uri.parse('${AppUrl.baseurl}account/cash/adjustment/store').replace(
+        queryParameters: {
+          'adjust_cash': adjustCashType,
+          'account_id': accountId,
+          'amount': amount,
+          'date': date,
+          'details': details ?? '',
+          'user_id': userId,
+        },
+      );
+
+      debugPrint("Request URL: $uri");
+
+      final response = await http.post(
+        uri,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+      );
+
+      debugPrint("Response status: ${response.statusCode}");
+      debugPrint("Response body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final result = AdjustCashResponse.fromJson(jsonData);
+
+        // Clear form data after successful operation
+        accountNameController.clear();
+        detailsController.clear();
+        _selectedDate = DateTime.now();
+
+        return result;
+      } else {
+        debugPrint("Adjustment failed: ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("API error: $e");
+      return null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
-}
 
-  // @override
-  // void dispose() {
-  //   accountNameController.dispose();
-  //   detailsController.dispose();
-  //   super.dispose();
-  // }
+ 
 }
-

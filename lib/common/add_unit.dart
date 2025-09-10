@@ -81,92 +81,98 @@ class _SelectUnitBottomSheetState extends State<SelectUnitBottomSheet> {
               ],
             ),
             const SizedBox(height: 20),
+           
+           
             if (unitProvider.isLoading)
               const Center(child: CircularProgressIndicator()),
             if (!unitProvider.isLoading) ...[
               Row(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Base Unit',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: 150,
-                        child: CustomDropdownTwo(
-                          items: unitProvider.units
-                              .map((unit) => unit.symbol)
-                              .toList(),
-                          hint: '',
-                          width: double.infinity,
-                          height: 40,
-                          selectedItem: _selectedUnit1,
-                          onChanged: (value) {
-                            final selectedUnit = unitProvider.units.firstWhere(
-                              (unit) => unit.symbol == value,
-                              orElse: () => unitProvider.units.first,
-                            );
-
-                            setState(() {
-                              _selectedUnit1 = value;
-                              _selectedUnit2 = null;
-                            });
-
-                            saleController.selectedUnitID = selectedUnit.id;
-                            widget.onUnit1Changed(value);
-                            widget.onUnit2Changed(null);
-                          },
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Base Unit',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width/2,
+                          child: CustomDropdownTwo(
+                            items: unitProvider.units
+                                .map((unit) => unit.symbol)
+                                .toList(),
+                            hint: '',
+                            width: double.infinity,
+                            height: 40,
+                            selectedItem: _selectedUnit1,
+                            onChanged: (value) {
+                              final selectedUnit = unitProvider.units.firstWhere(
+                                (unit) => unit.symbol == value,
+                                orElse: () => unitProvider.units.first,
+                              );
+                        
+                              setState(() {
+                                _selectedUnit1 = value;
+                                _selectedUnit2 = null;
+                              });
+                        
+                              saleController.selectedUnitID = selectedUnit.id;
+                              widget.onUnit1Changed(value);
+                              widget.onUnit2Changed(null);
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                   const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Secondary Unit',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: 150,
-                        child: CustomDropdownTwo(
-                          items: unitProvider.units
-                              .map((unit) => unit.symbol)
-                              .where((symbol) => symbol != _selectedUnit1)
-                              .toList(),
-                          hint: '',
-                          width: double.infinity,
-                          height: 40,
-                          selectedItem: _selectedUnit2,
-                          onChanged: (value) {
-                            final selectedUnit = unitProvider.units.firstWhere(
-                              (unit) => unit.symbol == value,
-                              orElse: () => unitProvider.units.first,
-                            );
-
-                            setState(() {
-                              _selectedUnit2 = value;
-                            });
-
-                            saleController.selectedUnit2ID = selectedUnit.id;
-                            widget.onUnit2Changed(value);
-                          },
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Secondary Unit',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+                        const SizedBox(height: 8),
+                        SizedBox(
+                           width: MediaQuery.of(context).size.width/2,
+                          child: CustomDropdownTwo(
+                            items: unitProvider.units
+                                .map((unit) => unit.symbol)
+                                .where((symbol) => symbol != _selectedUnit1)
+                                .toList(),
+                            hint: '',
+                            width: double.infinity,
+                            height: 40,
+                            selectedItem: _selectedUnit2,
+                            onChanged: (value) {
+                              final selectedUnit = unitProvider.units.firstWhere(
+                                (unit) => unit.symbol == value,
+                                orElse: () => unitProvider.units.first,
+                              );
+                        
+                              setState(() {
+                                _selectedUnit2 = value;
+                              });
+                        
+                              saleController.selectedUnit2ID = selectedUnit.id;
+                              widget.onUnit2Changed(value);
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   )
                 ],
               ),

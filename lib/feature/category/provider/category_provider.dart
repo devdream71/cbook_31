@@ -23,15 +23,15 @@ class CategoryProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
       final response = await http.get(
         Uri.parse('${AppUrl.baseurl}item-categories'),
-        headers: {'Accept': 'application/json',
-        "Authorization": "Bearer $token",
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
         },
       );
 
@@ -71,8 +71,9 @@ class CategoryProvider extends ChangeNotifier {
 
       final response = await http.post(
         Uri.parse(url),
-        headers: {'Accept': 'application/json',
-        "Authorization": "Bearer $token",
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
         },
       );
 
@@ -97,120 +98,86 @@ class CategoryProvider extends ChangeNotifier {
 
   ////=====> delete category .
   ///
-   
-   Future<bool> deleteCategory(int categoryId) async {
-    
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
 
+  Future<bool> deleteCategory(int categoryId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-  try {
-    final response = await http.post(
-      Uri.parse(
-          '${AppUrl.baseurl}item-categories/remove/$categoryId'),
-      headers: {'Accept': 'application/json',
-      
-      "Authorization": "Bearer $token",
-      },
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('${AppUrl.baseurl}item-categories/remove/$categoryId'),
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
 
-    final Map<String, dynamic> responseData = json.decode(response.body);
+      final Map<String, dynamic> responseData = json.decode(response.body);
 
-    if (response.statusCode == 200 && responseData['success'] == true) {
-      categories.removeWhere((category) => category.id == categoryId);
-      notifyListeners();
+      if (response.statusCode == 200 && responseData['success'] == true) {
+        categories.removeWhere((category) => category.id == categoryId);
+        notifyListeners();
 
-      debugPrint("Category deleted successfully");
-      return true; // ✅ Success
-    } else {
-      debugPrint("Failed to delete category: ${responseData['message']}");
-      return false; // ❌ Failure
+        debugPrint("Category deleted successfully");
+        return true; // Success
+      } else {
+        debugPrint("Failed to delete category: ${responseData['message']}");
+        return false; // Failure
+      }
+    } catch (error) {
+      debugPrint("Error deleting category: $error");
+      return false; // Exception failure
     }
-  } catch (error) {
-    debugPrint("Error deleting category: $error");
-    return false; // ❌ Exception failure
   }
-}
-
-
-
-  
-  ////get update catagory
-  // Future<EditCategoryModel?> fetchCategoryById(int id) async {
-
-  //       final prefs = await SharedPreferences.getInstance();
-  //     final token = prefs.getString('token');
-
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('${AppUrl.baseurl}/item-categories/edit/$id'),
-  //       headers: {'Accept': 'application/json',
-        
-  //       "Authorization": "Bearer $token",
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       if (data['success'] == true) {
-  //         return EditCategoryModel.fromJson(data['data']);
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint("Error fetching category: $e");
-  //   }
-  //   return null;
-  // }
-
 
   // Fixed fetchCategoryById method for CategoryProvider
 
-Future<EditCategoryModel?> fetchCategoryById(int id) async {
-  debugPrint('🔍 Fetching category by ID: $id');
-  
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('token');
+  Future<EditCategoryModel?> fetchCategoryById(int id) async {
+    debugPrint(' Fetching category by ID: $id');
 
-  try {
-    // ✅ Fixed: Remove extra slash in URL
-    final url = '${AppUrl.baseurl}item-categories/edit/$id';
-    debugPrint('🔍 API URL: $url');
-    
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Accept': 'application/json',
-        "Authorization": "Bearer $token",
-      },
-    );
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-    debugPrint('🔍 Response Status: ${response.statusCode}');
-    debugPrint('🔍 Response Body: ${response.body}');
+    try {
+      // ✅ Fixed: Remove extra slash in URL
+      final url = '${AppUrl.baseurl}item-categories/edit/$id';
+      debugPrint(' API URL: $url');
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      
-      debugPrint('🔍 Parsed Data: $data');
-      
-      if (data['success'] == true && data['data'] != null) {
-        final categoryData = EditCategoryModel.fromJson(data['data']);
-        debugPrint('✅ Successfully parsed category: ${categoryData.name}');
-        return categoryData;
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      debugPrint(' Response Status: ${response.statusCode}');
+      debugPrint(' Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        debugPrint('🔍 Parsed Data: $data');
+
+        if (data['success'] == true && data['data'] != null) {
+          final categoryData = EditCategoryModel.fromJson(data['data']);
+          debugPrint(' Successfully parsed category: ${categoryData.name}');
+          return categoryData;
+        } else {
+          debugPrint(' API returned success=false or null data');
+          debugPrint(' Full response: $data');
+        }
       } else {
-        debugPrint('❌ API returned success=false or null data');
-        debugPrint('❌ Full response: $data');
+        debugPrint(' HTTP Error: ${response.statusCode}');
+        debugPrint(' Error body: ${response.body}');
       }
-    } else {
-      debugPrint('❌ HTTP Error: ${response.statusCode}');
-      debugPrint('❌ Error body: ${response.body}');
+    } catch (e, stackTrace) {
+      debugPrint(" Exception fetching category: $e");
+      debugPrint(" Stack trace: $stackTrace");
     }
-  } catch (e, stackTrace) {
-    debugPrint("💥 Exception fetching category: $e");
-    debugPrint("💥 Stack trace: $stackTrace");
+
+    return null;
   }
-  
-  return null;
-}
 
 ////update category data
   Future<bool> updateCategory({
@@ -219,10 +186,8 @@ Future<EditCategoryModel?> fetchCategoryById(int id) async {
     required String status,
   }) async {
     try {
-           
-               final prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
-
 
       final response = await http.post(
         Uri.parse(
@@ -249,16 +214,15 @@ Future<EditCategoryModel?> fetchCategoryById(int id) async {
     isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
       final response = await http.get(
         Uri.parse('${AppUrl.baseurl}item-subcategories'),
-        headers: {'Accept': 'application/json',
-        "Authorization": "Bearer $token",
-        
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
         },
       );
 
@@ -282,40 +246,37 @@ Future<EditCategoryModel?> fetchCategoryById(int id) async {
     notifyListeners();
   }
 
- 
-
   Future<bool> deleteSubCategory(int subcategoryId) async {
-  try {
-      
-          final prefs = await SharedPreferences.getInstance();
+    try {
+      final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
 
+      final response = await http.post(
+        Uri.parse('${AppUrl.baseurl}item-subcategories/remove/$subcategoryId'),
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
 
-    final response = await http.post(
-      Uri.parse(
-          '${AppUrl.baseurl}item-subcategories/remove/$subcategoryId'),
-      headers: {'Accept': 'application/json',
-      "Authorization": "Bearer $token",
-      },
-    );
+      final Map<String, dynamic> responseData = json.decode(response.body);
 
-    final Map<String, dynamic> responseData = json.decode(response.body);
+      if (response.statusCode == 200 && responseData['success'] == true) {
+        subcategories
+            .removeWhere((subcategory) => subcategory.id == subcategoryId);
+        notifyListeners();
 
-    if (response.statusCode == 200 && responseData['success'] == true) {
-      subcategories.removeWhere((subcategory) => subcategory.id == subcategoryId);
-      notifyListeners();
-
-      debugPrint("Sub Category deleted successfully");
-      return true; // ✅ Return success
-    } else {
-      debugPrint("Failed to delete Sub category: ${responseData['message']}");
-      return false; // ❌ Return failure
+        debugPrint("Sub Category deleted successfully");
+        return true; // Return success
+      } else {
+        debugPrint("Failed to delete Sub category: ${responseData['message']}");
+        return false; // Return failure
+      }
+    } catch (error) {
+      debugPrint("Error deleting Sub category: $error");
+      return false; // Return failure on exception
     }
-  } catch (error) {
-    debugPrint("Error deleting Sub category: $error");
-    return false; // ❌ Return failure on exception
   }
-}
 
 //create sub category
 
@@ -343,9 +304,7 @@ Future<EditCategoryModel?> fetchCategoryById(int id) async {
       debugPrint("SubCategory Name: $name");
       debugPrint("Status: $status");
 
-           
       final token = prefs.getString('token');
-
 
       final response = await http.post(
         Uri.parse('${AppUrl.baseurl}item-subcategories/store'),
@@ -419,12 +378,10 @@ Future<EditCategoryModel?> fetchCategoryById(int id) async {
     isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-
-    final url = Uri.parse(
-        '${AppUrl.baseurl}item-subcategories/edit/$id');
+    final url = Uri.parse('${AppUrl.baseurl}item-subcategories/edit/$id');
 
     try {
       final response = await http.get(url, headers: {
@@ -453,27 +410,27 @@ Future<EditCategoryModel?> fetchCategoryById(int id) async {
     required String name,
     required String status,
   }) async {
-
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     final url = Uri.parse(
         '${AppUrl.baseurl}item-subcategories/update?id=$id&item_category=$itemCategoryId&name=$name&status=$status');
 
     try {
       final response = await http.post(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
         if (data['success']) {
           // ✅ Navigate to ItemSubCategoryView
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const ItemSubCategoryView()));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const ItemSubCategoryView()));
           // Optionally show a snackbar or toast
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

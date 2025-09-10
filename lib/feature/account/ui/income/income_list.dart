@@ -240,12 +240,19 @@ class _IncomeState extends State<Income> {
     }
 
     if (provider.incomeModel!.data.isEmpty) {
-      return const Center(
-        child: Text(
-          'No Income Found',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+      return 
+
+      const NoDataWidget(
+        message: "No Income records found",
+        lottieAsset: "assets/animation/no_data.json",
       );
+      
+      // const Center(
+      //   child: Text(
+      //     'No Income Found',
+      //     style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      //   ),
+      // );
     }
 
     final incomes = provider.incomeModel!.data;

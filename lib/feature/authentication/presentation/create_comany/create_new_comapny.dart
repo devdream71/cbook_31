@@ -43,9 +43,7 @@ class CreateNewCompanyState extends State<CreateNewCompany> {
 
     final authService = Provider.of<AuthService>(context, listen: false);
 
-    //setState(() {});
-
-    //  FocusScope.of(context).unfocus();
+  
 
     FocusManager.instance.primaryFocus?.unfocus();
 

@@ -95,10 +95,4 @@ class AppUrl {
   static String sellReturnHistory = "${baseurl}item/sales/history?customer_id=cash&item_id=25";
   static String sellReturnStore = "${baseurl}sales/return/store?user_id=1&customer_id=52&bill_number=521444&return_date=2025-03-20&details_notes=notes&gross_total=12&discount=5&payment_out=1&payment_amount=12";
 
-
-
-  
-
-
-
 }

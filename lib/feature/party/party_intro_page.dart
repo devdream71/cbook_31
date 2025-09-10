@@ -45,11 +45,10 @@ class AddNewPartyIntro extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-
-                        ///new customer 
+                        ///new customer
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(
+                            backgroundColor: const Color(
                                 0xff5156be), // 🔹 Set your desired background color
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
@@ -77,17 +76,14 @@ class AddNewPartyIntro extends StatelessWidget {
 
                 ///add supplier
                 Container(
-                  decoration: const BoxDecoration(
-                      //border: Border.all(color: Colors.green),
-                      //borderRadius: BorderRadius.circular(6)
-                      ),
+                  decoration: const BoxDecoration(),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(
+                            backgroundColor: const Color(
                                 0xff5156be), // 🔹 Set your desired background color
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
@@ -130,7 +126,7 @@ class AddNewPartyIntro extends StatelessWidget {
 
             Text(
               '''• Click For Customer Or Supplier
-• Price Level Only For Customer''',
+                 • Price Level Only For Customer''',
               style: ts2,
             ),
           ],

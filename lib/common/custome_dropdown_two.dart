@@ -172,32 +172,7 @@ class _CustomDropdownTwoState extends State<CustomDropdownTwo> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         // Search field (only show if enableSearch is true)
-                        if (widget.enableSearch) ...[
-                          // Container(
-                          //   padding: const EdgeInsets.all(8.0),
-                          //   child: TextField(
-                          //     controller: _searchController,
-                          //     onChanged: _onSearchChanged,
-                          //     decoration: InputDecoration(
-                          //       hintText: 'Search items...',
-                          //       hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
-                          //       prefixIcon: const Icon(Icons.search, size: 18, color: Colors.grey),
-                          //       contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                          //       border: OutlineInputBorder(
-                          //         borderRadius: BorderRadius.circular(4),
-                          //         borderSide: BorderSide(color: Colors.grey.shade300),
-                          //       ),
-                          //       focusedBorder: OutlineInputBorder(
-                          //         borderRadius: BorderRadius.circular(4),
-                          //         borderSide: const BorderSide(color: Colors.green),
-                          //       ),
-                          //       isDense: true,
-                          //     ),
-                          //     style: const TextStyle(fontSize: 12),
-                          //   ),
-                          // ),
-                          // Divider(height: 1, color: Colors.grey.shade300),
-                        ],
+                        if (widget.enableSearch) ...[],
 
                         // Items list
                         Flexible(
@@ -211,21 +186,19 @@ class _CustomDropdownTwoState extends State<CustomDropdownTwo> {
                                     textAlign: TextAlign.center,
                                   ),
                                 )
-                              : ListView.builder(
+                              : ListView.separated(
                                   shrinkWrap: true,
                                   padding: EdgeInsets.zero,
                                   itemCount: _filteredItems.length,
+                                  separatorBuilder: (context, index) =>
+                                      Container(
+                                    height: 0,
+                                    color: Colors.grey
+                                        .shade100, // Optional: visible 1px line
+                                  ),
                                   itemBuilder: (context, index) {
                                     final item = _filteredItems[index];
-                                    return ListTile(
-                                      dense: true,
-                                      title: Text(
-                                        item,
-                                        style: const TextStyle(fontSize: 13),
-                                      ),
-                                      tileColor: selectedItem == item
-                                          ? Colors.grey.shade200
-                                          : null,
+                                    return InkWell(
                                       onTap: () {
                                         setState(() {
                                           selectedItem = item;
@@ -236,6 +209,24 @@ class _CustomDropdownTwoState extends State<CustomDropdownTwo> {
                                         widget.onChanged(item);
                                         _removeDropdown();
                                       },
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 4), // Minimal padding
+
+                                        color: selectedItem == item
+                                            ? Colors.grey.shade200
+                                            : Colors.transparent,
+                                        child: Text(
+                                          item,
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              height:
+                                                  1.0, // Line height multiplier - removes extra vertical space
+                                              color: Colors.black),
+                                        ),
+                                      ),
                                     );
                                   },
                                 ),

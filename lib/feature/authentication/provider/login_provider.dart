@@ -45,6 +45,7 @@ class LoginProvider with ChangeNotifier {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', _loginResponse!.data.token);
       await prefs.setInt('user_id', _loginResponse!.data.id);
+      await prefs.setInt('company_id', _loginResponse!.data.companyId);
 
       // ✅ Save cookie from header
       String? rawCookie = response.headers['set-cookie'];

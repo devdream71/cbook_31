@@ -10,6 +10,8 @@ import '../../sales/sales_view.dart';
 import 'package:http/http.dart' as http;
 
 class PurchaseController extends ChangeNotifier {
+
+  
   TextEditingController mrpController = TextEditingController();
   TextEditingController qtyController = TextEditingController();
   TextEditingController noteController = TextEditingController();

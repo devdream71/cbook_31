@@ -29,8 +29,8 @@ class UnitDTProvider extends ChangeNotifier {
         },
       );
 
-      debugPrint('📋 Fetch Units Response: ${response.statusCode}');
-      debugPrint('📋 Response Body: ${response.body}');
+      debugPrint(' Fetch Units Response: ${response.statusCode}');
+      debugPrint(' Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -40,15 +40,15 @@ class UnitDTProvider extends ChangeNotifier {
             .map((unit) => UnitResponseModel.fromJson(unit))
             .toList();
             
-        debugPrint('📋 Total units loaded: ${units.length}');
+        debugPrint(' Total units loaded: ${units.length}');
         for (var unit in units) {
-          debugPrint('📋 Unit: ID=${unit.id}, Name=${unit.name}, Status=${unit.status}');
+          debugPrint(' Unit: ID=${unit.id}, Name=${unit.name}, Status=${unit.status}');
         }
       } else {
         throw Exception("Failed to load units");
       }
     } catch (error) {
-      debugPrint("❌ Error fetching units: $error");
+      debugPrint(" Error fetching units: $error");
     }
 
     isLoading = false;
@@ -61,11 +61,11 @@ class UnitDTProvider extends ChangeNotifier {
     String userId = prefs.getInt('user_id')?.toString() ?? '';
     final token = prefs.getString('token');
 
-    // ✅ Always pass status as "1"
+    // Always pass status as "1"
     final String url =
         '${AppUrl.baseurl}unit/store?user_id=$userId&name=$name&symbol=$symbol&status=1';
 
-    debugPrint('🚀 Add Unit URL: $url');
+    debugPrint(' Add Unit URL: $url');
 
     try {
       final response = await http.post(
@@ -76,8 +76,8 @@ class UnitDTProvider extends ChangeNotifier {
         },
       );
 
-      debugPrint('📤 Add Response: ${response.statusCode}');
-      debugPrint('📤 Add Response Body: ${response.body}');
+      debugPrint(' Add Response: ${response.statusCode}');
+      debugPrint(' Add Response Body: ${response.body}');
 
       final Map<String, dynamic> responseData = json.decode(response.body);
 
@@ -86,14 +86,14 @@ class UnitDTProvider extends ChangeNotifier {
         units.add(newUnit);
         notifyListeners();
 
-        debugPrint("✅ Unit added successfully: ${responseData['message']}");
+        debugPrint(" Unit added successfully: ${responseData['message']}");
         return true;
       } else {
-        debugPrint("❌ Failed to add unit: ${responseData['message']}");
+        debugPrint(" Failed to add unit: ${responseData['message']}");
         return false;
       }
     } catch (error) {
-      debugPrint("💥 Error adding unit: $error");
+      debugPrint(" Error adding unit: $error");
       return false;
     }
   }
@@ -105,7 +105,7 @@ class UnitDTProvider extends ChangeNotifier {
 
     final String url = '${AppUrl.baseurl}unit/remove/$unitId';
 
-    debugPrint('🗑️ Delete Unit URL: $url');
+    debugPrint(' Delete Unit URL: $url');
 
     try {
       final response = await http.post(
@@ -116,8 +116,8 @@ class UnitDTProvider extends ChangeNotifier {
         },
       );
 
-      debugPrint('🗑️ Delete Response: ${response.statusCode}');
-      debugPrint('🗑️ Delete Response Body: ${response.body}');
+      debugPrint(' Delete Response: ${response.statusCode}');
+      debugPrint(' Delete Response Body: ${response.body}');
 
       final Map<String, dynamic> responseData = json.decode(response.body);
 
@@ -125,35 +125,35 @@ class UnitDTProvider extends ChangeNotifier {
         units.removeWhere((unit) => unit.id == unitId);
         notifyListeners();
 
-        debugPrint("✅ Unit deleted successfully: ${responseData['message']}");
+        debugPrint(" Unit deleted successfully: ${responseData['message']}");
         return true;
       } else {
-        debugPrint("❌ Failed to delete unit: ${responseData['message']}");
+        debugPrint(" Failed to delete unit: ${responseData['message']}");
         return false;
       }
     } catch (error) {
-      debugPrint("💥 Error deleting unit: $error");
+      debugPrint(" Error deleting unit: $error");
       return false;
     }
   }
 
   ///unit update - Always status 1
   Future<bool> updateUnit(int unitId, String name, String symbol) async {
-    debugPrint('🔄 Starting unit update...');
-    debugPrint('🔄 Unit ID: $unitId');
-    debugPrint('🔄 Name: $name');
-    debugPrint('🔄 Symbol: $symbol');
-    debugPrint('🔄 Status: 1 (hardcoded)');
+    debugPrint(' Starting unit update...');
+    debugPrint(' Unit ID: $unitId');
+    debugPrint(' Name: $name');
+    debugPrint(' Symbol: $symbol');
+    debugPrint(' Status: 1 (hardcoded)');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userId = prefs.getInt('user_id')?.toString() ?? '';
     final token = prefs.getString('token');
 
-    // ✅ Always pass status as "1"
+    //  Always pass status as "1"
     final String url =
         '${AppUrl.baseurl}unit/update?id=$unitId&user_id=$userId&name=$name&symbol=$symbol&status=1';
 
-    debugPrint('🔄 API URL: $url');
+    debugPrint(' API URL: $url');
 
     try {
       final response = await http.post(
@@ -164,8 +164,8 @@ class UnitDTProvider extends ChangeNotifier {
         },
       );
 
-      debugPrint('🔄 Response Status: ${response.statusCode}');
-      debugPrint('🔄 Response Body: ${response.body}');
+      debugPrint(' Response Status: ${response.statusCode}');
+      debugPrint(' Response Body: ${response.body}');
 
       final Map<String, dynamic> responseData = json.decode(response.body);
 
@@ -176,24 +176,24 @@ class UnitDTProvider extends ChangeNotifier {
           UnitResponseModel updatedUnit = UnitResponseModel.fromJson(responseData['data']);
           units[index] = updatedUnit;
           
-          debugPrint('✅ Local list updated successfully');
-          debugPrint('✅ Updated unit: ID=${updatedUnit.id}, Name=${updatedUnit.name}, Status=${updatedUnit.status}');
+          debugPrint(' Local list updated successfully');
+          debugPrint(' Updated unit: ID=${updatedUnit.id}, Name=${updatedUnit.name}, Status=${updatedUnit.status}');
           
           notifyListeners();
         } else {
-          debugPrint('⚠️ Unit not found in local list');
+          debugPrint(' Unit not found in local list');
           return false;
         }
 
-        debugPrint("✅ Unit update successful: ${responseData['message']}");
+        debugPrint(" Unit update successful: ${responseData['message']}");
         return true;
       } else {
-        debugPrint("❌ Failed to update unit: ${responseData['message']}");
-        debugPrint("❌ Response data: $responseData");
+        debugPrint(" Failed to update unit: ${responseData['message']}");
+        debugPrint(" Response data: $responseData");
         return false;
       }
     } catch (error) {
-      debugPrint("💥 Error updating unit: $error");
+      debugPrint(" Error updating unit: $error");
       return false;
     }
   }

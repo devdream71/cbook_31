@@ -435,12 +435,13 @@ class _AddItemState extends State<AddItem> {
                                     isScrollControlled: true,
                                     context: context,
                                     backgroundColor: Colors.transparent,
+                                    clipBehavior: Clip.none,
                                     builder: (BuildContext context) {
                                       return DraggableScrollableSheet(
                                         expand: false,
-                                        initialChildSize: 0.45,
-                                        minChildSize: 0.35,
-                                        maxChildSize: 0.85,
+                                        initialChildSize: 0.55,
+                                        minChildSize: 0.45,
+                                        maxChildSize: 0.90,
                                         builder: (context, scrollController) {
                                           return Container(
                                             padding: EdgeInsets.only(

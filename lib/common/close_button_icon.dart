@@ -8,13 +8,13 @@ class CloseButtonIconNew extends StatelessWidget {
   final double size;
 
   const CloseButtonIconNew({
-    Key? key,
+    super.key,
     this.onTap,
     this.backgroundColor = Colors.white,
     this.borderColor = Colors.grey,
     this.iconColor,
     this.size = 20,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

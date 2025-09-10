@@ -19,6 +19,7 @@ class UserData {
   final dynamic password;
   final String token;
   final int id;
+  final companyId;
   final dynamic name;
   final dynamic phone;
   final dynamic avatar;
@@ -28,6 +29,7 @@ class UserData {
     required this.password,
     required this.token,
     required this.id,
+    required this.companyId,
     required this.name,
     required this.phone,
     this.avatar,
@@ -39,6 +41,7 @@ class UserData {
       password: json['password'],
       token: json['token'],
       id: json['id'],
+      companyId : json['company_id'],
       name: json['name'],
       phone: json['phone'],
       avatar: json['avatar'],

@@ -153,65 +153,85 @@ class IncomeProvider with ChangeNotifier {
   }
 
   /// fetch account
-   
-   /// fetch account '''''' ===> newly added for default cash and bank.
-Future<void> fetchAccounts(String type) async {
-  debugPrint('=== Starting fetchAccounts for type: $type ===');
 
-  isAccountLoading = true;
-  notifyListeners();
+  /// fetch account '''''' ===> newly added for default cash and bank.
+  Future<void> fetchAccounts(String type) async {
+    debugPrint('=== Starting fetchAccounts for type: $type ===');
 
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('token');
+    isAccountLoading = true;
+    notifyListeners();
 
-  final url = '${AppUrl.baseurl}receive/form/account?type=$type';
-  debugPrint('API URL: $url');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-  try {
-    debugPrint('Making API request...');
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {
-        "Authorization": "Bearer $token",
-        "Accept": "application/json",
-      },
-    );
+    final url = '${AppUrl.baseurl}receive/form/account?type=$type';
+    debugPrint('API URL: $url');
 
-    debugPrint('Response Status Code: ${response.statusCode}');
-    debugPrint('Response Body: ${response.body}');
+    try {
+      debugPrint('Making API request...');
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      debugPrint('Parsed JSON Data: $data');
+      debugPrint('Response Status Code: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
 
-      accountModel = AccountModel.fromJson(data);
-      accountNames = accountModel!.data.map((e) => e.accountName).toList();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        debugPrint('Parsed JSON Data: $data');
 
-      debugPrint('Account Model Created Successfully');
-      debugPrint('Total Accounts Found: ${accountModel!.data.length}');
-      debugPrint('Account Names: $accountNames');
+        accountModel = AccountModel.fromJson(data);
+        accountNames = accountModel!.data.map((e) => e.accountName).toList();
 
-      // Prepend default Cash or Bank
-      if (type == 'cash') {
-        // Insert default Cash at beginning
-        accountNames.insert(0, 'Cash');
-        accountModel!.data.insert(
-          0,
-          AccountData(id: 1, accountName: 'Cash'),
-        );
-      } else if (type == 'bank') {
-        // Insert default Bank at beginning
-        accountNames.insert(0, 'Bank');
-        accountModel!.data.insert(
-          0,
-          AccountData(id: 2, accountName: 'Bank'),
-        );
+        debugPrint('Account Model Created Successfully');
+        debugPrint('Total Accounts Found: ${accountModel!.data.length}');
+        debugPrint('Account Names: $accountNames');
+
+        // Prepend default Cash or Bank
+        if (type == 'cash') {
+          // Insert default Cash at beginning
+          accountNames.insert(0, 'Cash');
+          accountModel!.data.insert(
+            0,
+            AccountData(id: 1, accountName: 'Cash'),
+          );
+        } else if (type == 'bank') {
+          // Insert default Bank at beginning
+          accountNames.insert(0, 'Bank');
+          accountModel!.data.insert(
+            0,
+            AccountData(id: 2, accountName: 'Bank'),
+          );
+        }
+      } else {
+        debugPrint('API Error: Status ${response.statusCode}');
+        debugPrint('Error Body: ${response.body}');
+
+        // If error, still show default
+        if (type == 'cash') {
+          accountNames = ['Cash'];
+          accountModel = AccountModel(data: [
+            AccountData(id: 1, accountName: 'Cash'),
+          ]);
+        } else if (type == 'bank') {
+          accountNames = ['Bank'];
+          accountModel = AccountModel(data: [
+            AccountData(id: 2, accountName: 'Bank'),
+          ]);
+        } else {
+          accountModel = null;
+          accountNames = [];
+        }
       }
-    } else {
-      debugPrint('API Error: Status ${response.statusCode}');
-      debugPrint('Error Body: ${response.body}');
+    } catch (e, st) {
+      debugPrint(' Exception occurred: $e');
+      debugPrint(st.toString());
 
-      // If error, still show default
+      // If exception, still show default
       if (type == 'cash') {
         accountNames = ['Cash'];
         accountModel = AccountModel(data: [
@@ -227,102 +247,12 @@ Future<void> fetchAccounts(String type) async {
         accountNames = [];
       }
     }
-  } catch (e, st) {
-    debugPrint('❌ Exception occurred: $e');
-    debugPrint(st.toString());
 
-    // If exception, still show default
-    if (type == 'cash') {
-      accountNames = ['Cash'];
-      accountModel = AccountModel(data: [
-        AccountData(id: 1, accountName: 'Cash'),
-      ]);
-    } else if (type == 'bank') {
-      accountNames = ['Bank'];
-      accountModel = AccountModel(data: [
-        AccountData(id: 2, accountName: 'Bank'),
-      ]);
-    } else {
-      accountModel = null;
-      accountNames = [];
-    }
+    isAccountLoading = false;
+    debugPrint(
+        '=== fetchAccounts completed. Loading state: $isAccountLoading ===');
+    notifyListeners();
   }
-
-  isAccountLoading = false;
-  debugPrint(
-      '=== fetchAccounts completed. Loading state: $isAccountLoading ===');
-  notifyListeners();
-}
-
-
-
-   /////====>its work ===>
-  // Future<void> fetchAccounts(String type) async {
-  //   debugPrint('=== Starting fetchAccounts for type: $type ===');
-
-  //   isAccountLoading = true;
-  //   notifyListeners();
-
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final token = prefs.getString('token');
-
-  //   final url = '${AppUrl.baseurl}receive/form/account?type=$type';
-  //   debugPrint('API URL: $url');
-
-  //   try {
-  //     debugPrint('Making API request...');
-  //     final response = await http.post(Uri.parse(url), headers: {
-  //       "Authorization": "Bearer $token",
-  //       "Accept": "application/json",
-  //     });
-
-  //     debugPrint('Response Status Code: ${response.statusCode}');
-  //     debugPrint('Response Body: ${response.body}');
-
-  //     debugPrint('response Status code');
-
-  //     if (response.statusCode == 200) {
-  //       final data = json.decode(response.body);
-  //       debugPrint('Parsed JSON Data: $data');
-
-  //       accountModel = AccountModel.fromJson(data);
-  //       accountNames = accountModel!.data.map((e) => e.accountName).toList();
-
-  //       debugPrint('Account Model Created Successfully');
-  //       debugPrint('Total Accounts Found: ${accountModel!.data.length}');
-  //       debugPrint('Account Names: $accountNames');
-
-  //       // Print detailed account info
-  //       for (int i = 0; i < accountModel!.data.length; i++) {
-  //         final account = accountModel!.data[i];
-  //         debugPrint(
-  //             'Account $i: ID=${account.id}, Name=${account.accountName}');
-  //       }
-  //     } else {
-  //       debugPrint('API Error: Status ${response.statusCode}');
-  //       debugPrint('Error Body: ${response.body}');
-
-  //       // Clear previous data on error
-  //       accountModel = null;
-  //       accountNames = [];
-  //     }
-  //   } catch (e, st) {
-  //     debugPrint('Exception occurred: $e');
-  //     debugPrint(st.toString());
-  //     debugPrint('Stack trace: ${StackTrace.current}');
-
-  //     debugPrint('❌ Exception: $e');
-
-  //     // Clear data on exception
-  //     accountModel = null;
-  //     accountNames = [];
-  //   }
-
-  //   isAccountLoading = false;
-  //   debugPrint(
-  //       '=== fetchAccounts completed. Loading state: $isAccountLoading ===');
-  //   notifyListeners();
-  // }
 
   ///acount type list bas on recived to , cash or bank
   Map<int, String> _accountNameMap = {};
@@ -331,23 +261,21 @@ Future<void> fetchAccounts(String type) async {
 
   /// Fetch accounts for both bank and cash once (or based on demand)
   Future<void> fetchAccountNames() async {
-     
-         final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
       final bankUrl = '${AppUrl.baseurl}receive/form/account?type=bank';
       final cashUrl = '${AppUrl.baseurl}receive/form/account?type=cash';
 
       final bankResponse = await http.post(Uri.parse(bankUrl), headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       final cashResponse = await http.post(Uri.parse(cashUrl), headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
 
       if (bankResponse.statusCode == 200) {
         final data = json.decode(bankResponse.body);
@@ -375,21 +303,19 @@ Future<void> fetchAccounts(String type) async {
 
   ///delete income. ====>>>>>>><<<<<<
   Future<void> deleteIncome(String id) async {
-
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     final url = '${AppUrl.baseurl}income/remove?id=$id';
 
     try {
       final response = await http.post(Uri.parse(url), headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       if (response.statusCode == 200) {
         incomeModel?.data
-            .removeWhere((income) => income.id.toString() == id); // ✅ Correct
+            .removeWhere((income) => income.id.toString() == id); // Correct
         notifyListeners(); // This will refresh the UI
       } else {
         debugPrint('Failed to delete income');
@@ -420,9 +346,8 @@ Future<void> fetchAccounts(String type) async {
     debugPrint(url.toString());
     debugPrint(body.toString());
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
       final response = await http.post(
@@ -447,9 +372,7 @@ Future<void> fetchAccounts(String type) async {
     }
   }
 
-  ///edit data
-
-  ///income update
+  ///edit date ///income update
   IncomeEditModel? editIncomeData;
 
   ///update income.
@@ -474,9 +397,8 @@ Future<void> fetchAccounts(String type) async {
     debugPrint('URL: $url');
     debugPrint('Body: ${jsonEncode(body)}');
 
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
       final response = await http.post(
@@ -484,7 +406,6 @@ Future<void> fetchAccounts(String type) async {
         headers: {
           'Content-Type': 'application/json',
           "Authorization": "Bearer $token",
-
         },
         body: jsonEncode(body),
       );
@@ -493,14 +414,14 @@ Future<void> fetchAccounts(String type) async {
       debugPrint('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        debugPrint('✅ Income updated successfully');
+        debugPrint(' Income updated successfully');
         return true;
       } else {
-        debugPrint('❌ Failed to update income: ${response.statusCode}');
+        debugPrint(' Failed to update income: ${response.statusCode}');
         return false;
       }
     } catch (e) {
-      debugPrint('❌ Error updating income: $e');
+      debugPrint(' Error updating income: $e');
       return false;
     }
   }
@@ -514,18 +435,15 @@ Future<void> fetchAccounts(String type) async {
     isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
-      final response = await http.get(
-        Uri.parse('${AppUrl.baseurl}income/edit/$id'),
-        headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        }
-      );
+      final response = await http
+          .get(Uri.parse('${AppUrl.baseurl}income/edit/$id'), headers: {
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
 
       if (response.statusCode == 200) {
         final result = json.decode(response.body);
@@ -554,30 +472,29 @@ Future<void> fetchAccounts(String type) async {
     notifyListeners();
   }
 
-  // ✅ API Fetch Method ///expense Paid From list
+  // API Fetch Method ///expense Paid From list
 
-  List<ReceiveFromItem> receiveFormList = []; // ✅ Fixed
+  List<ReceiveFromItem> receiveFormList = []; //  Fixed
 
   Future<void> fetchReceiveFormList() async {
+
     isLoading = true;
     notifyListeners();
 
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
-      final response = await http
-          .get(Uri.parse('${AppUrl.baseurl}income/receive/form/list'),
+      final response = await http.get(
+          Uri.parse('${AppUrl.baseurl}income/receive/form/list'),
           headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        }
-          );
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          });
 
       if (response.statusCode == 200) {
         final result = ReceiveFromModel.fromJson(json.decode(response.body));
-        receiveFormList = result.data; // ✅ Now this works correctly
+        receiveFormList = result.data; //  Now this works correctly
       } else {
         debugPrint('Failed to load receive form list');
       }

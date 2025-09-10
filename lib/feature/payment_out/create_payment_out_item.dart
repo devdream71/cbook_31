@@ -29,6 +29,7 @@ class PaymentOutCreateItem extends StatefulWidget {
 }
 
 class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
+  
   TextEditingController billController = TextEditingController();
   TextEditingController discountPercentageController = TextEditingController();
   Map<int, TextEditingController> receiptControllers = {};
@@ -45,7 +46,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
   TextEditingController noteController = TextEditingController();
 
-  // ✅ Add these boolean flags to prevent infinite loops (add to your class variables)
+  // Add these boolean flags to prevent infinite loops (add to your class variables)
   bool _isUpdatingFromPercentage = false;
   bool _isUpdatingFromAmount = false;
 
@@ -428,7 +429,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
             ),
           ),
 
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
 
@@ -649,9 +650,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
             ],
           ),
 
-          // const SizedBox(
-          //   height: 8,
-          // ),
 
           const Center(
             child: Text(
@@ -686,10 +684,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                   customerProvider.customerResponse?.data ?? [];
               final selectedCustomer = customerProvider.selectedCustomer;
 
-              ///voucher_items
-              ///sales_id
-              ///amount
-              ///from here get sales id and amount for the vouceher items
+             
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

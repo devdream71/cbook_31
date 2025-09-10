@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class ProfileProvider with ChangeNotifier {
+  
   UserProfile? profile;
   bool isLoading = false;
   String errorMessage = '';

@@ -183,25 +183,10 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
     final logoBytes = await loadLogoImage();
     final logoImage = pw.MemoryImage(logoBytes);
 
-    // final columnAlignments = {
-    //   0: pw.Alignment.center, // SL
-    //   1: pw.Alignment.bottomLeft, // Product
-    //   2: pw.Alignment.center, // Code
-    //   3: pw.Alignment.center, // MRP
-    //   4: pw.Alignment.center, // Qty
-    //   5: pw.Alignment.center, // Unit
-    //   6: pw.Alignment.center, // Price
-    //   7: pw.Alignment.center, //discount
-    //   8: pw.Alignment.center, //vat
-    //   9: pw.Alignment.center, // Amount
-    // };
+  
 
     pdf.addPage(
-      // Define styles (place this at the top of your _viewPDF method)
-
-      // Define these styles at the top of your method or widget
-
-      // Define styles (place this at the top of your _viewPDF method)
+      
 
       pw.Page(
           pageFormat: PdfPageFormat.a4,

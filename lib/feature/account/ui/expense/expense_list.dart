@@ -199,7 +199,7 @@ class _ExpanseState extends State<Expanse> {
               ),
             ],
           ),
-          
+
           ///total voucher
           Consumer<ExpenseProvider>(builder: (context, provider, child) {
             final itemCount = provider.expenseList.length;
@@ -219,120 +219,124 @@ class _ExpanseState extends State<Expanse> {
           Consumer<ExpenseProvider>(
             builder: (context, provider, child) {
               if (provider.isLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Expanded(child: const Center(child: CircularProgressIndicator()));
               }
 
               if (provider.expenseList.isEmpty) {
-                return const NoDataWidget(
-                  message: "No expenses records found",
-                  lottieAsset: "assets/animation/no_data.json",
+                return const Expanded(
+                  child:  Center(
+                    child:   NoDataWidget(
+                      message: "No expenses records found",
+                      lottieAsset: "assets/animation/no_data.json",
+                    ),
+                  ),
                 );
-
-                 
               }
 
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: provider.expenseList.length,
-                itemBuilder: (context, index) {
-                  final expense = provider.expenseList[index];
-
-                  final expenseId = expense.id.toString();
-
-                  final accountName =
-                      provider.accountNameMap[expense.accountID ?? 0] ??
-                          'Account Not Found';
-
-                  return InkWell(
-                    onLongPress: () {
-                      editDeleteDiolog(context, expenseId);
-                    },
-                    // onTap: () {
-                    //   ///navigation to expense deatils page
-                    //   Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //           builder: (context) =>
-                    //               const ExpanseDetails()));
-                    // },
-                    child: Card(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.zero, // ✅ Set corner radius to zero
-                      ),
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 1, horizontal: 4),
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                /// Voucher Number
-                                const Text(
-                                  "Paid Form",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+              return Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: provider.expenseList.length,
+                  itemBuilder: (context, index) {
+                    final expense = provider.expenseList[index];
+                
+                    final expenseId = expense.id.toString();
+                
+                    final accountName =
+                        provider.accountNameMap[expense.accountID ?? 0] ??
+                            'Account Not Found';
+                
+                    return InkWell(
+                      onLongPress: () {
+                        editDeleteDiolog(context, expenseId);
+                      },
+                      // onTap: () {
+                      //   ///navigation to expense deatils page
+                      //   Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //           builder: (context) =>
+                      //               const ExpanseDetails()));
+                      // },
+                      child: Card(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.zero, // ✅ Set corner radius to zero
+                        ),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 1, horizontal: 4),
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  /// Voucher Number
+                                  const Text(
+                                    "Paid Form",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 2),
-
-                                ///
-                                Text(
-                                  expense.receivedTo,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black87,
+                                  const SizedBox(height: 2),
+                
+                                  ///
+                                  Text(
+                                    expense.receivedTo,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black87,
+                                    ),
                                   ),
-                                ),
-
-                                const SizedBox(height: 2),
-
-                                const SizedBox(height: 2),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      _formatDate(expense.voucherDate),
-                                      //'${expense.voucherDate}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black87,
+                
+                                  const SizedBox(height: 2),
+                
+                                  const SizedBox(height: 2),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        _formatDate(expense.voucherDate),
+                                        //'${expense.voucherDate}',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black87,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      '${expense.voucherNumber}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black87,
+                                      Text(
+                                        '${expense.voucherNumber}',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black87,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      '${expense.totalAmount} ৳',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
+                                      Text(
+                                        '${expense.totalAmount} ৳',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             },
           ),

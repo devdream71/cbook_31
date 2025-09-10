@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/sales/provider/sales_provider.dart';
 import 'package:cbook_dt/feature/sales/sales_details.dart';
 import 'package:cbook_dt/feature/sales/sales_update.dart';
@@ -556,21 +557,34 @@ class _SalesScreenState extends State<SalesScreen> {
                 }
 
                 if (provider.errorMessage != null) {
-                  return Center(
-                    child: Text(
-                      provider.errorMessage!,
-                      style: const TextStyle(color: Colors.red, fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  );
+                  return 
+                  // Center(
+                  //   child: Text(
+                  //     provider.errorMessage!,
+                  //     style: const TextStyle(color: Colors.red, fontSize: 16),
+                  //     textAlign: TextAlign.center,
+                  //   ),
+                  // );
+
+                  const NoDataWidget(
+                      message: "No purchase returns records found",
+                      lottieAsset: "assets/animation/no_data.json",
+                    );
                 }
 
                 if (provider.sales.isEmpty) {
-                  return const Center(
-                    child: Text("No sales data available",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold)),
-                  );
+                  return 
+
+                  const NoDataWidget(
+                      message: "No purchase returns records found",
+                      lottieAsset: "assets/animation/no_data.json",
+                    );
+                  
+                  // const Center(
+                  //   child: Text("No sales data available",
+                  //       style: TextStyle(
+                  //           color: Colors.black, fontWeight: FontWeight.bold)),
+                  // );
                 }
 
                 // Filter sales based on selected date range

@@ -18,19 +18,17 @@ class AccountTypeProvider with ChangeNotifier {
   final TextEditingController routingNumberController = TextEditingController();
   final TextEditingController bankLocationController = TextEditingController();
 
- void resetForm() {
-  accountNameController.clear();
-  accountGroupController.clear();
-  openBlanceController.clear();
-  accountHolderNameController.clear();
-  accountNoController.clear();
-  routingNumberController.clear();
-  bankLocationController.clear();
-  
-   
-  
-  notifyListeners();
-}
+  void resetForm() {
+    accountNameController.clear();
+    accountGroupController.clear();
+    openBlanceController.clear();
+    accountHolderNameController.clear();
+    accountNoController.clear();
+    routingNumberController.clear();
+    bankLocationController.clear();
+
+    notifyListeners();
+  }
 
   // Date
   DateTime _selectedDate = DateTime.now();
@@ -58,9 +56,6 @@ class AccountTypeProvider with ChangeNotifier {
   List<Account> get accounts => _accounts;
   bool get isLoading => _isLoading;
   String? get error => _error;
-
-  
- 
 
   Future<void> fetchAccounts() async {
     _isLoading = true;
@@ -108,29 +103,20 @@ class AccountTypeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-
-
-
-
   ///delete acc type
   String errorMessage = '';
 
   Future<bool> deleteAccountById(int id) async {
-    final url =
-        Uri.parse("${AppUrl.baseurl}account/remove/?id=$id");
+    final url = Uri.parse("${AppUrl.baseurl}account/remove/?id=$id");
 
-            final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
-      final response = await http.post(url,
-      headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        }
-      ); // ✅ POST method
+      final response = await http.post(url, headers: {
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      }); // ✅ POST method
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -149,8 +135,6 @@ class AccountTypeProvider with ChangeNotifier {
       return false;
     }
   }
-
-
 
   Future<AccountCreateResponseModel> createAccount({
     required String userId,
@@ -183,36 +167,33 @@ class AccountTypeProvider with ChangeNotifier {
     };
 
     final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+    final token = prefs.getString('token');
 
     final uri = Uri.https(
       'commercebook.site',
       '/api/v1/account/store',
       queryParameters,
-       
     );
 
     debugPrint('uri $uri');
 
     debugPrint('====Stopppppp=======');
 
-
     try {
-      final response = await http.post(uri, 
-       
+      final response = await http.post(
+        uri,
         headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer $token",
         },
-      
-       );
+      );
       final jsonData = json.decode(response.body);
-      debugPrint("✅ Sent URL: $uri");
-      debugPrint("📥 Response: $jsonData");
+      debugPrint(" Sent URL: $uri");
+      debugPrint(" Response: $jsonData");
 
       return AccountCreateResponseModel.fromJson(jsonData);
     } catch (e) {
-      debugPrint("❌ Error: $e");
+      debugPrint(" Error: $e");
       return AccountCreateResponseModel(
         success: false,
         message: 'Exception: $e',
@@ -225,20 +206,17 @@ class AccountTypeProvider with ChangeNotifier {
   String selectedStatus = "1";
 
   ///acount edit
-  /// ✅ Fetch Account by ID for Edit
+  /// Fetch Account by ID for Edit
   Future<void> fetchAccountById(int id) async {
-
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
-      final url =
-          Uri.parse('${AppUrl.baseurl}account/edit/$id');
+      final url = Uri.parse('${AppUrl.baseurl}account/edit/$id');
       final response = await http.get(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -253,10 +231,10 @@ class AccountTypeProvider with ChangeNotifier {
 
         notifyListeners();
       } else {
-        debugPrint("❌ Failed to fetch account. Status: ${response.statusCode}");
+        debugPrint(" Failed to fetch account. Status: ${response.statusCode}");
       }
     } catch (e) {
-      debugPrint("❌ Error fetching account by ID: $e");
+      debugPrint(" Error fetching account by ID: $e");
     }
   }
 
@@ -276,39 +254,35 @@ class AccountTypeProvider with ChangeNotifier {
     required String userId, // who is updating
   }) async {
     try {
-
-          final prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
 
-
-
-      final uri =
-          Uri.parse("${AppUrl.baseurl}account/update?id=$id"
-              "&user_id=$userId"
-              "&account_name=${accountNameController.text.trim()}"
-              "&account_type=$selectedAccountType"
-              "&account_group=${accountGroupController.text.trim()}"
-              "&opening_balance=${openBlanceController.text.trim()}"
-              "&date=$formattedDate"
-              "&status=$selectedStatus");
+      final uri = Uri.parse("${AppUrl.baseurl}account/update?id=$id"
+          "&user_id=$userId"
+          "&account_name=${accountNameController.text.trim()}"
+          "&account_type=$selectedAccountType"
+          "&account_group=${accountGroupController.text.trim()}"
+          "&opening_balance=${openBlanceController.text.trim()}"
+          "&date=$formattedDate"
+          "&status=$selectedStatus");
 
       debugPrint('🔄 Sending Update Request: ${uri.toString()}');
 
       final response = await http.post(uri, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        }); // 🔄 API is GET type here
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      }); // 🔄 API is GET type here
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
-        debugPrint("✅ Update Success: ${jsonData['message']}");
+        debugPrint(" Update Success: ${jsonData['message']}");
         return jsonData['success'] == true;
       } else {
-        debugPrint("❌ Update failed [${response.statusCode}]");
+        debugPrint(" Update failed [${response.statusCode}]");
         return false;
       }
     } catch (e) {
-      debugPrint('❌ Exception during update: $e');
+      debugPrint(' Exception during update: $e');
       return false;
     }
   }

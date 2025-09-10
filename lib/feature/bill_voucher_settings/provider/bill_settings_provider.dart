@@ -256,7 +256,7 @@ class BillSettingsProvider with ChangeNotifier {
         final jsonData = json.decode(response.body);
         
         if (jsonData['success'] == true) {
-          debugPrint('✅ Settings updated successfully');
+          debugPrint(' Settings updated successfully');
           // Optionally refresh the settings after successful update
           await fetchSettings();
           _isUpdating = false;
@@ -264,21 +264,21 @@ class BillSettingsProvider with ChangeNotifier {
           return true;
         } else {
           _error = 'Update failed: ${jsonData['message'] ?? 'Unknown error'}';
-          debugPrint('❌ Settings update failed: ${jsonData['message']}');
+          debugPrint(' Settings update failed: ${jsonData['message']}');
         }
       } else if (response.statusCode == 401) {
         _error = 'Unauthorized: Please login again';
-        debugPrint('❌ 401 Unauthorized - Token may be expired');
+        debugPrint(' 401 Unauthorized - Token may be expired');
       } else if (response.statusCode == 500) {
         _error = 'Server Error: Please try again later';
-        debugPrint('❌ 500 Server Error - Internal server error');
+        debugPrint(' 500 Server Error - Internal server error');
       } else {
         _error = 'Failed to update settings: ${response.statusCode}';
-        debugPrint('❌ Failed to update settings: ${response.statusCode} - ${response.reasonPhrase}');
+        debugPrint(' Failed to update settings: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
       _error = 'Network error: $e';
-      debugPrint('❌ Error updating settings: $e');
+      debugPrint(' Error updating settings: $e');
     }
 
     _isUpdating = false;

@@ -20,15 +20,6 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
 
   String selectedStatus = "1";
 
-  // List<String> itemList = [
-  //   'Cash in Hand',
-  //   'Bank',
-  //   "Direct Income",
-  //   'Indirect Income',
-  //   "Direct Expense",
-  //   "Indirect Expense",
-  // ];
-
   final Map<String, String> accountTypeMap = {
     "Cash in Hand": "cash",
     "Bank": "bank",
@@ -72,28 +63,7 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
                     height: 10,
                   ),
 
-                  ///account type
-                  // SizedBox(
-                  //   height: 40,
-                  //   width: double.infinity,
-                  //   child: CustomDropdownTwo(
-                  //     hint: '',
-                  //     items: itemList,
-                  //     width: double.infinity,
-                  //     height: 40,
-                  //     labelText: 'Account Type',
-                  //     selectedItem: selectedAccountType,
-                  //     onChanged: (value) async {
-                  //       setState(() {
-                  //         selectedAccountType = value;
-                  //         selectedAccount = null; // reset account selection
-
-                  //         debugPrint(
-                  //             "selectedAccountType  $selectedAccountType");
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
+                 
 
                   SizedBox(
                     height: 40,
@@ -264,192 +234,257 @@ class _AccountTypeCreateState extends State<AccountTypeCreate> {
                     const SizedBox(height: 10),
                   ],
 
-                  // SizedBox(
-                  //   width: double.infinity,
-                  //   child: CustomDropdownTwo(
-                  //     items: const ["Active", "Inactive"], // Display labels
-                  //     labelText: 'Status', //Select status
-                  //     width: double.infinity,
-                  //     height: 40,
-                  //     value: selectedStatus == "1"
-                  //         ? "Active"
-                  //         : "Inactive", // ✅ reflect selection
-                  //     onChanged: (value) {
-                  //       setState(() {
-                  //         selectedStatus = (value == "Active")
-                  //             ? "1"
-                  //             : "0"; // ✅ Convert label to 1 or 0
-                  //       });
-                  //       debugPrint(selectedStatus);
-                  //     },
-                  //   ),
-                  // ),
+                  
                 ],
               ),
             ),
 
-            SizedBox(
-              height: 40,
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () async {
-                  SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  String? userId = prefs.getInt('user_id')?.toString();
 
-                  final provider =
-                      Provider.of<AccountTypeProvider>(context, listen: false);
+            // Replace your ElevatedButton's onPressed method with this improved version:
 
-                      debugPrint( 'selectedAccount  ${selectedAccount}');
-
-                  final result = await controller.createAccount(
-                    userId: userId.toString(),
-                    accountName: controller.accountNameController.text.trim(),
-                    accountType: selectedAccount! ,
-                    
-                    accountGroup: controller.accountGroupController.text.trim(),
-                    openingBalance: controller.openBlanceController.text.trim(),
-                    date: controller.formattedDate.isNotEmpty
-                        ? controller.formattedDate
-                        : '2025-07-14',
-                    status: selectedStatus,
-                    accountHolderName:
-                        selectedAccountType?.toLowerCase() == 'bank'
-                            ? controller.accountHolderNameController.text.trim()
-                            : null,
-                    accountNo: selectedAccountType?.toLowerCase() == 'bank'
-                        ? controller.accountNoController.text.trim()
-                        : null,
-                    routingNumber: selectedAccountType?.toLowerCase() == 'bank'
-                        ? controller.routingNumberController.text.trim()
-                        : null,
-                    bankLocation: selectedAccountType?.toLowerCase() == 'bank'
-                        ? controller.bankLocationController.text.trim()
-                        : null,
-                  );
-
-                  if (result.success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(result.message),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-
-                    // Refresh the accounts list
-                    provider.fetchAccounts();
-
-                    // ✅ Reset all form fields using controller method
-                    controller.resetForm();
-
-                    // ✅ Reset widget state variables
-                    setState(() {
-                      selectedAccountType = null;
-                      selectedAccount = null;
-                      selectedStatus = "1";
-                      showBankDetails = false;
-                    });
-
-                    Navigator.pop(context);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(result.message),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-                child: const Text(
-                  'Save Account Type',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+SizedBox(
+  height: 40,
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: () async {
+      // Validate required fields first
+      if (controller.accountNameController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter an account name'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+  
+      if (selectedAccount == null || selectedAccount!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select an account type'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+  
+      try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String? userId = prefs.getInt('user_id')?.toString();
+  
+        if (userId == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('User session expired. Please login again.'),
+              backgroundColor: Colors.red,
             ),
+          );
+          return;
+        }
+  
+        final provider = Provider.of<AccountTypeProvider>(context, listen: false);
+  
+        debugPrint('selectedAccount: $selectedAccount');
+  
+        // Show loading indicator
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+  
+        final result = await controller.createAccount(
+          userId: userId,
+          accountName: controller.accountNameController.text.trim(),
+          accountType: selectedAccount!,
+          accountGroup: controller.accountGroupController.text.trim(),
+          openingBalance: controller.openBlanceController.text.trim(),
+          date: controller.formattedDate.isNotEmpty
+              ? controller.formattedDate
+              : '2025-09-10',
+          status: selectedStatus,
+          accountHolderName: selectedAccountType?.toLowerCase() == 'bank'
+              ? controller.accountHolderNameController.text.trim()
+              : null,
+          accountNo: selectedAccountType?.toLowerCase() == 'bank'
+              ? controller.accountNoController.text.trim()
+              : null,
+          routingNumber: selectedAccountType?.toLowerCase() == 'bank'
+              ? controller.routingNumberController.text.trim()
+              : null,
+          bankLocation: selectedAccountType?.toLowerCase() == 'bank'
+              ? controller.bankLocationController.text.trim()
+              : null,
+        );
+  
+        // Hide loading indicator
+        Navigator.of(context).pop();
+  
+        if (result.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result.message ?? 'Account created successfully'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+  
+          // Refresh the accounts list
+          provider.fetchAccounts();
+  
+          // Reset all form fields using controller method
+          controller.resetForm();
+  
+          // Reset widget state variables
+          setState(() {
+            selectedAccountType = null;
+            selectedAccount = null;
+            selectedStatus = "1";
+            showBankDetails = false;
+          });
+  
+          Navigator.pop(context);
+        } else {
+          // Handle specific error messages from the API
+          String errorMessage = result.message ?? 'Failed to create account';
+          
+          // Check for specific error cases and provide user-friendly messages
+          if (errorMessage.contains('Already exit this account')) {
+            errorMessage = 'An account with this name already exists. Please choose a different name.';
+          }
+  
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+              // action: SnackBarAction(
+              //   label: 'OK',
+              //   textColor: Colors.white,
+              //   onPressed: () {
+              //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              //   },
+              // ),
+            ),
+          );
+        }
+      } catch (e) {
+        // Hide loading indicator if it's showing
+        Navigator.of(context, rootNavigator: true).pop();
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An unexpected error occurred: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppColors.primaryColor,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(6),
+      ),
+    ),
+    child: const Text(
+      'Save Account',
+      style: TextStyle(color: Colors.white),
+    ),
+  ),
+),
 
             // SizedBox(
             //   height: 40,
             //   width: double.infinity,
             //   child: ElevatedButton(
-            //       onPressed: () async {
+            //     onPressed: () async {
+            //       SharedPreferences prefs =
+            //           await SharedPreferences.getInstance();
+            //       String? userId = prefs.getInt('user_id')?.toString();
 
-            //         SharedPreferences prefs =
-            //             await SharedPreferences.getInstance();
-            //         String? userId = prefs.getInt('user_id')?.toString();
+            //       final provider =
+            //           Provider.of<AccountTypeProvider>(context, listen: false);
 
-            //         final provider = Provider.of<AccountTypeProvider>(context,
-            //             listen: false);
+            //           debugPrint( 'selectedAccount  ${selectedAccount}');
 
-            //         final result = await controller.createAccount(
-            //           userId: userId.toString(),
-            //           accountName: controller.accountNameController.text.trim(),
-            //           accountType: selectedAccountType?.toLowerCase() ?? 'cash',
-            //           accountGroup:
-            //               controller.accountGroupController.text.trim(),
-            //           openingBalance:
-            //               controller.openBlanceController.text.trim(),
+            //       final result = await controller.createAccount(
+            //         userId: userId.toString(),
+            //         accountName: controller.accountNameController.text.trim(),
+            //         accountType: selectedAccount! ,
+                    
+            //         accountGroup: controller.accountGroupController.text.trim(),
+            //         openingBalance: controller.openBlanceController.text.trim(),
+            //         date: controller.formattedDate.isNotEmpty
+            //             ? controller.formattedDate
+            //             : '2025-07-14',
+            //         status: selectedStatus,
+            //         accountHolderName:
+            //             selectedAccountType?.toLowerCase() == 'bank'
+            //                 ? controller.accountHolderNameController.text.trim()
+            //                 : null,
+            //         accountNo: selectedAccountType?.toLowerCase() == 'bank'
+            //             ? controller.accountNoController.text.trim()
+            //             : null,
+            //         routingNumber: selectedAccountType?.toLowerCase() == 'bank'
+            //             ? controller.routingNumberController.text.trim()
+            //             : null,
+            //         bankLocation: selectedAccountType?.toLowerCase() == 'bank'
+            //             ? controller.bankLocationController.text.trim()
+            //             : null,
+            //       );
 
-            //           date: controller.formattedDate.isNotEmpty
-            //               ? controller.formattedDate
-            //               : '2025-07-14',
-
-            //           status: selectedStatus,
-
-            //           // 🔁 pass only if type is bank
-            //           accountHolderName: selectedAccountType?.toLowerCase() ==
-            //                   'bank'
-            //               ? controller.accountHolderNameController.text.trim()
-            //               : null,
-            //           accountNo: selectedAccountType?.toLowerCase() == 'bank'
-            //               ? controller.accountNoController.text.trim()
-            //               : null,
-            //           routingNumber:
-            //               selectedAccountType?.toLowerCase() == 'bank'
-            //                   ? controller.routingNumberController.text.trim()
-            //                   : null,
-            //           bankLocation: selectedAccountType?.toLowerCase() == 'bank'
-            //               ? controller.bankLocationController.text.trim()
-            //               : null,
+            //       if (result.success) {
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           SnackBar(
+            //             content: Text(result.message),
+            //             backgroundColor: Colors.green,
+            //           ),
             //         );
 
-            //         if (result.success) {
-            //           ScaffoldMessenger.of(context).showSnackBar(
-            //             SnackBar(
-            //                 content: Text(result.message),
-            //                 backgroundColor: Colors.green),
-            //           );
-            //           provider.fetchAccounts();
-            //           Navigator.pop(context);
-            //           controller.accountNameController.clear();
-            //           controller.accountGroupController.clear();
-            //           controller.openBlanceController.clear();
-            //         } else {
-            //           ScaffoldMessenger.of(context).showSnackBar(
-            //             SnackBar(
-            //                 content: Text(result.message),
-            //                 backgroundColor: Colors.red),
-            //           );
-            //         }
-            //       },
-            //       style: ElevatedButton.styleFrom(
-            //         backgroundColor: AppColors.primaryColor,
-            //         padding: const EdgeInsets.symmetric(
-            //             vertical: 12, horizontal: 20),
-            //         shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(6),
-            //         ),
+            //         // Refresh the accounts list
+            //         provider.fetchAccounts();
+
+            //         // ✅ Reset all form fields using controller method
+            //         controller.resetForm();
+
+            //         // ✅ Reset widget state variables
+            //         setState(() {
+            //           selectedAccountType = null;
+            //           selectedAccount = null;
+            //           selectedStatus = "1";
+            //           showBankDetails = false;
+            //         });
+
+            //         Navigator.pop(context);
+            //       } else {
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           SnackBar(
+            //             content: Text(result.message),
+            //             backgroundColor: Colors.red,
+            //           ),
+            //         );
+            //       }
+            //     },
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: AppColors.primaryColor,
+            //       padding:
+            //           const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(6),
             //       ),
-            //       child: const Text('Save Account Type',
-            //           style: TextStyle(color: Colors.white))),
+            //     ),
+            //     child: const Text(
+            //       'Save Account Type',
+            //       style: TextStyle(color: Colors.white),
+            //     ),
+            //   ),
             // ),
+
+            
 
             const SizedBox(
               height: 50,
