@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/unit/add_unit.dart';
 import 'package:cbook_dt/feature/unit/model/unit_response_model.dart';
 import 'package:cbook_dt/feature/unit/provider/unit_provider.dart';
@@ -41,11 +42,9 @@ class UnitListViewState extends State<UnitListView> {
         actions: [
           InkWell(
             onTap: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddUnit())
-              );
-              
+              final result = await Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const AddUnit()));
+
               if (result == 'refresh_needed') {
                 _refreshUnits();
               }
@@ -80,21 +79,9 @@ class UnitListViewState extends State<UnitListView> {
 
                 if (provider.units.isEmpty) {
                   return const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.inventory_2, size: 64, color: Colors.grey),
-                        SizedBox(height: 16),
-                        Text(
-                          'No Units Found',
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Tap the + button to add a unit',
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
-                        ),
-                      ],
+                    child: NoDataWidget(
+                      message: "No unit records found.",
+                      lottieAsset: "assets/animation/no_data.json",
                     ),
                   );
                 }
@@ -209,7 +196,8 @@ class UnitListViewState extends State<UnitListView> {
                   onTap: () async {
                     Navigator.of(context).pop();
 
-                    debugPrint('🔄 Before update - Unit exists: ${Provider.of<UnitDTProvider>(context, listen: false).unitExists(unit.id)}');
+                    debugPrint(
+                        '🔄 Before update - Unit exists: ${Provider.of<UnitDTProvider>(context, listen: false).unitExists(unit.id)}');
 
                     final result = await Navigator.push(
                       context,
@@ -218,7 +206,8 @@ class UnitListViewState extends State<UnitListView> {
                       ),
                     );
 
-                    debugPrint('🔄 After update - Unit exists: ${Provider.of<UnitDTProvider>(context, listen: false).unitExists(unit.id)}');
+                    debugPrint(
+                        '🔄 After update - Unit exists: ${Provider.of<UnitDTProvider>(context, listen: false).unitExists(unit.id)}');
 
                     if (result == 'refresh_needed') {
                       _refreshUnits();
@@ -308,11 +297,11 @@ class UnitListViewState extends State<UnitListView> {
 
     try {
       final provider = Provider.of<UnitDTProvider>(context, listen: false);
-      
+
       debugPrint('🗑️ Starting delete operation for unit: $unitId');
-      
+
       bool isDeleted = await provider.deleteUnit(int.parse(unitId), context);
-      
+
       // ✅ Close loading dialog - check if context is still mounted
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
@@ -351,7 +340,7 @@ class UnitListViewState extends State<UnitListView> {
       }
     } catch (e) {
       debugPrint('💥 Exception during delete: $e');
-      
+
       // ✅ Ensure loading dialog is closed even on error
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
@@ -378,5 +367,3 @@ class UnitListViewState extends State<UnitListView> {
     }
   }
 }
-
- 

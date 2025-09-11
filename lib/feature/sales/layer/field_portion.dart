@@ -12,34 +12,9 @@ class _FieldPortionState extends State<FieldPortion> {
   TextEditingController totalAmountController = TextEditingController();
 
   String? selectedTaxId;
-
-  // ✅ add flags
-  // bool _itemWiseDiscount = false;
-  // bool _itemWiseVatTax = false;
-
   bool _billWiseVatTax = false;
   bool _billWiseDiscount = false;
-
   bool _isLoading = true;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   taxAmountController = TextEditingController();
-  //   //totalAmountController = TextEditingController();
-  //   totalAmountController.text = '0.00'; // Initial value
-
-  //   final controller = context.read<SalesController>();
-
-  //   controller.addListener(() {
-  //     taxAmountController.text = controller.taxAmount.toStringAsFixed(2);
-  //     totalAmountController.text = controller.totalAmount;
-  //     setState(() {}); // Rebuild to reflect changes in UI
-  //   });
-
-  //   taxAmountController.text = controller.taxAmount.toStringAsFixed(2);
-  //   totalAmountController.text = controller.totalAmount;
-  // }
 
   @override
   void initState() {
@@ -64,8 +39,6 @@ class _FieldPortionState extends State<FieldPortion> {
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      // _itemWiseDiscount = prefs.getBool('itemWiseDiscount') ?? false;
-      // _itemWiseVatTax = prefs.getBool('itemWiseVatTax') ?? false;
       _billWiseVatTax = prefs.getBool('billWiseVatTax') ?? false;
       _billWiseDiscount = prefs.getBool('billWiseDiscount') ?? false;
       _isLoading = false;
@@ -174,10 +147,6 @@ class _FieldPortionState extends State<FieldPortion> {
                 : const SizedBox.shrink()
             : const SizedBox.shrink(),
 
-        // const SizedBox(
-        //   height: 5,
-        // ),
-
         // //cash ////tax and percentace
         controller.isVatTax && controller.isCash
             ? _billWiseVatTax && controller.isCash
@@ -216,13 +185,6 @@ class _FieldPortionState extends State<FieldPortion> {
                                     width: double.infinity,
                                     selectedItem: selectedTaxName,
                                     onChanged: (newValue) {});
-
-                                // const Center(
-                                //   child: Text(
-                                //     'No tax',
-                                //     style: TextStyle(color: Colors.black),
-                                //   ),
-                                // );
                               }
                               return SizedBox(
                                 width: 80,
@@ -269,8 +231,7 @@ class _FieldPortionState extends State<FieldPortion> {
                                           controller.selectedTaxPercent =
                                               double.tryParse(selected.percent);
 
-                                          // controller.updateTaxPaecentId(
-                                          //     '${selectedTaxId}_${controller.selectedTaxPercent}');
+                                          
 
                                           /// ✅ Add these lines for calculation:
                                           controller.calculateTaxCash();
@@ -465,8 +426,7 @@ class _FieldPortionState extends State<FieldPortion> {
 
         ////==============================================>>> credit
 
-        // controller.isCash == false ? vPad5 : const SizedBox.shrink(),
-
+    
         // /////credit discount <==============
 
         controller.isCash == false && controller.isDisocunt == true
@@ -509,7 +469,7 @@ class _FieldPortionState extends State<FieldPortion> {
                             onChanged: (value) {
                               controller.updateDiscountCreditAmount(value);
                             },
-                            //style: const TextStyle(fontSize: 12, color: Colors.black),
+                           
                             decoration: const InputDecoration(
                               hintText: "৳",
                             ),
@@ -562,12 +522,7 @@ class _FieldPortionState extends State<FieldPortion> {
                                     selectedItem: selectedTaxName,
                                     onChanged: (newValue) {});
 
-                                // const Center(
-                                //   child: Text(
-                                //     'No tax',
-                                //     style: TextStyle(color: Colors.black),
-                                //   ),
-                                // );
+                             
                               }
 
                               return SizedBox(

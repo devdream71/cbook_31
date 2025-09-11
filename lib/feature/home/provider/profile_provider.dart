@@ -51,6 +51,7 @@ class ProfileProvider with ChangeNotifier {
     try {
       final response = await http.get(
         Uri.parse('${AppUrl.baseurl}profile/$userId'),
+         
         headers: {
           "Authorization": "Bearer $token",
           "Accept": "application/json",

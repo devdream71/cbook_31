@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
+import 'package:cbook_dt/common/new_pdfview.dart';
 import 'package:cbook_dt/feature/app_service_free_premium/controler/app_service_controller.dart';
 import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
-import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/invoice/invoice.dart';
 import 'package:cbook_dt/feature/invoice/invoice_model.dart';
 import 'package:cbook_dt/feature/item/model/items_show_model.dart';
@@ -18,7 +18,6 @@ import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
 import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/purchase/model/purchase_create_model.dart';
 import 'package:cbook_dt/feature/purchase/provider/purchase_provider.dart';
-import 'package:cbook_dt/feature/purchase/purchase_setting.dart';
 import 'package:cbook_dt/feature/sales/sales_view.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/custom_box.dart';
@@ -31,7 +30,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../common/give_information_dialog.dart';
 import '../sales/widget/add_sales_formfield.dart';
 import 'controller/purchase_controller.dart';
 import 'package:http/http.dart' as http;
@@ -292,7 +290,8 @@ class LayoutState extends State<Layout> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const BillInvoiceCreateForm()));
+                              builder: (context) =>
+                                  const BillInvoiceCreateForm()));
                     },
                     icon: const Icon(
                       Icons.settings,
@@ -2247,53 +2246,160 @@ class LayoutState extends State<Layout> {
                         hPad5,
 
                         ///=====>view A4
-                        InkWell(
-                          onTap: () {
-                            if (controller.purchaseItem.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  backgroundColor: Colors.red,
-                                  duration: Duration(seconds: 1),
-                                  content: Text("No Item added"),
-                                ),
-                              );
-                            } else {
-                              debugPrint(
-                                  "return item length ${controller.purchaseItem.length}");
-                              List<InvoiceItem> invoiceItems =
-                                  (controller.isCash
-                                          ? controller.itemsCash
-                                          : controller.itemsCredit)
-                                      .map((item) {
-                                return InvoiceItem(
-                                  itemName: item.itemName ?? "",
-                                  unit: item.unit ?? "PC",
-                                  quantity:
-                                      int.tryParse(item.quantity ?? "0") ?? 0,
-                                  amount: (int.tryParse(item.quantity ?? "0") ??
-                                          0) *
-                                      (double.tryParse(item.mrp ?? "0") ?? 0.0),
-                                  discount: double.tryParse(
-                                          controller.discountController.text) ??
-                                      0.0,
-                                );
-                              }).toList();
+                        // InkWell(
+                        //   onTap: () {
+                        //     if (controller.purchaseItem.isEmpty) {
+                        //       ScaffoldMessenger.of(context).showSnackBar(
+                        //         const SnackBar(
+                        //           backgroundColor: Colors.red,
+                        //           duration: Duration(seconds: 1),
+                        //           content: Text("No Item added"),
+                        //         ),
+                        //       );
+                        //     } else {
+                        //       debugPrint(
+                        //           "return item length ${controller.purchaseItem.length}");
+                        //       List<InvoiceItem> invoiceItems =
+                        //           (controller.isCash
+                        //                   ? controller.itemsCash
+                        //                   : controller.itemsCredit)
+                        //               .map((item) {
+                        //         return InvoiceItem(
+                        //           itemName: item.itemName ?? "",
+                        //           unit: item.unit ?? "PC",
+                        //           quantity:
+                        //               int.tryParse(item.quantity ?? "0") ?? 0,
+                        //           amount: (int.tryParse(item.quantity ?? "0") ??
+                        //                   0) *
+                        //               (double.tryParse(item.mrp ?? "0") ?? 0.0),
+                        //           discount: double.tryParse(
+                        //                   controller.discountController.text) ??
+                        //               0.0,
+                        //         );
+                        //       }).toList();
 
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      InvoiceScreen(items: invoiceItems),
-                                ),
-                              );
-                            }
-                          },
-                          child: const CustomBox(
-                            color: Colors.white,
-                            textColor: Colors.black,
-                            text: "View A4",
-                          ),
-                        ),
+                        //       Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //           builder: (context) =>
+                        //               InvoiceScreen(items: invoiceItems),
+                        //         ),
+                        //       );
+                        //     }
+                        //   },
+                        //   child: const CustomBox(
+                        //     color: Colors.white,
+                        //     textColor: Colors.black,
+                        //     text: "View A4",
+                        //   ),
+                        // ),
+
+                        //printing pdf
+                ElevatedButton.icon(
+                  onPressed: () {
+                    //_viewPDFGenPrinting();
+                    // debugPrint('vieww pdf called');
+                    if (controller.purchaseItem.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 1),
+                                    content: Text("No Item added"),
+                                  ),
+                                );
+                              } else {
+                                debugPrint(
+                                    "return item length ${controller.purchaseItem.length}");
+
+                                final String finalCustomerName = controller.isCash
+                                    ? 'Cash'
+                                    : controller.customerNameController.text;
+
+                                //final String billPersion = controller.billPerson.text;
+
+                                final String discountPercent =
+                                    controller.percentController.text;
+                                    
+                                final String discountAmount =
+                                    controller.discountController.text;
+
+                                // Get selected tax
+                                final String selectedTaxIdPercent = controller
+                                            .selectedTotalTaxId !=
+                                        null
+                                    ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
+                                    : '';
+
+                                 // Get tax amount
+                                final String taxAmount =
+                                    controller.totalTaxAmountl?.toStringAsFixed(2) ??
+                                        '0.00';
+
+                                //helper function
+                                int _toInt(dynamic value) {
+                                  if (value is int) return value;
+                                  if (value is double) return value.toInt();
+                                  if (value is String)
+                                    return double.tryParse(value)?.toInt() ?? 0;
+                                  return 0;
+                                }
+
+                                List<InvoiceItem> invoiceItems = (controller.isCash
+                                        ? controller.itemsCash
+                                        : controller.itemsCredit)
+                                    .map((item) {
+                                  return InvoiceItem(
+                                    itemName: item.itemName ?? "",
+                                    unit: item.unit ?? "PC",
+                                    quantity: int.tryParse(item.quantity ?? "0") ?? 0,
+                                    amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
+                                        (double.tryParse(item.mrp ?? "0") ?? 0.0),
+                                    discount: double.tryParse(
+                                            controller.discountController.text) ??
+                                        0.0,
+                                    itemDiscountAmount: _toInt(item.discountAmount),
+                                    itemDiscountPercentace:
+                                        _toInt(item.discountPercentance),
+                                    itemVatTaxAmount: _toInt(item.vatAmount),
+                                    itemvatTaxPercentace: _toInt(item.vatPerentace),
+                                    customerName: _toInt(item.vatPerentace),
+                                  );
+                                }).toList();
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NewInvoicePage(
+                                      items: invoiceItems,
+                                      billNo: billController.text,
+                                      customerName: finalCustomerName,
+                                      //billPersion: billPersion,
+                                      discountAmount: discountAmount,
+                                      discountPercent: discountPercent,
+                                      taxAmount: taxAmount,
+                                      taxIdPercent: selectedTaxIdPercent,
+                                    ),
+                                  ),
+                                );
+                              }
+                  },
+                  icon: const Icon(Icons.picture_as_pdf, size: 18),
+                  label: const Text(
+                    "View PDF",
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    minimumSize: const Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5), // Rounded corners
+                    ),
+                  ),
+                ),
 
                         hPad5,
 
@@ -2614,7 +2720,7 @@ class LayoutState extends State<Layout> {
                                                         as int)
                                                     .toDouble()
                                                 : (selectedItem.purchasePrice ??
-                                                    0.0);
+                                                    0);
 
                                             controller.unitQty =
                                                 selectedItem.unitQty ?? 1;
@@ -2622,10 +2728,19 @@ class LayoutState extends State<Layout> {
                                             // ✅ Use resetDialogState to clear everything properly
                                             controller.resetDialogState();
 
-                                            // Set initial price
+                                            // Set initial price //its working, as 0.0
+                                            // controller.mrpController.text =
+                                            //     controller.purchasePrice
+                                            //         .toStringAsFixed(2);
+
+                                            
+                                            
+                                            ///its working == as 0 
                                             controller.mrpController.text =
-                                                controller.purchasePrice
-                                                    .toStringAsFixed(2);
+                                                controller.purchasePrice == 0
+                                                    ? "0"
+                                                    : controller.purchasePrice
+                                                        .toStringAsFixed(2);
                                           });
 
                                           // Fetch stock quantity

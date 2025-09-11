@@ -558,16 +558,10 @@ class _SalesScreenState extends State<SalesScreen> {
 
                 if (provider.errorMessage != null) {
                   return 
-                  // Center(
-                  //   child: Text(
-                  //     provider.errorMessage!,
-                  //     style: const TextStyle(color: Colors.red, fontSize: 16),
-                  //     textAlign: TextAlign.center,
-                  //   ),
-                  // );
+                  
 
                   const NoDataWidget(
-                      message: "No purchase returns records found",
+                      message: "No Sales records found",
                       lottieAsset: "assets/animation/no_data.json",
                     );
                 }
@@ -580,11 +574,7 @@ class _SalesScreenState extends State<SalesScreen> {
                       lottieAsset: "assets/animation/no_data.json",
                     );
                   
-                  // const Center(
-                  //   child: Text("No sales data available",
-                  //       style: TextStyle(
-                  //           color: Colors.black, fontWeight: FontWeight.bold)),
-                  // );
+                
                 }
 
                 // Filter sales based on selected date range

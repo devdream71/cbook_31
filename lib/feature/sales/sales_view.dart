@@ -22,7 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../common/input_field.dart';
 import '../../utils/custom_padding.dart';
 import 'controller/sales_controller.dart';
@@ -30,7 +30,6 @@ import 'widget/add_sales_formfield.dart';
 import 'layer/bttom_portion.dart';
 import 'package:http/http.dart' as http;
 part 'layer/field_portion.dart';
-part 'layer/give_information.dart';
 
 class SalesView extends StatefulWidget {
   const SalesView({super.key});
@@ -1990,9 +1989,17 @@ class _LayoutState extends State<_Layout> {
                                           // controller.mrpController.text =
                                           //     controller.salePrice;
 
+                                          ///work as 0.0
+                                          // controller.mrpController.text =
+                                          //     controller.salePrice
+                                          //         .toStringAsFixed(2);
+
+                                          /// work as 0
                                           controller.mrpController.text =
-                                              controller.salePrice
-                                                  .toStringAsFixed(2);
+                                              controller.salePrice == 0
+                                                  ? "0"
+                                                  : controller.salePrice
+                                                      .toStringAsFixed(2);
 
                                           controller.seletedItemName =
                                               selectedItem.name;
@@ -2351,99 +2358,238 @@ class _LayoutState extends State<_Layout> {
                                 // Dropdown (VAT / TAX)
                                 Expanded(
                                   flex: 1,
-                                  child: Consumer<TaxProvider>(
-                                    builder: (context, taxProvider, child) {
-                                      if (taxProvider.isLoading) {
-                                        return const Center(
-                                            child: CircularProgressIndicator());
-                                      }
-                                      if (taxProvider.taxList.isEmpty) {
-                                        return const Center(
-                                          child: Text(
-                                            'No tax options available.',
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                  child: SizedBox(
+                                    width: 80,
+                                    height: 58,
+                                    child: Consumer<TaxProvider>(
+                                      builder: (context, taxProvider, child) {
+                                        if (taxProvider.isLoading) {
+                                          return const Center(
+                                              child:
+                                                  SizedBox()); //CircularProgressIndicator()
+                                        }
+
+                                        if (taxProvider.taxList.isEmpty) {
+                                          return Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                              CustomDropdownTwo(
+                                                  height: 38,
+                                                  hint: taxProvider
+                                                          .taxList.isEmpty
+                                                      ? "None"
+                                                      : "Select VAT/TAX",
+                                                  items: taxProvider
+                                                          .taxList.isEmpty
+                                                      ? [
+                                                          "None"
+                                                        ] // Show only "None"
+                                                      : taxProvider.taxList
+                                                          .map((tax) =>
+                                                              "${tax.name} - ${tax.percent}")
+                                                          .toList(),
+                                                  width: double.infinity,
+                                                  selectedItem: selectedTaxName,
+                                                  onChanged: (newValue) {}),
+                                            ],
+                                          );
+
+                                          // const Center(
+                                          //   child: Text(
+                                          //     'No tax',
+                                          //     style: TextStyle(color: Colors.black),
+                                          //   ),
+                                          // );
+                                        }
+                                        return SizedBox(
+                                          width: 80,
+                                          height: 38,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              CustomDropdownTwo(
+                                                height: 38,
+                                                hint: '', //Select VAT/TAX
+                                                items: taxProvider.taxList
+                                                    .map((tax) => tax.percent
+                                                        .toString()) //${tax.name} -
+                                                    .toList(),
+                                                width: double.infinity,
+                                                selectedItem: selectedTaxName,
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    selectedTaxName = newValue;
+
+                                                    final nameOnly = newValue
+                                                        ?.split(" - ")
+                                                        .first;
+
+                                                    final selected = taxProvider
+                                                        .taxList
+                                                        .firstWhere(
+                                                      (tax) =>
+                                                          tax.name == nameOnly,
+                                                      orElse: () => taxProvider
+                                                          .taxList.first,
+                                                    );
+
+                                                    selectedTaxId =
+                                                        selected.id.toString();
+
+                                                    controller
+                                                            .selectedTaxPercent =
+                                                        double.tryParse(
+                                                            selected.percent);
+
+                                                    controller
+                                                        .taxPercent = controller
+                                                            .selectedTaxPercent ??
+                                                        0.0;
+
+                                                    controller.selectedTaxId =
+                                                        selected.id.toString();
+                                                    controller
+                                                            .selectedTaxPercent =
+                                                        double.tryParse(
+                                                            selected.percent);
+
+                                                    // controller.updateTaxPaecentId(
+                                                    //     '${selectedTaxId}_${controller.selectedTaxPercent}');
+
+                                                    /// ✅ Add these lines for calculation:
+                                                    controller
+                                                        .calculateTaxCash();
+                                                    controller
+                                                        .calculateTotalCash();
+
+                                                    final taxPercent = (controller
+                                                                .selectedTaxPercent ??
+                                                            0)
+                                                        .toStringAsFixed(0);
+                                                    controller.updateTaxPaecentId(
+                                                        '${selectedTaxId}_$taxPercent');
+
+                                                    debugPrint(
+                                                        'tax_percent: "${controller.taxPercentValue}"');
+                                                    debugPrint(
+                                                        "Selected Tax ID: $selectedTaxId");
+                                                    debugPrint(
+                                                        "Selected Tax Percent: ${controller.selectedTaxPercent}");
+
+                                                    controller
+                                                        .selectTotalTaxDropdown(
+                                                            double.parse(
+                                                                controller
+                                                                    .totalAmount),
+                                                            newValue);
+                                                  });
+                                                },
+                                              ),
+                                            ],
                                           ),
                                         );
-                                      }
-
-                                      return Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 20),
-                                          SizedBox(
-                                            height: 38,
-                                            child: CustomDropdownTwo(
-                                              labelText: 'Vat/Tax',
-                                              hint: '',
-                                              items: taxProvider.taxList
-                                                  .map((tax) =>
-                                                      "${tax.name} - (${tax.percent})")
-                                                  .toList(),
-                                              width: double.infinity,
-                                              height: 38,
-                                              selectedItem: selectedTaxName,
-                                              onChanged: (newValue) {
-                                                setState(() {
-                                                  selectedTaxName = newValue;
-
-                                                  final nameOnly = newValue
-                                                      ?.split(" - ")
-                                                      .first;
-
-                                                  final selected = taxProvider
-                                                      .taxList
-                                                      .firstWhere(
-                                                    (tax) =>
-                                                        tax.name == nameOnly,
-                                                    orElse: () => taxProvider
-                                                        .taxList.first,
-                                                  );
-
-                                                  selectedTaxId =
-                                                      selected.id.toString();
-
-                                                  controller
-                                                          .selectedTaxPercent =
-                                                      double.tryParse(
-                                                          selected.percent);
-
-                                                  controller
-                                                      .taxPercent = controller
-                                                          .selectedTaxPercent ??
-                                                      0.0;
-
-                                                  controller.selectedTaxId =
-                                                      selected.id.toString();
-                                                  controller
-                                                          .selectedTaxPercent =
-                                                      double.tryParse(
-                                                          selected.percent);
-
-                                                  final taxPercent = (controller
-                                                              .selectedTaxPercent ??
-                                                          0)
-                                                      .toStringAsFixed(0);
-                                                  controller.updateTaxPaecentId(
-                                                      '${selectedTaxId}_$taxPercent');
-
-                                                  debugPrint(
-                                                      'tax_percent: "${controller.taxPercentValue}"');
-                                                  debugPrint(
-                                                      "Selected Tax ID: $selectedTaxId");
-                                                  debugPrint(
-                                                      "Selected Tax Percent: ${controller.selectedTaxPercent}");
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
+                                      },
+                                    ),
                                   ),
+
+                                  // Consumer<TaxProvider>(
+                                  //   builder: (context, taxProvider, child) {
+                                  //     if (taxProvider.isLoading) {
+                                  //       return const Center(
+                                  //           child: CircularProgressIndicator());
+                                  //     }
+                                  //     if (taxProvider.taxList.isEmpty) {
+                                  //       return const Center(
+                                  //         child: Text(
+                                  //           'No tax options available.',
+                                  //           style:
+                                  //               TextStyle(color: Colors.black),
+                                  //         ),
+                                  //       );
+                                  //     }
+
+                                  //     return Column(
+                                  //       mainAxisAlignment:
+                                  //           MainAxisAlignment.start,
+                                  //       crossAxisAlignment:
+                                  //           CrossAxisAlignment.start,
+                                  //       children: [
+                                  //         const SizedBox(height: 20),
+                                  //         SizedBox(
+                                  //           height: 38,
+                                  //           child: CustomDropdownTwo(
+                                  //             labelText: 'Vat/Tax',
+                                  //             hint: '',
+                                  //             items: taxProvider.taxList
+                                  //                 .map((tax) =>
+                                  //                     "${tax.name} - (${tax.percent})")
+                                  //                 .toList(),
+                                  //             width: double.infinity,
+                                  //             height: 38,
+                                  //             selectedItem: selectedTaxName,
+                                  //             onChanged: (newValue) {
+                                  //               setState(() {
+                                  //                 selectedTaxName = newValue;
+
+                                  //                 final nameOnly = newValue
+                                  //                     ?.split(" - ")
+                                  //                     .first;
+
+                                  //                 final selected = taxProvider
+                                  //                     .taxList
+                                  //                     .firstWhere(
+                                  //                   (tax) =>
+                                  //                       tax.name == nameOnly,
+                                  //                   orElse: () => taxProvider
+                                  //                       .taxList.first,
+                                  //                 );
+
+                                  //                 selectedTaxId =
+                                  //                     selected.id.toString();
+
+                                  //                 controller
+                                  //                         .selectedTaxPercent =
+                                  //                     double.tryParse(
+                                  //                         selected.percent);
+
+                                  //                 controller
+                                  //                     .taxPercent = controller
+                                  //                         .selectedTaxPercent ??
+                                  //                     0.0;
+
+                                  //                 controller.selectedTaxId =
+                                  //                     selected.id.toString();
+                                  //                 controller
+                                  //                         .selectedTaxPercent =
+                                  //                     double.tryParse(
+                                  //                         selected.percent);
+
+                                  //                 final taxPercent = (controller
+                                  //                             .selectedTaxPercent ??
+                                  //                         0)
+                                  //                     .toStringAsFixed(0);
+                                  //                 controller.updateTaxPaecentId(
+                                  //                     '${selectedTaxId}_$taxPercent');
+
+                                  //                 debugPrint(
+                                  //                     'tax_percent: "${controller.taxPercentValue}"');
+                                  //                 debugPrint(
+                                  //                     "Selected Tax ID: $selectedTaxId");
+                                  //                 debugPrint(
+                                  //                     "Selected Tax Percent: ${controller.selectedTaxPercent}");
+                                  //               });
+                                  //             },
+                                  //           ),
+                                  //         ),
+                                  //       ],
+                                  //     );
+                                  //   },
+                                  // ),
                                 ),
 
                                 const SizedBox(width: 8),

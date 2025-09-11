@@ -15,7 +15,7 @@ import 'dart:typed_data';
 import 'package:intl/intl.dart';
 
 import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';  
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NewInvoicePage extends StatefulWidget {
   final List<InvoiceItem> items;
@@ -25,6 +25,7 @@ class NewInvoicePage extends StatefulWidget {
   final dynamic discountAmount;
   final dynamic taxIdPercent;
   final dynamic taxAmount;
+  final String billNo;
   const NewInvoicePage({
     super.key,
     required this.items,
@@ -34,6 +35,7 @@ class NewInvoicePage extends StatefulWidget {
     this.discountPercent,
     this.taxIdPercent,
     this.taxAmount,
+    required this.billNo,
   });
 
   @override
@@ -46,7 +48,8 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
   String? selectedDropdownValue;
 
   Future<Uint8List> loadLogoImage() async {
-    final data = await rootBundle.load('assets/image/cbook_logo.png');
+    final data = await rootBundle
+        .load('assets/image/logo_new.png'); //assets\image\logo_new.png
     return data.buffer.asUint8List();
   }
 
@@ -79,7 +82,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
     // Calculate total amount
     final totalAmount = widget.items.fold<double>(
       0.0,
-      (sum, item) => sum + (item.amount ),
+      (sum, item) => sum + (item.amount),
     );
 
     // Format
@@ -183,11 +186,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
     final logoBytes = await loadLogoImage();
     final logoImage = pw.MemoryImage(logoBytes);
 
-  
-
     pdf.addPage(
-      
-
       pw.Page(
           pageFormat: PdfPageFormat.a4,
           margin:
@@ -265,7 +264,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                           pw.Column(
                               crossAxisAlignment: pw.CrossAxisAlignment.end,
                               children: [
-                                pw.Text("Bill No: inv542",
+                                pw.Text("Bill No: ${widget.billNo}",
                                     style: const pw.TextStyle(fontSize: 9)),
                                 pw.Text(
                                   "Date: ${DateFormat('dd/MM/yyyy').format(DateTime.now())}",
@@ -362,8 +361,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                               if (showMRP) pw.Text('0', style: cellStyle),
                               pw.Text(widget.items[i].quantity.toString(),
                                   style: cellStyle),
-                              pw.Text(widget.items[i].unit,
-                                  style: cellStyle),
+                              pw.Text(widget.items[i].unit, style: cellStyle),
                               pw.Text(
                                 ((widget.items[i].amount /
                                         (widget.items[i].quantity > 0
@@ -723,7 +721,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                   pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
-                        pw.Text("Bill No: inv542",
+                        pw.Text("Bill No: ${widget.billNo}",
                             style: const pw.TextStyle(fontSize: 9)),
                         // pw.Text("Date: 12/10/2023",
                         //     style: const pw.TextStyle(fontSize: 9)),
@@ -848,7 +846,6 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
               ],
             ),
 
-          
             pw.SizedBox(height: 10),
 
             ///toatl section.
@@ -903,8 +900,6 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                           barcode: pw.Barcode.qrCode(),
                           width: 50,
                           height: 50)),
-
-               
 
                 pw.SizedBox(width: 10),
                 pw.Column(
@@ -1135,7 +1130,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                   pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.end,
                       children: [
-                        pw.Text("Bill No: inv542",
+                        pw.Text("Bill No: ${widget.billNo}",
                             style: const pw.TextStyle(fontSize: 9)),
                         pw.Text(
                           "Date: ${DateFormat('dd/MM/yyyy').format(DateTime.now())}",
@@ -1426,10 +1421,23 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
   bool showAmountinWord = false;
   bool showNarration = false;
 
+ String? companyName;
+
   @override
   void initState() {
     super.initState();
     _loadCheckboxState();
+
+    companyNameFromSharePref();
+  }
+
+  Future<void> companyNameFromSharePref() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedName  = prefs.getString('company_name');
+
+     setState(() {
+      companyName = storedName ?? ''; // <-- update state
+    });
   }
 
   Future<void> _loadCheckboxState() async {
@@ -1480,6 +1488,9 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
         '=====> item vat per ${widget.items.first.itemvatTaxPercentace}');
 
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    //final prefs = await SharedPreferences.getInstance();
+    debugPrint(companyName);
 
     TextStyle tableHeaderStyle =
         const TextStyle(fontWeight: FontWeight.bold, color: Colors.black);
@@ -1578,7 +1589,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Text("Dream Tech International",
+                                        Text("$companyName",
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14,
@@ -1606,7 +1617,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                       width: 40,
                                       height: 40,
                                       child: Image.asset(
-                                          'assets/image/cbook_logo.png')),
+                                          'assets/image/logo_new.png')), //assets\image\logo_new.png
                                 ],
                               ),
                             ),
@@ -1642,7 +1653,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      const Text("Bill No: Inv542",
+                                      Text("Bill No: ${widget.billNo}",
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 10)),
@@ -2001,7 +2012,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                   icon: const Icon(Icons.picture_as_pdf,
                                       size: 18),
                                   label: const Text(
-                                    "View PDF",
+                                    "Print PDF",
                                     style: TextStyle(fontSize: 12),
                                   ),
                                   style: ElevatedButton.styleFrom(

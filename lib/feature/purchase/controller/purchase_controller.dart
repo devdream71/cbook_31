@@ -13,6 +13,11 @@ class PurchaseController extends ChangeNotifier {
 
   
   TextEditingController mrpController = TextEditingController();
+  TextEditingController customerNameController = TextEditingController();
+
+  TextEditingController percentController = TextEditingController();
+
+
   TextEditingController qtyController = TextEditingController();
   TextEditingController noteController = TextEditingController();
   TextEditingController amountController = TextEditingController();
@@ -63,6 +68,9 @@ class PurchaseController extends ChangeNotifier {
   double purchasePrice = 0.0;
   int onlinePaymentValue = 0;
   double _subtotalItemDialog = 0.0;
+  String? selectedTotalTaxId;
+  double selectedTotalTaxPercent = 0.00;
+  double totalTaxAmountl = 0.00;
 
   int unitQty = 1;
 
@@ -73,6 +81,7 @@ class PurchaseController extends ChangeNotifier {
   String email = "";
   String address = "";
   String selcetedItemId = "";
+  
 
   bool isAmountCredit = true;
   bool isDiscountCredit = true;
@@ -113,7 +122,7 @@ class PurchaseController extends ChangeNotifier {
 
   // ✅ FIXED: Remove the problematic dialogtotalController method and replace with this
   void dialogtotalController() {
-    final price = double.tryParse(mrpController.text) ?? 0.0;
+    final price = double.tryParse(mrpController.text) ?? 0;
     final qty = double.tryParse(qtyController.text) ?? 0.0;
     _subtotalItemDialog = price * qty;
     notifyListeners();
@@ -645,7 +654,7 @@ class PurchaseController extends ChangeNotifier {
     debugPrint("=== ADDING CREDIT ITEM ===");
     debugPrint("seletedItemName: '$seletedItemName'");
 
-    double price = double.tryParse(mrpController.text) ?? 0.0;
+    double price = double.tryParse(mrpController.text) ?? 0;
     double quantity = double.tryParse(qtyController.text) ?? 0.0;
     double calculatedTotal = price * quantity;
 
@@ -743,7 +752,7 @@ class PurchaseController extends ChangeNotifier {
     debugPrint("=== ADDING CASH ITEM ===");
     debugPrint("seletedItemName: '$seletedItemName'");
 
-    double price = double.tryParse(mrpController.text) ?? 0.0;
+    double price = double.tryParse(mrpController.text) ?? 0;
     double quantity = double.tryParse(qtyController.text) ?? 0.0;
     double calculatedTotal = price * quantity;
 

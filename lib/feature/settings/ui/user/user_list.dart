@@ -404,6 +404,7 @@
 // }
 
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/settings/ui/user/user_add.dart';
 import 'package:cbook_dt/feature/settings/ui/user/user_details.dart';
 import 'package:cbook_dt/feature/settings/ui/user/user_provider/user_provider.dart';
@@ -483,12 +484,24 @@ class UserCeate extends StatelessWidget {
           //     :
 
           userSettingProvider.users.isEmpty
-              ? const Center(
-                  child: Text(
-                  "No user found.",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ))
+              ?   Center(
+                  child: 
+                  
+                //   Text(
+                //   "No user found.",
+                //   style: TextStyle(
+                //       color: Colors.black, fontWeight: FontWeight.bold),
+                // )
+
+
+                  NoDataWidget(
+                      message: "No User records found",
+                      lottieAsset: "assets/animation/no_data.json",
+                    )
+                
+                
+                
+                )
               : ListView.builder(
                   itemCount: userSettingProvider.users.length,
                   itemBuilder: (ctx, index) {

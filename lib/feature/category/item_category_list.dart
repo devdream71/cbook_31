@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/category/category_update.dart';
 import 'package:cbook_dt/feature/category/create_category.dart';
 import 'package:cbook_dt/feature/category/provider/category_provider.dart';
@@ -71,10 +72,9 @@ class ItemCategoryViewState extends State<ItemCategoryView> {
 
                   if (provider.categories.isEmpty) {
                     return const Center(
-                        child: Text(
-                      "No categories found",
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
+                        child: NoDataWidget(
+                      message: "No category records found.",
+                      lottieAsset: "assets/animation/no_data.json",
                     ));
                   }
 

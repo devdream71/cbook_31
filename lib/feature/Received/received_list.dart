@@ -256,7 +256,7 @@ class _ReceivedListState extends State<ReceivedList> {
                 if (provider.vouchers.isEmpty) {
                   return const Center(
                     child: NoDataWidget(
-                      message: "No tax records found",
+                      message: "No Received records found.",
                       lottieAsset: "assets/animation/no_data.json",
                     ),
                   );

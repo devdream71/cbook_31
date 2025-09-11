@@ -28,51 +28,97 @@ class SalesProvider with ChangeNotifier {
   SalesSummary? get summary => _summary;
 
   /// Fetch sales from API
+  // Future<void> fetchSales() async {
+  //   _isLoading = true;
+  //   _errorMessage = null;
+  //   notifyListeners();
+
+  //   final prefs = await SharedPreferences.getInstance();
+  //     final token = prefs.getString('token');
+
+
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse('${AppUrl.baseurl}sales/'),
+  //       headers: {
+  //         "Authorization": "Bearer $token",
+  //         "Accept": "application/json",
+  //       },
+  //     );
+
+  //     debugPrint("API called. Status Code: ${response.statusCode}");
+
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       SalesResponse salesResponse = SalesResponse.fromJson(data);
+  //       _sales = salesResponse.data;
+  //       _filteredSales = _sales; // Initialize with all sales
+
+  //       _sales = salesResponse.data;
+  //       _summary = salesResponse.summary;
+
+  //       debugPrint("Success: ${jsonEncode(data)}");
+  //     } else if (response.statusCode == 404) {
+  //       _errorMessage = "Error 404: Sales data not found";
+  //     } else if (response.statusCode == 500) {
+  //       _errorMessage =
+  //           "Error 500: Internal Server Error. Please try again later.";
+  //     } else {
+  //       _errorMessage = "Unexpected Error: ${response.statusCode}";
+  //     }
+  //   } catch (e) {
+  //     _errorMessage = "Exception occurred: $e";
+  //   }
+
+  //   _isLoading = false;
+  //   notifyListeners();
+  // }
+
+
+
   Future<void> fetchSales() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+  _isLoading = true;
+  _errorMessage = null;
+  notifyListeners();
 
-    final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
 
+  try {
+    final response = await http.get(
+      Uri.parse('${AppUrl.baseurl}sales/'),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      },
+    );
 
-    try {
-      final response = await http.get(
-        Uri.parse('${AppUrl.baseurl}sales/'),
-        headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        },
-      );
+    debugPrint("API called. Status Code: ${response.statusCode}");
 
-      debugPrint("API called. Status Code: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      SalesResponse salesResponse = SalesResponse.fromJson(data);
+      _sales = salesResponse.data;
+      _filteredSales = _sales; // Initialize with all sales
+      _summary = salesResponse.summary;
+      _errorMessage = null; // Clear any previous errors
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        SalesResponse salesResponse = SalesResponse.fromJson(data);
-        _sales = salesResponse.data;
-        _filteredSales = _sales; // Initialize with all sales
-
-        _sales = salesResponse.data;
-        _summary = salesResponse.summary;
-
-        debugPrint("Success: ${jsonEncode(data)}");
-      } else if (response.statusCode == 404) {
-        _errorMessage = "Error 404: Sales data not found";
-      } else if (response.statusCode == 500) {
-        _errorMessage =
-            "Error 500: Internal Server Error. Please try again later.";
-      } else {
-        _errorMessage = "Unexpected Error: ${response.statusCode}";
-      }
-    } catch (e) {
-      _errorMessage = "Exception occurred: $e";
+      debugPrint("Success: Loaded ${_sales.length} sales items");
+    } else if (response.statusCode == 404) {
+      _errorMessage = "Error 404: Sales data not found";
+    } else if (response.statusCode == 500) {
+      _errorMessage = "Error 500: Internal Server Error. Please try again later.";
+    } else {
+      _errorMessage = "Unexpected Error: ${response.statusCode}";
     }
-
-    _isLoading = false;
-    notifyListeners();
+  } catch (e) {
+    _errorMessage = "Exception occurred: $e";
+    debugPrint("Error in fetchSales: $e");
   }
+
+  _isLoading = false;
+  notifyListeners(); // ← This notifies the UI to rebuild
+}
 
   /// Filter sales by customer name or "cash"
   // void filterSales(String query) {

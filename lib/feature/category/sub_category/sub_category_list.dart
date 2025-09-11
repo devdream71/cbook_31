@@ -1,4 +1,5 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/category/model/category_list.dart';
 import 'package:cbook_dt/feature/category/provider/category_provider.dart';
 import 'package:cbook_dt/feature/category/sub_category/create_sub_category.dart';
@@ -93,11 +94,19 @@ class _ItemSubCategoryViewState extends State<ItemSubCategoryView> {
                   }
 
                   if (provider.subcategories.isEmpty) {
-                    return const Center(
-                        child: Text(
-                      "No subcategories found",
-                      style: TextStyle(color: Colors.black),
+                    return   
+
+                    const Center(
+                        child: NoDataWidget(
+                      message: "No subcategory found.",
+                      lottieAsset: "assets/animation/no_data.json",
                     ));
+                    
+                    // Center(
+                    //     child: Text(
+                    //   "No subcategories found",
+                    //   style: TextStyle(color: Colors.black),
+                    // ));
                   }
 
                   return ListView.builder(

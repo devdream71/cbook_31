@@ -386,7 +386,7 @@ class _PartyState extends State<Party> {
                   if (customerProvider.errorMessage.isNotEmpty) {
                     return const Center(
                         child: NoDataWidget(
-                      message: "No purchase returns records found",
+                      message: "No party records found.",
                       lottieAsset: "assets/animation/no_data.json",
                     )
 

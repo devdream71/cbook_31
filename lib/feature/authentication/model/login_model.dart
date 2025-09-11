@@ -19,10 +19,12 @@ class UserData {
   final dynamic password;
   final String token;
   final int id;
-  final companyId;
+  final int companyId;
   final dynamic name;
   final dynamic phone;
   final dynamic avatar;
+  //final int companyID;
+  final String ? companyName;
 
   UserData({
     required this.email,
@@ -32,12 +34,16 @@ class UserData {
     required this.companyId,
     required this.name,
     required this.phone,
+    //required this.companyID,
+    this.companyName,
+    
     this.avatar,
   });
 
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
       email: json['email'],
+      //companyID: json['company_id'],
       password: json['password'],
       token: json['token'],
       id: json['id'],
@@ -45,6 +51,8 @@ class UserData {
       name: json['name'],
       phone: json['phone'],
       avatar: json['avatar'],
+      companyName: json['company_name'],
+
     );
   }
 }

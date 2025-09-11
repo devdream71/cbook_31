@@ -46,6 +46,9 @@ class LoginProvider with ChangeNotifier {
       await prefs.setString('token', _loginResponse!.data.token);
       await prefs.setInt('user_id', _loginResponse!.data.id);
       await prefs.setInt('company_id', _loginResponse!.data.companyId);
+      // await prefs.setInt('company_name', _loginResponse!.data.companyName);
+      await prefs.setString('company_name', _loginResponse!.data.companyName ?? '');
+
 
       // ✅ Save cookie from header
       String? rawCookie = response.headers['set-cookie'];
