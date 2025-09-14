@@ -43,7 +43,7 @@ class _BillPersonListState extends State<BillPersonList> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(),
+            //const SizedBox(),
             const Text(
               'Bill Person',
               style: TextStyle(

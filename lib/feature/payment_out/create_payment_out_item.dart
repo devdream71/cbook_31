@@ -29,7 +29,6 @@ class PaymentOutCreateItem extends StatefulWidget {
 }
 
 class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
-  
   TextEditingController billController = TextEditingController();
   TextEditingController discountPercentageController = TextEditingController();
   Map<int, TextEditingController> receiptControllers = {};
@@ -451,17 +450,17 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                       selectedItem: selectedReceivedTo,
                       onChanged: (value) async {
                         // debugPrint('=== Received To Selected: $value ===');
-                
+
                         debugPrint('=== Received To Selected: $value ===');
-                
+
                         setState(() {
                           selectedReceivedTo = value;
                           selectedAccount = null;
-                
+
                           internalReceivedTo =
                               value == 'Cash in Hand' ? 'cash' : 'bank';
                         });
-                
+
                         if (internalReceivedTo == 'cash') {
                           debugPrint('Fetching Cash accounts...');
                           await provider.fetchAccounts('cash');
@@ -469,7 +468,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                           debugPrint('Fetching Bank accounts...');
                           await provider.fetchAccounts('bank');
                         }
-                
+
                         debugPrint(
                             'Fetched Account Names: ${provider.accountNames}');
                         debugPrint(
@@ -505,21 +504,21 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                               setState(() {
                                 selectedAccount = value;
                               });
-                
+
                               if (provider.accountModel != null) {
                                 final selectedAccountData = provider
                                     .accountModel!.data
                                     .firstWhere((account) =>
                                         account.accountName == value);
-                
+
                                 selectedAccountId = selectedAccountData.id;
-                
+
                                 debugPrint('=== Account Selected: $value ===');
                                 if (selectedAccountId != null) {
                                   debugPrint(
                                       'Selected Account ID: $selectedAccountId');
                                 }
-                
+
                                 debugPrint('Selected Account Details:');
                                 debugPrint('- ID: ${selectedAccountData.id}');
                                 debugPrint(
@@ -532,7 +531,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                 ),
               ),
 
-              
               const Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -650,7 +648,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
             ],
           ),
 
-
           const Center(
             child: Text(
               "Payment To",
@@ -683,8 +680,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
               final customerList =
                   customerProvider.customerResponse?.data ?? [];
               final selectedCustomer = customerProvider.selectedCustomer;
-
-             
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1122,22 +1117,137 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
           ),
 
           Padding(
-            padding: const EdgeInsets.only(right: 4.0),
+            padding: const EdgeInsets.only(right: 4.0, top: 4.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 /// Total Amount Section
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [],
+                // const Padding(
+                //   padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.end,
+                //     children: [],
+                //   ),
+                // ),
+
+                //printing pdf
+                ElevatedButton.icon(
+                  onPressed: () {
+                    //_viewPDFGenPrinting();
+                    // debugPrint('vieww pdf called');
+                    // if (controller.saleItem.isEmpty) {
+                    //             ScaffoldMessenger.of(context).showSnackBar(
+                    //               const SnackBar(
+                    //                 backgroundColor: Colors.red,
+                    //                 duration: Duration(seconds: 1),
+                    //                 content: Text("No Item added"),
+                    //               ),
+                    //             );
+                    //           } else {
+                    //             debugPrint(
+                    //                 "return item length ${controller.saleItem.length}");
+
+                    //             final String finalCustomerName = controller.isCash
+                    //                 ? 'Cash'
+                    //                 : controller.customerNameController.text;
+
+                    //             final String billPersion = controller.billPerson.text;
+
+                    //             final String discountPercent =
+                    //                 controller.percentController.text;
+                    //             final String discountAmount =
+                    //                 controller.discountController.text;
+
+                    //             // Get selected tax
+                    //             final String selectedTaxIdPercent = controller
+                    //                         .selectedTotalTaxId !=
+                    //                     null
+                    //                 ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
+                    //                 : '';
+
+                    //              // Get tax amount
+                    //             final String taxAmount =
+                    //                 controller.totalTaxAmountl?.toStringAsFixed(2) ??
+                    //                     '0.00';
+
+                    //             //helper function
+                    //             int _toInt(dynamic value) {
+                    //               if (value is int) return value;
+                    //               if (value is double) return value.toInt();
+                    //               if (value is String)
+                    //                 return double.tryParse(value)?.toInt() ?? 0;
+                    //               return 0;
+                    //             }
+
+                    //             List<InvoiceItem> invoiceItems = (controller.isCash
+                    //                     ? controller.itemsCash
+                    //                     : controller.itemsCredit)
+                    //                 .map((item) {
+                    //               return InvoiceItem(
+                    //                 itemName: item.itemName ?? "",
+                    //                 unit: item.unit ?? "PC",
+                    //                 quantity: int.tryParse(item.quantity ?? "0") ?? 0,
+                    //                 amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
+                    //                     (double.tryParse(item.mrp ?? "0") ?? 0.0),
+                    //                 discount: double.tryParse(
+                    //                         controller.discountController.text) ??
+                    //                     0.0,
+                    //                 itemDiscountAmount: _toInt(item.discountAmount),
+                    //                 itemDiscountPercentace:
+                    //                     _toInt(item.discountPercentance),
+                    //                 itemVatTaxAmount: _toInt(item.vatAmount),
+                    //                 itemvatTaxPercentace: _toInt(item.vatPerentace),
+                    //                 customerName: _toInt(item.vatPerentace),
+                    //               );
+                    //             }).toList();
+
+                    //             Navigator.push(
+                    //               context,
+                    //               MaterialPageRoute(
+                    //                 builder: (context) => NewInvoicePage(
+                    //                   items: invoiceItems,
+                    //                   billNo: widget.billNo,
+                    //                   customerName: finalCustomerName,
+                    //                   billPersion: billPersion,
+                    //                   discountAmount: discountAmount,
+                    //                   discountPercent: discountPercent,
+                    //                   taxAmount: taxAmount,
+                    //                   taxIdPercent: selectedTaxIdPercent,
+                    //                 ),
+                    //               ),
+                    //             );
+                    //           }
+                  },
+                  icon: const Icon(Icons.picture_as_pdf, size: 18),
+                  label: const Text(
+                    "View PDF",
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    minimumSize: const Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5), // Rounded corners
+                    ),
                   ),
                 ),
+
+                const SizedBox(
+                  width: 6,
+                ),
+
                 Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 6),
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5)),
 

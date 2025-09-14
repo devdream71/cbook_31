@@ -6,6 +6,7 @@ import 'package:cbook_dt/feature/account/ui/cash_in_hand/provider/cash_in_hand.d
 import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
 import 'package:cbook_dt/feature/app_service_free_premium/controler/app_service_controller.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:cbook_dt/feature/authentication/presentation/forgot_password/provider/forget_password_provider.dart';
 import 'package:cbook_dt/feature/authentication/provider/login_provider.dart';
 import 'package:cbook_dt/feature/authentication/provider/otp_provider.dart';
@@ -47,7 +48,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app_const/app_colors.dart';
 import 'feature/sales/controller/sales_controller.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -75,7 +75,8 @@ void main() async {
           ChangeNotifierProvider(create: (context) => LoginProvider()),
           ChangeNotifierProvider(create: (context) => ProfileProvider()),
           ChangeNotifierProvider(create: (context) => ItemProvider()),
-          ChangeNotifierProvider(create: (context) => AddItemProvider()..fetchItems()),
+          ChangeNotifierProvider(
+              create: (context) => AddItemProvider()..fetchItems()),
           ChangeNotifierProvider(create: (context) => ItemUpdateProvider()),
           ChangeNotifierProvider(create: (context) => UnitProvider()),
           ChangeNotifierProvider(create: (context) => SupplierProvider()),
@@ -90,7 +91,8 @@ void main() async {
           ChangeNotifierProvider(create: (_) => SalesReturnProvider()),
           ChangeNotifierProvider(create: (_) => CategoryProvider()),
           ChangeNotifierProvider(create: (_) => TaxProvider()..fetchTaxes()),
-          ChangeNotifierProvider(create: (_) => SettingUserProvider()..fetchUsers()),
+          ChangeNotifierProvider(
+              create: (_) => SettingUserProvider()..fetchUsers()),
           ChangeNotifierProvider(create: (_) => IncomeProvider()),
           ChangeNotifierProvider(create: (_) => ExpenseProvider()),
           ChangeNotifierProvider(create: (_) => PaymentVoucherProvider()),
@@ -102,8 +104,12 @@ void main() async {
           ChangeNotifierProvider(create: (_) => BankAdjustProvider()),
           ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
           ChangeNotifierProvider(create: (_) => AppServiceProvider()),
-          ChangeNotifierProvider(create: (_) => BillSettingsProvider()..fetchSettings()),
-          ChangeNotifierProvider(create: (_) =>DashboardReportProvider()..fetchCustomerTransaction()),
+          ChangeNotifierProvider(create: (_) => CurrencyProvider()),
+          ChangeNotifierProvider(
+              create: (_) => BillSettingsProvider()..fetchSettings()),
+          ChangeNotifierProvider(
+              create: (_) =>
+                  DashboardReportProvider()..fetchCustomerTransaction()),
         ],
         child: const MyApp(),
       ),

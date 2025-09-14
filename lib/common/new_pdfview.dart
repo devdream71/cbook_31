@@ -1421,7 +1421,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
   bool showAmountinWord = false;
   bool showNarration = false;
 
- String? companyName;
+  String? companyName;
 
   @override
   void initState() {
@@ -1433,9 +1433,9 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
 
   Future<void> companyNameFromSharePref() async {
     final prefs = await SharedPreferences.getInstance();
-    final storedName  = prefs.getString('company_name');
+    final storedName = prefs.getString('company_name');
 
-     setState(() {
+    setState(() {
       companyName = storedName ?? ''; // <-- update state
     });
   }
@@ -1538,7 +1538,6 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
         actions: [
           IconButton(
               onPressed: () async {
-                //Navigator.push(context, MaterialPageRoute(builder: (context)=>const BillInvoicePrint()));
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -1553,10 +1552,10 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
         children: [
           if (showbodyWaterMarkLogo)
             Opacity(
-              opacity: 0.09, // adjust this value as needed for transparency
+              opacity: 0.09,
               child: Center(
                 child: Image.asset(
-                  'assets/image/cbook_logo.png', //assets\image\cbook_logo.png
+                  'assets/image/cbook_logo.png',
                   width: 300,
                   fit: BoxFit.contain,
                 ),
@@ -1589,8 +1588,8 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                        Text("$companyName",
-                                          style: TextStyle(
+                                      Text("$companyName",
+                                          style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14,
                                               color: Colors.black)),
@@ -1607,9 +1606,6 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                               color: Colors.black,
                                               fontSize: 11),
                                         ),
-                                      // Text("0198994406",
-                                      //     style: TextStyle(
-                                      //         color: Colors.black, fontSize: 11)),
                                     ],
                                   ),
                                   // Wrapping QrImage inside a SizedBox
@@ -1617,7 +1613,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                       width: 40,
                                       height: 40,
                                       child: Image.asset(
-                                          'assets/image/logo_new.png')), //assets\image\logo_new.png
+                                          'assets/image/logo_new.png')),
                                 ],
                               ),
                             ),
@@ -1654,7 +1650,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text("Bill No: ${widget.billNo}",
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 10)),
                                       Text(
@@ -1662,8 +1658,6 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                         style: const TextStyle(
                                             color: Colors.black, fontSize: 10),
                                       ),
-
-                                      //  "Bill Person: ${widget.billPersion != null && widget.billPersion!.trim().isNotEmpty ? widget.billPersion : "No Bill Person"}",
                                       Text(
                                           "Bill Person: ${widget.billPersion != null && widget.billPersion!.trim().isNotEmpty ? widget.billPersion : "N/A"}",
                                           style: const TextStyle(
@@ -1774,8 +1768,6 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                         ],
                                       );
                                     }),
-
-                                    // Data Row 1
                                   ],
                                 ),
                               ),
@@ -1827,14 +1819,10 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                           dashGapLength: 1.0,
                                         ),
                                       ),
-                                    //"${(widget.discountAmount == null || widget.discountAmount.trim().isEmpty || widget.discountAmount.toLowerCase() == 'n/a') ? '0.00' : widget.discountAmount}"
-                                    //${widget.discountAmount}
-
                                     if (showBillDiscountAmountAndPercentance)
                                       customDiscount(
                                           "Discount ${widget.discountPercent}%",
                                           "${(widget.discountAmount == null || widget.discountAmount.trim().isEmpty || widget.discountAmount.toLowerCase() == 'n/a') ? '0.00' : widget.discountAmount}"),
-
                                     if (showBillVatTaxAmountAndPercentance)
                                       const SizedBox(
                                         width: 150,
@@ -1845,7 +1833,6 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                           dashGapLength: 1.0,
                                         ),
                                       ),
-
                                     if (showBillVatTaxAmountAndPercentance)
                                       customDiscount(
                                           "Vat/Tax ${taxPercentOnly}%",
@@ -1859,7 +1846,6 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                         dashGapLength: 1.0,
                                       ),
                                     ),
-                                    // customDiscount("Total Amount", "53,500"),
                                     customDiscount(
                                         "Total Amount", formattedTotalAmount),
                                     const SizedBox(
@@ -1895,8 +1881,6 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                 ),
                               ],
                             ),
-
-                            //Text("${convertDoubleToWords(totalAmount)}"),
 
                             if (showAmountinWord)
                               Padding(
@@ -2056,7 +2040,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                                         MaterialTapTargetSize.shrinkWrap,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
-                                          5), // Rounded corners
+                                          5),  
                                     ),
                                   ),
                                 ),

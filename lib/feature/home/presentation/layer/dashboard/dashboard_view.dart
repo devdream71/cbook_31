@@ -8,6 +8,7 @@ import 'package:cbook_dt/feature/account/ui/bank_ui.dart';
 import 'package:cbook_dt/feature/account/ui/cash_in_hand/cash_in_hand.dart';
 import 'package:cbook_dt/feature/account/ui/expense/expense_list.dart';
 import 'package:cbook_dt/feature/account/ui/income/income_list.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/sales_report_model_home.dart';
 import 'package:cbook_dt/feature/dashboard_report/provider/dashbord_report_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/layer/dashboard/dashboard_controller.dart';
@@ -73,6 +74,9 @@ class LayoutState extends State<Layout> {
       await provider.fetchSalesLast30Days();
       _loadUserIdAndFetchProfile();
     });
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
   }
 
   Future<void> _loadUserIdAndFetchProfile() async {
@@ -272,27 +276,62 @@ class LayoutState extends State<Layout> {
                     hPad5,
 
                     ///customer.
+                    // Expanded(
+                    //   child: Consumer<DashboardReportProvider>(
+                    //     builder: (context, provider, _) {
+                    //       if (provider.isLoading) {
+                    //         return const Center(child: SizedBox());
+                    //       } else if (provider.error != null) {
+                    //         return Text("Error: ${provider.error}");
+                    //       } else {
+                    //         return InkWell(
+                    //           onTap: () {
+                    //             Navigator.push(
+                    //                 context,
+                    //                 MaterialPageRoute(
+                    //                     builder: (context) => const Party()));
+                    //           },
+                    //           child: _buildSummaryCard(
+                    //             title: "Customer",
+                    //             amount: '${provider.customerTransaction ?? 0}',
+
+                    //             ///
+                    //             //icon: Icons.person_rounded,
+                    //             color: Colors.green.shade100,
+                    //             iconColor: Colors.green.shade800,
+                    //           ),
+                    //         );
+                    //       }
+                    //     },
+                    //   ),
+                    // ),
+
                     Expanded(
-                      child: Consumer<DashboardReportProvider>(
-                        builder: (context, provider, _) {
-                          if (provider.isLoading) {
+                      child:
+                          Consumer2<DashboardReportProvider, CurrencyProvider>(
+                        builder:
+                            (context, reportProvider, currencyProvider, _) {
+                          final currency =
+                              currencyProvider.currencyModel?.currency ??
+                                  '৳'; // fallback
+                          if (reportProvider.isLoading) {
                             return const Center(child: SizedBox());
-                          } else if (provider.error != null) {
-                            return Text("Error: ${provider.error}");
+                          } else if (reportProvider.error != null) {
+                            return Text("Error: ${reportProvider.error}");
                           } else {
                             return InkWell(
                               onTap: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const Party()));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Party()),
+                                );
                               },
                               child: _buildSummaryCard(
                                 title: "Customer",
-                                amount: '${provider.customerTransaction ?? 0}',
-
-                                ///
-                                //icon: Icons.person_rounded,
+                                amount:
+                                    '${reportProvider.customerTransaction ?? 0}',
+                                currency: currency, // 👈 pass here
                                 color: Colors.green.shade100,
                                 iconColor: Colors.green.shade800,
                               ),
@@ -302,32 +341,67 @@ class LayoutState extends State<Layout> {
                       ),
                     ),
 
-                     
-
                     const SizedBox(
                       width: 0,
                     ),
 
                     ///supplier
+                    // Expanded(
+                    //   child: Consumer<DashboardReportProvider>(
+                    //     builder: (context, provider, _) {
+                    //       if (provider.isLoading) {
+                    //         return const Center(child: SizedBox());
+                    //       } else if (provider.error != null) {
+                    //         return Text("Error: ${provider.error}");
+                    //       } else {
+                    //         return InkWell(
+                    //           onTap: () {
+                    //             Navigator.push(
+                    //                 context,
+                    //                 MaterialPageRoute(
+                    //                     builder: (_) => const Party()));
+                    //           },
+                    //           child: _buildSummaryCard(
+                    //             title: "Supplier",
+                    //             amount: '${provider.supplierTransaction ?? 0}',
+                    //             //icon: Icons.handshake_rounded,
+                    //             color: Colors.red.shade100,
+                    //             iconColor: Colors.red.shade800,
+                    //           ),
+                    //         );
+                    //       }
+                    //     },
+                    //   ),
+                    // ),
+
                     Expanded(
-                      child: Consumer<DashboardReportProvider>(
-                        builder: (context, provider, _) {
-                          if (provider.isLoading) {
+                      child:
+                          Consumer2<DashboardReportProvider, CurrencyProvider>(
+                        builder:
+                            (context, reportProvider, currencyProvider, _) {
+                          final currency =
+                              currencyProvider.currencyModel?.currency ??
+                                  '৳'; // fallback
+
+                          if (reportProvider.isLoading) {
                             return const Center(child: SizedBox());
-                          } else if (provider.error != null) {
-                            return Text("Error: ${provider.error}");
+                          } else if (reportProvider.error != null) {
+                            return Text("Error: ${reportProvider.error}");
                           } else {
                             return InkWell(
                               onTap: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const Party()));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const Party()),
+                                );
                               },
                               child: _buildSummaryCard(
                                 title: "Supplier",
-                                amount: '${provider.supplierTransaction ?? 0}',
-                                //icon: Icons.handshake_rounded,
+                                amount:
+                                    '${reportProvider.supplierTransaction ?? 0}',
+                                currency:
+                                    currency, // 👈 Pass currency dynamically
                                 color: Colors.red.shade100,
                                 iconColor: Colors.red.shade800,
                               ),
@@ -342,31 +416,71 @@ class LayoutState extends State<Layout> {
                     ),
 
                     ///cash in hand
+                    // Expanded(
+                    //   child: Consumer<DashboardReportProvider>(
+                    //     builder: (context, provider, _) {
+                    //       if (provider.isLoading) {
+                    //         return const Center(child: SizedBox());
+                    //       } else if (provider.error != null) {
+                    //         return Text("Error: ${provider.error}");
+                    //       } else {
+                    //         return InkWell(
+                    //           onTap: () {
+                    //             Navigator.push(
+                    //                 context,
+                    //                 MaterialPageRoute(
+                    //                     builder: (_) => CashInHand()));
+                    //           },
+                    //           child: _buildSummaryCard(
+                    //             title: "Cash",
+                    //             //amount: "${provider.cashInHand.toStringAsFixed(2) ?? 0}",
+
+                    //             //icon: Icons.attach_money_rounded,
+                    //             amount: double.tryParse(
+                    //                         provider.cashInHand?.toString() ??
+                    //                             '')
+                    //                     ?.toStringAsFixed(2) ??
+                    //                 '0.00',
+                    //             color: Colors.blue.shade100,
+                    //             iconColor: Colors.blue.shade800,
+                    //           ),
+                    //         );
+                    //       }
+                    //     },
+                    //   ),
+                    // ),
+
                     Expanded(
-                      child: Consumer<DashboardReportProvider>(
-                        builder: (context, provider, _) {
-                          if (provider.isLoading) {
+                      child:
+                          Consumer2<DashboardReportProvider, CurrencyProvider>(
+                        builder:
+                            (context, reportProvider, currencyProvider, _) {
+                          final currency =
+                              currencyProvider.currencyModel?.currency ??
+                                  '৳'; // fallback
+
+                          if (reportProvider.isLoading) {
                             return const Center(child: SizedBox());
-                          } else if (provider.error != null) {
-                            return Text("Error: ${provider.error}");
+                          } else if (reportProvider.error != null) {
+                            return Text("Error: ${reportProvider.error}");
                           } else {
+                            final cash = reportProvider.cashInHand;
+                            final formattedCash = (cash != null)
+                                ? cash.toStringAsFixed(2)
+                                : '0.00'; // ✅ Safe formatting
+
                             return InkWell(
                               onTap: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => CashInHand()));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => CashInHand()),
+                                );
                               },
                               child: _buildSummaryCard(
                                 title: "Cash",
-                                //amount: "${provider.cashInHand.toStringAsFixed(2) ?? 0}",
-
-                                //icon: Icons.attach_money_rounded,
-                                amount: double.tryParse(
-                                            provider.cashInHand?.toString() ??
-                                                '')
-                                        ?.toStringAsFixed(2) ??
-                                    '0.00',
+                                amount: formattedCash,
+                                currency: currency, // 👈 Pass dynamic currency
                                 color: Colors.blue.shade100,
                                 iconColor: Colors.blue.shade800,
                               ),
@@ -381,25 +495,65 @@ class LayoutState extends State<Layout> {
                     ),
 
                     ///bank
+                    // Expanded(
+                    //   child: Consumer<DashboardReportProvider>(
+                    //     builder: (context, provider, _) {
+                    //       if (provider.isLoading) {
+                    //         return const Center(child: SizedBox());
+                    //       } else if (provider.error != null) {
+                    //         return Text("Error: ${provider.error}");
+                    //       } else {
+                    //         return InkWell(
+                    //           onTap: () {
+                    //             Navigator.push(
+                    //                 context,
+                    //                 MaterialPageRoute(
+                    //                     builder: (_) => const Bank()));
+                    //           },
+                    //           child: _buildSummaryCard(
+                    //             title: "Bank",
+                    //             amount: '${provider.bankBalance ?? 0}',
+                    //             //icon: Icons.account_balance_rounded,
+                    //             color: Colors.orange.shade100,
+                    //             iconColor: Colors.orange.shade800,
+                    //           ),
+                    //         );
+                    //       }
+                    //     },
+                    //   ),
+                    // ),
+
                     Expanded(
-                      child: Consumer<DashboardReportProvider>(
-                        builder: (context, provider, _) {
-                          if (provider.isLoading) {
+                      child:
+                          Consumer2<DashboardReportProvider, CurrencyProvider>(
+                        builder:
+                            (context, reportProvider, currencyProvider, _) {
+                          final currency =
+                              currencyProvider.currencyModel?.currency ??
+                                  '৳'; // fallback
+
+                          if (reportProvider.isLoading) {
                             return const Center(child: SizedBox());
-                          } else if (provider.error != null) {
-                            return Text("Error: ${provider.error}");
+                          } else if (reportProvider.error != null) {
+                            return Text("Error: ${reportProvider.error}");
                           } else {
+                            final bankBalance = reportProvider.bankBalance;
+                            final formattedBalance = (bankBalance != null)
+                                ? bankBalance.toStringAsFixed(2)
+                                : '0.00'; // ✅ Safe formatting
+
                             return InkWell(
                               onTap: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const Bank()));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const Bank()),
+                                );
                               },
                               child: _buildSummaryCard(
                                 title: "Bank",
-                                amount: '${provider.bankBalance ?? 0}',
-                                //icon: Icons.account_balance_rounded,
+                                amount: formattedBalance,
+                                currency: currency, // 👈 Dynamic currency
                                 color: Colors.orange.shade100,
                                 iconColor: Colors.orange.shade800,
                               ),
@@ -438,69 +592,132 @@ class LayoutState extends State<Layout> {
                 ),
 
                 ///Transaction summary
-                Consumer<DashboardReportProvider>(
-                  builder: (context, provider, _) {
-                    if (provider.isLoading) {
-                      return Shimmer.fromColors(
-                        baseColor: Colors.grey.shade300,
-                        highlightColor: Colors.grey.shade100,
-                        child: Column(
-                          children: List.generate(3, (index) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Container(
-                                height: 180,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      );
-                    } else if (provider.error != null) {
-                      return Text('Error: ${provider.error}');
-                    } else if (provider.voucherSummary == null) {
-                      return const Text('No data available');
-                    } else {
-                      final summary = provider.voucherSummary!;
+                // Consumer<DashboardReportProvider>(
+                //   builder: (context, provider, _) {
+                //     if (provider.isLoading) {
+                //       return Shimmer.fromColors(
+                //         baseColor: Colors.grey.shade300,
+                //         highlightColor: Colors.grey.shade100,
+                //         child: Column(
+                //           children: List.generate(3, (index) {
+                //             return Padding(
+                //               padding:
+                //                   const EdgeInsets.symmetric(vertical: 8.0),
+                //               child: Container(
+                //                 height: 180,
+                //                 decoration: BoxDecoration(
+                //                   color: Colors.white,
+                //                   borderRadius: BorderRadius.circular(12),
+                //                 ),
+                //               ),
+                //             );
+                //           }),
+                //         ),
+                //       );
+                //     } else if (provider.error != null) {
+                //       return Text('Error: ${provider.error}');
+                //     } else if (provider.voucherSummary == null) {
+                //       return const Text('No data available');
+                //     } else {
+                //       final summary = provider.voucherSummary!;
 
-                      final values = [
-                        summary.received.toDouble(),
-                        summary.payment.toDouble(),
-                        summary.income.toDouble(),
-                        summary.expense.toDouble(),
-                      ];
+                //       final values = [
+                //         summary.received.toDouble(),
+                //         summary.payment.toDouble(),
+                //         summary.income.toDouble(),
+                //         summary.expense.toDouble(),
+                //       ];
 
-                      final labels = [
-                        'Received',
-                        'Payment',
-                        'Income',
-                        'Expense'
-                      ];
-                      final legendLabels = [
-                        '৳ ${summary.received}',
-                        '৳ ${summary.payment}',
-                        '৳ ${summary.income}',
-                        '৳ ${summary.expense}',
-                      ];
+                //       final labels = [
+                //         'Received',
+                //         'Payment',
+                //         'Income',
+                //         'Expense'
+                //       ];
+                //       final legendLabels = [
+                //         '৳ ${summary.received}',
+                //         '৳ ${summary.payment}',
+                //         '৳ ${summary.income}',
+                //         '৳ ${summary.expense}',
+                //       ];
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          //const SizedBox(height: 16),
-                          DonutChartViewRound(
-                            values: values,
-                            labels: labels,
-                            legendLabels: legendLabels,
-                          ),
-                        ],
-                      );
-                    }
-                  },
+                //       return Column(
+                //         crossAxisAlignment: CrossAxisAlignment.start,
+                //         children: [
+                //           //const SizedBox(height: 16),
+                //           DonutChartViewRound(
+                //             values: values,
+                //             labels: labels,
+                //             legendLabels: legendLabels,
+                //           ),
+                //         ],
+                //       );
+                //     }
+                //   },
+                // ),
+
+
+                Consumer2<DashboardReportProvider, CurrencyProvider>(
+  builder: (context, reportProvider, currencyProvider, _) {
+    final currency = currencyProvider.currencyModel?.currency ?? '৳'; // fallback
+
+    if (reportProvider.isLoading) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: Column(
+          children: List.generate(3, (index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
                 ),
+              ),
+            );
+          }),
+        ),
+      );
+    } else if (reportProvider.error != null) {
+      return Text('Error: ${reportProvider.error}');
+    } else if (reportProvider.voucherSummary == null) {
+      return const Text('No data available');
+    } else {
+      final summary = reportProvider.voucherSummary!;
+
+      final values = [
+        summary.received.toDouble(),
+        summary.payment.toDouble(),
+        summary.income.toDouble(),
+        summary.expense.toDouble(),
+      ];
+
+      final labels = ['Received', 'Payment', 'Income', 'Expense'];
+
+      /// ✅ Use currency from API here
+      final legendLabels = [
+        '$currency ${summary.received}',
+        '$currency ${summary.payment}',
+        '$currency ${summary.income}',
+        '$currency ${summary.expense}',
+      ];
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DonutChartViewRound(
+            values: values,
+            labels: labels,
+            legendLabels: legendLabels,
+          ),
+        ],
+      );
+    }
+  },
+),
+
 
                 const SizedBox(
                   height: 6,
@@ -521,12 +738,64 @@ class LayoutState extends State<Layout> {
 }
 
 ////summary pay , expense
+// Widget _buildSummaryCard({
+//   required String title,
+//   required dynamic amount,
+//   //required IconData icon,
+//   required Color color,
+//   required Color iconColor,
+// }) {
+//   return Container(
+//     margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+//     padding: const EdgeInsets.all(4),
+//     decoration: BoxDecoration(
+//       color: color,
+//       borderRadius: BorderRadius.circular(5),
+//       boxShadow: [
+//         BoxShadow(
+//           color: Colors.black.withOpacity(0.05),
+//           blurRadius: 5,
+//           offset: const Offset(0, 3),
+//         ),
+//       ],
+//     ),
+//     //width: 106,
+//     child: Row(
+//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//       children: [
+//         Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text(
+//               title,
+//               style: TextStyle(
+//                 fontSize: 12,
+//                 color: Colors.grey.shade800,
+//                 fontWeight: FontWeight.w500,
+//               ),
+//             ),
+//             const SizedBox(height: 4),
+//             Text(
+//               '৳ $amount',
+//               style: TextStyle(
+//                 fontSize: 12,
+//                 color: iconColor,
+//               ),
+//             ),
+//           ],
+//         ),
+//         //Icon(icon, size: 28, color: iconColor),
+//       ],
+//     ),
+//   );
+// }
+
 Widget _buildSummaryCard({
   required String title,
   required dynamic amount,
-  //required IconData icon,
   required Color color,
   required Color iconColor,
+  required String currency, // 👈 new parameter
 }) {
   return Container(
     margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
@@ -542,7 +811,6 @@ Widget _buildSummaryCard({
         ),
       ],
     ),
-    //width: 106,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -559,7 +827,7 @@ Widget _buildSummaryCard({
             ),
             const SizedBox(height: 4),
             Text(
-              '৳ $amount',
+              '$currency $amount', // 👈 now dynamic
               style: TextStyle(
                 fontSize: 12,
                 color: iconColor,
@@ -567,7 +835,6 @@ Widget _buildSummaryCard({
             ),
           ],
         ),
-        //Icon(icon, size: 28, color: iconColor),
       ],
     ),
   );

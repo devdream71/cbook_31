@@ -839,129 +839,253 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
                     ],
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
 
-                      backgroundColor: Colors.green, // Button background color
-                      foregroundColor: Colors.white, // Button text color
+                Row(
+                  children: [
+                    //printing pdf
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        //_viewPDFGenPrinting();
+                        // debugPrint('vieww pdf called');
+                        // if (controller.saleItem.isEmpty) {
+                        //             ScaffoldMessenger.of(context).showSnackBar(
+                        //               const SnackBar(
+                        //                 backgroundColor: Colors.red,
+                        //                 duration: Duration(seconds: 1),
+                        //                 content: Text("No Item added"),
+                        //               ),
+                        //             );
+                        //           } else {
+                        //             debugPrint(
+                        //                 "return item length ${controller.saleItem.length}");
+
+                        //             final String finalCustomerName = controller.isCash
+                        //                 ? 'Cash'
+                        //                 : controller.customerNameController.text;
+
+                        //             final String billPersion = controller.billPerson.text;
+
+                        //             final String discountPercent =
+                        //                 controller.percentController.text;
+                        //             final String discountAmount =
+                        //                 controller.discountController.text;
+
+                        //             // Get selected tax
+                        //             final String selectedTaxIdPercent = controller
+                        //                         .selectedTotalTaxId !=
+                        //                     null
+                        //                 ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
+                        //                 : '';
+
+                        //              // Get tax amount
+                        //             final String taxAmount =
+                        //                 controller.totalTaxAmountl?.toStringAsFixed(2) ??
+                        //                     '0.00';
+
+                        //             //helper function
+                        //             int _toInt(dynamic value) {
+                        //               if (value is int) return value;
+                        //               if (value is double) return value.toInt();
+                        //               if (value is String)
+                        //                 return double.tryParse(value)?.toInt() ?? 0;
+                        //               return 0;
+                        //             }
+
+                        //             List<InvoiceItem> invoiceItems = (controller.isCash
+                        //                     ? controller.itemsCash
+                        //                     : controller.itemsCredit)
+                        //                 .map((item) {
+                        //               return InvoiceItem(
+                        //                 itemName: item.itemName ?? "",
+                        //                 unit: item.unit ?? "PC",
+                        //                 quantity: int.tryParse(item.quantity ?? "0") ?? 0,
+                        //                 amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
+                        //                     (double.tryParse(item.mrp ?? "0") ?? 0.0),
+                        //                 discount: double.tryParse(
+                        //                         controller.discountController.text) ??
+                        //                     0.0,
+                        //                 itemDiscountAmount: _toInt(item.discountAmount),
+                        //                 itemDiscountPercentace:
+                        //                     _toInt(item.discountPercentance),
+                        //                 itemVatTaxAmount: _toInt(item.vatAmount),
+                        //                 itemvatTaxPercentace: _toInt(item.vatPerentace),
+                        //                 customerName: _toInt(item.vatPerentace),
+                        //               );
+                        //             }).toList();
+
+                        //             Navigator.push(
+                        //               context,
+                        //               MaterialPageRoute(
+                        //                 builder: (context) => NewInvoicePage(
+                        //                   items: invoiceItems,
+                        //                   billNo: widget.billNo,
+                        //                   customerName: finalCustomerName,
+                        //                   billPersion: billPersion,
+                        //                   discountAmount: discountAmount,
+                        //                   discountPercent: discountPercent,
+                        //                   taxAmount: taxAmount,
+                        //                   taxIdPercent: selectedTaxIdPercent,
+                        //                 ),
+                        //               ),
+                        //             );
+                        //           }
+                      },
+                      icon: const Icon(Icons.picture_as_pdf, size: 18),
+                      label: const Text(
+                        "View PDF",
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(5), // Rounded corners
+                        ),
+                      ),
                     ),
-                    onPressed: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      String? userId = prefs.getInt('user_id')?.toString();
 
-                      if (userId == null) {
-                        debugPrint("User ID is null");
-                        return;
-                      }
+                    SizedBox(
+                      width: 6,
+                    ),
 
-                      final invoiceNo = billController.text.trim();
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 6),
+                          minimumSize: const Size(0, 0),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
 
-                      final date = controller
-                          .formattedDate2; // your date string like '2025-06-10'
-                      // final receivedTo =
-                      //     (selectedReceivedTo ?? '').toLowerCase();
+                          backgroundColor:
+                              Colors.green, // Button background color
+                          foregroundColor: Colors.white, // Button text color
+                        ),
+                        onPressed: () async {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          String? userId = prefs.getInt('user_id')?.toString();
 
-                      final receivedTo = selectedReceivedTo != null
-                          ? paidToOptions[selectedReceivedTo]
-                          : null;
+                          if (userId == null) {
+                            debugPrint("User ID is null");
+                            return;
+                          }
 
-                      final accountID = selectedAccountId.toString();
-                      const notes = 'text'; // Or from your input field
-                      const status = 1;
+                          final invoiceNo = billController.text.trim();
 
-                      //final billPersonId = selectedBillPersonData!.id;
+                          final date = controller
+                              .formattedDate2; // your date string like '2025-06-10'
+                          // final receivedTo =
+                          //     (selectedReceivedTo ?? '').toLowerCase();
 
-                      final totalAmount =
-                          providerExpense.receiptItems.fold<double>(
-                        0,
-                        (sum, item) =>
-                            sum +
-                            (double.tryParse(item.amount.toString()) ?? 0),
-                      );
+                          final receivedTo = selectedReceivedTo != null
+                              ? paidToOptions[selectedReceivedTo]
+                              : null;
 
-                      // Prepare income items with correct account_id (use your actual accountId)
-                      final List<ExpenseItemPopUp> expenseItems =
-                          providerExpense.receiptItems.map((item) {
-                        return ExpenseItemPopUp(
-                          //itemAccountId: selectedPaidTo!, // or item-specific account id if different
-                          //accountId: providerExpense.selectedAccountForUpdate?.id.toString() ?? '',
-                          itemAccountId: item.purchaseId.toString(),
-                          narration: item.note,
-                          amount: item.amount.toString(),
-                        );
-                      }).toList();
+                          final accountID = selectedAccountId.toString();
+                          const notes = 'text'; // Or from your input field
+                          const status = 1;
 
-                      // 👉 Print all sending data
-                      debugPrint('Sending Data:');
-                      debugPrint('User ID: $userId');
-                      debugPrint('Expense No: $invoiceNo');
-                      debugPrint('Date: ${controller.formattedDate2}');
-                      debugPrint('Paid To: $receivedTo');
-                      debugPrint('AccountID: $accountID');
-                      debugPrint('Total Amount: $totalAmount');
-                      debugPrint('Notes: $notes');
-                      debugPrint('Status: $status');
-                      // debugPrint('bill person: $billPersonId');
-                      debugPrint(
-                          'Expense Items: ${expenseItems.map((e) => e.toJson()).toList()}');
+                          //final billPersonId = selectedBillPersonData!.id;
 
-                      bool success = await providerExpense.storeExpense(
-                        userId: userId,
-                        invoiceNo: invoiceNo,
-                        date: date,
-                        receivedTo: receivedTo ?? "",
-                        account: accountID,
-                        totalAmount: totalAmount,
-                        notes: notes,
-                        status: status,
-                        expenseItems: expenseItems,
-                        //billPersonId: billPersonId.toString(),
-                      );
+                          final totalAmount =
+                              providerExpense.receiptItems.fold<double>(
+                            0,
+                            (sum, item) =>
+                                sum +
+                                (double.tryParse(item.amount.toString()) ?? 0),
+                          );
 
-                      if (success) {
-                        providerExpense.receiptItems.clear();
-                        providerExpense.notifyListeners();
+                          // Prepare income items with correct account_id (use your actual accountId)
+                          final List<ExpenseItemPopUp> expenseItems =
+                              providerExpense.receiptItems.map((item) {
+                            return ExpenseItemPopUp(
+                              //itemAccountId: selectedPaidTo!, // or item-specific account id if different
+                              //accountId: providerExpense.selectedAccountForUpdate?.id.toString() ?? '',
+                              itemAccountId: item.purchaseId.toString(),
+                              narration: item.note,
+                              amount: item.amount.toString(),
+                            );
+                          }).toList();
 
-                        providerExpense.fetchExpenseList();
+                          // 👉 Print all sending data
+                          debugPrint('Sending Data:');
+                          debugPrint('User ID: $userId');
+                          debugPrint('Expense No: $invoiceNo');
+                          debugPrint('Date: ${controller.formattedDate2}');
+                          debugPrint('Paid To: $receivedTo');
+                          debugPrint('AccountID: $accountID');
+                          debugPrint('Total Amount: $totalAmount');
+                          debugPrint('Notes: $notes');
+                          debugPrint('Status: $status');
+                          // debugPrint('bill person: $billPersonId');
+                          debugPrint(
+                              'Expense Items: ${expenseItems.map((e) => e.toJson()).toList()}');
 
-                        // ✅ Clear everything
-                        resetForm();
+                          bool success = await providerExpense.storeExpense(
+                            userId: userId,
+                            invoiceNo: invoiceNo,
+                            date: date,
+                            receivedTo: receivedTo ?? "",
+                            account: accountID,
+                            totalAmount: totalAmount,
+                            notes: notes,
+                            status: status,
+                            expenseItems: expenseItems,
+                            //billPersonId: billPersonId.toString(),
+                          );
 
-                        final expesanseProvider = Provider.of<ExpenseProvider>(
-                            context,
-                            listen: false);
+                          if (success) {
+                            providerExpense.receiptItems.clear();
+                            providerExpense.notifyListeners();
 
-                        expesanseProvider.fetchExpenseList();
+                            providerExpense.fetchExpenseList();
 
-                        Navigator.pop(context);
+                            // ✅ Clear everything
+                            resetForm();
 
-                        // Navigator.pushAndRemoveUntil(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => const Expanse()),
-                        //   (Route<dynamic> route) => false,
-                        // );
+                            final expesanseProvider =
+                                Provider.of<ExpenseProvider>(context,
+                                    listen: false);
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              backgroundColor: Colors.green,
-                              content:
-                                  Text('Successfully. Save  The Expense.')),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Failed to save expense.')),
-                        );
-                      }
-                    },
-                    child: const Text("Save"),
-                  ),
+                            expesanseProvider.fetchExpenseList();
+
+                            Navigator.pop(context);
+
+                            // Navigator.pushAndRemoveUntil(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //       builder: (context) => const Expanse()),
+                            //   (Route<dynamic> route) => false,
+                            // );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  backgroundColor: Colors.green,
+                                  content:
+                                      Text('Successfully. Save  The Expense.')),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Failed to save expense.')),
+                            );
+                          }
+                        },
+                        child: const Text("Save"),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 6,
+                    ),
+                  ],
                 ),
               ],
             ),

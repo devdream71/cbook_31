@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cbook_dt/app_const/app_colors.dart';
+import 'package:cbook_dt/feature/authentication/provider/reg_provider.dart';
 import 'package:cbook_dt/feature/home/presentation/home_view.dart';
 import 'package:cbook_dt/feature/home/provider/profile_provider.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
@@ -17,6 +18,7 @@ class CompanyInfromation extends StatefulWidget {
 }
 
 class _CompanyInfromationState extends State<CompanyInfromation> {
+
   TextEditingController companyNameController = TextEditingController();
   TextEditingController couyntryController = TextEditingController();
   TextEditingController currencyController = TextEditingController();
@@ -27,6 +29,8 @@ class _CompanyInfromationState extends State<CompanyInfromation> {
   TextEditingController hrIDController = TextEditingController();
   TextEditingController adminEmailController = TextEditingController();
   TextEditingController adminPhoneController = TextEditingController();
+  TextEditingController _countryController = TextEditingController();
+  TextEditingController _countryCodeController = TextEditingController();
 
   ///image 1
   XFile? _imageFile;
@@ -41,6 +45,8 @@ class _CompanyInfromationState extends State<CompanyInfromation> {
       });
     }
   }
+
+  String? _selectedCountryId;
 
   ///image 2
   XFile? _imageFile2;
@@ -83,16 +89,17 @@ class _CompanyInfromationState extends State<CompanyInfromation> {
     int? userId = prefs.getInt('user_id');
 
     if (!mounted) return;
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
     await profileProvider.fetchCountries();
 
     if (userId != null) {
       setState(() {
         userID = userId;
       });
-      
+
       // Call fetchProfile after userId is loaded
-      
+
       profileProvider.fetchProfile(userID!);
     } else {
       // Handle null userId
@@ -121,6 +128,10 @@ class _CompanyInfromationState extends State<CompanyInfromation> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
+    final countries = authService.countries;
+
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: AppColors.sfWhite,
@@ -175,8 +186,6 @@ class _CompanyInfromationState extends State<CompanyInfromation> {
               couyntryController.text =
                   provider.getCountryNameById(user.countryId);
             }
-
-          
           }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,7 +225,7 @@ class _CompanyInfromationState extends State<CompanyInfromation> {
                   ),
                   Expanded(
                     child: AddSalesFormfield(
-                      readOnly: true,
+                      //readOnly: true,
                       labelText: "Currency",
                       height: 40,
                       controller: currencyController,
@@ -224,6 +233,37 @@ class _CompanyInfromationState extends State<CompanyInfromation> {
                   ),
                 ],
               ),
+
+              // DropdownButtonFormField<String>(
+              //   decoration: const InputDecoration(
+              //     //hintText: "Country",
+              //     hintStyle: TextStyle(fontSize: 14),
+              //   ),
+              //   value: _selectedCountryId,
+              //   items: countries.map((country) {
+              //     return DropdownMenuItem<String>(
+              //       value: country.id.toString(),
+              //       child: Text(country.name),
+              //     );
+              //   }).toList(),
+              //   onChanged: (value) {
+              //     final selected = countries.firstWhere(
+              //       (country) => country.id.toString() == value,
+              //       orElse: () => countries.first,
+              //     );
+
+              //     setState(() {
+              //       _selectedCountryId = value;
+              //       _countryController.text = value!;
+              //       _countryCodeController.text =
+              //           selected.code; // ✅ update text controller
+              //     });
+
+              //     debugPrint('country id - $_selectedCountryId');
+              //   },
+              //   validator: (value) =>
+              //       value == null ? "Please select a country" : null,
+              // ),
 
               const SizedBox(
                 height: 10,

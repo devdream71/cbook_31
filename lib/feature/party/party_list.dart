@@ -1,5 +1,6 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/no_data_fount.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:cbook_dt/feature/customer_create/customer_details.dart';
 import 'package:cbook_dt/feature/customer_create/customer_update.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_create_model.dart';
@@ -55,6 +56,10 @@ class _PartyState extends State<Party> {
     Future.microtask(() async {
       await provider.fetchTotalSupplierCount();
     });
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
+
   }
 
   bool isSearching = false;
@@ -230,61 +235,124 @@ class _PartyState extends State<Party> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Consumer<DashboardReportProvider>(
-                                builder: (context, provider, _) {
-                                  final isLoadingTransaction =
-                                      provider.isLoadingCustomerTransaction;
-                                  final isLoadingCount =
-                                      provider.isLoadingCustomerCount;
 
-                                  final errorTransaction =
-                                      provider.errorCustomerTransaction;
-                                  final errorCount =
-                                      provider.errorCustomerCount;
 
-                                  if (isLoadingTransaction || isLoadingCount) {
-                                    return const Text("Loading...");
-                                  }
+                              // Consumer<DashboardReportProvider>(
+                              //   builder: (context, provider, _) {
+                              //     final isLoadingTransaction =
+                              //         provider.isLoadingCustomerTransaction;
+                              //     final isLoadingCount =
+                              //         provider.isLoadingCustomerCount;
 
-                                  if (errorTransaction != null ||
-                                      errorCount != null) {
-                                    return Text(
-                                        "Error: ${errorTransaction ?? errorCount}");
-                                  }
+                              //     final errorTransaction =
+                              //         provider.errorCustomerTransaction;
+                              //     final errorCount =
+                              //         provider.errorCustomerCount;
 
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Customer (${provider.customerTransactionCountTotal ?? 0})',
-                                        style: TextStyle(
-                                            color: selectedFilter == 'customer'
-                                                ? Colors.blue[700]
-                                                : Colors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '৳ ${provider.customerTransaction ?? 0}',
-                                            style: TextStyle(
-                                              color:
-                                                  selectedFilter == 'customer'
-                                                      ? Colors.blue[700]
-                                                      : Colors.black,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
+                              //     if (isLoadingTransaction || isLoadingCount) {
+                              //       return const Text("Loading...");
+                              //     }
+
+                              //     if (errorTransaction != null ||
+                              //         errorCount != null) {
+                              //       return Text(
+                              //           "Error: ${errorTransaction ?? errorCount}");
+                              //     }
+
+                              //     return Column(
+                              //       crossAxisAlignment:
+                              //           CrossAxisAlignment.start,
+                              //       children: [
+                              //         Text(
+                              //           'Customer (${provider.customerTransactionCountTotal ?? 0})',
+                              //           style: TextStyle(
+                              //               color: selectedFilter == 'customer'
+                              //                   ? Colors.blue[700]
+                              //                   : Colors.black,
+                              //               fontSize: 12,
+                              //               fontWeight: FontWeight.bold),
+                              //         ),
+                              //         Row(
+                              //           children: [
+                              //             Text(
+                              //               '৳ ${provider.customerTransaction ?? 0}',
+                              //               style: TextStyle(
+                              //                 color:
+                              //                     selectedFilter == 'customer'
+                              //                         ? Colors.blue[700]
+                              //                         : Colors.black,
+                              //                 fontSize: 12,
+                              //                 fontWeight: FontWeight.bold,
+                              //               ),
+                              //             ),
+                              //             const SizedBox(width: 8),
+                              //           ],
+                              //         ),
+                              //       ],
+                              //     );
+                              //   },
+                              // ),
+
+
+
+                              Consumer2<DashboardReportProvider, CurrencyProvider>(
+          builder: (context, provider, currencyProvider, _) {
+            final currency =
+                currencyProvider.currencyModel?.currency ?? '৳'; // fallback
+
+            final isLoadingTransaction = provider.isLoadingCustomerTransaction;
+            final isLoadingCount = provider.isLoadingCustomerCount;
+
+            if (isLoadingTransaction || isLoadingCount) {
+              return const Text("Loading...");
+            }
+
+            if (provider.errorCustomerTransaction != null ||
+                provider.errorCustomerCount != null) {
+              return Text(
+                  "Error: ${provider.errorCustomerTransaction ?? provider.errorCustomerCount}");
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Customer (${provider.customerTransactionCountTotal ?? 0})',
+                  style: TextStyle(
+                    color: selectedFilter == 'customer'
+                        ? Colors.blue[700]
+                        : Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      '$currency ${provider.customerTransaction ?? 0}',
+                      style: TextStyle(
+                        color: selectedFilter == 'customer'
+                            ? Colors.blue[700]
+                            : Colors.black,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+    
+    
+
+
+
+
+
+
                             ],
                           ),
                         ],
@@ -329,44 +397,91 @@ class _PartyState extends State<Party> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 ///supplier
-                                Consumer<DashboardReportProvider>(
-                                  builder: (context, provider, _) {
-                                    if (provider.isLoading) {
-                                      return const Center(child: SizedBox());
-                                    } else if (provider.error != null) {
-                                      return const SizedBox.shrink();
+                                // Consumer<DashboardReportProvider>(
+                                //   builder: (context, provider, _) {
+                                //     if (provider.isLoading) {
+                                //       return const Center(child: SizedBox());
+                                //     } else if (provider.error != null) {
+                                //       return const SizedBox.shrink();
 
-                                      //Text("Error: ${provider.error}");
-                                    } else {
-                                      return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            'Supplier  (${provider.totalSupplierCount ?? 0})',
-                                            style: TextStyle(
-                                                color:
-                                                    selectedFilter == 'supplier'
-                                                        ? Colors.red[700]
-                                                        : Colors.black,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            '৳ ${provider.supplierTransaction ?? 0}  ',
-                                            style: TextStyle(
-                                                color:
-                                                    selectedFilter == 'supplier'
-                                                        ? Colors.red[700]
-                                                        : Colors.black,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      );
-                                    }
-                                  },
-                                ),
+                                //       //Text("Error: ${provider.error}");
+                                //     } else {
+                                //       return Column(
+                                //         crossAxisAlignment:
+                                //             CrossAxisAlignment.end,
+                                //         children: [
+                                //           Text(
+                                //             'Supplier  (${provider.totalSupplierCount ?? 0})',
+                                //             style: TextStyle(
+                                //                 color:
+                                //                     selectedFilter == 'supplier'
+                                //                         ? Colors.red[700]
+                                //                         : Colors.black,
+                                //                 fontSize: 12,
+                                //                 fontWeight: FontWeight.bold),
+                                //           ),
+                                //           Text(
+                                //             '৳ ${provider.supplierTransaction ?? 0}  ',
+                                //             style: TextStyle(
+                                //                 color:
+                                //                     selectedFilter == 'supplier'
+                                //                         ? Colors.red[700]
+                                //                         : Colors.black,
+                                //                 fontSize: 12,
+                                //                 fontWeight: FontWeight.bold),
+                                //           ),
+                                //         ],
+                                //       );
+                                //     }
+                                //   },
+                                // ),
+
+
+                                Consumer2<DashboardReportProvider, CurrencyProvider>(
+          builder: (context, provider, currencyProvider, _) {
+            final currency =
+                currencyProvider.currencyModel?.currency ?? '৳'; // fallback
+
+            if (provider.isLoading) {
+              return const SizedBox.shrink();
+            } else if (provider.error != null) {
+              return const SizedBox.shrink();
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'Supplier (${provider.totalSupplierCount ?? 0})',
+                  style: TextStyle(
+                    color: selectedFilter == 'supplier'
+                        ? Colors.red[700]
+                        : Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  '$currency ${provider.supplierTransaction ?? 0}',
+                  style: TextStyle(
+                    color: selectedFilter == 'supplier'
+                        ? Colors.red[700]
+                        : Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      
+
+
+
+
+
+
                               ],
                             ),
                           ),

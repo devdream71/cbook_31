@@ -405,10 +405,7 @@ class _BottomPortionState extends State<BottomPortion> {
                 //               ),
                 //               hPad5,
 
-                const SizedBox(
-                  width: 6,
-                ),
-
+                
                 //download
                 // ElevatedButton.icon(
                 //   onPressed: () {

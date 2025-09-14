@@ -2403,9 +2403,7 @@ class LayoutState extends State<Layout> {
 
                         hPad5,
 
-                        hPad5,
-
-                        hPad5,
+                       
                         InkWell(
                           onTap: () async {
                             var date = controller.formattedDate;

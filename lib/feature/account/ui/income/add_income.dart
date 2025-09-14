@@ -847,126 +847,251 @@ class _IncomeCreateState extends State<IncomeCreate> {
                 ),
 
                 ///save income.
-                Padding(
-                  padding: const EdgeInsets.only(right: 4.0),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Colors.green, // Button background color
-                          foregroundColor: Colors.white, // Button text color
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5))),
-                      onPressed: () async {
-                        SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
-                        String? userId = prefs.getInt('user_id')?.toString();
+                ///
 
-                        if (userId == null) {
-                          debugPrint("User ID is null");
-                          return;
-                        }
+                Row(
+                  children: [
+                    //printing pdf
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        //_viewPDFGenPrinting();
+                        // debugPrint('vieww pdf called');
+                        // if (controller.saleItem.isEmpty) {
+                        //             ScaffoldMessenger.of(context).showSnackBar(
+                        //               const SnackBar(
+                        //                 backgroundColor: Colors.red,
+                        //                 duration: Duration(seconds: 1),
+                        //                 content: Text("No Item added"),
+                        //               ),
+                        //             );
+                        //           } else {
+                        //             debugPrint(
+                        //                 "return item length ${controller.saleItem.length}");
 
-                        final invoiceNo = billController.text.trim();
-                        // const date =
-                        //     "2025-06-10"; // your date string like '2025-06-10'
+                        //             final String finalCustomerName = controller.isCash
+                        //                 ? 'Cash'
+                        //                 : controller.customerNameController.text;
 
-                        // final receivedTo =
-                        //     (selectedReceivedTo ?? '').toLowerCase();
+                        //             final String billPersion = controller.billPerson.text;
 
-                        final receivedTo = selectedReceivedTo != null
-                            ? paidToOptions[selectedReceivedTo]
-                            : null;
+                        //             final String discountPercent =
+                        //                 controller.percentController.text;
+                        //             final String discountAmount =
+                        //                 controller.discountController.text;
 
-                        final account = selectedAccountId.toString();
-                        const notes = 'text'; // Or from your input field
-                        //final billPersonID = selectedBillPersonData!.id;
+                        //             // Get selected tax
+                        //             final String selectedTaxIdPercent = controller
+                        //                         .selectedTotalTaxId !=
+                        //                     null
+                        //                 ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
+                        //                 : '';
 
-                        const status = 1;
+                        //              // Get tax amount
+                        //             final String taxAmount =
+                        //                 controller.totalTaxAmountl?.toStringAsFixed(2) ??
+                        //                     '0.00';
 
-                        final totalAmount = provider.receiptItems.fold<double>(
-                          0,
-                          (sum, item) =>
-                              sum +
-                              (double.tryParse(item.amount.toString()) ?? 0),
-                        );
+                        //             //helper function
+                        //             int _toInt(dynamic value) {
+                        //               if (value is int) return value;
+                        //               if (value is double) return value.toInt();
+                        //               if (value is String)
+                        //                 return double.tryParse(value)?.toInt() ?? 0;
+                        //               return 0;
+                        //             }
 
-                        // Prepare income items with correct account_id (use your actual accountId)
-                        final List<IncomeItem> incomeItems =
-                            provider.receiptItems.map((item) {
-                          return IncomeItem(
-                            accountId:
-                                account, // or item-specific account id if different
-                            narration: item.note,
-                            amount: item.amount.toString(),
-                          );
-                        }).toList();
+                        //             List<InvoiceItem> invoiceItems = (controller.isCash
+                        //                     ? controller.itemsCash
+                        //                     : controller.itemsCredit)
+                        //                 .map((item) {
+                        //               return InvoiceItem(
+                        //                 itemName: item.itemName ?? "",
+                        //                 unit: item.unit ?? "PC",
+                        //                 quantity: int.tryParse(item.quantity ?? "0") ?? 0,
+                        //                 amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
+                        //                     (double.tryParse(item.mrp ?? "0") ?? 0.0),
+                        //                 discount: double.tryParse(
+                        //                         controller.discountController.text) ??
+                        //                     0.0,
+                        //                 itemDiscountAmount: _toInt(item.discountAmount),
+                        //                 itemDiscountPercentace:
+                        //                     _toInt(item.discountPercentance),
+                        //                 itemVatTaxAmount: _toInt(item.vatAmount),
+                        //                 itemvatTaxPercentace: _toInt(item.vatPerentace),
+                        //                 customerName: _toInt(item.vatPerentace),
+                        //               );
+                        //             }).toList();
 
-                        // 👉 Print all sending data
-                        debugPrint('Sending Data:');
-                        debugPrint('User ID: $userId');
-                        debugPrint('Expense No: $invoiceNo');
-                        //debugPrint('Date: $date');
-                        debugPrint('Paid To: $receivedTo');
-                        debugPrint('Account: $account');
-                        debugPrint('Total Amount: $totalAmount');
-                        debugPrint('Notes: $notes');
-                        debugPrint('Status: $status');
-                        //debugPrint(" bill  person $billPersonID");
-                        debugPrint(
-                            "📅 Selected Bill Date: ${controller.formattedDate2}");
-                        debugPrint(
-                            'income Items: ${incomeItems.map((e) => e.toJson()).toList()}');
-
-                        bool success = await provider.storeIncome(
-                          userId: userId,
-                          invoiceNo: invoiceNo,
-                          date: controller.formattedDate2,
-                          receivedTo: receivedTo ?? "",
-                          account: account,
-                          totalAmount: totalAmount,
-                          notes: notes,
-                          status: status,
-                          incomeItems: incomeItems,
-                          //billPersonID: billPersonID.toString(),
-                        );
-
-                        if (success) {
-                          provider.receiptItems.clear();
-                          provider.notifyListeners();
-
-                          final listIncome = Provider.of<IncomeProvider>(
-                              context,
-                              listen: false);
-
-                          await listIncome.fetchIncomeList();
-
-                          Navigator.pop(context);
-
-                          // Navigate to Income page (replace with your actual route)
-                          // Navigator.pushReplacement(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => const Income()));
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                backgroundColor: Colors.green,
-                                content:
-                                    Text('Successfully. Save  The income.')),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Failed to save income.')),
-                          );
-                        }
+                        //             Navigator.push(
+                        //               context,
+                        //               MaterialPageRoute(
+                        //                 builder: (context) => NewInvoicePage(
+                        //                   items: invoiceItems,
+                        //                   billNo: widget.billNo,
+                        //                   customerName: finalCustomerName,
+                        //                   billPersion: billPersion,
+                        //                   discountAmount: discountAmount,
+                        //                   discountPercent: discountPercent,
+                        //                   taxAmount: taxAmount,
+                        //                   taxIdPercent: selectedTaxIdPercent,
+                        //                 ),
+                        //               ),
+                        //             );
+                        //           }
                       },
-                      child: const Text("Save"),
+                      icon: const Icon(Icons.picture_as_pdf, size: 18),
+                      label: const Text(
+                        "View PDF",
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(5), // Rounded corners
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+
+                    const SizedBox(
+                      width: 6,
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 6),
+                              minimumSize: const Size(0, 0),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              backgroundColor:
+                                  Colors.green, // Button background color
+                              foregroundColor:
+                                  Colors.white, // Button text color
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5))),
+                          onPressed: () async {
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            String? userId =
+                                prefs.getInt('user_id')?.toString();
+
+                            if (userId == null) {
+                              debugPrint("User ID is null");
+                              return;
+                            }
+
+                            final invoiceNo = billController.text.trim();
+                            // const date =
+                            //     "2025-06-10"; // your date string like '2025-06-10'
+
+                            // final receivedTo =
+                            //     (selectedReceivedTo ?? '').toLowerCase();
+
+                            final receivedTo = selectedReceivedTo != null
+                                ? paidToOptions[selectedReceivedTo]
+                                : null;
+
+                            final account = selectedAccountId.toString();
+                            const notes = 'text'; // Or from your input field
+                            //final billPersonID = selectedBillPersonData!.id;
+
+                            const status = 1;
+
+                            final totalAmount =
+                                provider.receiptItems.fold<double>(
+                              0,
+                              (sum, item) =>
+                                  sum +
+                                  (double.tryParse(item.amount.toString()) ??
+                                      0),
+                            );
+
+                            // Prepare income items with correct account_id (use your actual accountId)
+                            final List<IncomeItem> incomeItems =
+                                provider.receiptItems.map((item) {
+                              return IncomeItem(
+                                accountId:
+                                    account, // or item-specific account id if different
+                                narration: item.note,
+                                amount: item.amount.toString(),
+                              );
+                            }).toList();
+
+                            // 👉 Print all sending data
+                            debugPrint('Sending Data:');
+                            debugPrint('User ID: $userId');
+                            debugPrint('Expense No: $invoiceNo');
+                            //debugPrint('Date: $date');
+                            debugPrint('Paid To: $receivedTo');
+                            debugPrint('Account: $account');
+                            debugPrint('Total Amount: $totalAmount');
+                            debugPrint('Notes: $notes');
+                            debugPrint('Status: $status');
+                            //debugPrint(" bill  person $billPersonID");
+                            debugPrint(
+                                "📅 Selected Bill Date: ${controller.formattedDate2}");
+                            debugPrint(
+                                'income Items: ${incomeItems.map((e) => e.toJson()).toList()}');
+
+                            bool success = await provider.storeIncome(
+                              userId: userId,
+                              invoiceNo: invoiceNo,
+                              date: controller.formattedDate2,
+                              receivedTo: receivedTo ?? "",
+                              account: account,
+                              totalAmount: totalAmount,
+                              notes: notes,
+                              status: status,
+                              incomeItems: incomeItems,
+                              //billPersonID: billPersonID.toString(),
+                            );
+
+                            if (success) {
+                              provider.receiptItems.clear();
+                              provider.notifyListeners();
+
+                              final listIncome = Provider.of<IncomeProvider>(
+                                  context,
+                                  listen: false);
+
+                              await listIncome.fetchIncomeList();
+
+                              Navigator.pop(context);
+
+                              // Navigate to Income page (replace with your actual route)
+                              // Navigator.pushReplacement(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => const Income()));
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content: Text(
+                                        'Successfully. Save  The income.')),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Failed to save income.')),
+                              );
+                            }
+                          },
+                          child: const Text("Save"),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
 
