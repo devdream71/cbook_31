@@ -1,5 +1,6 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/no_data_fount.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:cbook_dt/feature/sales/provider/sales_provider.dart';
 import 'package:cbook_dt/feature/sales/sales_details.dart';
 import 'package:cbook_dt/feature/sales/sales_update.dart';
@@ -30,6 +31,9 @@ class _SalesScreenState extends State<SalesScreen> {
         salesProvider.filterSales(_searchController.text);
       });
     });
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
   }
 
   Future<void> _selectDate(BuildContext context, DateTime initialDate,
@@ -242,139 +246,6 @@ class _SalesScreenState extends State<SalesScreen> {
           ),
         ],
       ),
-      // appBar: AppBar(
-      //   title: isSearching
-      //       ? Column(
-      //           children: [
-      //             const SizedBox(
-      //               height: 10,
-      //             ),
-      //             SizedBox(
-      //               height: 35,
-      //               child: TextField(
-      //                 controller: searchController,
-      //                 autofocus: true,
-      //                 cursorHeight: 15,
-      //                 cursorColor: Colors.white,
-      //                 style: const TextStyle(color: Colors.white, fontSize: 16),
-      //                 decoration: InputDecoration(
-      //                   //hintText: ' ',
-      //                   hintStyle: const TextStyle(color: Colors.black54),
-      //                   enabledBorder: OutlineInputBorder(
-      //                     borderSide: const BorderSide(color: Colors.white),
-      //                     borderRadius: BorderRadius.circular(4),
-      //                   ),
-      //                   focusedBorder: OutlineInputBorder(
-      //                     borderSide:
-      //                         const BorderSide(color: Colors.white, width: 0.5),
-      //                     borderRadius: BorderRadius.circular(2),
-      //                   ),
-      //                   contentPadding: const EdgeInsets.symmetric(
-      //                       horizontal: 8, vertical: 0),
-      //                   fillColor: Colors.grey.shade100,
-      //                   isDense: true,
-      //                 ),
-      //                 onChanged: (value) {
-      //                   Provider.of<SalesProvider>(context, listen: false)
-      //                       .filterSales(value);
-      //                   // Your filter logic
-      //                 },
-      //               ),
-      //             ),
-      //           ],
-      //         )
-      //       : const Text(
-      //           'Sales List',
-      //           style: TextStyle(color: Colors.yellow, fontSize: 16),
-      //         ),
-      //   leading: const BackButton(color: Colors.white),
-      //   backgroundColor: colorScheme.primary,
-      //   actions: [
-      //     // Search or Close Icon with circular background
-      //     Padding(
-      //       padding: const EdgeInsets.only(right: 8.0),
-      //       child: GestureDetector(
-      //         onTap: () {
-      //           setState(() {
-      //             isSearching = !isSearching;
-      //             if (!isSearching) {
-      //               searchController.clear();
-      //             }
-      //           });
-      //         },
-      //         child: Container(
-      //           height: 20,
-      //           width: 20,
-      //           decoration: BoxDecoration(
-      //             color: isSearching ? Colors.red : Colors.green,
-      //             shape: BoxShape.circle,
-      //             border: isSearching
-      //                 ? null
-      //                 : Border.all(color: Colors.white, width: 2),
-      //           ),
-      //           padding: const EdgeInsets.all(0),
-      //           child: InkWell(
-      //             onTap: () {
-      //               setState(() {
-      //                 isSearching = !isSearching;
-      //                 if (!isSearching) {
-      //                   searchController.clear();
-      //                   Provider.of<SalesProvider>(context, listen: false)
-      //                       .resetFilter();
-      //                 }
-      //               });
-      //             },
-      //             child: Align(
-      //               alignment: Alignment.center,
-      //               child: Icon(
-      //                 isSearching ? Icons.close : Icons.search,
-      //                 color: Colors.white,
-      //                 size: 16,
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-
-      //     // Bill Button
-      //     InkWell(
-      //       onTap: () {
-      //         Navigator.push(
-      //           context,
-      //           MaterialPageRoute(
-      //             builder: (context) => const SalesView(),
-      //           ),
-      //         );
-      //       },
-      //       child: const Padding(
-      //         padding: EdgeInsets.only(right: 8.0),
-      //         child: Row(
-      //           children: [
-      //             CircleAvatar(
-      //               radius: 9,
-      //               backgroundColor: Colors.white,
-      //               child: Align(
-      //                 alignment: Alignment.center,
-      //                 child: Icon(
-      //                   Icons.add,
-      //                   size: 18,
-      //                   color: Colors.green,
-      //                 ),
-      //               ),
-      //             ),
-      //             SizedBox(width: 3),
-      //             Text(
-      //               'Sales',
-      //               style: TextStyle(color: Colors.yellow, fontSize: 16),
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
-
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -543,43 +414,38 @@ class _SalesScreenState extends State<SalesScreen> {
             ),
           ),
 
-          //sales list with date filtering
           Expanded(
-            child: Consumer<SalesProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
+            child: Consumer2<SalesProvider, CurrencyProvider>(
+              builder: (context, salesProvider, currencyProvider, child) {
+                final currency =
+                    currencyProvider.currencyModel?.currency ?? '৳';
+
+                if (salesProvider.isLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
                 // Show loading indicator when deleting a sale
-                if (provider.isDeleting) {
+                if (salesProvider.isDeleting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (provider.errorMessage != null) {
-                  return 
-                  
-
-                  const NoDataWidget(
-                      message: "No Sales records found",
-                      lottieAsset: "assets/animation/no_data.json",
-                    );
+                if (salesProvider.errorMessage != null) {
+                  return const NoDataWidget(
+                    message: "No Sales records found",
+                    lottieAsset: "assets/animation/no_data.json",
+                  );
                 }
 
-                if (provider.sales.isEmpty) {
-                  return 
-
-                  const NoDataWidget(
-                      message: "No purchase returns records found",
-                      lottieAsset: "assets/animation/no_data.json",
-                    );
-                  
-                
+                if (salesProvider.sales.isEmpty) {
+                  return const NoDataWidget(
+                    message: "No purchase returns records found",
+                    lottieAsset: "assets/animation/no_data.json",
+                  );
                 }
 
                 // Filter sales based on selected date range
                 List<dynamic> filteredSales =
-                    filterSalesByDateRange(provider.sales);
+                    filterSalesByDateRange(salesProvider.sales);
 
                 if (filteredSales.isEmpty) {
                   return const Center(
@@ -590,234 +456,444 @@ class _SalesScreenState extends State<SalesScreen> {
                 }
 
                 return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: filteredSales.length, // Use filtered sales count
-                    itemBuilder: (context, index) {
-                      final sale = filteredSales[index]; // Use filtered sales
+                  shrinkWrap: true,
+                  itemCount: filteredSales.length,
+                  itemBuilder: (context, index) {
+                    final sale = filteredSales[index];
+                    final salesInvoiceCount = filteredSales.length;
+                    debugPrint('filtered sales count: $salesInvoiceCount');
 
-                      // Use filtered sales
+                    final salesID = sale.purchaseDetails.first.purchaseId;
+                    final transactionMethod = sale.transactionMethod;
+                    final customerName = sale.customerName;
 
-                      final salesInvoiceCount = filteredSales.length;
-                      debugPrint('filtered sales count: $salesInvoiceCount');
-
-                      final salesID = sale.purchaseDetails.first.purchaseId;
-
-                      final transactionMethod = sale.transactionMethod;
-                      final customerName = sale.customerName;
-
-                      return InkWell(
-                        onLongPress: () {
-                          editDeleteDiolog(
-                            context, 
-                          
+                    return InkWell(
+                      onLongPress: () {
+                        editDeleteDiolog(
+                          context,
                           salesID.toString(),
                           transactionMethod,
                           customerName,
+                        );
+                      },
+                      child: Card(
+                        color: const Color(0xfff4f6ff),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 1),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 5),
 
+                              /// Left Side Info
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            SalesDetails(sale: sale),
+                                      ),
+                                    );
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      /// date & bill no
+                                      Row(
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                formatDate(sale.purchaseDate),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              Text(
+                                                sale.billNumber,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
 
+                                          /// Divider
+                                          Container(
+                                            height: 30,
+                                            width: 2,
+                                            color: Colors.green.shade200,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 6),
+                                          ),
 
-                          
-                          
-                          
-                          );
-                        },
-                        onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => SalesDetails(sale: sale),
-                          //   ),
-                          // );
-                        },
-                        child: Card(
-                          color: const Color(0xfff4f6ff),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                2), // 👈 Rounded corners (radius: 2)
-                          ),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 1),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                // Left Side Info
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              SalesDetails(sale: sale),
-                                        ),
-                                      );
-                                    },
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ///date, bill qty
-                                        ///
-                                        Row(
-                                          children: [
-                                            ///date and invoice number
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  formatDate(sale.purchaseDate),
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
+                                          /// Cash & Amount
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                sale.customerName == "N/A"
+                                                    ? "Cash"
+                                                    : sale.customerName,
+                                                style: const TextStyle(
                                                     color: Colors.black,
+                                                    fontSize: 12),
+                                              ),
+
+                                              /// Amounts with currency from API
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    '$currency ${sale.grossTotal}, ',
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 12),
                                                   ),
-                                                ),
-                                                Text(
-                                                  sale.billNumber,
-                                                  style: const TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ],
-                                            ),
-
-                                            ///horizontal divider
-                                            //Divider (horizontal line)
-                                            Container(
-                                              height: 30,
-                                              width: 2,
-                                              color: Colors.green.shade200,
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 6),
-                                            ),
-
-                                            //cash and amount
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                ///cash
-                                                Text(
-                                                  sale.customerName == "N/A"
-                                                      ? "Cash"
-                                                      : sale.customerName,
-                                                  style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 12),
-                                                ),
-
-                                                //amount
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      '${sale.grossTotal} TK, ',
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 2.0),
+                                                    child: Text(
+                                                      'Rcpt: $currency ${sale.receipt}',
                                                       style: const TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 12),
                                                     ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              bottom: 2.0),
-                                                      child: Text(
-                                                        'Rcpt: ${sale.receipt} TK',
-                                                        style: const TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 12),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-
-                                // Right Side Info
-                                InkWell(
-                                  onTap: () {},
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      const SizedBox(height: 4),
-                                      //> status, /=>edit  and delete button
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          // Payment status and due amount
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              // Payment Status
-                                              Text(
-                                                sale.paymentStatus == 2
-                                                    ? 'Paid'
-                                                    : sale.paymentStatus == 1
-                                                        ? 'Partial'
-                                                        : 'Unpaid',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: sale.paymentStatus == 2
-                                                      ? Colors.green
-                                                      : sale.paymentStatus == 1
-                                                          ? Colors.amber
-                                                          : Colors.red,
-                                                ),
-                                              ),
-
-                                              // Show due only for Partial or Unpaid
-                                              if (sale.paymentStatus != 2)
-                                                Text(
-                                                  "Due: ${sale.due} TK",
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.black,
                                                   ),
-                                                )
+                                                ],
+                                              ),
                                             ],
-                                          ),
-
-                                          const SizedBox(width: 4),
+                                          )
                                         ],
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+
+                              /// Right Side Info
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            sale.paymentStatus == 2
+                                                ? 'Paid'
+                                                : sale.paymentStatus == 1
+                                                    ? 'Partial'
+                                                    : 'Unpaid',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: sale.paymentStatus == 2
+                                                  ? Colors.green
+                                                  : sale.paymentStatus == 1
+                                                      ? Colors.amber
+                                                      : Colors.red,
+                                            ),
+                                          ),
+
+                                          /// Show due only for Partial or Unpaid
+                                          if (sale.paymentStatus != 2)
+                                            Text(
+                                              "Due: $currency ${sale.due}",
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.black,
+                                              ),
+                                            )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    });
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ),
+
+          //sales list with date filtering
+          // Expanded(
+          //   child: Consumer<SalesProvider>(
+          //     builder: (context, provider, child) {
+          //       if (provider.isLoading) {
+          //         return const Center(child: CircularProgressIndicator());
+          //       }
+
+          //       // Show loading indicator when deleting a sale
+          //       if (provider.isDeleting) {
+          //         return const Center(child: CircularProgressIndicator());
+          //       }
+
+          //       if (provider.errorMessage != null) {
+          //         return const NoDataWidget(
+          //           message: "No Sales records found",
+          //           lottieAsset: "assets/animation/no_data.json",
+          //         );
+          //       }
+
+          //       if (provider.sales.isEmpty) {
+          //         return const NoDataWidget(
+          //           message: "No purchase returns records found",
+          //           lottieAsset: "assets/animation/no_data.json",
+          //         );
+          //       }
+
+          //       // Filter sales based on selected date range
+          //       List<dynamic> filteredSales =
+          //           filterSalesByDateRange(provider.sales);
+
+          //       if (filteredSales.isEmpty) {
+          //         return const Center(
+          //           child: Text("No sales found for selected date range",
+          //               style: TextStyle(
+          //                   color: Colors.black, fontWeight: FontWeight.bold)),
+          //         );
+          //       }
+
+          //       return ListView.builder(
+          //           shrinkWrap: true,
+          //           itemCount: filteredSales.length, // Use filtered sales count
+          //           itemBuilder: (context, index) {
+          //             final sale = filteredSales[index]; // Use filtered sales
+
+          //             // Use filtered sales
+
+          //             final salesInvoiceCount = filteredSales.length;
+          //             debugPrint('filtered sales count: $salesInvoiceCount');
+
+          //             final salesID = sale.purchaseDetails.first.purchaseId;
+
+          //             final transactionMethod = sale.transactionMethod;
+          //             final customerName = sale.customerName;
+
+          //             return InkWell(
+          //               onLongPress: () {
+          //                 editDeleteDiolog(
+          //                   context,
+          //                   salesID.toString(),
+          //                   transactionMethod,
+          //                   customerName,
+          //                 );
+          //               },
+          //               onTap: () {},
+          //               child: Card(
+          //                 color: const Color(0xfff4f6ff),
+          //                 shape: RoundedRectangleBorder(
+          //                   borderRadius: BorderRadius.circular(
+          //                       2), // 👈 Rounded corners (radius: 2)
+          //                 ),
+          //                 margin: const EdgeInsets.symmetric(
+          //                     horizontal: 0, vertical: 1),
+          //                 child: Padding(
+          //                   padding: const EdgeInsets.all(12.0),
+          //                   child: Row(
+          //                     crossAxisAlignment: CrossAxisAlignment.start,
+          //                     children: [
+          //                       const SizedBox(
+          //                         height: 5,
+          //                       ),
+          //                       // Left Side Info
+          //                       Expanded(
+          //                         child: GestureDetector(
+          //                           onTap: () {
+          //                             Navigator.push(
+          //                               context,
+          //                               MaterialPageRoute(
+          //                                 builder: (context) =>
+          //                                     SalesDetails(sale: sale),
+          //                               ),
+          //                             );
+          //                           },
+          //                           child: Column(
+          //                             crossAxisAlignment:
+          //                                 CrossAxisAlignment.start,
+          //                             children: [
+          //                               ///date, bill qty
+          //                               ///
+          //                               Row(
+          //                                 children: [
+          //                                   ///date and invoice number
+          //                                   Column(
+          //                                     crossAxisAlignment:
+          //                                         CrossAxisAlignment.start,
+          //                                     children: [
+          //                                       Text(
+          //                                         formatDate(sale.purchaseDate),
+          //                                         style: const TextStyle(
+          //                                           fontSize: 12,
+          //                                           color: Colors.black,
+          //                                         ),
+          //                                       ),
+          //                                       Text(
+          //                                         sale.billNumber,
+          //                                         style: const TextStyle(
+          //                                             fontSize: 12,
+          //                                             color: Colors.black,
+          //                                             fontWeight:
+          //                                                 FontWeight.bold),
+          //                                       ),
+          //                                     ],
+          //                                   ),
+
+          //                                   ///horizontal divider
+          //                                   //Divider (horizontal line)
+          //                                   Container(
+          //                                     height: 30,
+          //                                     width: 2,
+          //                                     color: Colors.green.shade200,
+          //                                     margin:
+          //                                         const EdgeInsets.symmetric(
+          //                                             horizontal: 6),
+          //                                   ),
+
+          //                                   //cash and amount
+          //                                   Column(
+          //                                     crossAxisAlignment:
+          //                                         CrossAxisAlignment.start,
+          //                                     children: [
+          //                                       ///cash
+          //                                       Text(
+          //                                         sale.customerName == "N/A"
+          //                                             ? "Cash"
+          //                                             : sale.customerName,
+          //                                         style: const TextStyle(
+          //                                             color: Colors.black,
+          //                                             fontSize: 12),
+          //                                       ),
+
+          //                                       //amount
+          //                                       Row(
+          //                                         mainAxisAlignment:
+          //                                             MainAxisAlignment.center,
+          //                                         crossAxisAlignment:
+          //                                             CrossAxisAlignment.center,
+          //                                         children: [
+          //                                           Text(
+          //                                             '${sale.grossTotal} TK, ',
+          //                                             style: const TextStyle(
+          //                                                 color: Colors.black,
+          //                                                 fontSize: 12),
+          //                                           ),
+          //                                           Padding(
+          //                                             padding:
+          //                                                 const EdgeInsets.only(
+          //                                                     bottom: 2.0),
+          //                                             child: Text(
+          //                                               'Rcpt: ${sale.receipt} TK',
+          //                                               style: const TextStyle(
+          //                                                   color: Colors.black,
+          //                                                   fontSize: 12),
+          //                                             ),
+          //                                           ),
+          //                                         ],
+          //                                       ),
+          //                                     ],
+          //                                   )
+          //                                 ],
+          //                               ),
+          //                             ],
+          //                           ),
+          //                         ),
+          //                       ),
+
+          //                       // Right Side Info
+          //                       InkWell(
+          //                         onTap: () {},
+          //                         child: Column(
+          //                           crossAxisAlignment: CrossAxisAlignment.end,
+          //                           children: [
+          //                             const SizedBox(height: 4),
+          //                             //> status, /=>edit  and delete button
+          //                             Row(
+          //                               mainAxisSize: MainAxisSize.min,
+          //                               mainAxisAlignment:
+          //                                   MainAxisAlignment.spaceAround,
+          //                               children: [
+          //                                 // Payment status and due amount
+          //                                 Column(
+          //                                   crossAxisAlignment:
+          //                                       CrossAxisAlignment.end,
+          //                                   children: [
+          //                                     // Payment Status
+          //                                     Text(
+          //                                       sale.paymentStatus == 2
+          //                                           ? 'Paid'
+          //                                           : sale.paymentStatus == 1
+          //                                               ? 'Partial'
+          //                                               : 'Unpaid',
+          //                                       style: TextStyle(
+          //                                         fontSize: 12,
+          //                                         color: sale.paymentStatus == 2
+          //                                             ? Colors.green
+          //                                             : sale.paymentStatus == 1
+          //                                                 ? Colors.amber
+          //                                                 : Colors.red,
+          //                                       ),
+          //                                     ),
+
+          //                                     // Show due only for Partial or Unpaid
+          //                                     if (sale.paymentStatus != 2)
+          //                                       Text(
+          //                                         "Due: ${sale.due} TK",
+          //                                         style: const TextStyle(
+          //                                           fontSize: 12,
+          //                                           color: Colors.black,
+          //                                         ),
+          //                                       )
+          //                                   ],
+          //                                 ),
+
+          //                                 const SizedBox(width: 4),
+          //                               ],
+          //                             ),
+          //                           ],
+          //                         ),
+          //                       ),
+          //                     ],
+          //                   ),
+          //                 ),
+          //               ),
+          //             );
+          //           });
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );
   }
 
   ///show edit and delete list from alart diolog
-  Future<dynamic> editDeleteDiolog(BuildContext context, String salesID,dynamic transactionMethod, dynamic customerName ) {
+  Future<dynamic> editDeleteDiolog(BuildContext context, String salesID,
+      dynamic transactionMethod, dynamic customerName) {
     final colorScheme = Theme.of(context).colorScheme;
     return showDialog(
       context: context,
@@ -877,16 +953,13 @@ class _SalesScreenState extends State<SalesScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            SalesUpdateScreen(
-                              
-                              salesId: int.parse(salesID,),
-                              transactionMethod: transactionMethod, // Add this
-      customerName: customerName,
-
-                              
-                              
-                              ),
+                        builder: (context) => SalesUpdateScreen(
+                          salesId: int.parse(
+                            salesID,
+                          ),
+                          transactionMethod: transactionMethod, // Add this
+                          customerName: customerName,
+                        ),
                       ),
                     );
                   },

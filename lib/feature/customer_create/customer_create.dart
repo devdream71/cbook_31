@@ -83,7 +83,7 @@ class _CustomerCreateState extends State<CustomerCreate> {
     final levelType = _isChecked ? _selectedPrice : "";
     final level = _isChecked ? "1" : "";
 
-    if (name.isNotEmpty && proprietorName.isNotEmpty) {
+    if (name.isNotEmpty) {
       setState(() {
         isLoading = true; // This will disable the button
       });
@@ -168,6 +168,8 @@ class _CustomerCreateState extends State<CustomerCreate> {
       );
     }
   }
+
+  // Modified _saveCustomer method
 
   @override
   Widget build(BuildContext context) {
@@ -344,7 +346,7 @@ class _CustomerCreateState extends State<CustomerCreate> {
                 AddSalesFormfield(
                   labelText: "Name",
                   height: 40,
-                  controller: _individualNameController,
+                  controller: _nameController, // _individualNameController
                   //validator: _validateRequired,
                 ),
 
@@ -621,23 +623,6 @@ class _CustomerCreateState extends State<CustomerCreate> {
               ),
 
               const Spacer(),
-
-              // SizedBox(
-              //   width: double.infinity,
-              //   child: ElevatedButton(
-              //     onPressed: _saveCustomer,
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: AppColors.primaryColor,
-              //       padding: const EdgeInsets.symmetric(
-              //           vertical: 12, horizontal: 20),
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(10),
-              //       ),
-              //     ),
-              //     child: const Text("Save Customer",
-              //         style: TextStyle(color: Colors.white)),
-              //   ),
-              // ),
 
               SizedBox(
                 width: double.infinity,

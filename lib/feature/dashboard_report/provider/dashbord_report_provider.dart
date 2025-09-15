@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cbook_dt/feature/dashboard_report/model/bank_trans.dart';
+import 'package:cbook_dt/feature/dashboard_report/model/company_model.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/sales_report_model_home.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/supplier_trans.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/total_supplier_count_model.dart';
@@ -22,6 +23,216 @@ class DashboardReportProvider extends ChangeNotifier {
   int? customerTransactionCountTotal;
   bool isLoadingCustomerCount = false;
   String? errorCustomerCount;
+
+
+   bool _isSwitchingCompany = false;
+  String? _switchCompanyError;
+
+  bool get isSwitchingCompany => _isSwitchingCompany;
+  String? get switchCompanyError => _switchCompanyError;
+
+  
+  ///switch company.
+  // Future<bool> switchCompany(int companyId) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('token');
+  //   final userId = prefs.getInt('user_id');
+
+  //   if (token == null || userId == null) {
+  //     _switchCompanyError = "Token or User ID not found";
+  //     notifyListeners();
+  //     return false;
+  //   }
+
+  //   _isSwitchingCompany = true;
+  //   _switchCompanyError = null;
+  //   notifyListeners();
+
+  //   try {
+  //     final url = Uri.parse('https://commercebook.site/api/v1/company/switch?user_id=$userId&company_id=$companyId');
+      
+  //     print("🔄 Switching to company ID: $companyId"); // Debug print
+      
+  //     final response = await http.post(
+  //       url,
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Authorization': 'Bearer $token',
+  //       },
+  //     );
+
+  //     print("🔄 Switch API Response: ${response.body}"); // Debug print
+
+  //     if (response.statusCode == 200) {
+  //       final decoded = json.decode(response.body);
+        
+  //       if (decoded['success'] == true) {
+  //         // Save new company ID to SharedPreferences
+  //         await prefs.setInt('company_id', companyId);
+          
+  //         print("✅ Company switched successfully to ID: $companyId"); // Debug print
+          
+  //         _isSwitchingCompany = false;
+  //         notifyListeners();
+  //         return true;
+  //       } else {
+  //         _switchCompanyError = decoded['message'] ?? 'Failed to switch company';
+  //         _isSwitchingCompany = false;
+  //         notifyListeners();
+  //         return false;
+  //       }
+  //     } else {
+  //       _switchCompanyError = "Server error: ${response.statusCode}";
+  //       _isSwitchingCompany = false;
+  //       notifyListeners();
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     _switchCompanyError = e.toString();
+  //     _isSwitchingCompany = false;
+  //     notifyListeners();
+  //     return false;
+  //   }
+  // }
+
+
+
+
+///switch company.
+  Future<bool> switchCompany(int companyId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final userId = prefs.getInt('user_id');
+
+    if (token == null || userId == null) {
+      _switchCompanyError = "Token or User ID not found";
+      notifyListeners();
+      return false;
+    }
+
+    _isSwitchingCompany = true;
+    _switchCompanyError = null;
+    notifyListeners();
+
+    try {
+      final url = Uri.parse('https://commercebook.site/api/v1/company/switch?user_id=$userId&company_id=$companyId');
+      
+      print("🔄 Switching to company ID: $companyId");
+      
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print("🔄 Switch API Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        
+        if (decoded['success'] == true) {
+          // Save new company ID to SharedPreferences
+          await prefs.setInt('company_id', companyId);
+          
+          // Find the selected company and save its details
+          final selectedCompany = _companyList.firstWhere(
+            (company) => company.companyId == companyId,
+            orElse: () => _companyList.first,
+          );
+          
+          // Save company name
+          await prefs.setString('company_name', selectedCompany.companyName);
+          
+          // Save company logo
+          if (selectedCompany.logo != null && selectedCompany.logo!.isNotEmpty) {
+            await prefs.setString('company_logo', selectedCompany.logo!);
+          } else {
+            await prefs.remove('company_logo');
+          }
+          
+          print("✅ Company switched successfully to ID: $companyId");
+          print("✅ Company logo updated: ${selectedCompany.logo}");
+          
+          _isSwitchingCompany = false;
+          notifyListeners();
+          return true;
+        } else {
+          _switchCompanyError = decoded['message'] ?? 'Failed to switch company';
+          _isSwitchingCompany = false;
+          notifyListeners();
+          return false;
+        }
+      } else {
+        _switchCompanyError = "Server error: ${response.statusCode}";
+        _isSwitchingCompany = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _switchCompanyError = e.toString();
+      _isSwitchingCompany = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  
+   // Company List
+  List<CompanyModel> _companyList = [];
+  bool _isLoadingCompanyList = false;
+  String? _errorCompanyList;
+
+  List<CompanyModel> get companyList => _companyList;
+  bool get isLoadingCompanyList => _isLoadingCompanyList;
+  String? get errorCompanyList => _errorCompanyList;
+
+  Future<void> fetchCompanyList() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final userId = prefs.getInt('user_id');
+
+    if (token == null || userId == null) {
+      _errorCompanyList = "Token or User ID not found";
+      notifyListeners();
+      return;
+    }
+
+    _isLoadingCompanyList = true;
+    _errorCompanyList = null;
+    notifyListeners();
+
+    try {
+      final url = Uri.parse('https://commercebook.site/api/v1/company/list?user_id=$userId');
+      final response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        
+        if (decoded['success'] == true && decoded['data'] != null) {
+          _companyList = (decoded['data'] as List)
+              .map((company) => CompanyModel.fromJson(company))
+              .toList();
+        } else {
+          _errorCompanyList = decoded['message'] ?? 'Failed to load companies';
+        }
+      } else {
+        _errorCompanyList = "Server error: ${response.statusCode}";
+      }
+    } catch (e) {
+      _errorCompanyList = e.toString();
+    } finally {
+      _isLoadingCompanyList = false;
+      notifyListeners();
+    }
+  }
  
   Future<void> fetchCustomerTransaction() async {
     final prefs = await SharedPreferences.getInstance();

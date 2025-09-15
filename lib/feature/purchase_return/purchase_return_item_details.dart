@@ -448,7 +448,7 @@ class PurchaseReturnDetailsPageState extends State<PurchaseReturnDetailsPage> {
                                     /// reduction qty.
                                     SizedBox(
                                       width: 150,
-                                      height: 30,
+                                      height: 38,
                                       child: AddSalesFormfield(
                                         labelText: 'Reduction Qty',
                                         controller:

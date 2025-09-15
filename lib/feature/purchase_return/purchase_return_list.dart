@@ -1,7 +1,6 @@
-import 'dart:ffi';
-
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/no_data_fount.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:cbook_dt/feature/purchase_return/presentation/purchase_return_view.dart';
 import 'package:cbook_dt/feature/purchase_return/provider/purchase_return_provider.dart';
 import 'package:cbook_dt/feature/purchase_return/purchase_return_details.dart';
@@ -20,6 +19,11 @@ class PurchaseReturnList extends StatefulWidget {
 class _PurchaseReturnListState extends State<PurchaseReturnList> {
   @override
   void initState() {
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
+
+        
     Future.microtask(() {
       Provider.of<PurchaseReturnProvider>(context, listen: false)
           .fetchPurchaseReturns();
@@ -94,13 +98,6 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                         size: 20,
                         color: Colors.green,
                       )),
-                  // SizedBox(
-                  //   width: 3,
-                  // ),
-                  // Text(
-                  //   'P. Return',
-                  //   style: TextStyle(color: Colors.yellow, fontSize: 16),
-                  // ),
                 ],
               ),
             ),
@@ -190,7 +187,7 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 0, vertical: 0),
                       child: Text(
-                        'T. P. Return: ৳${provider.totalReturn.toStringAsFixed(2)}',
+                        'T. P. Return: ${provider.totalReturn.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 14,
                           //fontWeight: FontWeight.bold,
@@ -214,8 +211,12 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
               );
             }),
             Expanded(
-              child: Consumer<PurchaseReturnProvider>(
-                builder: (context, provider, child) {
+              child: Consumer2<PurchaseReturnProvider, CurrencyProvider>(
+                builder: (context, provider, currencyProvider, child) {
+
+                   final currency = currencyProvider.currencyModel?.currency ?? '৳';
+
+
                   if (provider.isLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
@@ -236,12 +237,6 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                       lottieAsset: "assets/animation/no_data.json",
                     );
 
-                    // const Center(
-                    //     child: Text(
-                    //   "No purchase returns found.",
-                    //   style: TextStyle(
-                    //       color: Colors.black, fontWeight: FontWeight.bold),
-                    // ));
                   }
 
                   return ListView.builder(
@@ -325,7 +320,7 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                                           color: Colors.black),
                                     ),
                                     Text(
-                                      "৳ ${item.grossTotal ?? 0}",
+                                      "$currency ${item.grossTotal ?? 0}",
                                       style: const TextStyle(
                                           fontSize: 14, color: Colors.black),
                                     ),

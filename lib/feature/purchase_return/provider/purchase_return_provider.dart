@@ -19,49 +19,74 @@ class PurchaseReturnProvider with ChangeNotifier {
   double get totalReturn => _totalReturn;
 
   ///purchase return list show.
-   
-
-
-  Future<void> fetchPurchaseReturns() async {
-     final url = "${AppUrl.baseurl}purchase/return";
-
-     final prefs = await SharedPreferences.getInstance();
+  ///
+  
+   Future<void> fetchPurchaseReturns() async {
+    print("🔄 fetchPurchaseReturns() called");
+    
+    final url = "${AppUrl.baseurl}purchase/return";
+    print("🌐 API URL: $url");
+    
+    final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
+    
+    print("🔑 Token: ${token != null ? 'Found' : 'NOT FOUND'}");
 
     try {
       _isLoading = true;
       _errorMessage = '';
       notifyListeners();
+      
+      print("📡 Making API request...");
 
-      final response = await http.get(Uri.parse(url),  headers: {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
           "Authorization": "Bearer $token",
           "Accept": "application/json",
-        },);
+        },
+      );
+
+      print("📊 Response Status Code: ${response.statusCode}");
 
       if (response.statusCode == 200) {
-        final result = PurchaseReturnResponse.fromJson(response.body);
-        _purchaseReturns = result.data;
-
-        _totalReturn = result.totalReturn;
-
-        debugPrint("Total Return from API: ${result.totalReturn}");
+        print("✅ API call successful, parsing data...");
         
-        debugPrint("Parsed purchase return list: $_purchaseReturns");
+        try {
+          final result = PurchaseReturnResponse.fromJson(response.body);
+          _purchaseReturns = result.data;
+          _totalReturn = result.totalReturn;
 
-        debugPrint("purchase return list $purchaseReturns");
-
-
+          print("📋 Total Return from API: ${result.totalReturn}");
+          print("📋 Number of purchase returns: ${_purchaseReturns.length}");
+          
+          // Debug each item
+          for (int i = 0; i < _purchaseReturns.length; i++) {
+            print("📦 Item $i: Bill ${_purchaseReturns[i].billNumber}, Amount: ${_purchaseReturns[i].grossTotal}");
+          }
+          
+          print("✅ Data parsed successfully!");
+          
+        } catch (parseError) {
+          print("💥 JSON parsing error: $parseError");
+          _errorMessage = "Failed to parse data: $parseError";
+        }
+        
       } else {
         _errorMessage = "Failed to load data: ${response.statusCode}";
+        print("❌ API Error: $_errorMessage");
       }
     } catch (e) {
       _errorMessage = "Something went wrong: $e";
+      print("💥 Exception caught: $e");
     } finally {
       _isLoading = false;
       notifyListeners();
+      print("🏁 fetchPurchaseReturns() completed");
     }
   }
 
+   
   ///delete purchse return
   Future<void> deletePurchaseReturn(String id, context) async {
     final url =

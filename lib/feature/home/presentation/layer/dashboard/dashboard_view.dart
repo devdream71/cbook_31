@@ -9,8 +9,10 @@ import 'package:cbook_dt/feature/account/ui/cash_in_hand/cash_in_hand.dart';
 import 'package:cbook_dt/feature/account/ui/expense/expense_list.dart';
 import 'package:cbook_dt/feature/account/ui/income/income_list.dart';
 import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
+import 'package:cbook_dt/feature/dashboard_report/model/company_model.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/sales_report_model_home.dart';
 import 'package:cbook_dt/feature/dashboard_report/provider/dashbord_report_provider.dart';
+import 'package:cbook_dt/feature/home/presentation/layer/dashboard/company_switch.dart';
 import 'package:cbook_dt/feature/home/presentation/layer/dashboard/dashboard_controller.dart';
 import 'package:cbook_dt/feature/home/provider/profile_provider.dart';
 import 'package:cbook_dt/feature/party/party_list.dart';
@@ -72,6 +74,7 @@ class LayoutState extends State<Layout> {
       await provider.fetchBankBalance();
       await provider.fetchVoucherSummary();
       await provider.fetchSalesLast30Days();
+      await provider.fetchCompanyList();
       _loadUserIdAndFetchProfile();
     });
 
@@ -94,6 +97,145 @@ class LayoutState extends State<Layout> {
     } else {
       // Handle null userId
       debugPrint('User ID not found in SharedPreferences');
+    }
+  }
+
+  Future<String> _getCurrentCompanyName(String defaultCompanyName,
+      DashboardReportProvider dashboardProvider) async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentCompanyId = prefs.getInt('company_id');
+
+    if (currentCompanyId != null && dashboardProvider.companyList.isNotEmpty) {
+      final currentCompany = dashboardProvider.companyList.firstWhere(
+        (company) => company.companyId == currentCompanyId,
+        orElse: () => dashboardProvider.companyList.first,
+      );
+      return currentCompany.companyName;
+    }
+
+    return defaultCompanyName;
+  }
+
+  Future<Map<String, String>> _getCurrentCompanyInfo(String defaultCompanyName,
+      DashboardReportProvider dashboardProvider) async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentCompanyId = prefs.getInt('company_id');
+
+    if (currentCompanyId != null && dashboardProvider.companyList.isNotEmpty) {
+      final currentCompany = dashboardProvider.companyList.firstWhere(
+        (company) => company.companyId == currentCompanyId,
+        orElse: () => dashboardProvider.companyList.first,
+      );
+      return {
+        'name': currentCompany.companyName,
+        'role': currentCompany.role ?? "No Role",
+      };
+    }
+
+    return {
+      'name': defaultCompanyName,
+      'role': "No Role",
+    };
+  }
+
+  Future<String?> _getCurrentCompanyLogo(
+      DashboardReportProvider dashboardProvider) async {
+    final prefs = await SharedPreferences.getInstance();
+    final currentCompanyId = prefs.getInt('company_id');
+
+    if (currentCompanyId != null && dashboardProvider.companyList.isNotEmpty) {
+      final currentCompany = dashboardProvider.companyList.firstWhere(
+        (company) => company.companyId == currentCompanyId,
+        orElse: () => dashboardProvider.companyList.first,
+      );
+      return currentCompany.logo;
+    }
+
+    // Fallback to stored logo in SharedPreferences
+    return prefs.getString('company_logo');
+  }
+
+  ImageProvider _getImageProvider(String? companyLogo, String? userAvatar) {
+    if (companyLogo != null && companyLogo.isNotEmpty) {
+      return NetworkImage("https://commercebook.site/$companyLogo");
+    }
+    ////====> this is  no need. its showing user avater.
+    // else if (userAvatar != null && userAvatar.isNotEmpty) {
+    //   return NetworkImage("https://commercebook.site/$userAvatar");
+    // }
+
+    else {
+      return const AssetImage('assets/image/logo_new.png');
+    }
+  }
+
+  void _showCompanySwitchModal(
+      BuildContext context,
+      DashboardReportProvider dashboardProvider,
+      ProfileProvider profileProvider) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext modalContext) {
+        return ChangeNotifierProvider.value(
+          value: dashboardProvider,
+          child: CompanySwitchModal(
+            onCompanySelected: (CompanyModel company) async {
+              await _handleCompanySwitch(
+                  company, dashboardProvider, profileProvider);
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _handleCompanySwitch(
+      CompanyModel company,
+      DashboardReportProvider dashboardProvider,
+      ProfileProvider profileProvider) async {
+    print(
+        "🔄 User tapped company: ${company.companyName} (ID: ${company.companyId})");
+
+    final success = await dashboardProvider.switchCompany(company.companyId);
+
+    if (success) {
+      print("✅ Company switched successfully");
+      print("✅ Company name: ${company.companyName}");
+      print("✅ Company logo: ${company.logo}");
+
+      // Refresh profile and dashboard data
+      if (userID != null) {
+        profileProvider.fetchProfile(userID!);
+      }
+      dashboardProvider.fetchCustomerTransaction();
+
+      // Trigger UI rebuild
+      if (mounted) {
+        setState(() {});
+      }
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ Switched to ${company.companyName}'),
+            backgroundColor: AppColors.primaryColor,
+          ),
+        );
+      }
+    } else {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                '❌ Failed to switch: ${dashboardProvider.switchCompanyError}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -191,40 +333,164 @@ class LayoutState extends State<Layout> {
                                         horizontal: 8.0),
                                     child: Row(
                                       children: [
-                                        CircleAvatar(
-                                          radius: 15,
-                                          backgroundColor: Colors.white,
-                                          child: CircleAvatar(
-                                            radius: 15,
-                                            backgroundImage: (user.avatar !=
-                                                        null &&
-                                                    user.avatar!.isNotEmpty)
-                                                ? NetworkImage(
-                                                    "https://commercebook.site/${user.avatar}")
-                                                : const AssetImage(
-                                                        'assets/image/logo_new.png')
-                                                    as ImageProvider,
-                                          ),
+                                        // Company Logo/Avatar with dynamic switching
+                                        Consumer<DashboardReportProvider>(
+                                          builder: (context, dashboardProvider,
+                                              child) {
+                                            return FutureBuilder<String?>(
+                                              future: _getCurrentCompanyLogo(
+                                                  dashboardProvider),
+                                              builder: (context, logoSnapshot) {
+                                                final companyLogo =
+                                                    logoSnapshot.data;
+
+                                                return CircleAvatar(
+                                                  radius: 15,
+                                                  backgroundColor: Colors.white,
+                                                  child: CircleAvatar(
+                                                    radius: 15,
+                                                    backgroundImage:
+                                                        _getImageProvider(
+                                                            companyLogo,
+                                                            user.avatar),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
                                         ),
+
                                         const SizedBox(width: 4),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              user.companyName,
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Text(
-                                              user.name,
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12),
-                                            ),
-                                          ],
+
+                                        Consumer<ProfileProvider>(
+                                          builder: (context, profileProvider,
+                                              child) {
+                                            if (profileProvider.isLoading) {
+                                              return const Center(
+                                                  child:
+                                                      CircularProgressIndicator());
+                                            } else if (profileProvider
+                                                    .profile !=
+                                                null) {
+                                              final user =
+                                                  profileProvider.profile!;
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Row(
+                                                  children: [
+                                                    const SizedBox(width: 4),
+
+                                                    // Company name and user name with dropdown
+                                                    Consumer<
+                                                        DashboardReportProvider>(
+                                                      builder: (context,
+                                                          dashboardProvider,
+                                                          child) {
+                                                        return Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                
+
+                                                                // Usage in UI:
+                                                                FutureBuilder<
+                                                                    Map<String,
+                                                                        String>>(
+                                                                  future: _getCurrentCompanyInfo(
+                                                                      user.companyName,
+                                                                      dashboardProvider),
+                                                                  builder: (context,
+                                                                      snapshot) {
+                                                                    final companyInfo =
+                                                                        snapshot.data ??
+                                                                            {
+                                                                              'name': user.companyName,
+                                                                              'role': "No Role"
+                                                                            };
+
+                                                                    return Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                          companyInfo[
+                                                                              'name']!,
+                                                                          style: const TextStyle(
+                                                                              color: Colors.white,
+                                                                              fontSize: 12,
+                                                                              fontWeight: FontWeight.bold),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                            height:
+                                                                                2),
+                                                                        Text(
+                                                                          companyInfo[
+                                                                              'role']!,
+                                                                          style: const TextStyle(
+                                                                              color: Colors.white70,
+                                                                              fontSize: 10,
+                                                                              fontWeight: FontWeight.w400),
+                                                                        ),
+                                                                      ],
+                                                                    );
+                                                                  },
+                                                                ),
+
+                                                                IconButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    _showCompanySwitchModal(
+                                                                        context,
+                                                                        dashboardProvider,
+                                                                        profileProvider);
+                                                                  },
+                                                                  icon:
+                                                                      const Icon(
+                                                                    Icons
+                                                                        .keyboard_double_arrow_down,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+
+                                                            // User name
+                                                            Text(
+                                                              user.name,
+                                                              style: const TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 12),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            } else {
+                                              return Center(
+                                                child: Text(
+                                                  profileProvider.errorMessage
+                                                          .isNotEmpty
+                                                      ? profileProvider
+                                                          .errorMessage
+                                                      : "No profile data found",
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.red),
+                                                ),
+                                              );
+                                            }
+                                          },
                                         ),
                                       ],
                                     ),
@@ -260,8 +526,6 @@ class LayoutState extends State<Layout> {
                           ],
                         ),
                       ),
-
-                      //vPad16,
                     ],
                   ),
                 ),
@@ -274,38 +538,6 @@ class LayoutState extends State<Layout> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     hPad5,
-
-                    ///customer.
-                    // Expanded(
-                    //   child: Consumer<DashboardReportProvider>(
-                    //     builder: (context, provider, _) {
-                    //       if (provider.isLoading) {
-                    //         return const Center(child: SizedBox());
-                    //       } else if (provider.error != null) {
-                    //         return Text("Error: ${provider.error}");
-                    //       } else {
-                    //         return InkWell(
-                    //           onTap: () {
-                    //             Navigator.push(
-                    //                 context,
-                    //                 MaterialPageRoute(
-                    //                     builder: (context) => const Party()));
-                    //           },
-                    //           child: _buildSummaryCard(
-                    //             title: "Customer",
-                    //             amount: '${provider.customerTransaction ?? 0}',
-
-                    //             ///
-                    //             //icon: Icons.person_rounded,
-                    //             color: Colors.green.shade100,
-                    //             iconColor: Colors.green.shade800,
-                    //           ),
-                    //         );
-                    //       }
-                    //     },
-                    //   ),
-                    // ),
-
                     Expanded(
                       child:
                           Consumer2<DashboardReportProvider, CurrencyProvider>(
@@ -340,40 +572,9 @@ class LayoutState extends State<Layout> {
                         },
                       ),
                     ),
-
                     const SizedBox(
                       width: 0,
                     ),
-
-                    ///supplier
-                    // Expanded(
-                    //   child: Consumer<DashboardReportProvider>(
-                    //     builder: (context, provider, _) {
-                    //       if (provider.isLoading) {
-                    //         return const Center(child: SizedBox());
-                    //       } else if (provider.error != null) {
-                    //         return Text("Error: ${provider.error}");
-                    //       } else {
-                    //         return InkWell(
-                    //           onTap: () {
-                    //             Navigator.push(
-                    //                 context,
-                    //                 MaterialPageRoute(
-                    //                     builder: (_) => const Party()));
-                    //           },
-                    //           child: _buildSummaryCard(
-                    //             title: "Supplier",
-                    //             amount: '${provider.supplierTransaction ?? 0}',
-                    //             //icon: Icons.handshake_rounded,
-                    //             color: Colors.red.shade100,
-                    //             iconColor: Colors.red.shade800,
-                    //           ),
-                    //         );
-                    //       }
-                    //     },
-                    //   ),
-                    // ),
-
                     Expanded(
                       child:
                           Consumer2<DashboardReportProvider, CurrencyProvider>(
@@ -410,46 +611,9 @@ class LayoutState extends State<Layout> {
                         },
                       ),
                     ),
-
                     const SizedBox(
                       width: 0,
                     ),
-
-                    ///cash in hand
-                    // Expanded(
-                    //   child: Consumer<DashboardReportProvider>(
-                    //     builder: (context, provider, _) {
-                    //       if (provider.isLoading) {
-                    //         return const Center(child: SizedBox());
-                    //       } else if (provider.error != null) {
-                    //         return Text("Error: ${provider.error}");
-                    //       } else {
-                    //         return InkWell(
-                    //           onTap: () {
-                    //             Navigator.push(
-                    //                 context,
-                    //                 MaterialPageRoute(
-                    //                     builder: (_) => CashInHand()));
-                    //           },
-                    //           child: _buildSummaryCard(
-                    //             title: "Cash",
-                    //             //amount: "${provider.cashInHand.toStringAsFixed(2) ?? 0}",
-
-                    //             //icon: Icons.attach_money_rounded,
-                    //             amount: double.tryParse(
-                    //                         provider.cashInHand?.toString() ??
-                    //                             '')
-                    //                     ?.toStringAsFixed(2) ??
-                    //                 '0.00',
-                    //             color: Colors.blue.shade100,
-                    //             iconColor: Colors.blue.shade800,
-                    //           ),
-                    //         );
-                    //       }
-                    //     },
-                    //   ),
-                    // ),
-
                     Expanded(
                       child:
                           Consumer2<DashboardReportProvider, CurrencyProvider>(
@@ -489,40 +653,9 @@ class LayoutState extends State<Layout> {
                         },
                       ),
                     ),
-
                     const SizedBox(
                       width: 0,
                     ),
-
-                    ///bank
-                    // Expanded(
-                    //   child: Consumer<DashboardReportProvider>(
-                    //     builder: (context, provider, _) {
-                    //       if (provider.isLoading) {
-                    //         return const Center(child: SizedBox());
-                    //       } else if (provider.error != null) {
-                    //         return Text("Error: ${provider.error}");
-                    //       } else {
-                    //         return InkWell(
-                    //           onTap: () {
-                    //             Navigator.push(
-                    //                 context,
-                    //                 MaterialPageRoute(
-                    //                     builder: (_) => const Bank()));
-                    //           },
-                    //           child: _buildSummaryCard(
-                    //             title: "Bank",
-                    //             amount: '${provider.bankBalance ?? 0}',
-                    //             //icon: Icons.account_balance_rounded,
-                    //             color: Colors.orange.shade100,
-                    //             iconColor: Colors.orange.shade800,
-                    //           ),
-                    //         );
-                    //       }
-                    //     },
-                    //   ),
-                    // ),
-
                     Expanded(
                       child:
                           Consumer2<DashboardReportProvider, CurrencyProvider>(
@@ -562,7 +695,6 @@ class LayoutState extends State<Layout> {
                         },
                       ),
                     ),
-
                     hPad5,
                   ],
                 ),
@@ -591,133 +723,73 @@ class LayoutState extends State<Layout> {
                       fontSize: 14),
                 ),
 
-                ///Transaction summary
-                // Consumer<DashboardReportProvider>(
-                //   builder: (context, provider, _) {
-                //     if (provider.isLoading) {
-                //       return Shimmer.fromColors(
-                //         baseColor: Colors.grey.shade300,
-                //         highlightColor: Colors.grey.shade100,
-                //         child: Column(
-                //           children: List.generate(3, (index) {
-                //             return Padding(
-                //               padding:
-                //                   const EdgeInsets.symmetric(vertical: 8.0),
-                //               child: Container(
-                //                 height: 180,
-                //                 decoration: BoxDecoration(
-                //                   color: Colors.white,
-                //                   borderRadius: BorderRadius.circular(12),
-                //                 ),
-                //               ),
-                //             );
-                //           }),
-                //         ),
-                //       );
-                //     } else if (provider.error != null) {
-                //       return Text('Error: ${provider.error}');
-                //     } else if (provider.voucherSummary == null) {
-                //       return const Text('No data available');
-                //     } else {
-                //       final summary = provider.voucherSummary!;
-
-                //       final values = [
-                //         summary.received.toDouble(),
-                //         summary.payment.toDouble(),
-                //         summary.income.toDouble(),
-                //         summary.expense.toDouble(),
-                //       ];
-
-                //       final labels = [
-                //         'Received',
-                //         'Payment',
-                //         'Income',
-                //         'Expense'
-                //       ];
-                //       final legendLabels = [
-                //         '৳ ${summary.received}',
-                //         '৳ ${summary.payment}',
-                //         '৳ ${summary.income}',
-                //         '৳ ${summary.expense}',
-                //       ];
-
-                //       return Column(
-                //         crossAxisAlignment: CrossAxisAlignment.start,
-                //         children: [
-                //           //const SizedBox(height: 16),
-                //           DonutChartViewRound(
-                //             values: values,
-                //             labels: labels,
-                //             legendLabels: legendLabels,
-                //           ),
-                //         ],
-                //       );
-                //     }
-                //   },
-                // ),
-
-
                 Consumer2<DashboardReportProvider, CurrencyProvider>(
-  builder: (context, reportProvider, currencyProvider, _) {
-    final currency = currencyProvider.currencyModel?.currency ?? '৳'; // fallback
+                  builder: (context, reportProvider, currencyProvider, _) {
+                    final currency = currencyProvider.currencyModel?.currency ??
+                        '৳'; // fallback
 
-    if (reportProvider.isLoading) {
-      return Shimmer.fromColors(
-        baseColor: Colors.grey.shade300,
-        highlightColor: Colors.grey.shade100,
-        child: Column(
-          children: List.generate(3, (index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Container(
-                height: 180,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                    if (reportProvider.isLoading) {
+                      return Shimmer.fromColors(
+                        baseColor: Colors.grey.shade300,
+                        highlightColor: Colors.grey.shade100,
+                        child: Column(
+                          children: List.generate(3, (index) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Container(
+                                height: 180,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                      );
+                    } else if (reportProvider.error != null) {
+                      return Text('Error: ${reportProvider.error}');
+                    } else if (reportProvider.voucherSummary == null) {
+                      return const Text('No data available');
+                    } else {
+                      final summary = reportProvider.voucherSummary!;
+
+                      final values = [
+                        summary.received.toDouble(),
+                        summary.payment.toDouble(),
+                        summary.income.toDouble(),
+                        summary.expense.toDouble(),
+                      ];
+
+                      final labels = [
+                        'Received',
+                        'Payment',
+                        'Income',
+                        'Expense'
+                      ];
+
+                      /// ✅ Use currency from API here
+                      final legendLabels = [
+                        '$currency ${summary.received}',
+                        '$currency ${summary.payment}',
+                        '$currency ${summary.income}',
+                        '$currency ${summary.expense}',
+                      ];
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          DonutChartViewRound(
+                            values: values,
+                            labels: labels,
+                            legendLabels: legendLabels,
+                          ),
+                        ],
+                      );
+                    }
+                  },
                 ),
-              ),
-            );
-          }),
-        ),
-      );
-    } else if (reportProvider.error != null) {
-      return Text('Error: ${reportProvider.error}');
-    } else if (reportProvider.voucherSummary == null) {
-      return const Text('No data available');
-    } else {
-      final summary = reportProvider.voucherSummary!;
-
-      final values = [
-        summary.received.toDouble(),
-        summary.payment.toDouble(),
-        summary.income.toDouble(),
-        summary.expense.toDouble(),
-      ];
-
-      final labels = ['Received', 'Payment', 'Income', 'Expense'];
-
-      /// ✅ Use currency from API here
-      final legendLabels = [
-        '$currency ${summary.received}',
-        '$currency ${summary.payment}',
-        '$currency ${summary.income}',
-        '$currency ${summary.expense}',
-      ];
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DonutChartViewRound(
-            values: values,
-            labels: labels,
-            legendLabels: legendLabels,
-          ),
-        ],
-      );
-    }
-  },
-),
-
 
                 const SizedBox(
                   height: 6,

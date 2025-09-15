@@ -4,6 +4,7 @@ import 'package:cbook_dt/feature/Received/create_recevied_item.dart';
 import 'package:cbook_dt/feature/Received/provider/received_provider.dart';
 import 'package:cbook_dt/feature/Received/recevied_details.dart';
 import 'package:cbook_dt/feature/Received/recevied_edit.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -20,6 +21,11 @@ class _ReceivedListState extends State<ReceivedList> {
   @override
   void initState() {
     super.initState();
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
+
+        
     Future.microtask(() =>
         Provider.of<ReceiveVoucherProvider>(context, listen: false)
             .fetchReceiveVouchers());
@@ -211,24 +217,48 @@ class _ReceivedListState extends State<ReceivedList> {
                       ),
                     ),
                     const Spacer(),
-                    Consumer<ReceiveVoucherProvider>(
-                      builder: (context, provider, child) {
-                        if (provider.isLoading) {
-                          return const Center(child: Text(''));
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 0),
-                          child: Text(
-                            'T. Received: ৳${provider.totalReceived.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                    // Consumer<ReceiveVoucherProvider>(
+                    //   builder: (context, provider, child) {
+                    //     if (provider.isLoading) {
+                    //       return const Center(child: SizedBox.shrink());
+                    //     }
+                    //     return Padding(
+                    //       padding: const EdgeInsets.symmetric(
+                    //           horizontal: 0, vertical: 0),
+                    //       child: Text(
+                    //         'T. Received: ${provider.totalReceived.toStringAsFixed(2)}',
+                    //         style: const TextStyle(
+                    //           fontSize: 14,
+                    //           color: Colors.black,
+                    //         ),
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
+
+
+                    Consumer2<ReceiveVoucherProvider, CurrencyProvider>(
+  builder: (context, provider, currencyProvider, child) {
+    // Show loading if either provider is loading
+    if (provider.isLoading || currencyProvider.isLoading) {
+      return const Center(child: SizedBox.shrink());
+    }
+    
+    final currency = currencyProvider.currencyModel?.currency ?? '৳';
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+      child: Text(
+        'T. Received: $currency ${provider.totalReceived.toStringAsFixed(2)}',
+        style: const TextStyle(
+          fontSize: 14,
+          color: Colors.black,
+        ),
+      ),
+    );
+  },
+),
+
                   ],
                 ),
                 Consumer<ReceiveVoucherProvider>(builder: (context, provider, child) {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
 import 'package:cbook_dt/feature/customer_create/customer_create.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
@@ -92,6 +93,9 @@ class _LayoutState extends State<_Layout> {
   @override
   void initState() {
     super.initState();
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
 
     // Initialize with loading text
     billController.text = "Loading...";
@@ -1202,13 +1206,28 @@ class _LayoutState extends State<_Layout> {
                                                                                     ),
 
                                                                                     ///cash mrp, qty, unit, total price.
-                                                                                    Text(
-                                                                                      "৳ ${item.mrp!} x ${item.quantity!} ${item.unit} = ${item.total}",
-                                                                                      style: const TextStyle(
-                                                                                        color: Colors.grey,
-                                                                                        fontSize: 12,
-                                                                                        //fontWeight: FontWeight.w600,
-                                                                                      ),
+                                                                                    // Text(
+                                                                                    //   "৳ ${item.mrp!} x ${item.quantity!} ${item.unit} = ${item.total}",
+                                                                                    //   style: const TextStyle(
+                                                                                    //     color: Colors.grey,
+                                                                                    //     fontSize: 12,
+                                                                                    //     //fontWeight: FontWeight.w600,
+                                                                                    //   ),
+                                                                                    // ),
+
+                                                                                    ///cash mrp, qty, unit, total price.
+                                                                                    Consumer<CurrencyProvider>(
+                                                                                      builder: (context, currencyProvider, child) {
+                                                                                        final currency = currencyProvider.currencyModel?.currency ?? '৳';
+
+                                                                                        return Text(
+                                                                                          "$currency ${item.mrp!} x ${item.quantity!} ${item.unit} = $currency ${item.total}",
+                                                                                          style: const TextStyle(
+                                                                                            color: Colors.grey,
+                                                                                            fontSize: 12,
+                                                                                          ),
+                                                                                        );
+                                                                                      },
                                                                                     ),
                                                                                   ],
                                                                                 ),
@@ -1504,13 +1523,28 @@ class _LayoutState extends State<_Layout> {
                                                                                     ),
 
                                                                                     ///creadit mrp, quantity, unit, total amount.
-                                                                                    Text(
-                                                                                      "৳ ${item.mrp!} x ${item.quantity!} ${item.unit} = ${item.total}",
-                                                                                      style: const TextStyle(
-                                                                                        color: Colors.grey,
-                                                                                        fontSize: 12,
-                                                                                        //fontWeight: FontWeight.w200,
-                                                                                      ),
+                                                                                    // Text(
+                                                                                    //   "৳ ${item.mrp!} x ${item.quantity!} ${item.unit} = ${item.total}",
+                                                                                    //   style: const TextStyle(
+                                                                                    //     color: Colors.grey,
+                                                                                    //     fontSize: 12,
+                                                                                    //     //fontWeight: FontWeight.w200,
+                                                                                    //   ),
+                                                                                    // ),
+
+                                                                                    ///cash mrp, qty, unit, total price.
+                                                                                    Consumer<CurrencyProvider>(
+                                                                                      builder: (context, currencyProvider, child) {
+                                                                                        final currency = currencyProvider.currencyModel?.currency ?? '৳';
+
+                                                                                        return Text(
+                                                                                          "$currency ${item.mrp!} x ${item.quantity!} ${item.unit} = $currency ${item.total}",
+                                                                                          style: const TextStyle(
+                                                                                            color: Colors.grey,
+                                                                                            fontSize: 12,
+                                                                                          ),
+                                                                                        );
+                                                                                      },
                                                                                     ),
                                                                                   ],
                                                                                 ),

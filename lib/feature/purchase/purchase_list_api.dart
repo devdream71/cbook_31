@@ -1,5 +1,6 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/no_data_fount.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:cbook_dt/feature/purchase/provider/purchase_provider.dart';
 import 'package:cbook_dt/feature/purchase/purchase_details_page.dart';
 import 'package:cbook_dt/feature/purchase/purchase_update.dart';
@@ -97,6 +98,9 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
   void initState() {
     super.initState();
     // Fetch the data when the screen is initialized
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
 
     Future.delayed(Duration.zero, () {
       Provider.of<PurchaseProvider>(context, listen: false).fetchPurchases();
@@ -388,17 +392,17 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              "Purchase: ৳${summary['totalPurchase']?.toStringAsFixed(2) ?? '0.00'}",
+                              "Purchase: ${summary['totalPurchase']?.toStringAsFixed(2) ?? '0.00'}",
                               style: const TextStyle(
                                   fontSize: 12, color: Colors.black),
                             ),
                             Text(
-                              "Payment: ৳${summary['totalPayment']?.toStringAsFixed(2) ?? '0.00'}",
+                              "Payment: ${summary['totalPayment']?.toStringAsFixed(2) ?? '0.00'}",
                               style: const TextStyle(
                                   fontSize: 12, color: Colors.black),
                             ),
                             Text(
-                              "Due: ৳${summary['totalDue']?.toStringAsFixed(2) ?? '0.00'}",
+                              "Due: ${summary['totalDue']?.toStringAsFixed(2) ?? '0.00'}",
                               style: const TextStyle(
                                   fontSize: 12, color: Colors.black),
                             ),
@@ -533,10 +537,13 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
               ),
             ),
 
-            // Purchase list with date filtering
+            // Purchase list with date filtering + currency from API
             Expanded(
-              child: Consumer<PurchaseProvider>(
-                builder: (context, provider, child) {
+              child: Consumer2<PurchaseProvider, CurrencyProvider>(
+                builder: (context, provider, currencyProvider, child) {
+                  final currency =
+                      currencyProvider.currencyModel?.currency ?? '৳';
+
                   if (provider.isLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
@@ -548,13 +555,6 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                       message: "No Purchase records found",
                       lottieAsset: "assets/animation/no_data.json",
                     );
-
-                    // const Center(
-                    //     child: Text('No Purchase data available',
-                    //         style: TextStyle(
-                    //             fontSize: 18,
-                    //             color: Colors.black,
-                    //             fontWeight: FontWeight.bold)));
                   }
 
                   // Filter purchases based on selected date range
@@ -574,11 +574,9 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 0.0, vertical: 1),
-                    itemCount: filteredPurchases
-                        .length, // Use filtered purchases count
+                    itemCount: filteredPurchases.length,
                     itemBuilder: (context, index) {
-                      final purchase =
-                          filteredPurchases[index]; // Use filtered purchases
+                      final purchase = filteredPurchases[index];
 
                       final billCount = filteredPurchases.length;
                       debugPrint('filtered purchase count => $billCount');
@@ -590,7 +588,6 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
 
                       final transactionMethod =
                           purchase.transactionMethod ?? '';
-
                       debugPrint('transactionMethod ==>$transactionMethod');
 
                       final paymentStatus = purchase.paymentStatus ?? 0;
@@ -612,10 +609,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                         child: Card(
                           shadowColor: const Color.fromARGB(255, 12, 9, 199),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              2.0,
-                            ),
-                            // side: BorderSide(color: Color(0xffdddefa))
+                            borderRadius: BorderRadius.circular(2.0),
                           ),
                           elevation: 1,
                           margin: const EdgeInsets.all(2),
@@ -633,7 +627,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                     children: [
                                       Row(
                                         children: [
-                                          //date, invoice number
+                                          // Date, invoice number
                                           SizedBox(
                                             width: 90,
                                             child: Column(
@@ -647,17 +641,19 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                                       fontSize: 14,
                                                       color: Colors.black),
                                                 ),
-                                                Text('${purchase.billNumber}',
-                                                    style: const TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold)),
+                                                Text(
+                                                  '${purchase.billNumber}',
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
                                               ],
                                             ),
                                           ),
 
-                                          //divider
+                                          // Divider
                                           Container(
                                             height: 30,
                                             width: 2,
@@ -666,7 +662,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                                 horizontal: 6),
                                           ),
 
-                                          //cash or supplier name, amount
+                                          // Cash or supplier name, amount
                                           Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -680,10 +676,11 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                                     color: Colors.black),
                                               ),
                                               Text(
-                                                  '৳ ${purchase.grossTotal ?? 0}',
-                                                  style: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.black)),
+                                                '$currency ${purchase.grossTotal ?? 0}',
+                                                style: const TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.black),
+                                              ),
                                             ],
                                           )
                                         ],
@@ -692,11 +689,10 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                   ),
                                 ),
 
-                                /// End Right side:, paid, unpaid, due amount, edit, delete
+                                /// Right side: Payment status, due
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    //=>paid, unpaid, due amount , //=> edit  and update button
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
                                       mainAxisAlignment:
@@ -728,7 +724,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                                         .toLowerCase() ==
                                                     'customer'
                                                 ? Text(
-                                                    "Due: ${purchase.due} TK", // Show due amount here
+                                                    "Due: $currency ${purchase.due ?? 0}",
                                                     style: const TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.black,
@@ -752,6 +748,220 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                 },
               ),
             ),
+
+            // Purchase list with date filtering
+            // Expanded(
+            //   child: Consumer<PurchaseProvider>(
+            //     builder: (context, provider, child) {
+            //       if (provider.isLoading) {
+            //         return const Center(child: CircularProgressIndicator());
+            //       }
+
+            //       if (provider.purchaseData == null ||
+            //           provider.purchaseData!.data == null ||
+            //           provider.purchaseData!.data!.isEmpty) {
+            //         return const NoDataWidget(
+            //           message: "No Purchase records found",
+            //           lottieAsset: "assets/animation/no_data.json",
+            //         );
+
+            //       }
+
+            //       // Filter purchases based on selected date range
+            //       List<dynamic> filteredPurchases =
+            //           filterPurchasesByDateRange(provider.purchaseData!.data!);
+
+            //       if (filteredPurchases.isEmpty) {
+            //         return const Center(
+            //           child: Text("No purchases found for selected date range",
+            //               style: TextStyle(
+            //                   color: Colors.black,
+            //                   fontWeight: FontWeight.bold)),
+            //         );
+            //       }
+
+            //       return ListView.builder(
+            //         shrinkWrap: true,
+            //         padding: const EdgeInsets.symmetric(
+            //             horizontal: 0.0, vertical: 1),
+            //         itemCount: filteredPurchases
+            //             .length, // Use filtered purchases count
+            //         itemBuilder: (context, index) {
+            //           final purchase =
+            //               filteredPurchases[index]; // Use filtered purchases
+
+            //           final billCount = filteredPurchases.length;
+            //           debugPrint('filtered purchase count => $billCount');
+
+            //           bool isEnabled = purchase.disabled == 'enable';
+
+            //           final purchaseId =
+            //               purchase.purchaseDetails!.first.purchaseId.toString();
+
+            //           final transactionMethod =
+            //               purchase.transactionMethod ?? '';
+
+            //           debugPrint('transactionMethod ==>$transactionMethod');
+
+            //           final paymentStatus = purchase.paymentStatus ?? 0;
+
+            //           return InkWell(
+            //             onLongPress: () {
+            //               editDeleteDiolog(context, purchaseId,
+            //                   transactionMethod, paymentStatus);
+            //             },
+            //             onTap: () {
+            //               Navigator.push(
+            //                 context,
+            //                 MaterialPageRoute(
+            //                   builder: (context) =>
+            //                       PurchaseDetailsPage(purchase: purchase),
+            //                 ),
+            //               );
+            //             },
+            //             child: Card(
+            //               shadowColor: const Color.fromARGB(255, 12, 9, 199),
+            //               shape: RoundedRectangleBorder(
+            //                 borderRadius: BorderRadius.circular(
+            //                   2.0,
+            //                 ),
+            //                 // side: BorderSide(color: Color(0xffdddefa))
+            //               ),
+            //               elevation: 1,
+            //               margin: const EdgeInsets.all(2),
+            //               child: Padding(
+            //                 padding: const EdgeInsets.symmetric(
+            //                     horizontal: 8, vertical: 8),
+            //                 child: Row(
+            //                   crossAxisAlignment: CrossAxisAlignment.start,
+            //                   children: [
+            //                     /// Left side: Supplier info
+            //                     Expanded(
+            //                       child: Column(
+            //                         crossAxisAlignment:
+            //                             CrossAxisAlignment.start,
+            //                         children: [
+            //                           Row(
+            //                             children: [
+            //                               //date, invoice number
+            //                               SizedBox(
+            //                                 width: 90,
+            //                                 child: Column(
+            //                                   crossAxisAlignment:
+            //                                       CrossAxisAlignment.start,
+            //                                   children: [
+            //                                     Text(
+            //                                       formatDate(
+            //                                           purchase.pruchaseDate),
+            //                                       style: const TextStyle(
+            //                                           fontSize: 14,
+            //                                           color: Colors.black),
+            //                                     ),
+            //                                     Text('${purchase.billNumber}',
+            //                                         style: const TextStyle(
+            //                                             fontSize: 14,
+            //                                             color: Colors.black,
+            //                                             fontWeight:
+            //                                                 FontWeight.bold)),
+            //                                   ],
+            //                                 ),
+            //                               ),
+
+            //                               //divider
+            //                               Container(
+            //                                 height: 30,
+            //                                 width: 2,
+            //                                 color: Colors.green.shade200,
+            //                                 margin: const EdgeInsets.symmetric(
+            //                                     horizontal: 6),
+            //                               ),
+
+            //                               //cash or supplier name, amount
+            //                               Column(
+            //                                 crossAxisAlignment:
+            //                                     CrossAxisAlignment.start,
+            //                                 children: [
+            //                                   Text(
+            //                                     (purchase.supplier == 'N/A')
+            //                                         ? 'Cash'
+            //                                         : purchase.supplier!,
+            //                                     style: const TextStyle(
+            //                                         fontSize: 14,
+            //                                         color: Colors.black),
+            //                                   ),
+            //                                   Text(
+            //                                       '৳ ${purchase.grossTotal ?? 0}',
+            //                                       style: const TextStyle(
+            //                                           fontSize: 14,
+            //                                           color: Colors.black)),
+            //                                 ],
+            //                               )
+            //                             ],
+            //                           ),
+            //                         ],
+            //                       ),
+            //                     ),
+
+            //                     /// End Right side:, paid, unpaid, due amount, edit, delete
+            //                     Column(
+            //                       crossAxisAlignment: CrossAxisAlignment.end,
+            //                       children: [
+            //                         //=>paid, unpaid, due amount , //=> edit  and update button
+            //                         Row(
+            //                           mainAxisSize: MainAxisSize.min,
+            //                           mainAxisAlignment:
+            //                               MainAxisAlignment.spaceAround,
+            //                           children: [
+            //                             Column(
+            //                               crossAxisAlignment:
+            //                                   CrossAxisAlignment.end,
+            //                               children: [
+            //                                 Text(
+            //                                   purchase.paymentStatus == 2
+            //                                       ? 'Paid'
+            //                                       : purchase.paymentStatus == 1
+            //                                           ? 'Partial'
+            //                                           : 'Unpaid',
+            //                                   style: TextStyle(
+            //                                     fontWeight: FontWeight.bold,
+            //                                     fontSize: 14,
+            //                                     color: purchase.paymentStatus ==
+            //                                             2
+            //                                         ? Colors.green
+            //                                         : purchase.paymentStatus ==
+            //                                                 1
+            //                                             ? Colors.orange
+            //                                             : Colors.red,
+            //                                   ),
+            //                                 ),
+            //                                 purchase.transactionMethod!
+            //                                             .toLowerCase() ==
+            //                                         'customer'
+            //                                     ? Text(
+            //                                         "Due: ${purchase.due} TK", // Show due amount here
+            //                                         style: const TextStyle(
+            //                                           fontSize: 12,
+            //                                           color: Colors.black,
+            //                                         ),
+            //                                       )
+            //                                     : const SizedBox.shrink(),
+            //                               ],
+            //                             ),
+            //                             const SizedBox(width: 8),
+            //                           ],
+            //                         ),
+            //                       ],
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ),
+            //             ),
+            //           );
+            //         },
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

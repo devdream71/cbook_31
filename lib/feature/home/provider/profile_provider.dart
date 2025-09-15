@@ -81,99 +81,6 @@ class ProfileProvider with ChangeNotifier {
 
   CompanyProfileUpdate? updateprofile;
 
-   
-
-  
-//   Future<bool> updateProfile({
-//   required int userId,
-//   required String companyName,
-//   required String email,
-//   required String phone,
-//   required String currency,
-//   required String name,
-//   required String nickName,
-//   required String address,
-//   required int countryId,
-//   File? avatar,
-//   File? logo,
-//   File? signature,
-// }) async {
-//   final uri = Uri.parse("${AppUrl.baseurl}profile/update");
-
-//   final prefs = await SharedPreferences.getInstance();
-//   final token = prefs.getString('token');
-
-//   final companyID = prefs.getString('company_id');
-
-
-//   if (token == null) {
-//     errorMessage = 'No token found. Please login again.';
-//     isLoading = false;
-//     notifyListeners();
-//     return false;
-//   }
-
-//   var request = http.MultipartRequest('POST', uri);
-
-//   // Add headers with token
-//   request.headers.addAll({
-//     "Authorization": "Bearer $token",
-//     "Accept": "application/json",
-//   });
-
-//   request.fields.addAll({
-//     'company_id' : companyID ?? '',  
-//     'user_id': userId.toString(),
-//     'company_name': companyName,
-//     'country_id': countryId.toString(),
-//     'currency': currency,
-//     'email': email,
-//     'phone': phone,
-//     'address': address,
-//     'name': name,
-//     'nick_name': nickName,
-//   });
-
-//   if (avatar != null) {
-//     request.files.add(await http.MultipartFile.fromPath('avatar', avatar.path));
-//   }
-//   if (logo != null) {
-//     request.files.add(await http.MultipartFile.fromPath('logo', logo.path));
-//   }
-//   if (signature != null) {
-//     request.files.add(await http.MultipartFile.fromPath('signature', signature.path));
-//   }
-
-//   try {
-//     final streamedResponse = await request.send();
-//     final response = await http.Response.fromStream(streamedResponse);
-
-//     debugPrint('Response === ${response.body}');
-
-//     if (response.statusCode == 200) {
-//       final responseData = jsonDecode(response.body);
-//       if (responseData['success'] == true) {
-//         updateprofile = CompanyProfileUpdate.fromJson(responseData['data']);
-
-//         // Save updated profile locally
-//         //prefs.setString('cached_profile', json.encode(updateprofile!.toJson()));
-
-//         notifyListeners();
-//         return true;
-//       } else {
-//         errorMessage = responseData['message'] ?? "Unknown error";
-//         debugPrint("Update failed: $errorMessage");
-//       }
-//     } else {
-//       debugPrint("Failed to update profile. Status code: ${response.statusCode}");
-//     }
-//   } catch (e) {
-//     debugPrint("Update profile error: $e");
-//   }
-
-//   return false;
-// }
-
 
 
 Future<bool> updateProfile({
@@ -261,10 +168,6 @@ Future<bool> updateProfile({
 
   return false;
 }
-
-
-
-
 
 
   ////country provider

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
 import 'package:cbook_dt/feature/customer_create/model/customer_list_model.dart';
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
@@ -54,6 +55,9 @@ class _LayoutState extends State<_Layout> {
   @override
   void initState() {
     super.initState();
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
 
     // Initialize with loading text
     billController.text = "Loading...";
@@ -1140,12 +1144,32 @@ class _LayoutState extends State<_Layout> {
 
                                                                       //${item.unit}
 
-                                                                      Text(
-                                                                        "৳ ${item.mrp!} x ${item.quantity!} ${item.unit} = ${(int.tryParse(item.quantity!) ?? 0) * (double.tryParse(item.mrp!) ?? 0)}",
-                                                                        style: const TextStyle(
-                                                                            color:
-                                                                                Colors.black,
-                                                                            fontSize: 14),
+                                                                      // Text(
+                                                                      //   "৳ ${item.mrp!} x ${item.quantity!} ${item.unit} = ${(int.tryParse(item.quantity!) ?? 0) * (double.tryParse(item.mrp!) ?? 0)}",
+                                                                      //   style: const TextStyle(
+                                                                      //       color:
+                                                                      //           Colors.black,
+                                                                      //       fontSize: 14),
+                                                                      // ),
+
+                                                                      ///cash mrp, qty, unit, total price.
+                                                                      Consumer<
+                                                                          CurrencyProvider>(
+                                                                        builder: (context,
+                                                                            currencyProvider,
+                                                                            child) {
+                                                                          final currency =
+                                                                              currencyProvider.currencyModel?.currency ?? '৳';
+
+                                                                          return Text(
+                                                                            "$currency ${item.mrp!} x ${item.quantity!} ${item.unit} = $currency ${item.total}",
+                                                                            style:
+                                                                                const TextStyle(
+                                                                              color: Colors.grey,
+                                                                              fontSize: 12,
+                                                                            ),
+                                                                          );
+                                                                        },
                                                                       ),
                                                                     ],
                                                                   ),
@@ -1440,8 +1464,6 @@ class _LayoutState extends State<_Layout> {
                         const SizedBox(
                           height: 2,
                         ),
-
-                        
 
                         SizedBox(
                           width: 200, // Half screen width

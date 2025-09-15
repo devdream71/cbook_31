@@ -2,11 +2,9 @@ import 'package:cbook_dt/feature/account/account.dart';
 import 'package:cbook_dt/feature/home/presentation/layer/dashboard/dashboard_view.dart';
 import 'package:cbook_dt/feature/home/presentation/layer/item_view.dart';
 import 'package:cbook_dt/feature/home/presentation/layer/report_view.dart';
-import 'package:cbook_dt/feature/home/presentation/layer/transaction_view.dart';
 import 'package:cbook_dt/feature/party/party_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'layer/settings_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -40,12 +38,12 @@ class HomeViewState extends State<HomeView> {
   }
 
   List<String> title = [
-    "Dashboard",
+    "Home",
     'Party'
-    "Item",
+        "Item",
     "Account"
-    //"Transaction",
-    "Report",
+        //"Transaction",
+        "Report",
     'Settings',
     //"Profile",
   ];
@@ -81,7 +79,7 @@ class HomeViewState extends State<HomeView> {
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.dashboard),
-                  label: 'Dashboard',
+                  label: 'Home',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.groups),
@@ -107,7 +105,6 @@ class HomeViewState extends State<HomeView> {
                   icon: Icon(Icons.settings),
                   label: 'Settings',
                 ),
-                
               ],
             ),
           ),

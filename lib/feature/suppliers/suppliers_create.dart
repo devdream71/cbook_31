@@ -78,11 +78,16 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
     final openingBalance = _opiningBanglaceController.text.trim();
 
     // ✅ Basic required field check
-    if (name.isNotEmpty &&
-        proprietorName.isNotEmpty &&
-        phone.isNotEmpty &&
-        address.isNotEmpty &&
-        openingBalance.isNotEmpty) {
+    if (name.isNotEmpty 
+    
+    // &&
+    //     proprietorName.isNotEmpty &&
+    //     phone.isNotEmpty &&
+    //     address.isNotEmpty &&
+    //     openingBalance.isNotEmpty
+        
+        
+        ) {
       await supplierProvider.createSupplier(
         name: name,
         email: email,
@@ -384,7 +389,7 @@ class _SuppliersCreateState extends State<SuppliersCreate> {
                   AddSalesFormfield(
                     labelText: "Name",
                     height: 40,
-                    controller: _individualNameController,
+                    controller: _nameController, //_individualNameController
                     //validator: _validateRequired,
                   ),
 

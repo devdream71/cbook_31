@@ -59,7 +59,6 @@ class _PartyState extends State<Party> {
 
     Future.microtask(() =>
         Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
-
   }
 
   bool isSearching = false;
@@ -235,8 +234,6 @@ class _PartyState extends State<Party> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-
-
                               // Consumer<DashboardReportProvider>(
                               //   builder: (context, provider, _) {
                               //     final isLoadingTransaction =
@@ -293,66 +290,64 @@ class _PartyState extends State<Party> {
                               //   },
                               // ),
 
+                              Consumer2<DashboardReportProvider,
+                                  CurrencyProvider>(
+                                builder:
+                                    (context, provider, currencyProvider, _) {
+                                  final currency = currencyProvider
+                                          .currencyModel?.currency ??
+                                      '৳'; // fallback
 
+                                  final isLoadingTransaction =
+                                      provider.isLoadingCustomerTransaction;
+                                  final isLoadingCount =
+                                      provider.isLoadingCustomerCount;
 
-                              Consumer2<DashboardReportProvider, CurrencyProvider>(
-          builder: (context, provider, currencyProvider, _) {
-            final currency =
-                currencyProvider.currencyModel?.currency ?? '৳'; // fallback
+                                  if (isLoadingTransaction || isLoadingCount) {
+                                    return const Text("Loading...");
+                                  }
 
-            final isLoadingTransaction = provider.isLoadingCustomerTransaction;
-            final isLoadingCount = provider.isLoadingCustomerCount;
+                                  if (provider.errorCustomerTransaction !=
+                                          null ||
+                                      provider.errorCustomerCount != null) {
+                                    return Text(
+                                        "Error: ${provider.errorCustomerTransaction ?? provider.errorCustomerCount}");
+                                  }
 
-            if (isLoadingTransaction || isLoadingCount) {
-              return const Text("Loading...");
-            }
-
-            if (provider.errorCustomerTransaction != null ||
-                provider.errorCustomerCount != null) {
-              return Text(
-                  "Error: ${provider.errorCustomerTransaction ?? provider.errorCustomerCount}");
-            }
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Customer (${provider.customerTransactionCountTotal ?? 0})',
-                  style: TextStyle(
-                    color: selectedFilter == 'customer'
-                        ? Colors.blue[700]
-                        : Colors.black,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      '$currency ${provider.customerTransaction ?? 0}',
-                      style: TextStyle(
-                        color: selectedFilter == 'customer'
-                            ? Colors.blue[700]
-                            : Colors.black,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                ),
-              ],
-            );
-          },
-        ),
-    
-    
-
-
-
-
-
-
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Customer (${provider.customerTransactionCountTotal ?? 0})',
+                                        style: TextStyle(
+                                          color: selectedFilter == 'customer'
+                                              ? Colors.blue[700]
+                                              : Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '$currency ${provider.customerTransaction ?? 0}',
+                                            style: TextStyle(
+                                              color:
+                                                  selectedFilter == 'customer'
+                                                      ? Colors.blue[700]
+                                                      : Colors.black,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         ],
@@ -436,52 +431,48 @@ class _PartyState extends State<Party> {
                                 //   },
                                 // ),
 
+                                Consumer2<DashboardReportProvider,
+                                    CurrencyProvider>(
+                                  builder:
+                                      (context, provider, currencyProvider, _) {
+                                    final currency = currencyProvider
+                                            .currencyModel?.currency ??
+                                        '৳'; // fallback
 
-                                Consumer2<DashboardReportProvider, CurrencyProvider>(
-          builder: (context, provider, currencyProvider, _) {
-            final currency =
-                currencyProvider.currencyModel?.currency ?? '৳'; // fallback
+                                    if (provider.isLoading) {
+                                      return const SizedBox.shrink();
+                                    } else if (provider.error != null) {
+                                      return const SizedBox.shrink();
+                                    }
 
-            if (provider.isLoading) {
-              return const SizedBox.shrink();
-            } else if (provider.error != null) {
-              return const SizedBox.shrink();
-            }
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  'Supplier (${provider.totalSupplierCount ?? 0})',
-                  style: TextStyle(
-                    color: selectedFilter == 'supplier'
-                        ? Colors.red[700]
-                        : Colors.black,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '$currency ${provider.supplierTransaction ?? 0}',
-                  style: TextStyle(
-                    color: selectedFilter == 'supplier'
-                        ? Colors.red[700]
-                        : Colors.black,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      
-
-
-
-
-
-
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          'Supplier (${provider.totalSupplierCount ?? 0})',
+                                          style: TextStyle(
+                                            color: selectedFilter == 'supplier'
+                                                ? Colors.red[700]
+                                                : Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          '$currency ${provider.supplierTransaction ?? 0}',
+                                          style: TextStyle(
+                                            color: selectedFilter == 'supplier'
+                                                ? Colors.red[700]
+                                                : Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
                               ],
                             ),
                           ),
@@ -703,8 +694,17 @@ class _PartyState extends State<Party> {
                                       color: Colors.black,
                                     ),
                                   ),
+                                  // Text(
+                                  //   "${customers.due}",
+                                  //   style: GoogleFonts.notoSansPhagsPa(
+                                  //     fontSize: 13,
+                                  //     color: customers.type == 'customer'
+                                  //         ? const Color(0xff278d46)
+                                  //         : Colors.red[700],
+                                  //   ),
+                                  // ),
                                   Text(
-                                    "${customers.due}",
+                                    "${customers.due.toStringAsFixed(2)}", // Now customers.due is already a double
                                     style: GoogleFonts.notoSansPhagsPa(
                                       fontSize: 13,
                                       color: customers.type == 'customer'

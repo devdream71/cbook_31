@@ -390,7 +390,7 @@ class CustomerProvider extends ChangeNotifier {
     final url = Uri.parse('${AppUrl.baseurl}customer/edit/$customerId');
     try {
       final response = await http.get(
-        url,
+        url,   
         headers: {
           'Accept': 'application/json',
           "Authorization": "Bearer $token",

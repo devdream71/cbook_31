@@ -1,5 +1,6 @@
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/no_data_fount.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:cbook_dt/feature/sales_return/presentation/sales_return_view.dart';
 import 'package:cbook_dt/feature/sales_return/provider/sale_return_provider.dart';
 import 'package:cbook_dt/feature/sales_return/sales_return_detail.dart';
@@ -22,6 +23,10 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
     final provider = Provider.of<SalesReturnProvider>(context, listen: false);
     provider.fetchSalesReturn();
     provider.fetchItems();
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
+        
   }
 
   final TextEditingController _searchController = TextEditingController();
@@ -183,7 +188,7 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                     child: Text(
-                      'T. S. Return: ৳${provider.totalReturn.toStringAsFixed(2)}',
+                      'T. S. Return: ${provider.totalReturn.toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontSize: 14,
                         //fontWeight: FontWeight.bold,
@@ -205,6 +210,8 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
               ),
             );
           }),
+          
+          
           Expanded(
             child: provider.isLoading
                 ? Consumer<SalesReturnProvider>(
@@ -300,12 +307,25 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.bold),
                                           ),
-                                          Text(
-                                            "৳ ${item.grossTotal}",
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12),
-                                          ),
+                                          // Text(
+                                          //   "৳ ${item.grossTotal}",
+                                          //   style: const TextStyle(
+                                          //       color: Colors.black,
+                                          //       fontSize: 12),
+                                          // ),
+
+                                          Consumer<CurrencyProvider>(
+  builder: (context, currencyProvider, child) {
+    final currency = currencyProvider.currencyModel?.currency ?? '৳';
+    return Text(
+      "$currency ${item.grossTotal}",
+      style: const TextStyle(
+        color: Colors.black,
+        fontSize: 12,
+      ),
+    );
+  },
+),
                                         ],
                                       ),
 
@@ -342,6 +362,8 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
                         ),
                       ),
           ),
+
+          
         ],
       ),
     );
