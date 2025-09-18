@@ -390,37 +390,7 @@ class _IncomeCreateState extends State<IncomeCreate> {
                     ),
                   ),
 
-                  // SizedBox(
-                  //   height: 30,
-                  //   width: 150,
-                  //   child: CustomDropdownTwo(
-                  //     hint: '',
-                  //     items: const ['Cash in Hand', 'Bank'],
-                  //     width: double.infinity,
-                  //     height: 30,
-                  //     labelText: 'Received to',
-                  //     selectedItem: selectedReceivedTo,
-                  //     onChanged: (value) async {
-                  //       debugPrint('=== Received To Selected: $value ===');
-
-                  //       setState(() {
-                  //         selectedReceivedTo = value;
-                  //         selectedAccount = null; // reset account selection
-                  //       });
-
-                  //       if (value == 'Cash in Hand') {
-                  //         debugPrint('Fetching Cash accounts...');
-                  //         await provider.fetchAccounts('cash');
-                  //       } else if (value == 'Bank') {
-                  //         debugPrint('Fetching Bank accounts...');
-                  //         await provider.fetchAccounts('bank');
-                  //       }
-
-                  //       debugPrint(
-                  //           'Fetched Account Names: ${provider.accountNames}');
-                  //     },
-                  //   ),
-                  // ),
+                  
 
                   const SizedBox(width: 4),
 
@@ -469,7 +439,7 @@ class _IncomeCreateState extends State<IncomeCreate> {
                             ),
                     ),
                   ),
-                  Column(
+                  const Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       //bill person
@@ -705,10 +675,7 @@ class _IncomeCreateState extends State<IncomeCreate> {
                                       });
                                     },
                                   );
-                                  // setState(() {
-                                  //   provider.receiptItems.remove(item);
-                                  //   provider.notifyListeners();
-                                  // });
+                                  
                                 },
                               ),
                             ],

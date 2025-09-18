@@ -677,107 +677,262 @@ class SaleUpdateProvider extends ChangeNotifier {
   }
 
   ///update sales
-  Future<void> updateSale(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+  // Future<void> updateSale(BuildContext context) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('token');
 
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   try {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      final discountAmount = updateDiscountAmount.text;
-      final discountPercent = updateDiscountPercentance.text;
+  //     final discountAmount = updateDiscountAmount.text;
+  //     final discountPercent = updateDiscountPercentance.text;
 
-      // Get the current sale ID
-      final saleId = currentSaleId?.toString();
+  //     // Get the current sale ID
+  //     final saleId = currentSaleId?.toString();
 
-      final url = "https://commercebook.site/api/v1/sales/update"
-          "?id=$saleId"
-          "&user_id=${prefs.getInt("user_id")}"
-          "&customer_id=${customerController.text}"
-          "&bill_number=${billNumberController.text}"
-          "&sale_date=${purchaseDateController.text}"
-          "&details_notes=notes"
-          "&gross_total=${getSubTotal}" //provider.getSubTotal()
-          "&payment_out=1"
-          "&payment_amount=${calculateFinalGrossTotalWithTax()}"
-          "&discount_percent=$discountPercent"
-          "&discount=$discountAmount"
-          "&tax_percents=${taxPercentValue}"
-          "&tax=${taxAmount.toStringAsFixed(2)}"
-          "&total_item_discounts=${updateDiscountAmount.text}"
-          "&total_item_vats=${taxAmount.toStringAsFixed(2)}";
+  //     final url = "https://commercebook.site/api/v1/sales/update"
+  //         "?id=$saleId"
+  //         "&user_id=${prefs.getInt("user_id")}"
+  //         "&customer_id=${customerController.text}"
+  //         "&bill_number=${billNumberController.text}"
+  //         "&sale_date=${purchaseDateController.text}"
+  //         "&details_notes=notes"
+  //         "&gross_total=${getSubTotal}" //provider.getSubTotal()
+  //         "&payment_out=1"
+  //         "&payment_amount=${calculateFinalGrossTotalWithTax()}"
+  //         "&discount_percent=$discountPercent"
+  //         "&discount=$discountAmount"
+  //         "&tax_percents=${taxPercentValue}"
+  //         "&tax=${taxAmount.toStringAsFixed(2)}"
+  //         "&total_item_discounts=${updateDiscountAmount.text}"
+  //         "&total_item_vats=${taxAmount.toStringAsFixed(2)}";
 
-      debugPrint("API URL: $url");
+  //     debugPrint("API URL: $url");
 
-      final requestBody = {
-        "sales_items": saleUpdateList.map((e) => e.toJson()).toList(),
-      };
+  //     final requestBody = {
+  //       "sales_items": saleUpdateList.map((e) => e.toJson()).toList(),
+  //     };
 
-      debugPrint("Request Body: ${jsonEncode(requestBody)}");
+  //     debugPrint("Request Body: ${jsonEncode(requestBody)}");
 
-      if (requestBody.isEmpty) return;
+  //     if (requestBody.isEmpty) return;
 
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $token",
-        },
-        body: jsonEncode(requestBody),
-      );
+  //     final response = await http.post(
+  //       Uri.parse(url),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Authorization": "Bearer $token",
+  //       },
+  //       body: jsonEncode(requestBody),
+  //     );
 
-      debugPrint("API Response: ${response.body}");
+  //     debugPrint("API Response: ${response.body}");
 
-      final data = json.decode(response.body);
+  //     final data = json.decode(response.body);
 
-      if (response.statusCode == 200) {
-        if (data["success"] == true) {
-          debugPrint("Sale successful: ${data["data"]}");
+  //     if (response.statusCode == 200) {
+  //       if (data["success"] == true) {
+  //         debugPrint("Sale successful: ${data["data"]}");
 
-          // Navigate to home page
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeView()),
-          );
+  //         // Navigate to home page
+  //         Navigator.pushReplacement(
+  //           context,
+  //           MaterialPageRoute(builder: (context) => const HomeView()),
+  //         );
 
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Sale Update successful!"),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-              duration: Duration(seconds: 2),
-            ),
-          );
-        } else {
-          // Handle API returning success: false
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(data["message"] ?? "An error occurred."),
-              backgroundColor: Colors.red,
-            ),
-          );
+  //         // Show success message
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(
+  //             content: Text("Sale Update successful!"),
+  //             backgroundColor: Colors.green,
+  //             behavior: SnackBarBehavior.floating,
+  //             duration: Duration(seconds: 2),
+  //           ),
+  //         );
+  //       } else {
+  //         // Handle API returning success: false
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(
+  //             content: Text(data["message"] ?? "An error occurred."),
+  //             backgroundColor: Colors.red,
+  //           ),
+  //         );
+  //       }
+  //     } else {
+  //       // Handle API returning an error status code
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text(
+  //             data["message"] ?? "Failed to process sale. Please try again.",
+  //           ),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     // Handle network or JSON decoding errors
+  //     debugPrint("Error: $e");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text("An unexpected error occurred: $e"),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   }
+  // }
+
+
+
+  ///update sales
+Future<void> updateSale(BuildContext context) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final discountAmount = updateDiscountAmount.text;
+    final discountPercent = updateDiscountPercentance.text;
+
+    // Get the current sale ID
+    final saleId = currentSaleId?.toString();
+
+    // ✅ Fixed: Call the method to get actual gross total value
+    final grossTotal = getSubTotal(); // This returns a String
+
+    // ✅ Fixed: Format tax percent properly - if empty, use empty string
+    final formattedTaxPercents = taxPercentValue.isEmpty ? "" : taxPercentValue;
+
+    final url = "https://commercebook.site/api/v1/sales/update"
+        "?id=$saleId"
+        "&user_id=${prefs.getInt("user_id")}"
+        "&customer_id=${customerController.text}"
+        "&bill_number=${billNumberController.text}"
+        "&sale_date=${purchaseDateController.text}"
+        "&details_notes=notes"
+        "&gross_total=$grossTotal" // ✅ Fixed: Use actual value, not function reference
+        "&payment_out=1"
+        "&payment_amount=${calculateFinalGrossTotalWithTax()}"
+        "&discount_percent=$discountPercent"
+        "&discount=$discountAmount"
+        "&tax_percents=$formattedTaxPercents" // ✅ Fixed: Handle empty tax
+        "&tax=${taxAmount.toStringAsFixed(2)}"
+        "&total_item_discounts=${updateDiscountAmount.text}"
+        "&total_item_vats=${taxAmount.toStringAsFixed(2)}";
+
+    debugPrint("API URL: $url");
+
+    // ✅ Fixed: Update sales_items format
+    final requestBody = {
+      "sales_items": saleUpdateList.map((e) {
+        // Parse unit_id to fix format
+        String unitId = e.unitId;
+        List<String> unitParts = unitId.split('_');
+        
+        // ✅ Fixed: Format as "id_symbol_qty" instead of "id_symbol_qty.00"
+        if (unitParts.length >= 3) {
+          String id = unitParts[0];
+          String symbol = unitParts[1];
+          String qty = double.tryParse(unitParts[2])?.toInt().toString() ?? unitParts[2];
+          unitId = "${id}_${symbol}_$qty"; // e.g., "1_pc_2" instead of "1_pc_2.00"
         }
+
+        // ✅ Fixed: Handle tax_percent - null if no tax, or "taxId_percent" if tax exists
+        String? taxPercent;
+        if (e.salesUpdateVATTAXPercentance != null && 
+            e.salesUpdateVATTAXPercentance!.isNotEmpty &&
+            e.salesUpdateVATTAXPercentance != "0" &&
+            e.salesUpdateVATTAXPercentance != "0.00") {
+          taxPercent = e.salesUpdateVATTAXPercentance;
+        } else {
+          taxPercent = null; // ✅ This will be serialized as null in JSON
+        }
+
+        return {
+          "item_id": e.itemId,
+          "qty": double.tryParse(e.qty)?.toInt().toString() ?? e.qty, // Remove .00 if whole number
+          "unit_id": unitId,
+          "price": e.price,
+          "sub_total": e.subTotal,
+          "discount_percentage": e.salesUpdateDiscountPercentace ?? "0",
+          "discount_amount": e.salesUpdateDiscountAmount ?? "0",
+          "tax_amount": e.salesUpdateVATTAXAmount ?? "0.00",
+          "tax_percent": taxPercent, // ✅ null or "taxId_percent"
+          "description": null,
+        };
+      }).toList(),
+    };
+
+    debugPrint("Request Body: ${jsonEncode(requestBody)}");
+
+    if (requestBody["sales_items"]!.isEmpty) return;
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    debugPrint("API Response: ${response.body}");
+
+    final data = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+      if (data["success"] == true) {
+        debugPrint("Sale successful: ${data["data"]}");
+
+        // Navigate to home page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeView()),
+        );
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Sale Update successful!"),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 2),
+          ),
+        );
       } else {
-        // Handle API returning an error status code
+        // Handle API returning success: false
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              data["message"] ?? "Failed to process sale. Please try again.",
-            ),
+            content: Text(data["message"] ?? "An error occurred."),
             backgroundColor: Colors.red,
           ),
         );
       }
-    } catch (e) {
-      // Handle network or JSON decoding errors
-      debugPrint("Error: $e");
+    } else {
+      // Handle API returning an error status code
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("An unexpected error occurred: $e"),
+          content: Text(
+            data["message"] ?? "Failed to process sale. Please try again.",
+          ),
           backgroundColor: Colors.red,
         ),
       );
     }
+  } catch (e) {
+    // Handle network or JSON decoding errors
+    debugPrint("Error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("An unexpected error occurred: $e"),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
+
+
+
+
+
 }

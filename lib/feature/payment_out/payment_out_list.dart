@@ -1,7 +1,3 @@
-
-
-
-
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/payment_out/create_payment_out_item.dart';
@@ -231,6 +227,8 @@ class _PaymentOutListState extends State<PaymentOutList> {
                       builder: (context, provider, child) {
                         if (provider.isLoading) {
                           return const Text('');
+
+                          
                         }
 
                         return Padding(

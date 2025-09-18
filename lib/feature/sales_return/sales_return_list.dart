@@ -26,7 +26,6 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
 
     Future.microtask(() =>
         Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
-        
   }
 
   final TextEditingController _searchController = TextEditingController();
@@ -210,8 +209,6 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
               ),
             );
           }),
-          
-          
           Expanded(
             child: provider.isLoading
                 ? Consumer<SalesReturnProvider>(
@@ -315,17 +312,21 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
                                           // ),
 
                                           Consumer<CurrencyProvider>(
-  builder: (context, currencyProvider, child) {
-    final currency = currencyProvider.currencyModel?.currency ?? '৳';
-    return Text(
-      "$currency ${item.grossTotal}",
-      style: const TextStyle(
-        color: Colors.black,
-        fontSize: 12,
-      ),
-    );
-  },
-),
+                                            builder: (context, currencyProvider,
+                                                child) {
+                                              final currency = currencyProvider
+                                                      .currencyModel
+                                                      ?.currency ??
+                                                  '';
+                                              return Text(
+                                                "${item.grossTotal} $currency",
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 12,
+                                                ),
+                                              );
+                                            },
+                                          ),
                                         ],
                                       ),
 
@@ -362,8 +363,6 @@ class _SalesReturnScreenState extends State<SalesReturnScreen> {
                         ),
                       ),
           ),
-
-          
         ],
       ),
     );

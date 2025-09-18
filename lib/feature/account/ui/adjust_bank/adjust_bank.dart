@@ -18,8 +18,10 @@ class _AdjustBankCreateState extends State<AdjustBankCreate> {
   String? selectedAccountType;
   String? selectedAccount;
 
-  String? selectedAdjustCashType;
+  // String? selectedAdjustCashType ;
   String? selectedAdjustCash;
+
+   String? selectedAdjustCashType = "Add";
 
   List<String> itemAdjustCash = [
     'Add',

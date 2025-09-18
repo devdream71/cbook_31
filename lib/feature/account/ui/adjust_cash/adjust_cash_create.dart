@@ -18,8 +18,9 @@ class AdjustCashCreate extends StatefulWidget {
 class _AdjustCashCreateState extends State<AdjustCashCreate> {
   String? selectedAccountType;
   String? selectedAccount;
-  String? selectedAdjustCashType;
+  // String? selectedAdjustCashType;
   String? selectedAdjustCash;
+  String? selectedAdjustCashType = "Add";
 
   List<String> itemAdjustCash = [
     'Add',
@@ -68,79 +69,7 @@ class _AdjustCashCreateState extends State<AdjustCashCreate> {
               Expanded(
                 child: Column(
                   children: [
-                    ///adjust cash.
-                    // SizedBox(
-                    //   height: 40,
-                    //   width: double.infinity,
-                    //   child: CustomDropdownTwo(
-                    //     hint: '',
-                    //     items: itemAdjustCash,
-                    //     width: double.infinity,
-                    //     height: 40,
-                    //     labelText: 'Adjust Cash',
-                    //     selectedItem: selectedAdjustCashType,
-                    //     onChanged: (value) {
-                    //       if (mounted) {
-                    //         setState(() {
-                    //           selectedAdjustCashType = value;
-                    //           selectedAdjustCash =
-                    //               null; // reset account selection
-                    //           debugPrint(
-                    //               "selectedAdjustCashType: $selectedAdjustCashType");
-                    //         });
-                    //       }
-                    //     },
-                    //   ),
-                    // ),
-
-                    // Replace the SizedBox dropdown with this radio button widget
-                    // Container(
-                    //   width: double.infinity,
-                    //   padding: const EdgeInsets.symmetric(
-                    //       vertical: 8, horizontal: 12),
-
-                    //   child: Column(
-                    //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //     children: [
-
-                    //       const SizedBox(height: 4),
-                    //       Row(
-                    //         children: itemAdjustCash.map((option) {
-                    //           return Expanded(
-                    //             child: Row(
-
-                    //               children: [
-                    //                 Radio<String>(
-                    //                   value: option,
-                    //                   groupValue: selectedAdjustCashType,
-                    //                   onChanged: (value) {
-                    //                     if (mounted) {
-                    //                       setState(() {
-                    //                         selectedAdjustCashType = value;
-                    //                         selectedAdjustCash =
-                    //                             null; // reset account selection
-                    //                         debugPrint(
-                    //                             "selectedAdjustCashType: $selectedAdjustCashType");
-                    //                       });
-                    //                     }
-                    //                   },
-                    //                   materialTapTargetSize:
-                    //                       MaterialTapTargetSize.shrinkWrap,
-                    //                   visualDensity: VisualDensity.compact,
-                    //                 ),
-                    //                 Text(
-                    //                   option,
-                    //                   style: const TextStyle(
-                    //                       fontSize: 14, color: Colors.black),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           );
-                    //         }).toList(),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
+                   
 
                     Container(
                       width: double.infinity,

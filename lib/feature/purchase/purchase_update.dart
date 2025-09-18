@@ -11,16 +11,13 @@ import 'package:cbook_dt/feature/item/provider/unit_provider.dart';
 import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
 import 'package:cbook_dt/feature/payment_out/provider/payment_out_provider.dart';
 import 'package:cbook_dt/feature/purchase/controller/purchase_controller.dart';
-import 'package:cbook_dt/feature/purchase/purchase_setting.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_form_two.dart';
 import 'package:cbook_dt/feature/sales/widget/add_sales_formfield.dart';
 import 'package:cbook_dt/feature/settings/ui/bill_invoice_create_form.dart';
 import 'package:cbook_dt/feature/suppliers/suppliers_create.dart';
 import 'package:cbook_dt/feature/unit/model/demo_unit_model.dart';
-import 'package:cbook_dt/utils/custom_padding.dart';
 import 'package:cbook_dt/utils/date_time_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -275,72 +272,155 @@ class PurchaseUpdateProvider extends ChangeNotifier {
   PurchaseEditResponse purchaseEditResponse = PurchaseEditResponse();
 
   ///fetch purchase data by id
-  Future<void> fetchPurchaseData(int id) async {
-    isLoading = true;
-    notifyListeners();
+  // Future<void> fetchPurchaseData(int id) async {
+  //   isLoading = true;
+  //   notifyListeners();
 
-    await fetchItems();
-    await fetchUnits();
+  //   await fetchItems();
+  //   await fetchUnits();
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final token = prefs.getString('token');
 
-    final url = "https://commercebook.site/api/v1/purchase/edit/$id";
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Accept': 'application/json',
-        "Authorization": "Bearer $token",
-      },
-    );
+  //   final url = "https://commercebook.site/api/v1/purchase/edit/$id";
+  //   final response = await http.get(
+  //     Uri.parse(url),
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       "Authorization": "Bearer $token",
+  //     },
+  //   );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      purchaseEditResponse = PurchaseEditResponse.fromJson(response.body);
-      purchaseUpdateList.clear();
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+  //     purchaseEditResponse = PurchaseEditResponse.fromJson(response.body);
+  //     purchaseUpdateList.clear();
+  //     purchaseEditResponse.data!.purchaseDetails!.forEach((e) {
+  //       purchaseUpdateList.add(PurchaseUpdateModel(
+  //         itemId: e.itemId.toString(),
+  //         price: e.price.toString(),
+  //         qty: e.qty.toString(),
+  //         subTotal: e.subTotal.toString(),
+  //         unitId: "${e.unitId.toString()}_${getUnitName(e.unitId.toString())}",
+  //       ));
+  //     });
+
+  //     debugPrint(purchaseUpdateList.length.toString());
+
+  //     if (data['success']) {
+  //       final purchaseData = purchaseEditResponse.data!;
+
+  //       purchaseDetailsList = purchaseData.purchaseDetails ?? [];
+  //       billNumberController.text = purchaseData.billNumber ?? "";
+  //       purchaseDateController.text = purchaseData.purchaseDate ?? "";
+  //       grossTotalController.text = purchaseData.grossTotal?.toString() ?? "";
+  //       customerController.text = purchaseData.customerId?.toString() ?? "";
+  //       discountTotalController.text = purchaseData.discount?.toString() ?? "0";
+
+  //       double existingDiscount = purchaseData.discount?.toDouble() ?? 0.0;
+  //       if (existingDiscount > 0) {
+  //         isPercentageDiscount = false;
+  //         discountAmountController.text = existingDiscount.toStringAsFixed(2);
+  //         discountPercentageController.clear();
+  //       } else {
+  //         discountAmountController.text = "0";
+  //         discountPercentageController.text = "0";
+  //       }
+
+  //       /// ✅ Set customerId and billPersonId from API response
+  //       customerId =
+  //           purchaseData.customerId; // This will be null for cash transactions
+  //       billPersonId =
+  //           purchaseData.billPersonId; // ✅ Get bill person ID from API
+  //     }
+  //   }
+
+  //   isLoading = false;
+  //   notifyListeners();
+  // }
+
+
+
+  ///fetch purchase data by id
+Future<void> fetchPurchaseData(int id) async {
+  isLoading = true;
+  notifyListeners();
+
+  await fetchItems();
+  await fetchUnits();
+
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  final url = "https://commercebook.site/api/v1/purchase/edit/$id";
+  final response = await http.get(
+    Uri.parse(url),
+    headers: {
+      'Accept': 'application/json',
+      "Authorization": "Bearer $token",
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    purchaseEditResponse = PurchaseEditResponse.fromJson(response.body);
+    purchaseUpdateList.clear();
+    
+    // ✅ Safe handling of purchase details
+    if (purchaseEditResponse.data?.purchaseDetails != null) {
       purchaseEditResponse.data!.purchaseDetails!.forEach((e) {
         purchaseUpdateList.add(PurchaseUpdateModel(
           itemId: e.itemId.toString(),
-          price: e.price.toString(),
-          qty: e.qty.toString(),
-          subTotal: e.subTotal.toString(),
+          price: e.price ?? "0", // ✅ Now it's already a string
+          qty: e.qty ?? "0", // ✅ Now it's already a string
+          subTotal: e.subTotal ?? "0", // ✅ Now it's already a string
           unitId: "${e.unitId.toString()}_${getUnitName(e.unitId.toString())}",
         ));
       });
-
-      debugPrint(purchaseUpdateList.length.toString());
-
-      if (data['success']) {
-        final purchaseData = purchaseEditResponse.data!;
-
-        purchaseDetailsList = purchaseData.purchaseDetails ?? [];
-        billNumberController.text = purchaseData.billNumber ?? "";
-        purchaseDateController.text = purchaseData.purchaseDate ?? "";
-        grossTotalController.text = purchaseData.grossTotal?.toString() ?? "";
-        customerController.text = purchaseData.customerId?.toString() ?? "";
-        discountTotalController.text = purchaseData.discount?.toString() ?? "0";
-
-        double existingDiscount = purchaseData.discount?.toDouble() ?? 0.0;
-        if (existingDiscount > 0) {
-          isPercentageDiscount = false;
-          discountAmountController.text = existingDiscount.toStringAsFixed(2);
-          discountPercentageController.clear();
-        } else {
-          discountAmountController.text = "0";
-          discountPercentageController.text = "0";
-        }
-
-        /// ✅ Set customerId and billPersonId from API response
-        customerId =
-            purchaseData.customerId; // This will be null for cash transactions
-        billPersonId =
-            purchaseData.billPersonId; // ✅ Get bill person ID from API
-      }
     }
 
-    isLoading = false;
-    notifyListeners();
+    debugPrint("Purchase update list length: ${purchaseUpdateList.length}");
+
+    if (data['success'] == true && purchaseEditResponse.data != null) {
+      final purchaseData = purchaseEditResponse.data!;
+
+      purchaseDetailsList = purchaseData.purchaseDetails ?? [];
+      billNumberController.text = purchaseData.billNumber ?? "";
+      purchaseDateController.text = purchaseData.purchaseDate ?? "";
+      
+      // ✅ Use the helper methods for safe conversion
+      grossTotalController.text = purchaseData.grossTotal ?? "0.00";
+      customerController.text = purchaseData.customerId?.toString() ?? "";
+      
+      // ✅ Safe discount handling - no more toDouble() error
+      double existingDiscount = purchaseData.discountAsDouble;
+      discountTotalController.text = existingDiscount.toStringAsFixed(2);
+
+      if (existingDiscount > 0) {
+        isPercentageDiscount = false;
+        discountAmountController.text = existingDiscount.toStringAsFixed(2);
+        discountPercentageController.clear();
+      } else {
+        discountAmountController.text = "0";
+        discountPercentageController.text = "0";
+      }
+
+      // ✅ Set customerId and billPersonId from API response
+      customerId = purchaseData.customerId;
+      billPersonId = purchaseData.billPersonId;
+      
+      debugPrint("Customer ID: $customerId");
+      debugPrint("Bill Person ID: $billPersonId");
+      debugPrint("Discount: ${purchaseData.discount}");
+      debugPrint("Gross Total: ${purchaseData.grossTotal}");
+    }
+  } else {
+    debugPrint("API Error: ${response.statusCode} - ${response.body}");
   }
+
+  isLoading = false;
+  notifyListeners();
+}
 
   ///update selected item, in update
   void updateSelectedItem(String name) {
@@ -383,39 +463,69 @@ class PurchaseUpdateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // void updatePurchaseDetail(int index) {
+  //   // Convert input values to double (assuming qty and price are double)
+  //   int? updatedPrice = int.tryParse(priceController.text);
+  //   int? updatedQty = int.tryParse(qtyController.text);
+
+  //   // Ensure values are not null before updating
+  //   if (updatedPrice != null && updatedQty != null) {
+  //     purchaseUpdateList[index].qty = updatedQty.toString();
+  //     purchaseUpdateList[index].price = updatedPrice.toString();
+  //     purchaseUpdateList[index].subTotal =
+  //         (updatedQty * updatedPrice).toString();
+
+  //     purchaseUpdateList[index].unitId =
+  //         "${purchaseEditResponse.data!.purchaseDetails![index].unitId.toString()}_${getUnitName(purchaseEditResponse.data!.purchaseDetails![index].unitId.toString())}";
+
+  //     // Updating response model
+  //     purchaseEditResponse.data!.purchaseDetails![index].price = updatedPrice;
+  //     purchaseEditResponse.data!.purchaseDetails![index].qty = updatedQty;
+  //     purchaseEditResponse.data!.purchaseDetails![index].subTotal =
+  //         (updatedQty * updatedPrice);
+
+  //     debugPrint(
+  //         "Updated Price: ${purchaseEditResponse.data!.purchaseDetails![index].price}");
+  //     debugPrint(
+  //         "Updated Qty: ${purchaseEditResponse.data!.purchaseDetails![index].qty}");
+
+  //     // Notify UI of changes
+  //     notifyListeners();
+  //   } else {
+  //     debugPrint(
+  //         "Invalid input: Please enter valid numbers for price and quantity.");
+  //   }
+  // }
+
+
   void updatePurchaseDetail(int index) {
-    // Convert input values to double (assuming qty and price are double)
-    int? updatedPrice = int.tryParse(priceController.text);
-    int? updatedQty = int.tryParse(qtyController.text);
+  // Convert input values to double (assuming qty and price are double)
+  double? updatedPrice = double.tryParse(priceController.text);
+  double? updatedQty = double.tryParse(qtyController.text);
 
-    // Ensure values are not null before updating
-    if (updatedPrice != null && updatedQty != null) {
-      purchaseUpdateList[index].qty = updatedQty.toString();
-      purchaseUpdateList[index].price = updatedPrice.toString();
-      purchaseUpdateList[index].subTotal =
-          (updatedQty * updatedPrice).toString();
+  // Ensure values are not null before updating
+  if (updatedPrice != null && updatedQty != null) {
+    purchaseUpdateList[index].qty = updatedQty.toString();
+    purchaseUpdateList[index].price = updatedPrice.toString();
+    purchaseUpdateList[index].subTotal = (updatedQty * updatedPrice).toString();
 
-      purchaseUpdateList[index].unitId =
-          "${purchaseEditResponse.data!.purchaseDetails![index].unitId.toString()}_${getUnitName(purchaseEditResponse.data!.purchaseDetails![index].unitId.toString())}";
+    purchaseUpdateList[index].unitId =
+        "${purchaseEditResponse.data!.purchaseDetails![index].unitId.toString()}_${getUnitName(purchaseEditResponse.data!.purchaseDetails![index].unitId.toString())}";
 
-      // Updating response model
-      purchaseEditResponse.data!.purchaseDetails![index].price = updatedPrice;
-      purchaseEditResponse.data!.purchaseDetails![index].qty = updatedQty;
-      purchaseEditResponse.data!.purchaseDetails![index].subTotal =
-          (updatedQty * updatedPrice);
+    // ✅ Updated: Use the new model structure
+    purchaseEditResponse.data!.purchaseDetails![index].price = updatedPrice.toString(); // Now expects string
+    purchaseEditResponse.data!.purchaseDetails![index].qty = updatedQty.toString(); // Now expects string
+    purchaseEditResponse.data!.purchaseDetails![index].subTotal = (updatedQty * updatedPrice).toString(); // Now expects string
 
-      debugPrint(
-          "Updated Price: ${purchaseEditResponse.data!.purchaseDetails![index].price}");
-      debugPrint(
-          "Updated Qty: ${purchaseEditResponse.data!.purchaseDetails![index].qty}");
+    debugPrint("Updated Price: ${purchaseEditResponse.data!.purchaseDetails![index].price}");
+    debugPrint("Updated Qty: ${purchaseEditResponse.data!.purchaseDetails![index].qty}");
 
-      // Notify UI of changes
-      notifyListeners();
-    } else {
-      debugPrint(
-          "Invalid input: Please enter valid numbers for price and quantity.");
-    }
+    // Notify UI of changes
+    notifyListeners();
+  } else {
+    debugPrint("Invalid input: Please enter valid numbers for price and quantity.");
   }
+}
 
   ///unit name
   String? getUnitName(String id) {
@@ -508,27 +618,56 @@ class PurchaseUpdateProvider extends ChangeNotifier {
   }
 
   ///add new item in item list
-  void addItem(
-      {required int id,
-      required int price,
-      required int qty,
-      required int subTotal,
-      required int unitId}) {
-    purchaseEditResponse.data!.purchaseDetails!.add(PurchaseDetail(
-      itemId: id,
-      price: price,
-      qty: qty,
-      subTotal: subTotal,
-      unitId: unitId,
-    ));
-    purchaseUpdateList.add((PurchaseUpdateModel(
-        itemId: id.toString(),
-        qty: qty.toString(),
-        unitId: "${unitId.toString()}_${getUnitName(unitId.toString())}}",
-        price: price.toString(),
-        subTotal: subTotal.toString())));
-    notifyListeners();
-  }
+  // void addItem(
+  //     {required int id,
+  //     required int price,
+  //     required int qty,
+  //     required int subTotal,
+  //     required int unitId}) {
+  //   purchaseEditResponse.data!.purchaseDetails!.add(PurchaseDetail(
+  //     itemId: id,
+  //     price: price,
+  //     qty: qty,
+  //     subTotal: subTotal,
+  //     unitId: unitId,
+  //   ));
+  //   purchaseUpdateList.add((PurchaseUpdateModel(
+  //       itemId: id.toString(),
+  //       qty: qty.toString(),
+  //       unitId: "${unitId.toString()}_${getUnitName(unitId.toString())}}",
+  //       price: price.toString(),
+  //       subTotal: subTotal.toString())));
+  //   notifyListeners();
+  // }
+
+
+  ///add new item in item list
+void addItem({
+  required int id,
+  required double price, // ✅ Changed from int to double
+  required double qty,   // ✅ Changed from int to double
+  required double subTotal, // ✅ Changed from int to double
+  required int unitId
+}) {
+  purchaseEditResponse.data!.purchaseDetails!.add(PurchaseDetail(
+    itemId: id,
+    price: price.toString(), // ✅ Convert to string
+    qty: qty.toString(),     // ✅ Convert to string
+    subTotal: subTotal.toString(), // ✅ Convert to string
+    unitId: unitId,
+  ));
+  
+  purchaseUpdateList.add(PurchaseUpdateModel(
+    itemId: id.toString(),
+    qty: qty.toString(),
+    unitId: "${unitId.toString()}_${getUnitName(unitId.toString())}}",
+    price: price.toString(),
+    subTotal: subTotal.toString()
+  ));
+  
+  notifyListeners();
+}
+
 }
 
 ///====> Purchase Update Screen UI
@@ -545,9 +684,9 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
   late PurchaseUpdateProvider provider;
 
   bool showNoteField = false;
-  String? selectedBillPerson;
-  int? selectedBillPersonId;
-  BillPersonModel? selectedBillPersonData;
+  // String? selectedBillPerson;
+  // int? selectedBillPersonId;
+  // BillPersonModel? selectedBillPersonData;
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -566,8 +705,10 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ItemCategoryProvider>(context, listen: false)
-          .fetchCategories();
+
+      // Provider.of<ItemCategoryProvider>(context, listen: false)
+      //     .fetchCategories();
+          
       Provider.of<AddItemProvider>(context, listen: false).fetchItems();
 
       provider = Provider.of<PurchaseUpdateProvider>(context, listen: false);
@@ -581,9 +722,9 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
     Future.microtask(() =>
         Provider.of<CustomerProvider>(context, listen: false).fetchCustomsr());
 
-    Future.microtask(() =>
-        Provider.of<PaymentVoucherProvider>(context, listen: false)
-            .fetchBillPersons());
+    // Future.microtask(() =>
+    //     Provider.of<PaymentVoucherProvider>(context, listen: false)
+    //         .fetchBillPersons());
   }
 
   // ✅ Initialize payment based on transaction type
@@ -682,52 +823,10 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                       padding: const EdgeInsets.all(0.0),
                       child: Column(
                         children: [
-                          // ✅ Modified Cash/Credit indicator section
-                          // Align(
-                          //   alignment: Alignment.topLeft,
-                          //   child: InkWell(
-                          //     onTap: () {
-                          //       controller.updateCash();
-                          //     },
-                          //     child: DecoratedBox(
-                          //       decoration: BoxDecoration(
-                          //         color: provider.isCashTransaction
-                          //             ? AppColors.primaryColor
-                          //             : Colors
-                          //                 .orange, // Different color for credit
-                          //         borderRadius: BorderRadius.circular(5),
-                          //       ),
-                          //       child: Padding(
-                          //         padding: const EdgeInsets.symmetric(
-                          //             horizontal: 8, vertical: 4),
-                          //         child: Row(
-                          //           mainAxisSize: MainAxisSize.min,
-                          //           children: [
-                          //             Text(
-                          //               provider.isCashTransaction
-                          //                   ? "Cash"
-                          //                   : "Credit",
-                          //               style: GoogleFonts.lato(
-                          //                 color: Colors.white,
-                          //                 fontWeight: FontWeight.w600,
-                          //                 fontSize: 14,
-                          //               ),
-                          //             ),
-                          //             const SizedBox(width: 4),
-                          //             const Icon(
-                          //               Icons.arrow_forward_ios,
-                          //               color: Colors.white,
-                          //               size: 12,
-                          //             )
-                          //           ],
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
+                         
 
                           Container(
-                            color: Color(0xffdddefa),
+                            color: const Color(0xffdddefa),
                             height: 48,
                             child: Row(
                               children: [
@@ -753,22 +852,13 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                               color: Colors.black,
                                               fontSize: 12),
                                         ),
-                                        // SizedBox(
-                                        //   child: AddSalesFormfield(
-                                        //     labelText: "Bill Number",
-                                        //     controller:
-                                        //         provider.billNumberController,
-                                        //     onChanged: (value) {
-                                        //       provider.customerId;
-                                        //     },
-                                        //   ),
-                                        // ),
+                                       
                                       ],
                                     ),
                                   ),
                                 ),
 
-                                SizedBox(
+                                const SizedBox(
                                   width: 6,
                                 ),
 
@@ -848,7 +938,7 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Row(
+                                const Row(
                                   children: [
                                     Expanded(
                                       child: Column(
@@ -857,20 +947,11 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          // const Text(
-                                          //   "Bill To",
-                                          //   style: TextStyle(
-                                          //       color: Colors.black,
-                                          //       fontWeight: FontWeight.w600,
-                                          //       fontSize: 12),
-                                          // ),
-                                          // vPad5,
-
-                                          // ✅ Modified customer/supplier section
+                                          
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(width: 5),
+                                    SizedBox(width: 5),
 
                                     // Right side - Bill number, date, bill person
                                     Expanded(
@@ -878,101 +959,7 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          // Bill person
-                                          // Padding(
-                                          //   padding:
-                                          //       const EdgeInsets.only(top: 8.0),
-                                          //   child: Consumer2<
-                                          //       PaymentVoucherProvider,
-                                          //       PurchaseUpdateProvider>(
-                                          //     builder: (context,
-                                          //         paymentProvider,
-                                          //         purchaseProvider,
-                                          //         child) {
-                                          //       // ✅ Auto-select bill person from API if not already selected
-                                          //       if (selectedBillPerson ==
-                                          //               null &&
-                                          //           purchaseProvider
-                                          //                   .billPersonId !=
-                                          //               null &&
-                                          //           paymentProvider.billPersons
-                                          //               .isNotEmpty) {
-                                          //         WidgetsBinding.instance
-                                          //             .addPostFrameCallback(
-                                          //                 (_) {
-                                          //           final billPersonName =
-                                          //               purchaseProvider
-                                          //                   .getBillPersonNameById(
-                                          //                       purchaseProvider
-                                          //                           .billPersonId,
-                                          //                       paymentProvider);
-
-                                          //           if (billPersonName !=
-                                          //                   null &&
-                                          //               mounted) {
-                                          //             setState(() {
-                                          //               selectedBillPerson =
-                                          //                   billPersonName;
-                                          //               selectedBillPersonData =
-                                          //                   paymentProvider
-                                          //                       .billPersons
-                                          //                       .firstWhere(
-                                          //                 (person) =>
-                                          //                     person.id ==
-                                          //                     purchaseProvider
-                                          //                         .billPersonId,
-                                          //               );
-                                          //               selectedBillPersonId =
-                                          //                   selectedBillPersonData!
-                                          //                       .id;
-                                          //             });
-                                          //           }
-                                          //         });
-                                          //       }
-
-                                          //       return SizedBox(
-                                          //         height: 30,
-                                          //         width: double.infinity,
-                                          //         child: paymentProvider
-                                          //                 .isLoading
-                                          //             ? const Center(
-                                          //                 child:
-                                          //                     CircularProgressIndicator())
-                                          //             : CustomDropdownTwo(
-                                          //                 hint: '',
-                                          //                 items: paymentProvider
-                                          //                     .billPersonNames,
-                                          //                 width:
-                                          //                     double.infinity,
-                                          //                 height: 30,
-                                          //                 labelText:
-                                          //                     'Bill Person',
-                                          //                 selectedItem:
-                                          //                     selectedBillPerson,
-                                          //                 onChanged: (value) {
-                                          //                   debugPrint(
-                                          //                       '=== Bill Person Selected: $value ===');
-                                          //                   setState(() {
-                                          //                     selectedBillPerson =
-                                          //                         value;
-                                          //                     selectedBillPersonData =
-                                          //                         paymentProvider
-                                          //                             .billPersons
-                                          //                             .firstWhere(
-                                          //                       (person) =>
-                                          //                           person
-                                          //                               .name ==
-                                          //                           value,
-                                          //                     );
-                                          //                     selectedBillPersonId =
-                                          //                         selectedBillPersonData!
-                                          //                             .id;
-                                          //                   });
-                                          //                 }),
-                                          //       );
-                                          //     },
-                                          //   ),
-                                          // ),
+                                         
                                         ],
                                       ),
                                     ),
@@ -994,12 +981,7 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            // const Text(
-                                            //   "Supplier",
-                                            //   style: TextStyle(
-                                            //       color: Colors.black,
-                                            //       fontSize: 12),
-                                            // ),
+                                           
                                             const SizedBox(height: 5),
                                             SizedBox(
                                               height: 58,
@@ -1795,16 +1777,7 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
                                 width: double.maxFinite,
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    // if (selectedBillPersonData == null) {
-                                    //   ScaffoldMessenger.of(context).showSnackBar(
-                                    //     const SnackBar(
-                                    //       content: Text(
-                                    //           'Please select a bill person.'),
-                                    //       backgroundColor: Colors.red,
-                                    //     ),
-                                    //   );
-                                    //   return;
-                                    // }
+                                   
 
                                     //int billPersonID = selectedBillPersonData!.id;
                                     await provider.updatePurchase(context
@@ -2564,9 +2537,13 @@ class _PurchaseUpdateScreenState extends State<PurchaseUpdateScreen> {
             if (detail != null) {
               detail.itemId = updatedItemId;
               detail.unitId = updatedUnitId;
-              detail.price = parsedPrice.toInt();
-              detail.qty = parsedQty.toInt();
-              detail.subTotal = parsedSubTotal;
+              /////!!!!!!!=======================================>>>>>>>>>>>>>>>
+              ///.........................................>>>>>>>>>>>>>>>
+              detail.price = parsedPrice.toString();
+              detail.qty = parsedQty.toString();
+              detail.subTotal = parsedSubTotal.toString();
+
+
             }
 
             provider.notifyListeners();

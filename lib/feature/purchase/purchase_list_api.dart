@@ -242,126 +242,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
         ],
       ),
 
-      // appBar: AppBar(
-      //   title: isSearching
-      //       ? Column(
-      //           children: [
-      //             const SizedBox(
-      //               height: 10,
-      //             ),
-      //             SizedBox(
-      //               height: 35,
-      //               child: TextField(
-      //                 controller: searchController,
-      //                 autofocus: true,
-      //                 cursorHeight: 15,
-      //                 style: const TextStyle(color: Colors.white, fontSize: 16),
-      //                 decoration: InputDecoration(
-      //                   hintText: ' ',
-      //                   hintStyle: const TextStyle(color: Colors.black54),
-      //                   enabledBorder: OutlineInputBorder(
-      //                     borderSide: const BorderSide(color: Colors.white),
-      //                     borderRadius: BorderRadius.circular(4),
-      //                   ),
-      //                   focusedBorder: OutlineInputBorder(
-      //                     borderSide:
-      //                         const BorderSide(color: Colors.white, width: 2),
-      //                     borderRadius: BorderRadius.circular(4),
-      //                   ),
-      //                   contentPadding: const EdgeInsets.symmetric(
-      //                       horizontal: 8, vertical: 0),
-      //                   isDense: true,
-      //                 ),
-      //                 onChanged: (value) {
-      //                   Provider.of<PurchaseProvider>(context, listen: false)
-      //                       .filterPurchases(value);
-      //                   // Your filter logic
-      //                 },
-      //               ),
-      //             ),
-      //           ],
-      //         )
-      //       : const Text(
-      //           'Purchase List',
-      //           style: TextStyle(color: Colors.yellow, fontSize: 16),
-      //         ),
-      //   leading: const BackButton(color: Colors.white),
-      //   backgroundColor: colorScheme.primary,
-      //   actions: [
-      //     // Search or Close Icon with circular background
-      //     Padding(
-      //       padding: const EdgeInsets.only(right: 8.0),
-      //       child: GestureDetector(
-      //         onTap: () {
-      //           setState(() {
-      //             isSearching = !isSearching;
-      //             if (!isSearching) {
-      //               searchController.clear();
-      //             }
-      //           });
-      //         },
-      //         child: Container(
-      //           height: 30,
-      //           width: 30,
-      //           decoration: BoxDecoration(
-      //             color: isSearching ? Colors.red : Colors.green,
-      //             shape: BoxShape.circle,
-      //             border: isSearching
-      //                 ? null
-      //                 : Border.all(color: Colors.white, width: 2),
-      //           ),
-      //           padding: const EdgeInsets.all(6),
-      //           child: InkWell(
-      //             onTap: () {
-      //               setState(() {
-      //                 isSearching = !isSearching;
-      //                 if (!isSearching) {
-      //                   searchController.clear();
-      //                   Provider.of<PurchaseProvider>(context, listen: false)
-      //                       .filterPurchases(searchController.text);
-      //                 }
-      //               });
-      //             },
-      //             child: Icon(
-      //               isSearching ? Icons.close : Icons.search,
-      //               color: Colors.white,
-      //               size: 16,
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-
-      //     // Bill Button
-      //     InkWell(
-      //       onTap: () {
-      //         Navigator.push(
-      //           context,
-      //           MaterialPageRoute(
-      //             builder: (context) => const PurchaseView(),
-      //           ),
-      //         );
-      //       },
-      //       child: const Padding(
-      //         padding: EdgeInsets.only(right: 8.0),
-      //         child: Row(
-      //           children: [
-      //             CircleAvatar(
-      //               radius: 10,
-      //               backgroundColor: Colors.white,
-      //               child: Icon(
-      //                 Icons.add,
-      //                 size: 20,
-      //                 color: Colors.green,
-      //               ),
-      //             ),
-
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
+    
 
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
@@ -676,7 +557,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                                     color: Colors.black),
                                               ),
                                               Text(
-                                                '$currency ${purchase.grossTotal ?? 0}',
+                                                '${purchase.grossTotal ?? 0} $currency',
                                                 style: const TextStyle(
                                                     fontSize: 14,
                                                     color: Colors.black),
@@ -724,7 +605,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                                                         .toLowerCase() ==
                                                     'customer'
                                                 ? Text(
-                                                    "Due: $currency ${purchase.due ?? 0}",
+                                                    "Due: ${purchase.due ?? 0} $currency",
                                                     style: const TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.black,
@@ -749,219 +630,7 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
               ),
             ),
 
-            // Purchase list with date filtering
-            // Expanded(
-            //   child: Consumer<PurchaseProvider>(
-            //     builder: (context, provider, child) {
-            //       if (provider.isLoading) {
-            //         return const Center(child: CircularProgressIndicator());
-            //       }
-
-            //       if (provider.purchaseData == null ||
-            //           provider.purchaseData!.data == null ||
-            //           provider.purchaseData!.data!.isEmpty) {
-            //         return const NoDataWidget(
-            //           message: "No Purchase records found",
-            //           lottieAsset: "assets/animation/no_data.json",
-            //         );
-
-            //       }
-
-            //       // Filter purchases based on selected date range
-            //       List<dynamic> filteredPurchases =
-            //           filterPurchasesByDateRange(provider.purchaseData!.data!);
-
-            //       if (filteredPurchases.isEmpty) {
-            //         return const Center(
-            //           child: Text("No purchases found for selected date range",
-            //               style: TextStyle(
-            //                   color: Colors.black,
-            //                   fontWeight: FontWeight.bold)),
-            //         );
-            //       }
-
-            //       return ListView.builder(
-            //         shrinkWrap: true,
-            //         padding: const EdgeInsets.symmetric(
-            //             horizontal: 0.0, vertical: 1),
-            //         itemCount: filteredPurchases
-            //             .length, // Use filtered purchases count
-            //         itemBuilder: (context, index) {
-            //           final purchase =
-            //               filteredPurchases[index]; // Use filtered purchases
-
-            //           final billCount = filteredPurchases.length;
-            //           debugPrint('filtered purchase count => $billCount');
-
-            //           bool isEnabled = purchase.disabled == 'enable';
-
-            //           final purchaseId =
-            //               purchase.purchaseDetails!.first.purchaseId.toString();
-
-            //           final transactionMethod =
-            //               purchase.transactionMethod ?? '';
-
-            //           debugPrint('transactionMethod ==>$transactionMethod');
-
-            //           final paymentStatus = purchase.paymentStatus ?? 0;
-
-            //           return InkWell(
-            //             onLongPress: () {
-            //               editDeleteDiolog(context, purchaseId,
-            //                   transactionMethod, paymentStatus);
-            //             },
-            //             onTap: () {
-            //               Navigator.push(
-            //                 context,
-            //                 MaterialPageRoute(
-            //                   builder: (context) =>
-            //                       PurchaseDetailsPage(purchase: purchase),
-            //                 ),
-            //               );
-            //             },
-            //             child: Card(
-            //               shadowColor: const Color.fromARGB(255, 12, 9, 199),
-            //               shape: RoundedRectangleBorder(
-            //                 borderRadius: BorderRadius.circular(
-            //                   2.0,
-            //                 ),
-            //                 // side: BorderSide(color: Color(0xffdddefa))
-            //               ),
-            //               elevation: 1,
-            //               margin: const EdgeInsets.all(2),
-            //               child: Padding(
-            //                 padding: const EdgeInsets.symmetric(
-            //                     horizontal: 8, vertical: 8),
-            //                 child: Row(
-            //                   crossAxisAlignment: CrossAxisAlignment.start,
-            //                   children: [
-            //                     /// Left side: Supplier info
-            //                     Expanded(
-            //                       child: Column(
-            //                         crossAxisAlignment:
-            //                             CrossAxisAlignment.start,
-            //                         children: [
-            //                           Row(
-            //                             children: [
-            //                               //date, invoice number
-            //                               SizedBox(
-            //                                 width: 90,
-            //                                 child: Column(
-            //                                   crossAxisAlignment:
-            //                                       CrossAxisAlignment.start,
-            //                                   children: [
-            //                                     Text(
-            //                                       formatDate(
-            //                                           purchase.pruchaseDate),
-            //                                       style: const TextStyle(
-            //                                           fontSize: 14,
-            //                                           color: Colors.black),
-            //                                     ),
-            //                                     Text('${purchase.billNumber}',
-            //                                         style: const TextStyle(
-            //                                             fontSize: 14,
-            //                                             color: Colors.black,
-            //                                             fontWeight:
-            //                                                 FontWeight.bold)),
-            //                                   ],
-            //                                 ),
-            //                               ),
-
-            //                               //divider
-            //                               Container(
-            //                                 height: 30,
-            //                                 width: 2,
-            //                                 color: Colors.green.shade200,
-            //                                 margin: const EdgeInsets.symmetric(
-            //                                     horizontal: 6),
-            //                               ),
-
-            //                               //cash or supplier name, amount
-            //                               Column(
-            //                                 crossAxisAlignment:
-            //                                     CrossAxisAlignment.start,
-            //                                 children: [
-            //                                   Text(
-            //                                     (purchase.supplier == 'N/A')
-            //                                         ? 'Cash'
-            //                                         : purchase.supplier!,
-            //                                     style: const TextStyle(
-            //                                         fontSize: 14,
-            //                                         color: Colors.black),
-            //                                   ),
-            //                                   Text(
-            //                                       '৳ ${purchase.grossTotal ?? 0}',
-            //                                       style: const TextStyle(
-            //                                           fontSize: 14,
-            //                                           color: Colors.black)),
-            //                                 ],
-            //                               )
-            //                             ],
-            //                           ),
-            //                         ],
-            //                       ),
-            //                     ),
-
-            //                     /// End Right side:, paid, unpaid, due amount, edit, delete
-            //                     Column(
-            //                       crossAxisAlignment: CrossAxisAlignment.end,
-            //                       children: [
-            //                         //=>paid, unpaid, due amount , //=> edit  and update button
-            //                         Row(
-            //                           mainAxisSize: MainAxisSize.min,
-            //                           mainAxisAlignment:
-            //                               MainAxisAlignment.spaceAround,
-            //                           children: [
-            //                             Column(
-            //                               crossAxisAlignment:
-            //                                   CrossAxisAlignment.end,
-            //                               children: [
-            //                                 Text(
-            //                                   purchase.paymentStatus == 2
-            //                                       ? 'Paid'
-            //                                       : purchase.paymentStatus == 1
-            //                                           ? 'Partial'
-            //                                           : 'Unpaid',
-            //                                   style: TextStyle(
-            //                                     fontWeight: FontWeight.bold,
-            //                                     fontSize: 14,
-            //                                     color: purchase.paymentStatus ==
-            //                                             2
-            //                                         ? Colors.green
-            //                                         : purchase.paymentStatus ==
-            //                                                 1
-            //                                             ? Colors.orange
-            //                                             : Colors.red,
-            //                                   ),
-            //                                 ),
-            //                                 purchase.transactionMethod!
-            //                                             .toLowerCase() ==
-            //                                         'customer'
-            //                                     ? Text(
-            //                                         "Due: ${purchase.due} TK", // Show due amount here
-            //                                         style: const TextStyle(
-            //                                           fontSize: 12,
-            //                                           color: Colors.black,
-            //                                         ),
-            //                                       )
-            //                                     : const SizedBox.shrink(),
-            //                               ],
-            //                             ),
-            //                             const SizedBox(width: 8),
-            //                           ],
-            //                         ),
-            //                       ],
-            //                     ),
-            //                   ],
-            //                 ),
-            //               ),
-            //             ),
-            //           );
-            //         },
-            //       );
-            //     },
-            //   ),
-            // ),
+           
           ],
         ),
       ),
@@ -1033,6 +702,12 @@ class _PurchaseListApiState extends State<PurchaseListApi> {
                   onTap: disableActions
                       ? null
                       : () {
+
+                        debugPrint('${int.parse(purchaseId)}');
+                        debugPrint('Stop ==== ===');
+
+
+
                           Navigator.of(context).pop();
                           Navigator.push(
                             context,

@@ -362,6 +362,139 @@ class LayoutState extends State<Layout> {
 
                                         const SizedBox(width: 4),
 
+                                        // Consumer<ProfileProvider>(
+                                        //   builder: (context, profileProvider,
+                                        //       child) {
+                                        //     if (profileProvider.isLoading) {
+                                        //       return const Center(
+                                        //           child:
+                                        //               CircularProgressIndicator());
+                                        //     } else if (profileProvider
+                                        //             .profile !=
+                                        //         null) {
+                                        //       final user =
+                                        //           profileProvider.profile!;
+                                        //       return Padding(
+                                        //         padding:
+                                        //             const EdgeInsets.symmetric(
+                                        //                 horizontal: 8.0),
+                                        //         child: Row(
+                                        //           children: [
+                                        //             const SizedBox(width: 4),
+
+                                        //             // Company name and user name with dropdown
+                                        //             Consumer<
+                                        //                 DashboardReportProvider>(
+                                        //               builder: (context,
+                                        //                   dashboardProvider,
+                                        //                   child) {
+                                        //                 return Column(
+                                        //                   crossAxisAlignment:
+                                        //                       CrossAxisAlignment
+                                        //                           .start,
+                                        //                   children: [
+                                        //                     Row(
+                                        //                       children: [
+                                        //                         // Usage in UI:
+                                        //                         FutureBuilder<
+                                        //                             Map<String,
+                                        //                                 String>>(
+                                        //                           future: _getCurrentCompanyInfo(
+                                        //                               user.companyName,
+                                        //                               dashboardProvider),
+                                        //                           builder: (context,
+                                        //                               snapshot) {
+                                        //                             final companyInfo =
+                                        //                                 snapshot.data ??
+                                        //                                     {
+                                        //                                       'name': user.companyName,
+                                        //                                       'role': "No Role"
+                                        //                                     };
+
+                                        //                             return Column(
+                                        //                               crossAxisAlignment:
+                                        //                                   CrossAxisAlignment
+                                        //                                       .start,
+                                        //                               children: [
+                                        //                                 Container(
+                                        //                                   color:
+                                        //                                       Colors.red,
+                                        //                                   child:
+                                        //                                       Row(
+                                        //                                     mainAxisAlignment:
+                                        //                                         MainAxisAlignment.start,
+                                        //                                     mainAxisSize:
+                                        //                                         MainAxisSize.min,
+                                        //                                     children: [
+                                        //                                       Text(
+                                        //                                         companyInfo['name']!,
+                                        //                                         style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                        //                                       ),
+                                        //                                       IconButton(
+                                        //                                         padding: EdgeInsets.zero, // Remove default padding
+                                        //                                         constraints: const BoxConstraints(), // Remove minimum size constraints
+                                        //                                         onPressed: () {
+                                        //                                           _showCompanySwitchModal(context, dashboardProvider, profileProvider);
+                                        //                                         },
+                                        //                                         icon: const RotatedBox(
+                                        //                                           quarterTurns: 3,
+                                        //                                           child: Icon(
+                                        //                                             Icons.arrow_back_ios,
+                                        //                                             color: Colors.white,
+                                        //                                             size: 16, // Smaller size for better alignment
+                                        //                                           ),
+                                        //                                         ),
+                                        //                                       ),
+                                        //                                     ],
+                                        //                                   ),
+                                        //                                 ),
+                                        //                                 Text(
+                                        //                                   companyInfo[
+                                        //                                       'role']!,
+                                        //                                   style: const TextStyle(
+                                        //                                       color: Colors.white70,
+                                        //                                       fontSize: 12,
+                                        //                                       fontWeight: FontWeight.w400),
+                                        //                                 ),
+                                        //                               ],
+                                        //                             );
+                                        //                           },
+                                        //                         ),
+                                        //                       ],
+                                        //                     ),
+
+                                        //                     // User name
+                                        //                     // Text(
+                                        //                     //   user.name,
+                                        //                     //   style: const TextStyle(
+                                        //                     //       color: Colors
+                                        //                     //           .white,
+                                        //                     //       fontSize: 12),
+                                        //                     // ),
+                                        //                   ],
+                                        //                 );
+                                        //               },
+                                        //             ),
+                                        //           ],
+                                        //         ),
+                                        //       );
+                                        //     } else {
+                                        //       return Center(
+                                        //         child: Text(
+                                        //           profileProvider.errorMessage
+                                        //                   .isNotEmpty
+                                        //               ? profileProvider
+                                        //                   .errorMessage
+                                        //               : "No profile data found",
+                                        //           style: const TextStyle(
+                                        //               fontSize: 14,
+                                        //               color: Colors.red),
+                                        //         ),
+                                        //       );
+                                        //     }
+                                        //   },
+                                        // ),
+
                                         Consumer<ProfileProvider>(
                                           builder: (context, profileProvider,
                                               child) {
@@ -388,110 +521,118 @@ class LayoutState extends State<Layout> {
                                                       builder: (context,
                                                           dashboardProvider,
                                                           child) {
-                                                        return Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Row(
+                                                        return FutureBuilder<
+                                                            Map<String,
+                                                                String>>(
+                                                          future: _getCurrentCompanyInfo(
+                                                              user.companyName,
+                                                              dashboardProvider),
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            final companyInfo =
+                                                                snapshot.data ??
+                                                                    {
+                                                                      'name': user
+                                                                          .companyName,
+                                                                      'role':
+                                                                          "No Role"
+                                                                    };
+
+                                                            return Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min, // ✅ Minimize column height
                                                               children: [
-                                                                
-
-                                                                // Usage in UI:
-                                                                FutureBuilder<
-                                                                    Map<String,
-                                                                        String>>(
-                                                                  future: _getCurrentCompanyInfo(
-                                                                      user.companyName,
-                                                                      dashboardProvider),
-                                                                  builder: (context,
-                                                                      snapshot) {
-                                                                    final companyInfo =
-                                                                        snapshot.data ??
-                                                                            {
-                                                                              'name': user.companyName,
-                                                                              'role': "No Role"
-                                                                            };
-
-                                                                    return Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        Text(
-                                                                          companyInfo[
-                                                                              'name']!,
-                                                                          style: const TextStyle(
-                                                                              color: Colors.white,
-                                                                              fontSize: 12,
-                                                                              fontWeight: FontWeight.bold),
+                                                                // Company name row with dropdown
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .start,
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Text(
+                                                                      companyInfo[
+                                                                          'name']!,
+                                                                      style:
+                                                                          const TextStyle(
+                                                                        color:
+                                                                            Colors.white,
+                                                                        fontSize:
+                                                                            12,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        height:
+                                                                            1.0, // ✅ Reduce line height
+                                                                      ),
+                                                                    ),
+                                                                    IconButton(
+                                                                      padding:
+                                                                          EdgeInsets.zero, // Remove default padding
+                                                                      constraints:
+                                                                          const BoxConstraints(), // Remove minimum size constraints
+                                                                      onPressed:
+                                                                          () {
+                                                                        _showCompanySwitchModal(
+                                                                            context,
+                                                                            dashboardProvider,
+                                                                            profileProvider);
+                                                                      },
+                                                                      icon:
+                                                                          const RotatedBox(
+                                                                        quarterTurns:
+                                                                            3,
+                                                                        child:
+                                                                            Icon(
+                                                                          Icons.arrow_back_ios,
+                                                                          color:
+                                                                              Colors.white,
+                                                                          size:
+                                                                              16, // Smaller size for better alignment
                                                                         ),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                2),
-                                                                        Text(
-                                                                          companyInfo[
-                                                                              'role']!,
-                                                                          style: const TextStyle(
-                                                                              color: Colors.white70,
-                                                                              fontSize: 10,
-                                                                              fontWeight: FontWeight.w400),
-                                                                        ),
-                                                                      ],
-                                                                    );
-                                                                  },
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
 
-                                                                IconButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    _showCompanySwitchModal(
-                                                                        context,
-                                                                        dashboardProvider,
-                                                                        profileProvider);
-                                                                  },
-                                                                  icon:
-                                                                      const Icon(
-                                                                    Icons
-                                                                        .keyboard_double_arrow_down,
+                                                                // ✅ Minimal spacing between company name and role
+                                                                const SizedBox(
+                                                                    height: 1),
+
+                                                                // Role text
+                                                                Text(
+                                                                  companyInfo[
+                                                                      'role']!,
+                                                                  style:
+                                                                      const TextStyle(
                                                                     color: Colors
-                                                                        .white,
+                                                                        .white70,
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    height:
+                                                                        1.0, // ✅ Reduce line height
                                                                   ),
                                                                 ),
                                                               ],
-                                                            ),
-
-                                                            // User name
-                                                            Text(
-                                                              user.name,
-                                                              style: const TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 12),
-                                                            ),
-                                                          ],
+                                                            );
+                                                          },
                                                         );
                                                       },
                                                     ),
                                                   ],
                                                 ),
                                               );
-                                            } else {
-                                              return Center(
-                                                child: Text(
-                                                  profileProvider.errorMessage
-                                                          .isNotEmpty
-                                                      ? profileProvider
-                                                          .errorMessage
-                                                      : "No profile data found",
-                                                  style: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.red),
-                                                ),
-                                              );
                                             }
+                                            return const SizedBox.shrink();
                                           },
-                                        ),
+                                        )
                                       ],
                                     ),
                                   );

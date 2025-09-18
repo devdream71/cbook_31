@@ -161,9 +161,9 @@ class _UpdatePurchaseItemViewState extends State<UpdatePurchaseItemView> {
     if (detail != null) {
       detail.itemId = updatedItemId;
       detail.unitId = updatedUnitId;
-      detail.price = parsedPrice.toInt();
-      detail.qty = parsedQty.toInt();
-      detail.subTotal = parsedSubTotal;
+      detail.price = parsedPrice.toString();
+      detail.qty = parsedQty.toString();
+      detail.subTotal = parsedSubTotal.toString();
     }
 
     widget.provider.notifyListeners();

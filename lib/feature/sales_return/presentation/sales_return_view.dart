@@ -22,7 +22,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../common/give_information_dialog.dart';
 import '../../sales/widget/add_sales_formfield.dart';
 import 'package:http/http.dart' as http;
 
@@ -230,14 +229,36 @@ class _LayoutState extends State<_Layout> {
                 ),
               ),
               actions: [
+                // CashCreditToggle(
+                //   initialCash: true,
+                //   onChanged: (isCash) {
+                //     print("Selected: ${isCash ? "Cash" : "Credit"}");
+                //     controller.updateCash();
+                //     ; // you can hook your logic here
+                //   },
+                // ),
+
                 CashCreditToggle(
                   initialCash: true,
                   onChanged: (isCash) {
                     print("Selected: ${isCash ? "Cash" : "Credit"}");
                     controller.updateCash();
-                    ; // you can hook your logic here
+
+                    // Clear customer selection when switching to Cash
+                    if (isCash) {
+                      setState(() {
+                        selectedCustomer = null;
+                        selectedCustomerId = null;
+                        selectedCustomerObject = null;
+                      });
+
+                      // Also clear the customer ID from AddItemProvider
+                      Provider.of<AddItemProvider>(context, listen: false)
+                          .setSelectedCustomerId("cash");
+                    }
                   },
                 ),
+
                 IconButton(
                   onPressed: () {
                     Navigator.push(
@@ -388,96 +409,6 @@ class _LayoutState extends State<_Layout> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // InkWell(
-                                  //   onTap: () {
-                                  //     controller.updateCash();
-                                  //   },
-                                  //   child: DecoratedBox(
-                                  //     decoration: BoxDecoration(
-                                  //       color: controller.isCash
-                                  //           ? Colors.blue
-                                  //               .shade600 // 🔹 Cash background
-                                  //           : Colors.orange
-                                  //               .shade600, // ✅ Credit background
-                                  //       borderRadius: BorderRadius.circular(5),
-                                  //     ),
-                                  //     child: Padding(
-                                  //       padding: const EdgeInsets.symmetric(
-                                  //           horizontal: 5, vertical: 4),
-                                  //       child: Row(
-                                  //         mainAxisSize: MainAxisSize.min,
-                                  //         children: [
-                                  //           Text(
-                                  //             controller.isCash
-                                  //                 ? "Cash"
-                                  //                 : "Credit",
-                                  //             style: GoogleFonts.lato(
-                                  //               color: Colors.white,
-                                  //               fontWeight: FontWeight.w600,
-                                  //               fontSize: 14,
-                                  //             ),
-                                  //           ),
-                                  //           const SizedBox(width: 4),
-                                  //           const Icon(
-                                  //             Icons.arrow_forward_ios,
-                                  //             color: Colors.white,
-                                  //             size: 12,
-                                  //           )
-                                  //         ],
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  // ),
-
-                                  // InkWell(
-                                  //   onTap: () {
-                                  //     controller.updateCash();
-                                  //   },
-                                  //   child: DecoratedBox(
-                                  //     decoration: BoxDecoration(
-                                  //       color: AppColors.primaryColor,
-                                  //       borderRadius: BorderRadius.circular(5),
-                                  //     ),
-                                  //     child: Padding(
-                                  //       padding: const EdgeInsets.symmetric(
-                                  //           horizontal: 5),
-                                  //       child: Row(
-                                  //         mainAxisSize: MainAxisSize.min,
-                                  //         children: [
-                                  //           Text(
-                                  //             controller.isCash
-                                  //                 ? "Cash"
-                                  //                 : "Credit",
-                                  //             style: GoogleFonts.lato(
-                                  //                 color: Colors.white,
-                                  //                 fontWeight: FontWeight.w600,
-                                  //                 fontSize: 14),
-                                  //           ),
-                                  //           const SizedBox(width: 1),
-                                  //           const Icon(
-                                  //             Icons.arrow_forward_ios,
-                                  //             color: Colors.white,
-                                  //             size: 14,
-                                  //           )
-                                  //         ],
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  // vPad5,
-                                  // const Text(
-                                  //   "Bill To",
-                                  //   style: TextStyle(
-                                  //       color: Colors.black,
-                                  //       fontWeight: FontWeight.w600,
-                                  //       fontSize: 12),
-                                  // ),
-                                  // vPad5,
-                                  // const Text(
-                                  //   "Customer",
-                                  //   style: TextStyle(
-                                  //       color: Colors.black, fontSize: 12),
-                                  // ),
                                   Row(
                                     children: [
                                       SizedBox(
@@ -486,128 +417,10 @@ class _LayoutState extends State<_Layout> {
                                           // Adjusted height for cursor visibility
                                           child: controller.isCash
                                               ? const SizedBox.shrink()
-
-                                              // TextField(
-                                              //     readOnly: true,
-                                              //     onTap: () {
-                                              //       showDialog(
-                                              //         context: context,
-                                              //         builder: (context) =>
-                                              //             Dialog(
-                                              //           child: ReusableForm(
-                                              //             nameController:
-                                              //                 nameController,
-                                              //             phoneController:
-                                              //                 phoneController,
-                                              //             emailController:
-                                              //                 emailController,
-                                              //             addressController:
-                                              //                 addressController,
-                                              //             primaryColor:
-                                              //                 Theme.of(context)
-                                              //                     .primaryColor,
-                                              //             onCancel: _onCancel,
-                                              //             onSubmit: () {
-                                              //               setState(() {
-                                              //                 controller
-                                              //                     .updatedCustomerInfomation(
-                                              //                   nameFrom:
-                                              //                       nameController
-                                              //                           .text,
-                                              //                   phoneFrom:
-                                              //                       phoneController
-                                              //                           .text,
-                                              //                   emailFrom:
-                                              //                       emailController
-                                              //                           .text,
-                                              //                   addressFrom:
-                                              //                       addressController
-                                              //                           .text,
-                                              //                 );
-                                              //               });
-                                              //               Navigator.pop(
-                                              //                   context);
-                                              //             },
-                                              //           ),
-                                              //         ),
-                                              //       );
-                                              //     },
-
-                                              //     controller: controller
-                                              //         .controller, // Managing text field content
-                                              //     style: const TextStyle(
-                                              //         color: Colors.black,
-                                              //         fontWeight: FontWeight.w600,
-                                              //         fontSize: 12),
-                                              //     decoration: InputDecoration(
-                                              //       // filled: true,
-                                              //       fillColor: Colors.white,
-                                              //       border: UnderlineInputBorder(
-                                              //         borderRadius:
-                                              //             BorderRadius.circular(
-                                              //                 0),
-                                              //         borderSide: BorderSide(
-                                              //           color: Colors.white
-                                              //               .withOpacity(0.2),
-                                              //           width: 1,
-                                              //         ),
-                                              //       ),
-                                              //       enabledBorder:
-                                              //           UnderlineInputBorder(
-                                              //         borderRadius:
-                                              //             BorderRadius.circular(
-                                              //                 0),
-                                              //         borderSide: BorderSide(
-                                              //           color: Colors.white
-                                              //               .withOpacity(0.2),
-                                              //           width: 1,
-                                              //         ),
-                                              //       ),
-                                              //       focusedBorder:
-                                              //           UnderlineInputBorder(
-                                              //         borderRadius:
-                                              //             BorderRadius.circular(
-                                              //                 0),
-                                              //         borderSide: BorderSide(
-                                              //           color: Colors.white
-                                              //               .withOpacity(0.2),
-                                              //           width: 1,
-                                              //         ),
-                                              //       ),
-                                              //       contentPadding:
-                                              //           const EdgeInsets
-                                              //               .symmetric(
-                                              //         vertical: 12,
-                                              //         horizontal: 2,
-                                              //       ),
-                                              //     ),
-                                              //     cursorHeight:
-                                              //         12, // Adjusted cursor height
-                                              //     cursorWidth:
-                                              //         2, // Adjusted cursor width for visibility
-                                              //   )
                                               : SizedBox.shrink()),
                                       // hPad3, // Space between TextField and Icon
                                     ],
                                   ),
-                                  // vPad5,
-                                  // nameController.value.text == ""
-                                  //     ? const SizedBox.shrink()
-                                  //     : Column(
-                                  //         crossAxisAlignment:
-                                  //             CrossAxisAlignment.start,
-                                  //         children: [
-                                  //           Text(
-                                  //               "Name: ${controller.customerName}",
-                                  //               style: const TextStyle(
-                                  //                   color: Colors.black,
-                                  //                   fontSize: 10)),
-                                  //           Text("Phone: ${controller.phone}",
-                                  //               style: const TextStyle(
-                                  //                   color: Colors.black,
-                                  //                   fontSize: 10)),
-                                  //         ],
-                                  //       ),
                                 ],
                               ),
                             ),
@@ -615,132 +428,7 @@ class _LayoutState extends State<_Layout> {
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  // Bill No Field
-                                  // SizedBox(
-                                  //   height: 30,
-                                  //   width: 130,
-                                  //   child: AddSalesFormfield(
-                                  //     controller: controller.billNoController,
-                                  //     labelText: 'Bill No',
-
-                                  //     // Match cursor height to text size
-                                  //   ),
-                                  // ),
-
-                                  // SizedBox(
-                                  //   height: 30,
-                                  //   width: 130,
-                                  //   child: AddSalesFormfield(
-                                  //     labelText: "Bill No",
-                                  //     controller: billController,
-                                  //     readOnly: true, // Prevent manual editing
-                                  //   ),
-                                  // ),
-
-                                  // SizedBox(
-                                  //   height: 30,
-                                  //   width: 130,
-                                  //   child: InkWell(
-                                  //     onTap: () => controller.pickDate(
-                                  //         context), // Trigger the date picker
-                                  //     child: InputDecorator(
-                                  //       decoration: InputDecoration(
-                                  //         isDense: true,
-                                  //         suffixIcon: Icon(
-                                  //           Icons.calendar_today,
-                                  //           size: 16,
-                                  //           color:
-                                  //               Theme.of(context).primaryColor,
-                                  //         ),
-                                  //         suffixIconConstraints:
-                                  //             const BoxConstraints(
-                                  //           minWidth: 16,
-                                  //           minHeight: 16,
-                                  //         ), // Adjust constraints to align icon closely
-                                  //         hintText: "Bill Date",
-                                  //         hintStyle: TextStyle(
-                                  //           color: Colors.grey.shade400,
-                                  //           fontSize: 10,
-                                  //         ),
-                                  //         enabledBorder:
-                                  //             const UnderlineInputBorder(
-                                  //           borderSide: BorderSide(
-                                  //               color: Colors.black,
-                                  //               width: 0.5),
-                                  //         ),
-                                  //         focusedBorder:
-                                  //             const UnderlineInputBorder(
-                                  //           borderSide:
-                                  //               BorderSide(color: Colors.black),
-                                  //         ),
-                                  //       ),
-                                  //       child: Text(
-                                  //         controller.formattedDate.isNotEmpty
-                                  //             ? controller.formattedDate
-                                  //             : "Select Date", // Default text when no date is selected
-                                  //         style: const TextStyle(
-                                  //           color: Colors.black,
-                                  //           fontSize: 12,
-                                  //         ),
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  // ),
-
-                                  //bill person
-                                  // Padding(
-                                  //   padding: const EdgeInsets.only(top: 8.0),
-                                  //   child: Consumer<PaymentVoucherProvider>(
-                                  //     builder: (context, provider, child) {
-                                  //       return SizedBox(
-                                  //         height: 30,
-                                  //         width: 130,
-                                  //         child: provider.isLoading
-                                  //             ? const Center(
-                                  //                 child:
-                                  //                     CircularProgressIndicator())
-                                  //             : CustomDropdownTwo(
-                                  //                 hint: '',
-                                  //                 items:
-                                  //                     provider.billPersonNames,
-                                  //                 width: double.infinity,
-                                  //                 height: 30,
-                                  //                 labelText: 'Bill Person',
-                                  //                 selectedItem:
-                                  //                     selectedBillPerson,
-                                  //                 onChanged: (value) {
-                                  //                   debugPrint(
-                                  //                       '=== Bill Person Selected: $value ===');
-                                  //                   setState(() {
-                                  //                     selectedBillPerson =
-                                  //                         value;
-                                  //                     selectedBillPersonData =
-                                  //                         provider.billPersons
-                                  //                             .firstWhere(
-                                  //                       (person) =>
-                                  //                           person.name ==
-                                  //                           value,
-                                  //                     ); // ✅ Save the whole object globally
-                                  //                     selectedBillPersonId =
-                                  //                         selectedBillPersonData!
-                                  //                             .id;
-                                  //                   });
-
-                                  //                   debugPrint(
-                                  //                       'Selected Bill Person Details:');
-                                  //                   debugPrint(
-                                  //                       '- ID: ${selectedBillPersonData!.id}');
-                                  //                   debugPrint(
-                                  //                       '- Name: ${selectedBillPersonData!.name}');
-                                  //                   debugPrint(
-                                  //                       '- Phone: ${selectedBillPersonData!.phone}');
-                                  //                 }),
-                                  //       );
-                                  //     },
-                                  //   ),
-                                  // ),
-                                ],
+                                children: [],
                               ),
                             )
                           ],
@@ -750,127 +438,136 @@ class _LayoutState extends State<_Layout> {
                           height: 6,
                         ),
 
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: Consumer<CustomerProvider>(
-                            builder: (context, customerProvider, child) {
-                              if (customerProvider.isLoading) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
+                        controller.isCash
+                            ? const SizedBox
+                                .shrink() // Hide when Cash is selected
+                            : Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: Consumer<CustomerProvider>(
+                                  builder: (context, customerProvider, child) {
+                                    if (customerProvider.isLoading) {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    }
 
-                              if (customerProvider.errorMessage.isNotEmpty) {
-                                return Center(
-                                  child: Text(
-                                    customerProvider.errorMessage,
-                                    style: const TextStyle(
-                                        color: Colors.red, fontSize: 16),
-                                  ),
-                                );
-                              }
-
-                              final customerList =
-                                  customerProvider.customerResponse?.data ?? [];
-
-                              if (customerList.isEmpty) {
-                                return const Center(
-                                  child: Text(
-                                    "No Customer Found",
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                );
-                              }
-
-                              // ✅ Map customer ID & Name
-                              final dropdownItems = customerList
-                                  .map((customer) =>
-                                      customer.name) // Store both ID and Name
-                                  .toList();
-
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomDropdownTwo(
-                                    items: dropdownItems,
-                                    hint: "Select Customer",
-                                    width: double.infinity,
-                                    height: 38,
-                                    selectedItem:
-                                        selectedCustomer, // Set initially selected item
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedCustomer = value;
-
-                                        if (selectedCustomer != null) {
-                                          selectedCustomerObject =
-                                              customerList.firstWhere(
-                                            (customer) =>
-                                                customer.name ==
-                                                selectedCustomer,
-                                            orElse: () => Customer(
-                                              id: -1,
-                                              userId: 0,
-                                              name: '',
-                                              proprietorName: '',
-                                              due: 0,
-                                              purchases: [],
-                                            ),
-                                          );
-
-                                          selectedCustomerId =
-                                              selectedCustomerObject!.id
-                                                  .toString();
-
-                                          // ✅ Update AddItemProvider with selected customer ID
-                                          Provider.of<AddItemProvider>(context,
-                                                  listen: false)
-                                              .setSelectedCustomerId(
-                                                  selectedCustomerId!);
-
-                                          // Find the selected customer object based on the ID
-                                          selectedCustomerObject =
-                                              customerList.firstWhere(
-                                            (customer) =>
-                                                customer.id.toString() ==
-                                                selectedCustomerId,
-                                            orElse: () => Customer(
-                                              id: -1,
-                                              userId: 0,
-                                              name: '',
-                                              proprietorName: '',
-                                              due: 0,
-                                              purchases: [],
-                                            ),
-                                          );
-                                        }
-                                      });
-
-                                      debugPrint(
-                                          "Selected Customer ID: $selectedCustomerId"); // Debugging
-                                    },
-                                  ),
-
-                                  // Show the due amount of the selected customer
-                                  if (selectedCustomerObject != null &&
-                                      selectedCustomerObject!.id != -1)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Text(
-                                        "Customer Due: \$${selectedCustomerObject!.due.toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.bold,
+                                    if (customerProvider
+                                        .errorMessage.isNotEmpty) {
+                                      return Center(
+                                        child: Text(
+                                          customerProvider.errorMessage,
+                                          style: const TextStyle(
+                                              color: Colors.red, fontSize: 16),
                                         ),
-                                      ),
-                                    ),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
+                                      );
+                                    }
+
+                                    final customerList = customerProvider
+                                            .customerResponse?.data ??
+                                        [];
+
+                                    if (customerList.isEmpty) {
+                                      return const Center(
+                                        child: Text(
+                                          "No Customer Found",
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      );
+                                    }
+
+                                    // ✅ Map customer ID & Name
+                                    final dropdownItems = customerList
+                                        .map((customer) => customer
+                                            .name) // Store both ID and Name
+                                        .toList();
+
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomDropdownTwo(
+                                          items: dropdownItems,
+                                          hint: "Select Customer",
+                                          width: double.infinity,
+                                          height: 38,
+                                          selectedItem:
+                                              selectedCustomer, // Set initially selected item
+                                          onChanged: (value) {
+                                            setState(() {
+                                              selectedCustomer = value;
+
+                                              if (selectedCustomer != null) {
+                                                selectedCustomerObject =
+                                                    customerList.firstWhere(
+                                                  (customer) =>
+                                                      customer.name ==
+                                                      selectedCustomer,
+                                                  orElse: () => Customer(
+                                                    id: -1,
+                                                    userId: 0,
+                                                    name: '',
+                                                    proprietorName: '',
+                                                    due: 0,
+                                                    purchases: [],
+                                                  ),
+                                                );
+
+                                                selectedCustomerId =
+                                                    selectedCustomerObject!.id
+                                                        .toString();
+
+                                                // ✅ Update AddItemProvider with selected customer ID
+                                                Provider.of<AddItemProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .setSelectedCustomerId(
+                                                        selectedCustomerId!);
+
+                                                // Find the selected customer object based on the ID
+                                                selectedCustomerObject =
+                                                    customerList.firstWhere(
+                                                  (customer) =>
+                                                      customer.id.toString() ==
+                                                      selectedCustomerId,
+                                                  orElse: () => Customer(
+                                                    id: -1,
+                                                    userId: 0,
+                                                    name: '',
+                                                    proprietorName: '',
+                                                    due: 0,
+                                                    purchases: [],
+                                                  ),
+                                                );
+                                              }
+                                            });
+
+                                            debugPrint(
+                                                "Selected Customer ID: $selectedCustomerId"); // Debugging
+                                          },
+                                        ),
+
+                                        // Show the due amount of the selected customer
+                                        if (selectedCustomerObject != null &&
+                                            selectedCustomerObject!.id != -1)
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
+                                            child: Text(
+                                              "Customer Due: \$${selectedCustomerObject!.due.toStringAsFixed(2)}",
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
 
                         const SizedBox(
                           height: 6,
@@ -906,47 +603,6 @@ class _LayoutState extends State<_Layout> {
                                           color: Colors.black,
                                           fontSize: 12),
                                     ),
-                                    // CustomDropdownTwo(
-                                    //   hint: '', //Choose an item
-                                    //   items: itemProvider.items
-                                    //       .map((item) => item.name)
-                                    //       .toList(),
-                                    //   width: 200,
-                                    //   height: 30,
-                                    //   selectedItem: controller.seletedItemName,
-                                    //   onChanged: (selectedItemName) async {
-
-                                    //      debugPrint(' controller  isCash ==> ${controller.isCash }');
-
-                                    //     final String? selectedCustomerID =selectedCustomerId;
-
-                                    //            //controller.isCash ;
-
-                                    //         debugPrint(' custopmer id ==> ${selectedCustomerID }');
-
-                                    //     setState(() {
-                                    //       controller.seletedItemName =
-                                    //           selectedItemName;
-                                    //       itemProvider.items.forEach((e) {
-                                    //         if (selectedItemName == e.name) {
-                                    //           controller.selcetedItemId =
-                                    //               e.id.toString();
-                                    //         }
-                                    //       });
-                                    //     });
-
-                                    //     if (controller.selcetedItemId != null ||
-                                    //         selectedCustomerID != null) {
-                                    //       await itemProvider.fetchSaleHistory(
-                                    //           int.tryParse(
-                                    //             controller.selcetedItemId,
-                                    //           ),
-                                    //           selectedCustomerID!);
-                                    //     }
-
-                                    //   },
-                                    // ),
-
                                     CustomDropdownTwo(
                                       hint: '',
                                       items: itemProvider.items
@@ -1541,6 +1197,15 @@ class _LayoutState extends State<_Layout> {
                         ),
 
                         //bottom button portion
+                        // BottomPortionSaleReturn(
+                        //   billNo: billController.text,
+                        //   invoiceItems: invoiceItems,
+                        //   saleType: controller.isCash ? "Cash" : "Credit",
+                        //   customerId: controller.isCash
+                        //       ? "cash"
+                        //       : selectedCustomerId ?? "",
+                        // )
+
                         BottomPortionSaleReturn(
                           billNo: billController.text,
                           invoiceItems: invoiceItems,
@@ -1548,6 +1213,21 @@ class _LayoutState extends State<_Layout> {
                           customerId: controller.isCash
                               ? "cash"
                               : selectedCustomerId ?? "",
+                          onSaveSuccess: () {
+                            // ✅ This callback will reset widget state after successful save
+                            setState(() {
+                              selectedCustomer = null;
+                              selectedCustomerId = null;
+                              selectedCustomerObject = null;
+                              showNoteField = false; // Also reset note field
+                            });
+
+                            // ✅ Clear customer selection from AddItemProvider
+                            Provider.of<AddItemProvider>(context, listen: false)
+                                .setSelectedCustomerId("cash");
+
+                            debugPrint("✅ Widget state reset completed");
+                          },
                         )
                       ],
                     ),

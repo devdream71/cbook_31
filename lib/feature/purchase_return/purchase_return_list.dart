@@ -214,7 +214,7 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
               child: Consumer2<PurchaseReturnProvider, CurrencyProvider>(
                 builder: (context, provider, currencyProvider, child) {
 
-                   final currency = currencyProvider.currencyModel?.currency ?? '৳';
+                   final currency = currencyProvider.currencyModel?.currency ?? '';
 
 
                   if (provider.isLoading) {
@@ -320,7 +320,7 @@ class _PurchaseReturnListState extends State<PurchaseReturnList> {
                                           color: Colors.black),
                                     ),
                                     Text(
-                                      "$currency ${item.grossTotal ?? 0}",
+                                      "${item.grossTotal ?? 0} $currency",
                                       style: const TextStyle(
                                           fontSize: 14, color: Colors.black),
                                     ),

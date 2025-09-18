@@ -22,82 +22,141 @@ class PaymentVoucherProvider with ChangeNotifier {
   double get totalPayment => _totalPayment;
 
   /////show payment voucher
-
-  Future<void> fetchPaymentVouchers(
-      {DateTime? startDate, DateTime? endDate}) async {
-    isLoading = true;
-    notifyListeners();
-
-        final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+  ///
+  
 
 
-    try {
-      final url =
-          Uri.parse('${AppUrl.baseurl}payment-vouchers');
-      final response = await http.get(url, headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        });
+  Future<void> fetchPaymentVouchers({DateTime? startDate, DateTime? endDate}) async {
+  isLoading = true;
+  notifyListeners();
 
-      if (response.statusCode == 200) {
-        final extractedData = json.decode(response.body);
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
 
-        if (extractedData['success'] == true && extractedData['data'] != null) {
-          final List<dynamic> rawData = extractedData['data'];
+  try {
+    final url = Uri.parse('${AppUrl.baseurl}payment-vouchers');
+    final response = await http.get(url, headers: {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json",
+    });
 
-          // Get total payment from last item
+    debugPrint('=== Payment Vouchers API Debug ===');
+    debugPrint('URL: $url');
+    debugPrint('Status Code: ${response.statusCode}');
+    debugPrint('Raw Response: ${response.body}');
+    debugPrint('==================================');
+
+    if (response.statusCode == 200) {
+      final extractedData = json.decode(response.body);
+
+      if (extractedData['success'] == true && extractedData['data'] != null) {
+        final List<dynamic> rawData = List.from(extractedData['data']);
+        
+        debugPrint('Raw data length: ${rawData.length}');
+        debugPrint('Raw data: $rawData');
+
+        // Handle total payment (last item in array)
+        double totalAllPayment = 0.0;
+        if (rawData.isNotEmpty) {
           final lastItem = rawData.last;
-          double totalAllPayment = 0.0;
-
-          if (lastItem is Map<String, dynamic> &&
-              lastItem.containsKey('total_payment')) {
-            final paymentString =
-                lastItem['total_payment'].toString().replaceAll(',', '');
-            totalAllPayment = double.tryParse(paymentString) ?? 0.0;
+          debugPrint('Last item: $lastItem');
+          
+          if (lastItem is Map<String, dynamic> && lastItem.containsKey('total_payment')) {
+            final paymentValue = lastItem['total_payment'];
+            debugPrint('Total payment value: $paymentValue');
+            
+            if (paymentValue is String) {
+              final paymentString = paymentValue.replaceAll(',', '');
+              totalAllPayment = double.tryParse(paymentString) ?? 0.0;
+            } else if (paymentValue is num) {
+              totalAllPayment = paymentValue.toDouble();
+            }
+            
+            // Remove the total_payment object from the list
             rawData.removeLast();
+            debugPrint('After removing total payment, data length: ${rawData.length}');
           }
+        }
 
-          // Convert to model list
-          List<PaymentVoucherModel> allVouchers = rawData
-              .map((voucher) => PaymentVoucherModel.fromJson(voucher))
-              .toList();
+        // Convert remaining items to PaymentVoucherModel
+        List<PaymentVoucherModel> allVouchers = [];
+        
+        for (var item in rawData) {
+          try {
+            debugPrint('Processing item: $item');
+            final voucher = PaymentVoucherModel.fromJson(item);
+            allVouchers.add(voucher);
+            debugPrint('Successfully created voucher: ${voucher.voucherNumber}');
+          } catch (e) {
+            debugPrint('Error creating voucher from item: $e');
+            debugPrint('Problematic item: $item');
+          }
+        }
+        
+        debugPrint('Total vouchers created: ${allVouchers.length}');
 
-          // Filter based on passed dates
-          if (startDate != null && endDate != null) {
-            _vouchers = allVouchers.where((voucher) {
-              try {
-                final date = DateTime.parse(voucher.voucherDate ?? '');
-                return date
-                        .isAfter(startDate.subtract(const Duration(days: 1))) &&
-                    date.isBefore(endDate.add(const Duration(days: 1)));
-              } catch (e) {
+        // Filter based on dates if provided
+        if (startDate != null && endDate != null) {
+          debugPrint('Filtering by date range: $startDate to $endDate');
+          
+          _vouchers = allVouchers.where((voucher) {
+            try {
+              if (voucher.voucherDate == null || voucher.voucherDate!.isEmpty) {
+                debugPrint('Voucher has null/empty date: ${voucher.voucherNumber}');
                 return false;
               }
-            }).toList();
-          } else {
-            _vouchers = allVouchers;
-          }
-
-          // Total payment of only filtered vouchers
-          _totalPayment = _vouchers.fold(0.0, (sum, v) => sum + v.totalAmount);
+              
+              final date = DateTime.parse(voucher.voucherDate!);
+              final isInRange = date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+                  date.isBefore(endDate.add(const Duration(days: 1)));
+              
+              debugPrint('Voucher ${voucher.voucherNumber} date $date in range: $isInRange');
+              return isInRange;
+            } catch (e) {
+              debugPrint('Date parsing error for voucher ${voucher.voucherNumber}: $e');
+              return false;
+            }
+          }).toList();
         } else {
-          _vouchers = [];
-          _totalPayment = 0.0;
+          _vouchers = allVouchers;
         }
+
+        debugPrint('Final filtered vouchers count: ${_vouchers.length}');
+
+        // Calculate total payment of filtered vouchers
+        _totalPayment = _vouchers.fold(0.0, (sum, voucher) {
+          debugPrint('Adding voucher ${voucher.voucherNumber} amount: ${voucher.totalAmount}');
+          return sum + voucher.totalAmount;
+        });
+
+        debugPrint('Calculated total payment: $_totalPayment');
+        
       } else {
+        debugPrint('API response success: false or data is null');
+        debugPrint('Success: ${extractedData['success']}');
+        debugPrint('Data: ${extractedData['data']}');
         _vouchers = [];
         _totalPayment = 0.0;
       }
-    } catch (e) {
+    } else {
+      debugPrint('HTTP Error: ${response.statusCode}');
+      debugPrint('Error Response: ${response.body}');
       _vouchers = [];
       _totalPayment = 0.0;
-    } finally {
-      isLoading = false;
-      notifyListeners();
     }
+  } catch (e, stackTrace) {
+    debugPrint('Exception in fetchPaymentVouchers: $e');
+    debugPrint('Stack trace: $stackTrace');
+    _vouchers = [];
+    _totalPayment = 0.0;
+  } finally {
+    isLoading = false;
+    debugPrint('Final state - Vouchers: ${_vouchers.length}, Total: $_totalPayment, Loading: $isLoading');
+    notifyListeners();
   }
+}
 
+  
   //bill person api call.
   Future<void> fetchBillPersons() async {
     isLoading = true;

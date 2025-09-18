@@ -192,297 +192,485 @@ class _PartyState extends State<Party> {
         ),
         body: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xffdddefa),
-                // Add border highlight for selected filter
-                border: Border(
-                  bottom: BorderSide(
-                    color: selectedFilter != 'all'
-                        ? Colors.blue.withOpacity(0.5)
-                        : Colors.transparent,
-                    width: 2,
-                  ),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Left (Customer) - Make it clickable
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedFilter =
-                            selectedFilter == 'customer' ? 'all' : 'customer';
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: selectedFilter == 'customer'
-                            ? Colors.blue.withOpacity(0.2)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                        border: selectedFilter == 'customer'
-                            ? Border.all(color: Colors.blue, width: 1)
-                            : null,
-                      ),
-                      child: Row(
+
+            
+Container(
+  padding: const EdgeInsets.all(8),
+  decoration: BoxDecoration(
+    color: const Color(0xffdddefa),
+    // Add border highlight for selected filter
+    border: Border(
+      bottom: BorderSide(
+        color: selectedFilter != 'all'
+            ? Colors.blue.withOpacity(0.5)
+            : Colors.transparent,
+        width: 2,
+      ),
+    ),
+  ),
+  child: Row(
+    children: [
+      // Left (Customer) - Fixed width container
+      Expanded(
+        flex: 1,
+        child: GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedFilter =
+                  selectedFilter == 'customer' ? 'all' : 'customer';
+            });
+          },
+          child: Container(
+            height: 50, // ✅ Fixed height to prevent movement
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: selectedFilter == 'customer'
+                  ? Colors.blue.withOpacity(0.2)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              border: selectedFilter == 'customer'
+                  ? Border.all(color: Colors.blue, width: 1)
+                  : null,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // ✅ Center content
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Consumer2<DashboardReportProvider, CurrencyProvider>(
+                  builder: (context, provider, currencyProvider, _) {
+                    final currency = currencyProvider.currencyModel?.currency ?? '৳';
+                    final isLoadingTransaction = provider.isLoadingCustomerTransaction;
+                    final isLoadingCount = provider.isLoadingCustomerCount;
+
+                    if (isLoadingTransaction || isLoadingCount) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(width: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Consumer<DashboardReportProvider>(
-                              //   builder: (context, provider, _) {
-                              //     final isLoadingTransaction =
-                              //         provider.isLoadingCustomerTransaction;
-                              //     final isLoadingCount =
-                              //         provider.isLoadingCustomerCount;
-
-                              //     final errorTransaction =
-                              //         provider.errorCustomerTransaction;
-                              //     final errorCount =
-                              //         provider.errorCustomerCount;
-
-                              //     if (isLoadingTransaction || isLoadingCount) {
-                              //       return const Text("Loading...");
-                              //     }
-
-                              //     if (errorTransaction != null ||
-                              //         errorCount != null) {
-                              //       return Text(
-                              //           "Error: ${errorTransaction ?? errorCount}");
-                              //     }
-
-                              //     return Column(
-                              //       crossAxisAlignment:
-                              //           CrossAxisAlignment.start,
-                              //       children: [
-                              //         Text(
-                              //           'Customer (${provider.customerTransactionCountTotal ?? 0})',
-                              //           style: TextStyle(
-                              //               color: selectedFilter == 'customer'
-                              //                   ? Colors.blue[700]
-                              //                   : Colors.black,
-                              //               fontSize: 12,
-                              //               fontWeight: FontWeight.bold),
-                              //         ),
-                              //         Row(
-                              //           children: [
-                              //             Text(
-                              //               '৳ ${provider.customerTransaction ?? 0}',
-                              //               style: TextStyle(
-                              //                 color:
-                              //                     selectedFilter == 'customer'
-                              //                         ? Colors.blue[700]
-                              //                         : Colors.black,
-                              //                 fontSize: 12,
-                              //                 fontWeight: FontWeight.bold,
-                              //               ),
-                              //             ),
-                              //             const SizedBox(width: 8),
-                              //           ],
-                              //         ),
-                              //       ],
-                              //     );
-                              //   },
-                              // ),
-
-                              Consumer2<DashboardReportProvider,
-                                  CurrencyProvider>(
-                                builder:
-                                    (context, provider, currencyProvider, _) {
-                                  final currency = currencyProvider
-                                          .currencyModel?.currency ??
-                                      '৳'; // fallback
-
-                                  final isLoadingTransaction =
-                                      provider.isLoadingCustomerTransaction;
-                                  final isLoadingCount =
-                                      provider.isLoadingCustomerCount;
-
-                                  if (isLoadingTransaction || isLoadingCount) {
-                                    return const Text("Loading...");
-                                  }
-
-                                  if (provider.errorCustomerTransaction !=
-                                          null ||
-                                      provider.errorCustomerCount != null) {
-                                    return Text(
-                                        "Error: ${provider.errorCustomerTransaction ?? provider.errorCustomerCount}");
-                                  }
-
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Customer (${provider.customerTransactionCountTotal ?? 0})',
-                                        style: TextStyle(
-                                          color: selectedFilter == 'customer'
-                                              ? Colors.blue[700]
-                                              : Colors.black,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '$currency ${provider.customerTransaction ?? 0}',
-                                            style: TextStyle(
-                                              color:
-                                                  selectedFilter == 'customer'
-                                                      ? Colors.blue[700]
-                                                      : Colors.black,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ],
+                          Text(
+                            'Customer (...)',
+                            style: TextStyle(
+                              color: selectedFilter == 'customer'
+                                  ? Colors.blue[700]
+                                  : Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Vertical Divider
-                  const SizedBox(
-                    height: 35,
-                    width: 35,
-                    child: Icon(
-                      Icons.group,
-                      size: 34,
-                    ),
-                  ),
-
-                  // Right (Supplier) - Make it clickable
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedFilter =
-                            selectedFilter == 'supplier' ? 'all' : 'supplier';
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: selectedFilter == 'supplier'
-                            ? Colors.red.withOpacity(0.2)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                        border: selectedFilter == 'supplier'
-                            ? Border.all(color: Colors.red, width: 1)
-                            : null,
-                      ),
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                ///supplier
-                                // Consumer<DashboardReportProvider>(
-                                //   builder: (context, provider, _) {
-                                //     if (provider.isLoading) {
-                                //       return const Center(child: SizedBox());
-                                //     } else if (provider.error != null) {
-                                //       return const SizedBox.shrink();
-
-                                //       //Text("Error: ${provider.error}");
-                                //     } else {
-                                //       return Column(
-                                //         crossAxisAlignment:
-                                //             CrossAxisAlignment.end,
-                                //         children: [
-                                //           Text(
-                                //             'Supplier  (${provider.totalSupplierCount ?? 0})',
-                                //             style: TextStyle(
-                                //                 color:
-                                //                     selectedFilter == 'supplier'
-                                //                         ? Colors.red[700]
-                                //                         : Colors.black,
-                                //                 fontSize: 12,
-                                //                 fontWeight: FontWeight.bold),
-                                //           ),
-                                //           Text(
-                                //             '৳ ${provider.supplierTransaction ?? 0}  ',
-                                //             style: TextStyle(
-                                //                 color:
-                                //                     selectedFilter == 'supplier'
-                                //                         ? Colors.red[700]
-                                //                         : Colors.black,
-                                //                 fontSize: 12,
-                                //                 fontWeight: FontWeight.bold),
-                                //           ),
-                                //         ],
-                                //       );
-                                //     }
-                                //   },
-                                // ),
-
-                                Consumer2<DashboardReportProvider,
-                                    CurrencyProvider>(
-                                  builder:
-                                      (context, provider, currencyProvider, _) {
-                                    final currency = currencyProvider
-                                            .currencyModel?.currency ??
-                                        '৳'; // fallback
-
-                                    if (provider.isLoading) {
-                                      return const SizedBox.shrink();
-                                    } else if (provider.error != null) {
-                                      return const SizedBox.shrink();
-                                    }
-
-                                    return Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          'Supplier (${provider.totalSupplierCount ?? 0})',
-                                          style: TextStyle(
-                                            color: selectedFilter == 'supplier'
-                                                ? Colors.red[700]
-                                                : Colors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          '$currency ${provider.supplierTransaction ?? 0}',
-                                          style: TextStyle(
-                                            color: selectedFilter == 'supplier'
-                                                ? Colors.red[700]
-                                                : Colors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ],
+                          Text(
+                            '$currency ...',
+                            style: TextStyle(
+                              color: selectedFilter == 'customer'
+                                  ? Colors.blue[700]
+                                  : Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                      );
+                    }
+
+                    if (provider.errorCustomerTransaction != null ||
+                        provider.errorCustomerCount != null) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Customer (0)',
+                            style: TextStyle(
+                              color: selectedFilter == 'customer'
+                                  ? Colors.blue[700]
+                                  : Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '$currency 0',
+                            style: TextStyle(
+                              color: selectedFilter == 'customer'
+                                  ? Colors.blue[700]
+                                  : Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Customer (${provider.customerTransactionCountTotal ?? 0})',
+                          style: TextStyle(
+                            color: selectedFilter == 'customer'
+                                ? Colors.blue[700]
+                                : Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '$currency ${provider.customerTransaction ?? 0}',
+                          style: TextStyle(
+                            color: selectedFilter == 'customer'
+                                ? Colors.blue[700]
+                                : Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
             ),
+          ),
+        ),
+      ),
+
+      // Center Icon - Fixed positioning
+      const SizedBox(
+        height: 50, // ✅ Match the container height
+        width: 50,  // ✅ Fixed width
+        child: Center( // ✅ Ensure icon stays centered
+          child: Icon(
+            Icons.group,
+            size: 34,
+          ),
+        ),
+      ),
+
+      // Right (Supplier) - Fixed width container
+      Expanded(
+        flex: 1,
+        child: GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedFilter =
+                  selectedFilter == 'supplier' ? 'all' : 'supplier';
+            });
+          },
+          child: Container(
+            height: 50, // ✅ Fixed height to prevent movement
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: selectedFilter == 'supplier'
+                  ? Colors.red.withOpacity(0.2)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              border: selectedFilter == 'supplier'
+                  ? Border.all(color: Colors.red, width: 1)
+                  : null,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // ✅ Center content
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Consumer2<DashboardReportProvider, CurrencyProvider>(
+                  builder: (context, provider, currencyProvider, _) {
+                    final currency = currencyProvider.currencyModel?.currency ?? '';
+
+                    if (provider.isLoading) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Supplier (...)',
+                            style: TextStyle(
+                              color: selectedFilter == 'supplier'
+                                  ? Colors.red[700]
+                                  : Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '$currency ...',
+                            style: TextStyle(
+                              color: selectedFilter == 'supplier'
+                                  ? Colors.red[700]
+                                  : Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (provider.error != null) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Supplier (0)',
+                            style: TextStyle(
+                              color: selectedFilter == 'supplier'
+                                  ? Colors.red[700]
+                                  : Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '$currency 0',
+                            style: TextStyle(
+                              color: selectedFilter == 'supplier'
+                                  ? Colors.red[700]
+                                  : Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Supplier (${provider.totalSupplierCount ?? 0})',
+                          style: TextStyle(
+                            color: selectedFilter == 'supplier'
+                                ? Colors.red[700]
+                                : Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '$currency ${provider.supplierTransaction ?? 0}',
+                          style: TextStyle(
+                            color: selectedFilter == 'supplier'
+                                ? Colors.red[700]
+                                : Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+            
+            
+            
+            
+            // Container(
+            //   padding: const EdgeInsets.all(8),
+            //   decoration: BoxDecoration(
+            //     color: const Color(0xffdddefa),
+            //     // Add border highlight for selected filter
+            //     border: Border(
+            //       bottom: BorderSide(
+            //         color: selectedFilter != 'all'
+            //             ? Colors.blue.withOpacity(0.5)
+            //             : Colors.transparent,
+            //         width: 2,
+            //       ),
+            //     ),
+            //   ),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       // Left (Customer) - Make it clickable
+            //       GestureDetector(
+            //         onTap: () {
+            //           setState(() {
+            //             selectedFilter =
+            //                 selectedFilter == 'customer' ? 'all' : 'customer';
+            //           });
+            //         },
+            //         child: Container(
+            //           padding: const EdgeInsets.all(4),
+            //           decoration: BoxDecoration(
+            //             color: selectedFilter == 'customer'
+            //                 ? Colors.blue.withOpacity(0.2)
+            //                 : Colors.transparent,
+            //             borderRadius: BorderRadius.circular(8),
+            //             border: selectedFilter == 'customer'
+            //                 ? Border.all(color: Colors.blue, width: 1)
+            //                 : null,
+            //           ),
+            //           child: Row(
+            //             children: [
+            //               const SizedBox(width: 8),
+            //               Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+                              
+
+            //                   Consumer2<DashboardReportProvider,
+            //                       CurrencyProvider>(
+            //                     builder:
+            //                         (context, provider, currencyProvider, _) {
+            //                       final currency = currencyProvider
+            //                               .currencyModel?.currency ??
+            //                           '৳'; // fallback
+
+            //                       final isLoadingTransaction =
+            //                           provider.isLoadingCustomerTransaction;
+            //                       final isLoadingCount =
+            //                           provider.isLoadingCustomerCount;
+
+            //                       if (isLoadingTransaction || isLoadingCount) {
+            //                         return const Text("Loading...");
+            //                       }
+
+            //                       if (provider.errorCustomerTransaction !=
+            //                               null ||
+            //                           provider.errorCustomerCount != null) {
+            //                         return Text(
+            //                             "Error: ${provider.errorCustomerTransaction ?? provider.errorCustomerCount}");
+            //                       }
+
+            //                       return Column(
+            //                         crossAxisAlignment:
+            //                             CrossAxisAlignment.start,
+            //                         children: [
+            //                           Text(
+            //                             'Customer (${provider.customerTransactionCountTotal ?? 0})',
+            //                             style: TextStyle(
+            //                               color: selectedFilter == 'customer'
+            //                                   ? Colors.blue[700]
+            //                                   : Colors.black,
+            //                               fontSize: 12,
+            //                               fontWeight: FontWeight.bold,
+            //                             ),
+            //                           ),
+            //                           Row(
+            //                             children: [
+            //                               Text(
+            //                                 '$currency ${provider.customerTransaction ?? 0}',
+            //                                 style: TextStyle(
+            //                                   color:
+            //                                       selectedFilter == 'customer'
+            //                                           ? Colors.blue[700]
+            //                                           : Colors.black,
+            //                                   fontSize: 12,
+            //                                   fontWeight: FontWeight.bold,
+            //                                 ),
+            //                               ),
+            //                               const SizedBox(width: 8),
+            //                             ],
+            //                           ),
+            //                         ],
+            //                       );
+            //                     },
+            //                   ),
+            //                 ],
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+
+            //       // Vertical Divider
+            //       const SizedBox(
+            //         height: 35,
+            //         width: 35,
+            //         child: Icon(
+            //           Icons.group,
+            //           size: 34,
+            //         ),
+            //       ),
+
+            //       // Right (Supplier) - Make it clickable
+            //       GestureDetector(
+            //         onTap: () {
+            //           setState(() {
+            //             selectedFilter =
+            //                 selectedFilter == 'supplier' ? 'all' : 'supplier';
+            //           });
+            //         },
+            //         child: Container(
+            //           padding: const EdgeInsets.all(4),
+            //           decoration: BoxDecoration(
+            //             color: selectedFilter == 'supplier'
+            //                 ? Colors.red.withOpacity(0.2)
+            //                 : Colors.transparent,
+            //             borderRadius: BorderRadius.circular(8),
+            //             border: selectedFilter == 'supplier'
+            //                 ? Border.all(color: Colors.red, width: 1)
+            //                 : null,
+            //           ),
+            //           child: Row(
+            //             children: [
+            //               Padding(
+            //                 padding: const EdgeInsets.only(right: 4.0),
+            //                 child: Column(
+            //                   crossAxisAlignment: CrossAxisAlignment.end,
+            //                   children: [
+                                
+
+            //                     Consumer2<DashboardReportProvider,
+            //                         CurrencyProvider>(
+            //                       builder:
+            //                           (context, provider, currencyProvider, _) {
+            //                         final currency = currencyProvider
+            //                                 .currencyModel?.currency ??
+            //                             '৳'; // fallback
+
+            //                         if (provider.isLoading) {
+            //                           return const SizedBox.shrink();
+            //                         } else if (provider.error != null) {
+            //                           return const SizedBox.shrink();
+            //                         }
+
+            //                         return Column(
+            //                           crossAxisAlignment:
+            //                               CrossAxisAlignment.end,
+            //                           children: [
+            //                             Text(
+            //                               'Supplier (${provider.totalSupplierCount ?? 0})',
+            //                               style: TextStyle(
+            //                                 color: selectedFilter == 'supplier'
+            //                                     ? Colors.red[700]
+            //                                     : Colors.black,
+            //                                 fontSize: 12,
+            //                                 fontWeight: FontWeight.bold,
+            //                               ),
+            //                             ),
+            //                             Text(
+            //                               '$currency ${provider.supplierTransaction ?? 0}',
+            //                               style: TextStyle(
+            //                                 color: selectedFilter == 'supplier'
+            //                                     ? Colors.red[700]
+            //                                     : Colors.black,
+            //                                 fontSize: 12,
+            //                                 fontWeight: FontWeight.bold,
+            //                               ),
+            //                             ),
+            //                           ],
+            //                         );
+            //                       },
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+
+
+
+
+
             Expanded(
               child: Consumer<CustomerProvider>(
                 builder: (context, customerProvider, child) {
@@ -496,11 +684,7 @@ class _PartyState extends State<Party> {
                       lottieAsset: "assets/animation/no_data.json",
                     )
 
-                        // Text(
-                        //   customerProvider.errorMessage,
-                        //   style: const TextStyle(color: Colors.red, fontSize: 16),
-                        // ),
-
+                         
                         );
                   }
 

@@ -133,29 +133,91 @@ class SalesReturnController extends ChangeNotifier {
   }
 
 
-  void resetAll() {
+//   void resetAll() {
+//   // Clear all lists
+//   itemsCashReuturn.clear();
+//   itemsCreditReturn.clear();
+//   reductionQtyList.clear();
+//   demoPurchaseReturnModelList.clear();
+//   itemsCash.clear();
+
+//   // Reset controllers
+//   billNoController.clear();
+//   discountController.clear();
+//   //paymentController.clear();
+
+//   // Reset selected values
+//  // selcetedItemId = null;
+//   seletedItemName = null;
+//   isCash = false;
+
+//   // Reset totals
+//   totalAmountController.text = "0.00";
+//   paymentAmountController.text = "0.00";
+
+//   debugPrint("✅ Controller reset done!");
+// }
+
+
+
+void resetAll() {
   // Clear all lists
   itemsCashReuturn.clear();
   itemsCreditReturn.clear();
   reductionQtyList.clear();
   demoPurchaseReturnModelList.clear();
   itemsCash.clear();
+  saleReturnItemModel.clear(); // ✅ Add this line to clear sale items
 
   // Reset controllers
   billNoController.clear();
   discountController.clear();
-  //paymentController.clear();
+  saleReturnNoteController.clear(); // ✅ Add this to clear notes
+  mrpController.clear();
+  qtyController.clear();
+  codeController.clear();
+  amountController.clear();
+  unitController.clear();
+  priceController.clear();
 
   // Reset selected values
- // selcetedItemId = null;
+  selcetedItemId = "";
   seletedItemName = null;
-  isCash = false;
+  selectedCategory = null;
+  selectedSubCategory = null;
+  selectedUnit = null;
+  selectedUnitIdWithName = "";
+  
+  // ✅ FIXED: Set isCash to true to match CashCreditToggle's initialCash: true
+  isCash = true;
 
   // Reset totals
   totalAmountController.text = "0.00";
   paymentAmountController.text = "0.00";
+  amountController.text = "0.00";
+  creditPaymentController.text = "0.00";
 
-  debugPrint("✅ Controller reset done!");
+  // Reset boolean flags to default state
+  isReturnAmount = true;
+  isAdditionalCost = true;
+  isTotalReturnAmount = true;
+  isSalesAmount = true;
+  isDiscount = true;
+  isAdditionalCost2 = true;
+  isMergeAmount = true;
+  isDisocunt = true;
+  isDiscountCredit = true;
+  isSubTotalCredit = true;
+  isAmount = true;
+  isAdditionalCostCredit = true;
+  isTotalAmount = true;
+  isPaymentType = true;
+  isPaymentAmount = true;
+  isDue = true;
+  isAmountCredit = true;
+
+  debugPrint("✅ Controller reset done - isCash: $isCash");
+  notifyListeners(); // ✅ Add this to notify UI of changes
 }
 
 

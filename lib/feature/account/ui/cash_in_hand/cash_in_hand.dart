@@ -3,6 +3,7 @@ import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_cash/adjust_cash_create.dart';
 import 'package:cbook_dt/feature/account/ui/cash_in_hand/provider/cash_in_hand.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,9 @@ class _CashInHandState extends State<CashInHand> {
     super.initState();
     Provider.of<CashInHandProvider>(context, listen: false)
         .fetchCashInHandData();
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
   }
 
   @override
@@ -27,199 +31,354 @@ class _CashInHandState extends State<CashInHand> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-        backgroundColor: AppColors.sfWhite,
-        appBar: AppBar(
-          backgroundColor: colorScheme.primary,
-          //centerTitle: true,
-          title: const Text(
-            'Cash in hand',
-            style: TextStyle(
-                color: Colors.yellow,
-                fontSize: 16,
-                fontWeight: FontWeight.bold),
-          ),
-          iconTheme: const IconThemeData(color: Colors.white),
-          automaticallyImplyLeading: true,
-          actions: [
-            Row(
-              children: [
-                ///adjust cash.
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AdjustCashCreate()));
-                  },
-                  child: const Text(
-                    'Adjust Cash',
-                    style: TextStyle(color: Colors.yellow, fontSize: 15),
-                  ),
-                ),
-                ///account.
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AccountTypeCreate()));
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Icon(Icons.add),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+      backgroundColor: AppColors.sfWhite,
+      appBar: AppBar(
+        backgroundColor: colorScheme.primary,
+        //centerTitle: true,
+        title: const Text(
+          'Cash in hand',
+          style: TextStyle(
+              color: Colors.yellow, fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        body: Consumer<CashInHandProvider>(
-          builder: (context, provider, child) {
-            if (provider.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        iconTheme: const IconThemeData(color: Colors.white),
+        automaticallyImplyLeading: true,
+        actions: [
+          Row(
+            children: [
+              ///adjust cash.
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AdjustCashCreate()));
+                },
+                child: const Text(
+                  'Adjust Cash',
+                  style: TextStyle(color: Colors.yellow, fontSize: 15),
+                ),
+              ),
 
-            final dataList = provider.cashInHandModel?.data ?? [];
-
-            if (dataList.isEmpty) {
-              return const NoDataWidget(
-                message: "No cash in hand records found.",
-                lottieAsset: "assets/animation/no_data.json",
-              );
-
-              
-            }
-
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Text(
-                    "Total Amount: ৳ ${provider.amountSum.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      //fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+              ///account.
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AccountTypeCreate()));
+                },
+                child: const Padding(
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Icon(Icons.add),
+                    ],
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: dataList.length,
-                    itemBuilder: (context, index) {
-                      final item = dataList[index];
-                      final cashID = dataList[index].id;
-                      return InkWell(
-                        onLongPress: () {
-                          editDeleteDiolog(context, cashID!);
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(2)),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 4, vertical: 2),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 10),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Left Column: Sales Number and Date
-                                Expanded(
-                                  flex: 2,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      item.billNumber == ''
-                                          ? Text(
-                                              item.billType ?? '',
-                                              style: GoogleFonts.lato(
-                                                fontSize: 14,
-                                                color: Colors.black87,
-                                              ),
-                                            )
-                                          : Text(
-                                              item.billNumber ?? '',
-                                              style: GoogleFonts.lato(
-                                                //fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        item.date ?? '',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 12,
-                                          color: Colors.grey[700],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: Consumer<CashInHandProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                                // Middle Column: Bill Type and Account
-                                Expanded(
-                                  flex: 3,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item.billType ?? '',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 14,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        item.account ?? '',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 14,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+          final dataList = provider.cashInHandModel?.data ?? [];
 
-                                // Right side: Amount
-                                Expanded(
-                                  flex: 1,
-                                  child: Align(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      "৳ ${item.amount ?? ''}",
-                                      style: GoogleFonts.lato(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      ),
+          if (dataList.isEmpty) {
+            return const NoDataWidget(
+              message: "No cash in hand records found.",
+              lottieAsset: "assets/animation/no_data.json",
+            );
+          }
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  "Total Amount: ৳ ${provider.amountSum.toStringAsFixed(2)}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    //fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: dataList.length,
+                  itemBuilder: (context, index) {
+                    final item = dataList[index];
+                    final cashID = dataList[index].id;
+                    return InkWell(
+                      onLongPress: () {
+                        editDeleteDiolog(context, cashID!);
+                      },
+                      child: Container(
+                        // ✅ Changed from Card to Container
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 2, vertical: 1), // ✅ Minimal margins
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6), // ✅ Reduced padding
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                              color: Colors.grey.shade300,
+                              width:
+                                  0.5), // ✅ Thin border instead of card shadow
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment
+                              .center, // ✅ Center alignment for compact look
+                          children: [
+                            // Left Column: Sales Number and Date
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize:
+                                    MainAxisSize.min, // ✅ Minimize height
+                                children: [
+                                  item.billNumber == ''
+                                      ? Text(
+                                          item.billType ?? '',
+                                          style: GoogleFonts.lato(
+                                            fontSize: 12, // ✅ Reduced font size
+                                            color: Colors.black87,
+                                            height:
+                                                1.2, // ✅ Reduced line height
+                                          ),
+                                        )
+                                      : Text(
+                                          item.billNumber ?? '',
+                                          style: GoogleFonts.lato(
+                                            fontSize: 12, // ✅ Reduced font size
+                                            color: Colors.black87,
+                                            height:
+                                                1.2, // ✅ Reduced line height
+                                          ),
+                                        ),
+                                  const SizedBox(
+                                      height: 2), // ✅ Minimal spacing
+                                  Text(
+                                    item.date ?? '',
+                                    style: GoogleFonts.lato(
+                                      fontSize: 11, // ✅ Smaller font size
+                                      color: Colors.grey[700],
+                                      height: 1.2, // ✅ Reduced line height
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
+
+                            // Middle Column: Bill Type and Account
+                            Expanded(
+                              flex: 3,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize:
+                                    MainAxisSize.min, // ✅ Minimize height
+                                children: [
+                                  Text(
+                                    item.billType ?? '',
+                                    style: GoogleFonts.lato(
+                                      fontSize: 12, // ✅ Reduced font size
+                                      color: Colors.black87,
+                                      height: 1.2, // ✅ Reduced line height
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                      height: 2), // ✅ Minimal spacing
+                                  Text(
+                                    item.account ?? '',
+                                    style: GoogleFonts.lato(
+                                      fontSize: 11, // ✅ Smaller font size
+                                      color: Colors.black54,
+                                      height: 1.2, // ✅ Reduced line height
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Right side: Amount
+                            // Expanded(
+                            //   flex: 1,
+                            //   child: Align(
+                            //     alignment: Alignment.centerRight, // ✅ Center alignment
+                            //     child: Consumer<CurrencyProvider>(
+                            //       builder: (context, currencyProvider, child) {
+                            //         final currency = currencyProvider.currencyModel?.currency ?? '';
+                            //         return Text(
+                            //           " ${item.amount ?? ''} $currency ",
+                            //           style: GoogleFonts.lato(
+                            //             fontWeight: FontWeight.bold,
+                            //             fontSize: 12,
+                            //             color: Colors.black,
+                            //             height: 1.2,
+                            //           ),
+                            //         );
+                            //       }
+                            //     ),
+                            //   ),
+                            // ),
+
+                            SizedBox(
+                              width:
+                                  80, // ✅ Fixed width for consistent alignment
+                              child: Consumer<CurrencyProvider>(
+                                  builder: (context, currencyProvider, child) {
+                                final currency =
+                                    currencyProvider.currencyModel?.currency ??
+                                        '';
+                                return Text(
+                                  " ${item.amount ?? ''} $currency ",
+                                  textAlign: TextAlign
+                                      .right, // ✅ Right align text within the fixed width
+                                  style: GoogleFonts.lato(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                    height: 1.2,
+                                  ),
+                                );
+                              }),
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              ],
-            );
-          },
-        ));
+              ),
+
+//               Expanded(
+//                 child: ListView.builder(
+//                   shrinkWrap: true,
+//                   itemCount: dataList.length,
+//                   itemBuilder: (context, index) {
+//                     final item = dataList[index];
+//                     final cashID = dataList[index].id;
+//                     return InkWell(
+//                       onLongPress: () {
+//                         editDeleteDiolog(context, cashID!);
+//                       },
+//                       child: Card(
+//                         shape: RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(2)),
+//                         margin: const EdgeInsets.symmetric(
+//                             horizontal: 4, vertical: 2),
+//                         child: Padding(
+//                           padding: const EdgeInsets.symmetric(
+//                               horizontal: 12, vertical: 10),
+//                           child: Row(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               // Left Column: Sales Number and Date
+//                               Expanded(
+//                                 flex: 2,
+//                                 child: Column(
+//                                   crossAxisAlignment: CrossAxisAlignment.start,
+//                                   children: [
+//                                     item.billNumber == ''
+//                                         ? Text(
+//                                             item.billType ?? '',
+//                                             style: GoogleFonts.lato(
+//                                               fontSize: 14,
+//                                               color: Colors.black87,
+//                                             ),
+//                                           )
+//                                         : Text(
+//                                             item.billNumber ?? '',
+//                                             style: GoogleFonts.lato(
+//                                               //fontWeight: FontWeight.bold,
+//                                               fontSize: 14,
+//                                               color: Colors.black87,
+//                                             ),
+//                                           ),
+//                                     const SizedBox(height: 4),
+//                                     Text(
+//                                       item.date ?? '',
+//                                       style: GoogleFonts.lato(
+//                                         fontSize: 12,
+//                                         color: Colors.grey[700],
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               ),
+
+//                               // Middle Column: Bill Type and Account
+//                               Expanded(
+//                                 flex: 3,
+//                                 child: Column(
+//                                   crossAxisAlignment: CrossAxisAlignment.start,
+//                                   children: [
+//                                     Text(
+//                                       item.billType ?? '',
+//                                       style: GoogleFonts.lato(
+//                                         fontSize: 14,
+//                                         color: Colors.black87,
+//                                       ),
+//                                     ),
+//                                     const SizedBox(height: 4),
+//                                     Text(
+//                                       item.account ?? '',
+//                                       style: GoogleFonts.lato(
+//                                         fontSize: 14,
+//                                         color: Colors.black54,
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               ),
+
+//                               // Right side: Amount
+//                               Expanded(
+//                                 flex: 1,
+//                                 child: Align(
+//                                   alignment: Alignment.topRight,
+
+//                                   child: Consumer<CurrencyProvider>(
+//   builder: (context, currencyProvider, child) {
+//     final currency = currencyProvider.currencyModel?.currency ?? '';
+//     return Text(
+//       "$currency ${item.amount ?? ''}",
+//       style: GoogleFonts.lato(
+//         fontWeight: FontWeight.bold,
+//         fontSize: 12,
+//         color: Colors.black,
+//       ),
+//     );
+//   }
+// ),
+
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                 ),
+//               ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   ///edit and delete pop up.
@@ -275,24 +434,7 @@ class _CashInHandState extends State<CashInHand> {
                   ],
                 ),
                 // const SizedBox(height: 16),
-                // InkWell(
-                //   onTap: () {
-                //     Navigator.of(context).pop();
-                //     //Navigate to Edit Page
-                //     // Navigator.push(
-                //     //   context,
-                //     //   MaterialPageRoute(
-                //     //     builder: (context) =>
-                //     //         TaxEdit(taxId: cashID),
-                //     //   ),
-                //     // );
-                //   },
-                //   child: const Padding(
-                //     padding: EdgeInsets.symmetric(vertical: 12),
-                //     child: Text('Edit',
-                //         style: TextStyle(fontSize: 16, color: Colors.blue)),
-                //   ),
-                // ),
+
                 // const Divider(),
                 InkWell(
                   onTap: () {

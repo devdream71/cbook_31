@@ -3,6 +3,7 @@ import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/accounty_type_update.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/provider/account_type_provider.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +19,9 @@ class _AccountListPageState extends State<AccountListPage> {
   void initState() {
     super.initState();
     Provider.of<AccountTypeProvider>(context, listen: false).fetchAccounts();
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
   }
 
   @override
@@ -30,7 +34,7 @@ class _AccountListPageState extends State<AccountListPage> {
         //centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-          "Account List",
+          "Account List mm",
           style: TextStyle(
               color: Colors.yellow, fontSize: 16, fontWeight: FontWeight.bold),
         ),
@@ -55,15 +59,6 @@ class _AccountListPageState extends State<AccountListPage> {
                         color: Colors.green,
                       )),
                   // SizedBox(
-                  //   width: 2,
-                  // ),
-                  // Text(
-                  //   'Add Account',
-                  //   style: TextStyle(
-                  //       color: Colors.yellow,
-                  //       fontSize: 16,
-                  //       fontWeight: FontWeight.bold),
-                  // ),
                 ],
               ),
             ),
@@ -83,12 +78,6 @@ class _AccountListPageState extends State<AccountListPage> {
               message: "No acount records found",
               lottieAsset: "assets/animation/no_data.json",
             );
-
-            // const Center(
-            //     child: Text(
-            //   "No accounts found.",
-            //   style: TextStyle(color: Colors.black),
-            // ));
           }
 
           return Consumer<AccountTypeProvider>(
@@ -103,7 +92,61 @@ class _AccountListPageState extends State<AccountListPage> {
                 return const Center(child: Text("No accounts found"));
               }
 
-              return ListView.builder(
+              return
+
+                  // ListView.builder(
+                  //   itemCount: provider.accounts.length,
+                  //   itemBuilder: (context, index) {
+                  //     final acc = provider.accounts[index];
+                  //     final accId = acc.id;
+
+                  //     return InkWell(
+                  //       onLongPress: () {
+                  //         editDeleteDiolog(context, accId);
+                  //       },
+                  //       child: Column(
+                  //         children: [
+                  //           Card(
+                  //             shape: RoundedRectangleBorder(
+                  //               borderRadius: BorderRadius.circular(6),
+                  //             ),
+                  //             elevation: 1,
+                  //             margin: EdgeInsets
+                  //                 .zero, // No extra margin; spacing handled below
+                  //             child: ListTile(
+                  //               title: Text(
+                  //                 "Type: ${acc.accountType}",
+                  //                 style: const TextStyle(
+                  //                     fontSize: 14, fontWeight: FontWeight.bold),
+                  //               ),
+                  //               subtitle: Row(
+                  //                 children: [
+                  //                   Text(
+                  //                     "${acc.accountName},",
+                  //                     style: const TextStyle(fontSize: 14),
+                  //                   ),
+                  //                   SizedBox(
+                  //                     child: Text(
+                  //                       "   Date: ${acc.date}",
+                  //                       style: const TextStyle(fontSize: 14),
+                  //                     ),
+                  //                   ),
+                  //                 ],
+                  //               ),
+                  //               trailing: Text(
+                  //                 "৳ ${acc.openingBalance ?? '0'}",
+                  //                 style: const TextStyle(fontSize: 14),
+                  //               ),
+                  //             ),
+                  //           ),
+                  //           const SizedBox(height: 4), // Spacing between cards
+                  //         ],
+                  //       ),
+                  //     );
+                  //   },
+                  // );
+
+                  ListView.builder(
                 itemCount: provider.accounts.length,
                 itemBuilder: (context, index) {
                   final acc = provider.accounts[index];
@@ -113,43 +156,89 @@ class _AccountListPageState extends State<AccountListPage> {
                     onLongPress: () {
                       editDeleteDiolog(context, accId);
                     },
-                    child: Column(
-                      children: [
-                        Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          elevation: 1,
-                          margin: EdgeInsets
-                              .zero, // No extra margin; spacing handled below
-                          child: ListTile(
-                            title: Text(
-                              "Type: ${acc.accountType}",
-                              style: const TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Row(
+                    child: Container(
+                      // ✅ Changed from Card to Container
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 2, vertical: 1), // ✅ Minimal margins
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 6), // ✅ Reduced padding
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 0.5), // ✅ Thin border
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      child: Row(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.center, // ✅ Center alignment
+                        children: [
+                          // Left Column - Account Type and Name
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize:
+                                  MainAxisSize.min, // ✅ Minimize height
                               children: [
                                 Text(
-                                  "${acc.accountName},",
-                                  style: const TextStyle(fontSize: 14),
+                                  "Type: ${acc.accountType}",
+                                  style: const TextStyle(
+                                    fontSize: 12, // ✅ Reduced font size
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                    height: 1.2, // ✅ Reduced line height
+                                  ),
                                 ),
-                                SizedBox(
-                                  child: Text(
-                                    "   Date: ${acc.date}",
-                                    style: const TextStyle(fontSize: 14),
+                                const SizedBox(height: 2), // ✅ Minimal spacing
+                                Text(
+                                  acc.accountName ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 11, // ✅ Smaller font size
+                                    color: Colors.black54,
+                                    height: 1.2, // ✅ Reduced line height
                                   ),
                                 ),
                               ],
                             ),
-                            trailing: Text(
-                              "৳ ${acc.openingBalance ?? '0'}",
-                              style: const TextStyle(fontSize: 14),
+                          ),
+
+                          // Middle Column - Date
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              "Date: ${acc.date ?? ''}",
+                              style: const TextStyle(
+                                fontSize: 11, // ✅ Smaller font size
+                                color: Colors.grey,
+                                height: 1.2, // ✅ Reduced line height
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 4), // Spacing between cards
-                      ],
+
+                          // Right Column - Opening Balance with fixed width
+                          SizedBox(
+                            width: 80, // ✅ Fixed width for consistent alignment
+                            child: Consumer<CurrencyProvider>(
+                                builder: (context, currencyProvider, child) {
+                              final currency =
+                                  currencyProvider.currencyModel?.currency ??
+                                      '';
+                              return Text(
+                                " ${acc.openingBalance ?? '0'} $currency",
+                                textAlign:
+                                    TextAlign.right, // ✅ Right align text
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  height: 1.2, // ✅ Reduced line height
+                                ),
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },

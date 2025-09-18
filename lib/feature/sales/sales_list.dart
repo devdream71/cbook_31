@@ -417,8 +417,7 @@ class _SalesScreenState extends State<SalesScreen> {
           Expanded(
             child: Consumer2<SalesProvider, CurrencyProvider>(
               builder: (context, salesProvider, currencyProvider, child) {
-                final currency =
-                    currencyProvider.currencyModel?.currency ?? '৳';
+                final currency = currencyProvider.currencyModel?.currency ?? '';
 
                 if (salesProvider.isLoading) {
                   return const Center(child: CircularProgressIndicator());
@@ -558,7 +557,7 @@ class _SalesScreenState extends State<SalesScreen> {
                                               Row(
                                                 children: [
                                                   Text(
-                                                    '$currency ${sale.grossTotal}, ',
+                                                    '${sale.grossTotal} $currency,',
                                                     style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 12),
@@ -568,7 +567,7 @@ class _SalesScreenState extends State<SalesScreen> {
                                                         const EdgeInsets.only(
                                                             bottom: 2.0),
                                                     child: Text(
-                                                      'Rcpt: $currency ${sale.receipt}',
+                                                      ' Rcpt: ${sale.receipt} $currency',
                                                       style: const TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 12),
@@ -616,7 +615,7 @@ class _SalesScreenState extends State<SalesScreen> {
                                           /// Show due only for Partial or Unpaid
                                           if (sale.paymentStatus != 2)
                                             Text(
-                                              "Due: $currency ${sale.due}",
+                                              "Due: ${sale.due} $currency",
                                               style: const TextStyle(
                                                 fontSize: 12,
                                                 color: Colors.black,

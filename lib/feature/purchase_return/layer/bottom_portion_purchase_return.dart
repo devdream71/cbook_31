@@ -157,109 +157,109 @@ class _BottomPortionPurchaseReturnState
             // ),
 
             //printing pdf
-            ElevatedButton.icon(
-              onPressed: () {
-                //_viewPDFGenPrinting();
-                // debugPrint('vieww pdf called');
-                // if (controller.saleItem.isEmpty) {
-                //             ScaffoldMessenger.of(context).showSnackBar(
-                //               const SnackBar(
-                //                 backgroundColor: Colors.red,
-                //                 duration: Duration(seconds: 1),
-                //                 content: Text("No Item added"),
-                //               ),
-                //             );
-                //           } else {
-                //             debugPrint(
-                //                 "return item length ${controller.saleItem.length}");
+            // ElevatedButton.icon(
+            //   onPressed: () {
+            //     //_viewPDFGenPrinting();
+            //     // debugPrint('vieww pdf called');
+            //     // if (controller.saleItem.isEmpty) {
+            //     //             ScaffoldMessenger.of(context).showSnackBar(
+            //     //               const SnackBar(
+            //     //                 backgroundColor: Colors.red,
+            //     //                 duration: Duration(seconds: 1),
+            //     //                 content: Text("No Item added"),
+            //     //               ),
+            //     //             );
+            //     //           } else {
+            //     //             debugPrint(
+            //     //                 "return item length ${controller.saleItem.length}");
 
-                //             final String finalCustomerName = controller.isCash
-                //                 ? 'Cash'
-                //                 : controller.customerNameController.text;
+            //     //             final String finalCustomerName = controller.isCash
+            //     //                 ? 'Cash'
+            //     //                 : controller.customerNameController.text;
 
-                //             final String billPersion = controller.billPerson.text;
+            //     //             final String billPersion = controller.billPerson.text;
 
-                //             final String discountPercent =
-                //                 controller.percentController.text;
-                //             final String discountAmount =
-                //                 controller.discountController.text;
+            //     //             final String discountPercent =
+            //     //                 controller.percentController.text;
+            //     //             final String discountAmount =
+            //     //                 controller.discountController.text;
 
-                //             // Get selected tax
-                //             final String selectedTaxIdPercent = controller
-                //                         .selectedTotalTaxId !=
-                //                     null
-                //                 ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
-                //                 : '';
+            //     //             // Get selected tax
+            //     //             final String selectedTaxIdPercent = controller
+            //     //                         .selectedTotalTaxId !=
+            //     //                     null
+            //     //                 ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
+            //     //                 : '';
 
-                //              // Get tax amount
-                //             final String taxAmount =
-                //                 controller.totalTaxAmountl?.toStringAsFixed(2) ??
-                //                     '0.00';
+            //     //              // Get tax amount
+            //     //             final String taxAmount =
+            //     //                 controller.totalTaxAmountl?.toStringAsFixed(2) ??
+            //     //                     '0.00';
 
-                //             //helper function
-                //             int _toInt(dynamic value) {
-                //               if (value is int) return value;
-                //               if (value is double) return value.toInt();
-                //               if (value is String)
-                //                 return double.tryParse(value)?.toInt() ?? 0;
-                //               return 0;
-                //             }
+            //     //             //helper function
+            //     //             int _toInt(dynamic value) {
+            //     //               if (value is int) return value;
+            //     //               if (value is double) return value.toInt();
+            //     //               if (value is String)
+            //     //                 return double.tryParse(value)?.toInt() ?? 0;
+            //     //               return 0;
+            //     //             }
 
-                //             List<InvoiceItem> invoiceItems = (controller.isCash
-                //                     ? controller.itemsCash
-                //                     : controller.itemsCredit)
-                //                 .map((item) {
-                //               return InvoiceItem(
-                //                 itemName: item.itemName ?? "",
-                //                 unit: item.unit ?? "PC",
-                //                 quantity: int.tryParse(item.quantity ?? "0") ?? 0,
-                //                 amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
-                //                     (double.tryParse(item.mrp ?? "0") ?? 0.0),
-                //                 discount: double.tryParse(
-                //                         controller.discountController.text) ??
-                //                     0.0,
-                //                 itemDiscountAmount: _toInt(item.discountAmount),
-                //                 itemDiscountPercentace:
-                //                     _toInt(item.discountPercentance),
-                //                 itemVatTaxAmount: _toInt(item.vatAmount),
-                //                 itemvatTaxPercentace: _toInt(item.vatPerentace),
-                //                 customerName: _toInt(item.vatPerentace),
-                //               );
-                //             }).toList();
+            //     //             List<InvoiceItem> invoiceItems = (controller.isCash
+            //     //                     ? controller.itemsCash
+            //     //                     : controller.itemsCredit)
+            //     //                 .map((item) {
+            //     //               return InvoiceItem(
+            //     //                 itemName: item.itemName ?? "",
+            //     //                 unit: item.unit ?? "PC",
+            //     //                 quantity: int.tryParse(item.quantity ?? "0") ?? 0,
+            //     //                 amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
+            //     //                     (double.tryParse(item.mrp ?? "0") ?? 0.0),
+            //     //                 discount: double.tryParse(
+            //     //                         controller.discountController.text) ??
+            //     //                     0.0,
+            //     //                 itemDiscountAmount: _toInt(item.discountAmount),
+            //     //                 itemDiscountPercentace:
+            //     //                     _toInt(item.discountPercentance),
+            //     //                 itemVatTaxAmount: _toInt(item.vatAmount),
+            //     //                 itemvatTaxPercentace: _toInt(item.vatPerentace),
+            //     //                 customerName: _toInt(item.vatPerentace),
+            //     //               );
+            //     //             }).toList();
 
-                //             Navigator.push(
-                //               context,
-                //               MaterialPageRoute(
-                //                 builder: (context) => NewInvoicePage(
-                //                   items: invoiceItems,
-                //                   billNo: widget.billNo,
-                //                   customerName: finalCustomerName,
-                //                   billPersion: billPersion,
-                //                   discountAmount: discountAmount,
-                //                   discountPercent: discountPercent,
-                //                   taxAmount: taxAmount,
-                //                   taxIdPercent: selectedTaxIdPercent,
-                //                 ),
-                //               ),
-                //             );
-                //           }
-              },
-              icon: const Icon(Icons.picture_as_pdf, size: 18),
-              label: const Text(
-                "View PDF",
-                style: TextStyle(fontSize: 12),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                minimumSize: const Size(0, 0),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5), // Rounded corners
-                ),
-              ),
-            ),
+            //     //             Navigator.push(
+            //     //               context,
+            //     //               MaterialPageRoute(
+            //     //                 builder: (context) => NewInvoicePage(
+            //     //                   items: invoiceItems,
+            //     //                   billNo: widget.billNo,
+            //     //                   customerName: finalCustomerName,
+            //     //                   billPersion: billPersion,
+            //     //                   discountAmount: discountAmount,
+            //     //                   discountPercent: discountPercent,
+            //     //                   taxAmount: taxAmount,
+            //     //                   taxIdPercent: selectedTaxIdPercent,
+            //     //                 ),
+            //     //               ),
+            //     //             );
+            //     //           }
+            //   },
+            //   icon: const Icon(Icons.picture_as_pdf, size: 18),
+            //   label: const Text(
+            //     "View PDF",
+            //     style: TextStyle(fontSize: 12),
+            //   ),
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: Colors.blue,
+            //     foregroundColor: Colors.white,
+            //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            //     minimumSize: const Size(0, 0),
+            //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(5), // Rounded corners
+            //     ),
+            //   ),
+            // ),
 
             hPad5,
             /////====

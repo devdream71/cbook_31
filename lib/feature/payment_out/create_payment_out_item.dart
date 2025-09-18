@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:cbook_dt/app_const/app_colors.dart';
-import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
 import 'package:cbook_dt/feature/bill_voucher_settings/provider/bill_settings_provider.dart';
@@ -290,14 +289,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
           ],
         ),
         actions: [
-          CashCreditToggle(
-            initialCash: true,
-            onChanged: (isCash) {
-              print("Selected: ${isCash ? "Cash" : "Credit"}");
-              controller.updateCash(context);
-              ; // you can hook your logic here
-            },
-          ),
           IconButton(
             onPressed: () {
               Navigator.push(
@@ -536,113 +527,6 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                 children: [
                   //bill person
                   // Inside your build method:
-
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 8.0),
-                  //   child: Consumer<PaymentVoucherProvider>(
-                  //     builder: (context, provider, child) {
-                  //       return SizedBox(
-                  //         height: 30,
-                  //         width: 130,
-                  //         child: provider.isLoading
-                  //             ? const Center(child: CircularProgressIndicator())
-                  //             : CustomDropdownTwo(
-                  //                 hint: '',
-                  //                 items: provider.billPersonNames,
-                  //                 width: double.infinity,
-                  //                 height: 30,
-                  //                 labelText: 'Bill Person',
-                  //                 selectedItem: selectedBillPerson,
-                  //                 onChanged: (value) {
-                  //                   debugPrint(
-                  //                       '=== Bill Person Selected: $value ===');
-                  //                   setState(() {
-                  //                     selectedBillPerson = value;
-                  //                     selectedBillPersonData =
-                  //                         provider.billPersons.firstWhere(
-                  //                       (person) => person.name == value,
-                  //                     ); // ✅ Save the whole object globally
-                  //                     selectedBillPersonId =
-                  //                         selectedBillPersonData!.id;
-                  //                   });
-
-                  //                   debugPrint('Selected Bill Person Details:');
-                  //                   debugPrint(
-                  //                       '- ID: ${selectedBillPersonData!.id}');
-                  //                   debugPrint(
-                  //                       '- Name: ${selectedBillPersonData!.name}');
-                  //                   debugPrint(
-                  //                       '- Phone: ${selectedBillPersonData!.phone}');
-                  //                 }),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
-
-                  // Bill No Field
-
-                  // const SizedBox(
-                  //   height: 8,
-                  // ),
-
-                  ///bill no, bill person
-
-                  // SizedBox(
-                  //   height: 30,
-                  //   width: 130,
-                  //   child: AddSalesFormfield(
-                  //     labelText: "Bill No",
-                  //     controller: billController,
-                  //     readOnly: true, // Prevent manual editing
-                  //   ),
-                  // ),
-
-                  //person
-
-                  ///bill date
-                  // SizedBox(
-                  //   height: 30,
-                  //   width: 130,
-                  //   child: InkWell(
-                  //     // onTap: () => controller.pickDate(
-                  //     //     context), // Trigger the date picker
-                  //     child: InputDecorator(
-                  //       decoration: InputDecoration(
-                  //         isDense: true,
-                  //         suffixIcon: Icon(
-                  //           Icons.calendar_today,
-                  //           size: 16,
-                  //           color: Theme.of(context).primaryColor,
-                  //         ),
-                  //         suffixIconConstraints: const BoxConstraints(
-                  //           minWidth: 16,
-                  //           minHeight: 16,
-                  //         ), // Adjust constraints to align icon closely
-                  //         hintText: "Bill Date",
-                  //         hintStyle: TextStyle(
-                  //           color: Colors.grey.shade400,
-                  //           fontSize: 9,
-                  //         ),
-                  //         enabledBorder: UnderlineInputBorder(
-                  //           borderSide: BorderSide(
-                  //               color: Colors.grey.shade400, width: 0.5),
-                  //         ),
-                  //         focusedBorder: const UnderlineInputBorder(
-                  //           borderSide: BorderSide(color: Colors.green),
-                  //         ),
-                  //       ),
-                  //       child: Text(
-                  //         controller.formattedDate.isNotEmpty
-                  //             ? controller.formattedDate
-                  //             : "Select Date", // Default text when no date is selected
-                  //         style: const TextStyle(
-                  //           color: Colors.black,
-                  //           fontSize: 12,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               )
             ],
@@ -752,11 +636,11 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                                                         fontSize: 14,
                                                         color: Colors.black)),
                                                 Text(
-                                                    'Bill ৳${invoice.grossTotal}',
+                                                    'Bill ${invoice.grossTotal}',
                                                     style: const TextStyle(
                                                         fontSize: 14,
                                                         color: Colors.black)),
-                                                Text('Due ৳${invoice.due}',
+                                                Text('Due ${invoice.due}',
                                                     style: const TextStyle(
                                                         fontSize: 14,
                                                         color: Colors.black)),
@@ -1121,125 +1005,9 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                /// Total Amount Section
-                // const Padding(
-                //   padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.end,
-                //     children: [],
-                //   ),
-                // ),
-
-                //printing pdf
-                ElevatedButton.icon(
-                  onPressed: () {
-                    //_viewPDFGenPrinting();
-                    // debugPrint('vieww pdf called');
-                    // if (controller.saleItem.isEmpty) {
-                    //             ScaffoldMessenger.of(context).showSnackBar(
-                    //               const SnackBar(
-                    //                 backgroundColor: Colors.red,
-                    //                 duration: Duration(seconds: 1),
-                    //                 content: Text("No Item added"),
-                    //               ),
-                    //             );
-                    //           } else {
-                    //             debugPrint(
-                    //                 "return item length ${controller.saleItem.length}");
-
-                    //             final String finalCustomerName = controller.isCash
-                    //                 ? 'Cash'
-                    //                 : controller.customerNameController.text;
-
-                    //             final String billPersion = controller.billPerson.text;
-
-                    //             final String discountPercent =
-                    //                 controller.percentController.text;
-                    //             final String discountAmount =
-                    //                 controller.discountController.text;
-
-                    //             // Get selected tax
-                    //             final String selectedTaxIdPercent = controller
-                    //                         .selectedTotalTaxId !=
-                    //                     null
-                    //                 ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
-                    //                 : '';
-
-                    //              // Get tax amount
-                    //             final String taxAmount =
-                    //                 controller.totalTaxAmountl?.toStringAsFixed(2) ??
-                    //                     '0.00';
-
-                    //             //helper function
-                    //             int _toInt(dynamic value) {
-                    //               if (value is int) return value;
-                    //               if (value is double) return value.toInt();
-                    //               if (value is String)
-                    //                 return double.tryParse(value)?.toInt() ?? 0;
-                    //               return 0;
-                    //             }
-
-                    //             List<InvoiceItem> invoiceItems = (controller.isCash
-                    //                     ? controller.itemsCash
-                    //                     : controller.itemsCredit)
-                    //                 .map((item) {
-                    //               return InvoiceItem(
-                    //                 itemName: item.itemName ?? "",
-                    //                 unit: item.unit ?? "PC",
-                    //                 quantity: int.tryParse(item.quantity ?? "0") ?? 0,
-                    //                 amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
-                    //                     (double.tryParse(item.mrp ?? "0") ?? 0.0),
-                    //                 discount: double.tryParse(
-                    //                         controller.discountController.text) ??
-                    //                     0.0,
-                    //                 itemDiscountAmount: _toInt(item.discountAmount),
-                    //                 itemDiscountPercentace:
-                    //                     _toInt(item.discountPercentance),
-                    //                 itemVatTaxAmount: _toInt(item.vatAmount),
-                    //                 itemvatTaxPercentace: _toInt(item.vatPerentace),
-                    //                 customerName: _toInt(item.vatPerentace),
-                    //               );
-                    //             }).toList();
-
-                    //             Navigator.push(
-                    //               context,
-                    //               MaterialPageRoute(
-                    //                 builder: (context) => NewInvoicePage(
-                    //                   items: invoiceItems,
-                    //                   billNo: widget.billNo,
-                    //                   customerName: finalCustomerName,
-                    //                   billPersion: billPersion,
-                    //                   discountAmount: discountAmount,
-                    //                   discountPercent: discountPercent,
-                    //                   taxAmount: taxAmount,
-                    //                   taxIdPercent: selectedTaxIdPercent,
-                    //                 ),
-                    //               ),
-                    //             );
-                    //           }
-                  },
-                  icon: const Icon(Icons.picture_as_pdf, size: 18),
-                  label: const Text(
-                    "View PDF",
-                    style: TextStyle(fontSize: 12),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    minimumSize: const Size(0, 0),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5), // Rounded corners
-                    ),
-                  ),
-                ),
-
                 const SizedBox(
                   width: 6,
                 ),
-
                 Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton(
@@ -1250,9 +1018,8 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5)),
-
-                      backgroundColor: Colors.green, // Button background color
-                      foregroundColor: Colors.white, // Button text color
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
                     ),
                     onPressed: () async {
                       ///final api call here ====== >>>>>>
@@ -1396,8 +1163,8 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               backgroundColor: Colors.green,
-                              content: Text(
-                                  "Successfully, Payment voucher saved successfully!")),
+                              content:
+                                  Text("Successfully, Payment voucher saved!")),
                         );
 
                         Navigator.pushReplacement(
@@ -1423,7 +1190,7 @@ class _PaymentOutCreateItemState extends State<PaymentOutCreateItem> {
 
           const SizedBox(
             height: 50,
-          )
+          ),
         ]),
       ),
     );

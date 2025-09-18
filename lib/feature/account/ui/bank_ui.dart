@@ -3,6 +3,7 @@ import 'package:cbook_dt/common/no_data_fount.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/adjust_bank.dart';
 import 'package:cbook_dt/feature/account/ui/adjust_bank/provider/bank_adjust_provider.dart';
+import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +22,9 @@ class _BankState extends State<Bank> {
     super.initState();
     Provider.of<BankAdjustProvider>(context, listen: false)
         .fetchBankAdjustments();
+
+    Future.microtask(() =>
+        Provider.of<CurrencyProvider>(context, listen: false).fetchCurrency());
   }
 
   @override
@@ -95,8 +99,6 @@ class _BankState extends State<Bank> {
                 message: "No bank records found.",
                 lottieAsset: "assets/animation/no_data.json",
               );
-
-              
             }
 
             return Column(
@@ -109,6 +111,7 @@ class _BankState extends State<Bank> {
                     color: Colors.black,
                   ),
                 ),
+
                 Expanded(
                   child: ListView.builder(
                     itemCount: dataList.length,
@@ -121,101 +124,248 @@ class _BankState extends State<Bank> {
                         onLongPress: () {
                           editDeleteDiolog(context, bankId!);
                         },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(2)),
+                        child: Container(
+                          // ✅ Changed from Card to Container
                           margin: const EdgeInsets.symmetric(
-                              horizontal: 4, vertical: 2),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 10),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Left Column
-                                Expanded(
-                                  flex: 2,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      item.billType == ''
-                                          ? Text(
-                                              item.billNumber ?? '',
-                                              style: GoogleFonts.lato(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: Colors.black87,
-                                              ),
-                                            )
-                                          : Text(
-                                              item.billType ?? '',
-                                              style: GoogleFonts.lato(
-                                                fontSize: 14,
-                                                color: Colors.black87,
-                                              ),
+                              horizontal: 2, vertical: 1), // ✅ Minimal margins
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 6), // ✅ Reduced padding
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                                color: Colors.grey.shade300,
+                                width:
+                                    0.5), // ✅ Thin border instead of card shadow
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment
+                                .center, // ✅ Center alignment for compact look
+                            children: [
+                              // Left Column
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize:
+                                      MainAxisSize.min, // ✅ Minimize height
+                                  children: [
+                                    item.billType == ''
+                                        ? Text(
+                                            item.billNumber ?? '',
+                                            style: GoogleFonts.lato(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize:
+                                                  12, // ✅ Reduced font size
+                                              color: Colors.black87,
+                                              height:
+                                                  1.2, // ✅ Reduced line height
                                             ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        item.date ?? '',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 12,
-                                          color: Colors.grey[700],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                // Middle Column
-                                Expanded(
-                                  flex: 3,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item.billType ?? '',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 14,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        item.account ?? '',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 14,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                // Right side: Amount
-                                Expanded(
-                                  flex: 1,
-                                  child: Align(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      "৳ ${item.amount ?? ''}",
+                                          )
+                                        : Text(
+                                            item.billType ?? '',
+                                            style: GoogleFonts.lato(
+                                              fontSize:
+                                                  12, // ✅ Reduced font size
+                                              color: Colors.black87,
+                                              height:
+                                                  1.2, // ✅ Reduced line height
+                                            ),
+                                          ),
+                                    const SizedBox(
+                                        height: 2), // ✅ Minimal spacing
+                                    Text(
+                                      item.date ?? '',
                                       style: GoogleFonts.lato(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: Colors.black,
+                                        fontSize: 11, // ✅ Smaller font size
+                                        color: Colors.grey[700],
+                                        height: 1.2, // ✅ Reduced line height
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+
+                              // Middle Column
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize:
+                                      MainAxisSize.min, // ✅ Minimize height
+                                  children: [
+                                    Text(
+                                      item.billType ?? '',
+                                      style: GoogleFonts.lato(
+                                        fontSize: 12, // ✅ Reduced font size
+                                        color: Colors.black87,
+                                        height: 1.2, // ✅ Reduced line height
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        height: 2), // ✅ Minimal spacing
+                                    Text(
+                                      item.account ?? '',
+                                      style: GoogleFonts.lato(
+                                        fontSize: 11, // ✅ Smaller font size
+                                        color: Colors.black54,
+                                        height: 1.2, // ✅ Reduced line height
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Right side: Amount with fixed width for alignment
+                              // SizedBox(
+                              //   width: 80, // ✅ Fixed width for consistent alignment
+                              //   child: Text(
+                              //     "৳ ${item.amount ?? ''}",
+                              //     textAlign: TextAlign.right, // ✅ Right align text within the fixed width
+                              //     style: GoogleFonts.lato(
+                              //       fontWeight: FontWeight.bold,
+                              //       fontSize: 12,
+                              //       color: Colors.black,
+                              //       height: 1.2, // ✅ Reduced line height
+                              //     ),
+                              //   ),
+                              // ),
+                              SizedBox(
+                                width:
+                                    80, // ✅ Fixed width for consistent alignment
+                                child: Consumer<CurrencyProvider>(builder:
+                                    (context, currencyProvider, child) {
+                                  final currency = currencyProvider
+                                          .currencyModel?.currency ??
+                                      '';
+                                  return Text(
+                                    " ${item.amount ?? ''} $currency ",
+                                    textAlign: TextAlign
+                                        .right, // ✅ Right align text within the fixed width
+                                    style: GoogleFonts.lato(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color: Colors.black,
+                                      height: 1.2,
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ],
                           ),
                         ),
                       );
                     },
                   ),
                 ),
+
+                // Expanded(
+                //   child: ListView.builder(
+                //     itemCount: dataList.length,
+                //     shrinkWrap: true,
+                //     itemBuilder: (context, index) {
+                //       final item = dataList[index];
+                //       final bankId = dataList[index].id;
+
+                //       return InkWell(
+                //         onLongPress: () {
+                //           editDeleteDiolog(context, bankId!);
+                //         },
+                //         child: Card(
+                //           shape: RoundedRectangleBorder(
+                //               borderRadius: BorderRadius.circular(2)),
+                //           margin: const EdgeInsets.symmetric(
+                //               horizontal: 4, vertical: 2),
+                //           child: Padding(
+                //             padding: const EdgeInsets.symmetric(
+                //                 horizontal: 12, vertical: 10),
+                //             child: Row(
+                //               crossAxisAlignment: CrossAxisAlignment.start,
+                //               children: [
+                //                 // Left Column
+                //                 Expanded(
+                //                   flex: 2,
+                //                   child: Column(
+                //                     crossAxisAlignment:
+                //                         CrossAxisAlignment.start,
+                //                     children: [
+                //                       item.billType == ''
+                //                           ? Text(
+                //                               item.billNumber ?? '',
+                //                               style: GoogleFonts.lato(
+                //                                 fontWeight: FontWeight.bold,
+                //                                 fontSize: 16,
+                //                                 color: Colors.black87,
+                //                               ),
+                //                             )
+                //                           : Text(
+                //                               item.billType ?? '',
+                //                               style: GoogleFonts.lato(
+                //                                 fontSize: 14,
+                //                                 color: Colors.black87,
+                //                               ),
+                //                             ),
+                //                       const SizedBox(height: 4),
+                //                       Text(
+                //                         item.date ?? '',
+                //                         style: GoogleFonts.lato(
+                //                           fontSize: 12,
+                //                           color: Colors.grey[700],
+                //                         ),
+                //                       ),
+                //                     ],
+                //                   ),
+                //                 ),
+
+                //                 // Middle Column
+                //                 Expanded(
+                //                   flex: 3,
+                //                   child: Column(
+                //                     crossAxisAlignment:
+                //                         CrossAxisAlignment.start,
+                //                     children: [
+                //                       Text(
+                //                         item.billType ?? '',
+                //                         style: GoogleFonts.lato(
+                //                           fontSize: 14,
+                //                           color: Colors.black87,
+                //                         ),
+                //                       ),
+                //                       const SizedBox(height: 4),
+                //                       Text(
+                //                         item.account ?? '',
+                //                         style: GoogleFonts.lato(
+                //                           fontSize: 14,
+                //                           color: Colors.black54,
+                //                         ),
+                //                       ),
+                //                     ],
+                //                   ),
+                //                 ),
+
+                //                 // Right side: Amount
+                //                 Expanded(
+                //                   flex: 1,
+                //                   child: Align(
+                //                     alignment: Alignment.topRight,
+                //                     child: Text(
+                //                       "৳ ${item.amount ?? ''}",
+                //                       style: GoogleFonts.lato(
+                //                         fontWeight: FontWeight.bold,
+                //                         fontSize: 12,
+                //                         color: Colors.black,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ],
+                //             ),
+                //           ),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
               ],
             );
           },
