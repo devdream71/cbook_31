@@ -236,12 +236,12 @@ class ExpenseProvider with ChangeNotifier {
 
   ///expense create.
   Future<bool> storeExpense({
-    required String userId,
+    required dynamic userId,
     required String invoiceNo,
     required String date,
-    required String receivedTo,
-    required String account,
-    required double totalAmount,
+    required dynamic receivedTo,
+    required dynamic account,
+    required dynamic totalAmount,
     required String notes,
     required int status,
     //required String billPersonId,

@@ -1,7 +1,7 @@
 class ExpenseItemPopUp {
-  final String itemAccountId;
-  final String narration;
-  final String amount;
+  final dynamic itemAccountId;
+  final dynamic narration;
+  final dynamic amount;
 
   ExpenseItemPopUp({
     required this.itemAccountId,

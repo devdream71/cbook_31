@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cbook_dt/app_const/app_colors.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/account_type/account_type_create.dart';
@@ -472,142 +471,13 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
                     children: [
                       //bill person
 
-                      // Padding(
-                      //   padding: const EdgeInsets.only(top: 8.0),
-                      //   child: Consumer<PaymentVoucherProvider>(
-                      //     builder: (context, provider, child) {
-                      //       return SizedBox(
-                      //         height: 30,
-                      //         width: 130,
-                      //         child: provider.isLoading
-                      //             ? const Center(
-                      //                 child: CircularProgressIndicator())
-                      //             : CustomDropdownTwo(
-                      //                 hint: '',
-                      //                 items: provider.billPersonNames,
-                      //                 width: double.infinity,
-                      //                 height: 30,
-                      //                 labelText: 'Bill Person',
-                      //                 selectedItem: selectedBillPerson,
-                      //                 onChanged: (value) {
-                      //                   debugPrint(
-                      //                       '=== Bill Person Selected: $value ===');
-                      //                   setState(() {
-                      //                     selectedBillPerson = value;
-                      //                     selectedBillPersonData =
-                      //                         provider.billPersons.firstWhere(
-                      //                       (person) => person.name == value,
-                      //                     ); // ✅ Save the whole object globally
-                      //                     selectedBillPersonId =
-                      //                         selectedBillPersonData!.id;
-                      //                   });
-
-                      //                   debugPrint(
-                      //                       'Selected Bill Person Details:');
-                      //                   debugPrint(
-                      //                       '- ID: ${selectedBillPersonData!.id}');
-                      //                   debugPrint(
-                      //                       '- Name: ${selectedBillPersonData!.name}');
-                      //                   debugPrint(
-                      //                       '- Phone: ${selectedBillPersonData!.phone}');
-                      //                 }),
-                      //       );
-                      //     },
-                      //   ),
-                      // ),
+                       
 
                       const SizedBox(
                         height: 8,
                       ),
 
-                      ///bill no, bill person
-                      // SizedBox(
-                      //   height: 30,
-                      //   width: 130,
-                      //   child: AddSalesFormfield(
-                      //     labelText: "Bill No",
-                      //   controller: billNoController,
-                      //     onChanged: (value) {
-                      //       billNo = value;
-                      //     }, // Match cursor height to text size
-                      //   ),
-                      // ),
-
-                      // SizedBox(
-                      //   height: 30,
-                      //   width: 130,
-                      //   child: AddSalesFormfield(
-                      //     labelText: "Bill No",
-                      //     controller: billController,
-                      //     readOnly: true, // Prevent manual editing
-                      //   ),
-                      // ),
-
-                      //person
-
-                      ///bill date
-                      ///bill date.
-                      // SizedBox(
-                      //   height: 30,
-                      //   width: 130,
-                      //   child: InkWell(
-                      //     onTap: () async {
-                      //       final DateTime? picked = await showDatePicker(
-                      //         context: context,
-                      //         initialDate: DateTime.now(),
-                      //         firstDate: DateTime(2000),
-                      //         lastDate: DateTime(2100),
-                      //       );
-
-                      //       if (picked != null) {
-                      //         final formatted =
-                      //             "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-
-                      //         setState(() {
-                      //           controller.formattedDate2 =
-                      //               formatted; // ✅ update UI
-                      //         });
-
-                      //         debugPrint("📅 Selected Bill Date: $formatted");
-                      //       }
-                      //     },
-                      //     child: InputDecorator(
-                      //       decoration: InputDecoration(
-                      //         isDense: true,
-                      //         suffixIcon: Icon(
-                      //           Icons.calendar_today,
-                      //           size: 16,
-                      //           color: Theme.of(context).primaryColor,
-                      //         ),
-                      //         suffixIconConstraints: const BoxConstraints(
-                      //           minWidth: 16,
-                      //           minHeight: 16,
-                      //         ),
-                      //         hintText: "Bill Date",
-                      //         hintStyle: TextStyle(
-                      //           color: Colors.grey.shade400,
-                      //           fontSize: 9,
-                      //         ),
-                      //         enabledBorder: UnderlineInputBorder(
-                      //           borderSide: BorderSide(
-                      //               color: Colors.grey.shade400, width: 0.5),
-                      //         ),
-                      //         focusedBorder: const UnderlineInputBorder(
-                      //           borderSide: BorderSide(color: Colors.green),
-                      //         ),
-                      //       ),
-                      //       child: Text(
-                      //         controller.formattedDate2.isNotEmpty
-                      //             ? controller.formattedDate2
-                      //             : "Select Date",
-                      //         style: const TextStyle(
-                      //           color: Colors.black,
-                      //           fontSize: 12,
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
+                    
                     ],
                   )
                 ],
@@ -765,39 +635,7 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
                   ),
                 ),
 
-                // Container(
-                //   decoration: BoxDecoration(
-                //     color: colorScheme.primary,
-                //     borderRadius: BorderRadius.circular(5),
-                //     boxShadow: [
-                //       BoxShadow(
-                //         color: Colors.black.withOpacity(0.2),
-                //         blurRadius: 5,
-                //         offset: const Offset(0, 3),
-                //       ),
-                //     ],
-                //   ),
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(4.0),
-                //     child: Row(
-                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //       children: [
-                //         const Text(
-                //           "Paid From",
-                //           style: TextStyle(color: Colors.white, fontSize: 14),
-                //         ),
-                //         InkWell(
-                //           onTap: () {},
-                //           child: const Icon(
-                //             Icons.add,
-                //             color: Colors.white,
-                //             size: 18,
-                //           ),
-                //         )
-                //       ],
-                //     ),
-                //   ),
-                // ),
+               
               ),
             ),
 
@@ -843,111 +681,7 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
                 Row(
                   children: [
                     //printing pdf
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        //_viewPDFGenPrinting();
-                        // debugPrint('vieww pdf called');
-                        // if (controller.saleItem.isEmpty) {
-                        //             ScaffoldMessenger.of(context).showSnackBar(
-                        //               const SnackBar(
-                        //                 backgroundColor: Colors.red,
-                        //                 duration: Duration(seconds: 1),
-                        //                 content: Text("No Item added"),
-                        //               ),
-                        //             );
-                        //           } else {
-                        //             debugPrint(
-                        //                 "return item length ${controller.saleItem.length}");
-
-                        //             final String finalCustomerName = controller.isCash
-                        //                 ? 'Cash'
-                        //                 : controller.customerNameController.text;
-
-                        //             final String billPersion = controller.billPerson.text;
-
-                        //             final String discountPercent =
-                        //                 controller.percentController.text;
-                        //             final String discountAmount =
-                        //                 controller.discountController.text;
-
-                        //             // Get selected tax
-                        //             final String selectedTaxIdPercent = controller
-                        //                         .selectedTotalTaxId !=
-                        //                     null
-                        //                 ? '${controller.selectedTotalTaxId}_${controller.selectedTotalTaxPercent}'
-                        //                 : '';
-
-                        //              // Get tax amount
-                        //             final String taxAmount =
-                        //                 controller.totalTaxAmountl?.toStringAsFixed(2) ??
-                        //                     '0.00';
-
-                        //             //helper function
-                        //             int _toInt(dynamic value) {
-                        //               if (value is int) return value;
-                        //               if (value is double) return value.toInt();
-                        //               if (value is String)
-                        //                 return double.tryParse(value)?.toInt() ?? 0;
-                        //               return 0;
-                        //             }
-
-                        //             List<InvoiceItem> invoiceItems = (controller.isCash
-                        //                     ? controller.itemsCash
-                        //                     : controller.itemsCredit)
-                        //                 .map((item) {
-                        //               return InvoiceItem(
-                        //                 itemName: item.itemName ?? "",
-                        //                 unit: item.unit ?? "PC",
-                        //                 quantity: int.tryParse(item.quantity ?? "0") ?? 0,
-                        //                 amount: (int.tryParse(item.quantity ?? "0") ?? 0) *
-                        //                     (double.tryParse(item.mrp ?? "0") ?? 0.0),
-                        //                 discount: double.tryParse(
-                        //                         controller.discountController.text) ??
-                        //                     0.0,
-                        //                 itemDiscountAmount: _toInt(item.discountAmount),
-                        //                 itemDiscountPercentace:
-                        //                     _toInt(item.discountPercentance),
-                        //                 itemVatTaxAmount: _toInt(item.vatAmount),
-                        //                 itemvatTaxPercentace: _toInt(item.vatPerentace),
-                        //                 customerName: _toInt(item.vatPerentace),
-                        //               );
-                        //             }).toList();
-
-                        //             Navigator.push(
-                        //               context,
-                        //               MaterialPageRoute(
-                        //                 builder: (context) => NewInvoicePage(
-                        //                   items: invoiceItems,
-                        //                   billNo: widget.billNo,
-                        //                   customerName: finalCustomerName,
-                        //                   billPersion: billPersion,
-                        //                   discountAmount: discountAmount,
-                        //                   discountPercent: discountPercent,
-                        //                   taxAmount: taxAmount,
-                        //                   taxIdPercent: selectedTaxIdPercent,
-                        //                 ),
-                        //               ),
-                        //             );
-                        //           }
-                      },
-                      icon: const Icon(Icons.picture_as_pdf, size: 18),
-                      label: const Text(
-                        "View PDF",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 6),
-                        minimumSize: const Size(0, 0),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(5), // Rounded corners
-                        ),
-                      ),
-                    ),
+                     
 
                     SizedBox(
                       width: 6,
@@ -1164,50 +898,7 @@ class _ExpenseCreateState extends State<ExpenseCreate> {
                         ),
                         const SizedBox(height: 20),
 
-                        ///paid to from pop up
-                        // SizedBox(
-                        //   height: 30,
-                        //   child: provider.isLoading
-                        //       ? const Center(child: CircularProgressIndicator())
-                        //       : CustomDropdownTwo(
-                        //           hint: '',
-                        //           items: provider.paidFormList
-                        //               .map((e) => e.accountName)
-                        //               .toList(),
-                        //           width: double.infinity,
-                        //           height: 30,
-                        //           labelText: 'Paid To',
-                        //           selectedItem: selectedPaidTo,
-                        //           onChanged: (selectedItem) {
-                        //             debugPrint(
-                        //                 'Selected Paid To: $selectedItem');
-
-                        //             final selected =
-                        //                 provider.paidFormList.firstWhere(
-                        //               (e) => e.accountName == selectedItem,
-                        //               orElse: () => PaidFormData(
-                        //                   id: 0, accountName: 'Unknown'),
-                        //             );
-
-                        //             debugPrint(
-                        //                 '✅ Selected Paid Form ID: ${selected.id}');
-
-                        //             setState(() {
-                        //               selectedPaidTo = selectedItem;
-
-                        //               // Optionally, if you want to store the object too:
-                        //               // selectedPaidFormData = selected;
-                        //             });
-                        //             // debugPrint(
-                        //             //     'Selected Paid To: $selectedItem');
-                        //             // debugPrint(
-                        //             //     'Selected Paid To: $selectedItem.');
-                        //             // setState(() {
-                        //             //   selectedPaidTo = selectedItem;
-                        //             // });
-                        //           },
-                        //         ),
-                        // ),
+                        
 
                         SizedBox(
                           height: 38,
