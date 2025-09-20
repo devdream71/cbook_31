@@ -2,9 +2,9 @@
 
 class ItemCategoryModel {
   final int id;
-  final int userId;
+  final dynamic userId;
   final String name;
-  final int status;
+  final dynamic status;
   final String? deletedAt;
   final String createdAt;
   final String updatedAt;

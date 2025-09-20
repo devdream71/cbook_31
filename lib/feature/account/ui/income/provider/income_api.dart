@@ -152,7 +152,7 @@ class IncomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// fetch account
+  /// fetch accountP
 
   /// fetch account '''''' ===> newly added for default cash and bank.
   Future<void> fetchAccounts(String type) async {

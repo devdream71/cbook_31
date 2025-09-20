@@ -66,31 +66,7 @@ class _PaymentOutListState extends State<PaymentOutList> {
   ///end date.
   DateTime selectedEndDate = DateTime.now();
 
-  // Add this method for edit/delete dialog (you'll need to implement this)
-  void editDeleteDiolog(BuildContext context, String voucherId) {
-    // Implement your edit/delete dialog here
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Options'),
-        content: const Text('What would you like to do?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Edit'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Delete'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-        ],
-      ),
-    );
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -503,10 +479,10 @@ class _PaymentOutListState extends State<PaymentOutList> {
               if (isDeleted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                      backgroundColor: Colors.green,
-                      content: Text(
+                      backgroundColor:  (AppColors.primaryColor),
+                      content: const Text(
                         'Successfully! Payment voucher deleted.',
-                        style: TextStyle(color: colorScheme.primary),
+                        style: TextStyle(color: Colors.white,  ),
                       )),
                 );
                 Navigator.of(context).pop(); // Close confirmation dialog

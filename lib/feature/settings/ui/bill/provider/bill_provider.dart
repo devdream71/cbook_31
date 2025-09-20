@@ -279,8 +279,16 @@ class BillPersonProvider with ChangeNotifier {
   Future<void> fetchDesignations() async {
     final url = Uri.parse('https://commercebook.site/api/v1/designation');
 
+     final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
     try {
-      final response = await http.get(url);
+      final response = await http.get(url,
+      headers: {
+         "Authorization": "Bearer $token",
+          "Accept": "application/json",
+      }
+      );
       final data = json.decode(response.body);
 
       if (response.statusCode == 200 && data['success'] == true) {

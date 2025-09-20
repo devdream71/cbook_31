@@ -3,7 +3,6 @@ import 'package:cbook_dt/common/cash_credit_switch_button.dart';
 import 'package:cbook_dt/common/custome_dropdown_two.dart';
 import 'package:cbook_dt/feature/account/ui/expense/provider/expense_provider.dart';
 import 'package:cbook_dt/feature/account/ui/income/provider/income_api.dart';
-
 import 'package:cbook_dt/feature/customer_create/provider/customer_provider.dart';
 import 'package:cbook_dt/feature/payment_out/model/bill_person_list_model.dart';
 import 'package:cbook_dt/feature/payment_out/model/create_payment_out_model.dart';
@@ -344,14 +343,7 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
           ],
         ),
         actions: [
-          CashCreditToggle(
-            initialCash: true,
-            onChanged: (isCash) {
-              print("Selected: ${isCash ? "Cash" : "Credit"}");
-              controller.updateCash(context);
-              ; // you can hook your logic here
-            },
-          ),
+           
           IconButton(
             onPressed: () {
               Navigator.push(
@@ -477,97 +469,96 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
 
           ///1 section
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4.0),
-                    child: SizedBox(
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 4.0),
+                  child: SizedBox(
+                    height: 30,
+                    width: 150,
+                    child: CustomDropdownTwo(
+                      hint: '',
+                      items: const ['Cash in Hand', 'Bank'],
+                      width: double.infinity,
                       height: 30,
-                      width: 150,
-                      child: CustomDropdownTwo(
-                        hint: '',
-                        items: const ['Cash in Hand', 'Bank'],
-                        width: double.infinity,
-                        height: 30,
-                        labelText: 'Receipt To',
-                        selectedItem: selectedReceivedTo,
-                        onChanged: (value) async {
-                          debugPrint('=== Received To Selected: $value ===');
-
-                          setState(() {
-                            selectedReceivedTo = value;
-                            selectedAccount = null;
-                          });
-
-                          final type = reverseReceivedToMap[value ?? ''] ?? '';
-
-                          if (type == 'cash') {
-                            await provider.fetchAccounts('cash');
-                          } else if (type == 'bank') {
-                            await provider.fetchAccounts('bank');
-                          }
-                        },
-                      ),
+                      labelText: 'Receipt To',
+                      selectedItem: selectedReceivedTo,
+                      onChanged: (value) async {
+                        debugPrint('=== Received To Selected: $value ===');
+                
+                        setState(() {
+                          selectedReceivedTo = value;
+                          selectedAccount = null;
+                        });
+                
+                        final type = reverseReceivedToMap[value ?? ''] ?? '';
+                
+                        if (type == 'cash') {
+                          await provider.fetchAccounts('cash');
+                        } else if (type == 'bank') {
+                          await provider.fetchAccounts('bank');
+                        }
+                      },
                     ),
                   ),
-
-                  const SizedBox(height: 10),
-
-                  /// Account Dropdown
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4.0),
-                    child: SizedBox(
-                      height: 30,
-                      width: 150,
-                      child: provider.isAccountLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : CustomDropdownTwo(
-                              hint: '',
-                              items: provider.accountNames,
-                              width: double.infinity,
-                              height: 30,
-                              labelText: 'A/C',
-                              selectedItem: selectedAccount,
-                              onChanged: (value) {
-                                debugPrint('=== Account Selected: $value ===');
-                                setState(() {
-                                  selectedAccount = value;
-                                });
-
-                                if (provider.accountModel != null) {
-                                  final selectedAccountData = provider
-                                      .accountModel!.data
-                                      .firstWhere((account) =>
-                                          account.accountName == value);
-
-                                  selectedAccountId = selectedAccountData.id;
-
-                                  debugPrint(
-                                      '=== Account Selected: $value ===');
-                                  if (selectedAccountId != null) {
-                                    debugPrint(
-                                        'Selected Account ID: $selectedAccountId');
-                                  }
-
-                                  debugPrint('Selected Account Details:');
-                                  debugPrint('- ID: ${selectedAccountData.id}');
-                                  debugPrint(
-                                      '- Name: ${selectedAccountData.accountName}');
-                                  debugPrint('- Type: $selectedReceivedTo');
-                                }
-                              },
-                            ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
+              
+              const SizedBox(height: 10),
+              
+              /// Account Dropdown
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 4.0),
+                  child: SizedBox(
+                    height: 30,
+                    width: 150,
+                    child: provider.isAccountLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : CustomDropdownTwo(
+                            hint: '',
+                            items: provider.accountNames,
+                            width: double.infinity,
+                            height: 30,
+                            labelText: 'A/C',
+                            selectedItem: selectedAccount,
+                            onChanged: (value) {
+                              debugPrint('=== Account Selected: $value ===');
+                              setState(() {
+                                selectedAccount = value;
+                              });
+                
+                              if (provider.accountModel != null) {
+                                final selectedAccountData = provider
+                                    .accountModel!.data
+                                    .firstWhere((account) =>
+                                        account.accountName == value);
+                
+                                selectedAccountId = selectedAccountData.id;
+                
+                                debugPrint(
+                                    '=== Account Selected: $value ===');
+                                if (selectedAccountId != null) {
+                                  debugPrint(
+                                      'Selected Account ID: $selectedAccountId');
+                                }
+                
+                                debugPrint('Selected Account Details:');
+                                debugPrint('- ID: ${selectedAccountData.id}');
+                                debugPrint(
+                                    '- Name: ${selectedAccountData.accountName}');
+                                debugPrint('- Type: $selectedReceivedTo');
+                              }
+                            },
+                          ),
+                  ),
+                ),
+              ),
+              
+              // const Column(
+              //   crossAxisAlignment: CrossAxisAlignment.end,
+              //   children: [
                   // Padding(
                   //   padding: const EdgeInsets.only(top: 8.0),
                   //   child: Consumer<PaymentVoucherProvider>(
@@ -615,8 +606,8 @@ class _PaymenyOutEditState extends State<PaymenyOutEdit> {
                   // const SizedBox(
                   //   height: 8,
                   // ),
-                ],
-              )
+              //   ],
+              // )
             ],
           ),
 

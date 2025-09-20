@@ -126,7 +126,10 @@ class _SalesReturnDetailsPageState extends State<SalesReturnDetailsPage> {
                   );
                 },
               ),
+              
             ),
+
+            const SizedBox(height: 50,),
           ],
         ),
       ),

@@ -23,26 +23,86 @@ class _BillInvoicePrintState extends State<BillInvoicePrint> {
   XFile? _signatureMiddleImage;
 
   final List<String> items = [
-    "Bill header", "Header style", "Company name size", "Mobile/phone", "Company Phone Number", "Mail",
-    "Company Address", "Company logo", "Bill Person", "Body Watermark", "Body Watermark logo",  "Customer Name", "S.l No", "Item Code",
-    "MRP", "Price", "Unit", "Item QTY", "Item Discount Amount", "Item Discount Percentance",
-    "Item Discount Amount & Percentance", "Bill Discount Amount", "Bill Discount Percentance",
-    "Bill Discount Amount & Percentance", "Item Vat/Tax Amount", "Item Vat/Tax Percentance",
-    "Item Vat/Tax Amount & Percentance", "Bill Vat/Tax Amount", "Bill Vat/Tax Percentance",
-    "Bill Vat/Tax Amount & Percentance", "Pervious Amount", "Amount in Word", "QR Code", "Narration",
-    "QR & Text Footer Text", "Paid Stamp", "Unpaid Stamp", "Terms & Condition", "Signature Right Show", "Signature Right",
-    "Signature Left", "Signature Middle", "Signature Right Title", "Signature Left Title",
-    "Signature Middle Title", "Print Copy", "Print Copy Shop", "Print Copy Customer"
+    "Bill header",
+    "Header style",
+    "Company name size",
+    "Mobile/phone",
+    "Company Phone Number",
+    "Mail",
+    "Company Address",
+    "Company logo",
+    "Bill Person",
+    "Body Watermark",
+    "Body Watermark logo",
+    "Customer Name",
+    "S.l No",
+    "Item Code",
+    "MRP",
+    "Price",
+    "Unit",
+    "Item QTY",
+    "Item Discount Amount",
+    "Item Discount Percentance",
+    "Item Discount Amount & Percentance",
+    "Bill Discount Amount",
+    "Bill Discount Percentance",
+    "Bill Discount Amount & Percentance",
+    "Item Vat/Tax Amount",
+    "Item Vat/Tax Percentance",
+    "Item Vat/Tax Amount & Percentance",
+    "Bill Vat/Tax Amount",
+    "Bill Vat/Tax Percentance",
+    "Bill Vat/Tax Amount & Percentance",
+    "Pervious Amount",
+    "Amount in Word",
+    "QR Code",
+    "Narration",
+    "QR & Text Footer Text",
+    "Paid Stamp",
+    "Unpaid Stamp",
+    "Terms & Condition",
+    "Signature Right Show",
+    "Signature Right",
+    "Signature Left",
+    "Signature Middle",
+    "Signature Right Title",
+    "Signature Left Title",
+    "Signature Middle Title",
+    "Print Copy",
+    "Print Copy Shop",
+    "Print Copy Customer"
   ];
 
   final List<String> noTextFieldItems = [
-    "S.l No", "Company Phone Number", "Item Code", "Price", "MRP", "QR Code", "Paid Stamp", "Unit",
-    "Customer Name", "Item QTY", "Item Discount Amount", "Item Discount Percentance",
-    "Item Discount Amount & Percentance", "Bill Discount Amount", "Bill Discount Percentance",
-    "Bill Discount Amount & Percentance", "Item Vat/Tax Amount", "Item Vat/Tax Percentance",
-    "Item Vat/Tax Amount & Percentance", "Bill Vat/Tax Amount", "Bill Vat/Tax Percentance",
-    "Bill Vat/Tax Amount & Percentance", 'Amount in Word', 'Narration', 'Terms & Condition',
-    'Print Copy Shop', "Print Copy Customer", 'Body Watermark logo', "Signature Right Show",
+    "S.l No",
+    "Company Phone Number",
+    "Item Code",
+    "Price",
+    "MRP",
+    "QR Code",
+    "Paid Stamp",
+    "Unit",
+    "Customer Name",
+    "Item QTY",
+    "Item Discount Amount",
+    "Item Discount Percentance",
+    "Item Discount Amount & Percentance",
+    "Bill Discount Amount",
+    "Bill Discount Percentance",
+    "Bill Discount Amount & Percentance",
+    "Item Vat/Tax Amount",
+    "Item Vat/Tax Percentance",
+    "Item Vat/Tax Amount & Percentance",
+    "Bill Vat/Tax Amount",
+    "Bill Vat/Tax Percentance",
+    "Bill Vat/Tax Amount & Percentance",
+    'Amount in Word',
+    'Narration',
+    'Terms & Condition',
+    'Print Copy Shop',
+    "Print Copy Customer",
+    'Body Watermark logo',
+    "Signature Right Show",
   ];
 
   final List<String> dropdownOptions = ["Manager", "Account", "Sales Person"];
@@ -58,8 +118,6 @@ class _BillInvoicePrintState extends State<BillInvoicePrint> {
     _loadSettings();
   }
 
- 
-
   @override
   void dispose() {
     for (var controller in controllers.values) {
@@ -69,10 +127,10 @@ class _BillInvoicePrintState extends State<BillInvoicePrint> {
   }
 
   Future<void> _saveAllCheckboxStates() async {
-  for (var entry in isChecked.entries) {
-    await _saveCheckbox(entry.key, entry.value);
+    for (var entry in isChecked.entries) {
+      await _saveCheckbox(entry.key, entry.value);
+    }
   }
-}
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
@@ -172,7 +230,13 @@ class _BillInvoicePrintState extends State<BillInvoicePrint> {
               });
               _saveCheckbox(key, value!);
 
-              if (value == true && ["Company logo", "Signature Right", "Signature Left", "Signature Middle"].contains(key)) {
+              if (value == true &&
+                  [
+                    "Company logo",
+                    "Signature Right",
+                    "Signature Left",
+                    "Signature Middle"
+                  ].contains(key)) {
                 _showImageSourceActionSheet(context, key);
               }
             },
@@ -188,7 +252,13 @@ class _BillInvoicePrintState extends State<BillInvoicePrint> {
           const Spacer(),
 
           // Image picker if checked
-          if (isChecked[key]! && ["Company logo", "Signature Right", "Signature Left", "Signature Middle"].contains(key))
+          if (isChecked[key]! &&
+              [
+                "Company logo",
+                "Signature Right",
+                "Signature Left",
+                "Signature Middle"
+              ].contains(key))
             GestureDetector(
               onTap: () => _showImageSourceActionSheet(context, key),
               child: Container(
@@ -217,7 +287,8 @@ class _BillInvoicePrintState extends State<BillInvoicePrint> {
                               ? FileImage(File(_signatureMiddleImage!.path))
                               : const AssetImage("assets/image/cbook_logo.png");
                         default:
-                          return const AssetImage("assets/image/cbook_logo.png");
+                          return const AssetImage(
+                              "assets/image/cbook_logo.png");
                       }
                     }()) as ImageProvider,
                     fit: BoxFit.cover,
@@ -227,16 +298,20 @@ class _BillInvoicePrintState extends State<BillInvoicePrint> {
                   alignment: Alignment.bottomRight,
                   child: Padding(
                     padding: EdgeInsets.all(2.0),
-                    child: Icon(Icons.camera_alt, size: 14, color: Colors.black54),
+                    child:
+                        Icon(Icons.camera_alt, size: 14, color: Colors.black54),
                   ),
                 ),
               ),
             )
 
           // Dropdown for title if checked
-          else if (isChecked[key]! && [
-            "Signature Right Title", "Signature Left Title", "Signature Middle Title",
-          ].contains(key))
+          else if (isChecked[key]! &&
+              [
+                "Signature Right Title",
+                "Signature Left Title",
+                "Signature Middle Title",
+              ].contains(key))
             DropdownButton<String>(
               value: selectedDropdownValues[key],
               hint: const Text("Select"),
@@ -261,10 +336,12 @@ class _BillInvoicePrintState extends State<BillInvoicePrint> {
                 style: const TextStyle(color: Colors.black, fontSize: 10),
                 decoration: InputDecoration(
                   labelText: key,
-                  
-                  labelStyle: const TextStyle(fontSize: 12, ),
+                  labelStyle: const TextStyle(
+                    fontSize: 12,
+                  ),
                   border: const OutlineInputBorder(),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
                 ),
                 onChanged: (val) {
                   _saveText(key, val);
@@ -283,31 +360,48 @@ class _BillInvoicePrintState extends State<BillInvoicePrint> {
     final colorScheme = Theme.of(context).colorScheme;
     return PopScope(
       canPop: true,
-    onPopInvokedWithResult: (bool didPop, dynamic result) async {
-      if (didPop) {
-        await _loadSettings(); // Save checkbox states before leaving
-        // Optionally return a result or perform additional actions
-      }
-    },
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (didPop) {
+          await _loadSettings(); // Save checkbox states before leaving
+          // Optionally return a result or perform additional actions
+        }
+      },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: colorScheme.primary,
-          centerTitle: true,
-          iconTheme: const IconThemeData(color: Colors.white),
-          title: const Text(
-            "Bill & Invoice Print Setting",
-            style: TextStyle(color: Colors.yellow, fontSize: 16, fontWeight: FontWeight.bold),
+          appBar: AppBar(
+            backgroundColor: colorScheme.primary,
+            centerTitle: true,
+            iconTheme: const IconThemeData(color: Colors.white),
+            title: const Text(
+              "Bill & Invoice Print Setting",
+              style: TextStyle(
+                  color: Colors.yellow,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: items.map((item) => _buildCheckboxRow(item)).toList(),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Map over your items and generate widgets for each one
+                ...items.map((item) => _buildCheckboxRow(item)).toList(),
+
+                const SizedBox(
+                  height: 50,
+                ), // You can add any other widgets here as needed
+              ],
+            ),
+          )
+
+          // SingleChildScrollView(
+          //   child: Column(
+          //     children: [
+          //       items.map((item) => _buildCheckboxRow(item)).toList();
+
+          //       SizedBox()
+          //     ],
+          //   ),
+          // ),
           ),
-        ),
-      ),
     );
   }
 }
-
-
- 

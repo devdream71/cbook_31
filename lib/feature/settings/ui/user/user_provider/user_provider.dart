@@ -48,7 +48,6 @@ class SettingUserProvider with ChangeNotifier {
 
     final url = '${AppUrl.baseurl}users/list/';
     try {
-
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
 
@@ -58,18 +57,14 @@ class SettingUserProvider with ChangeNotifier {
         notifyListeners();
         return;
       }
-      final response = await http.get(Uri.parse(url,
-      
-      
-      ),
-      
-      headers: {
-
-        "Authorization": "Bearer $token",
-        "Accept": "application/json",
-
-      }
-      );
+      final response = await http.get(
+          Uri.parse(
+            url,
+          ),
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          });
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List usersJson = data['data'];
@@ -85,9 +80,6 @@ class SettingUserProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
-
-
-
 
   ///delete user
   String _errorMessage = '';
@@ -223,8 +215,7 @@ class SettingUserProvider with ChangeNotifier {
     _editError = null;
     notifyListeners();
 
-    final url =
-        Uri.parse('${AppUrl.baseurl}users/edit/$userId');
+    final url = Uri.parse('${AppUrl.baseurl}users/edit/$userId');
 
     try {
       final response = await http.get(url);
@@ -242,7 +233,6 @@ class SettingUserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  
   ///user update
   Future<Map<String, dynamic>> updateUser({
     required int id,
@@ -349,8 +339,15 @@ class SettingUserProvider with ChangeNotifier {
   ///roles
   Future<void> fetchRoles() async {
     final url = '${AppUrl.baseurl}roles/';
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url), headers: {
+        "Authorization": "Bearer $token",
+        "Accept": "application/json",
+      });
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final List rolesJson = data['data'];

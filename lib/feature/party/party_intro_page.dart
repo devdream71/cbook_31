@@ -125,8 +125,7 @@ class AddNewPartyIntro extends StatelessWidget {
             ),
 
             Text(
-              '''• Click For Customer Or Supplier
-                 • Price Level Only For Customer''',
+              '• Click For Customer Or Supplier\n• Price Level Only For Customer',
               style: ts2,
             ),
           ],

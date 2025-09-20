@@ -148,36 +148,36 @@ class _BillInvoiceCreateFormState extends State<BillInvoiceCreateForm> {
 
               // Now your switches
               ///===>>>Bill/Invoice Number
-              ListTile(
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                title: const Text(
-                  "Bill/Invoice Number",
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    //inactiveTrackColor: Colors.orange,
-                    inactiveThumbColor: const Color(0xff278d46),
+              // ListTile(
+              //   dense: true,
+              //   visualDensity: VisualDensity.compact,
+              //   contentPadding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              //   title: const Text(
+              //     "Bill/Invoice Number",
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: Transform.scale(
+              //     scale: 0.75,
+              //     child: Switch(
+              //       //inactiveTrackColor: Colors.orange,
+              //       inactiveThumbColor: const Color(0xff278d46),
 
-                    //activeColor: Color(0xff278d46),
-                    activeTrackColor: const Color(0xff278d46),
-                    trackOutlineColor:
-                        WidgetStateProperty.all(const Color(0xff278d46)),
+              //       //activeColor: Color(0xff278d46),
+              //       activeTrackColor: const Color(0xff278d46),
+              //       trackOutlineColor:
+              //           WidgetStateProperty.all(const Color(0xff278d46)),
 
-                    value: _billInvoiceNumber,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _billInvoiceNumber = value;
-                      });
-                      _saveSettings();
-                    },
-                  ),
-                ),
-              ),
+              //       value: _billInvoiceNumber,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           _billInvoiceNumber = value;
+              //         });
+              //         _saveSettings();
+              //       },
+              //     ),
+              //   ),
+              // ),
 
               ///===>>> Defiled cash
               ListTile(
@@ -462,228 +462,228 @@ class _BillInvoiceCreateFormState extends State<BillInvoiceCreateForm> {
               ),
 
               ///Show Profit/Loss Icon
-              ListTile(
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                title: const Text(
-                  "Show Profit/Loss Icon",
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    inactiveThumbColor: const Color(0xff278d46),
-                    activeTrackColor: const Color(0xff278d46),
-                    trackOutlineColor:
-                        WidgetStateProperty.all(const Color(0xff278d46)),
-                    value: _showProfitLossIcon,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _showProfitLossIcon = value;
-                      });
-                      _saveSettings();
-                    },
-                  ),
-                ),
-              ),
+              // ListTile(
+              //   dense: true,
+              //   visualDensity: VisualDensity.compact,
+              //   contentPadding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              //   title: const Text(
+              //     "Show Profit/Loss Icon",
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: Transform.scale(
+              //     scale: 0.75,
+              //     child: Switch(
+              //       inactiveThumbColor: const Color(0xff278d46),
+              //       activeTrackColor: const Color(0xff278d46),
+              //       trackOutlineColor:
+              //           WidgetStateProperty.all(const Color(0xff278d46)),
+              //       value: _showProfitLossIcon,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           _showProfitLossIcon = value;
+              //         });
+              //         _saveSettings();
+              //       },
+              //     ),
+              //   ),
+              // ),
 
               ///Save & New
-              ListTile(
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                title: const Text(
-                  "Save & New",
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    inactiveThumbColor: const Color(0xff278d46),
-                    activeTrackColor: const Color(0xff278d46),
-                    trackOutlineColor:
-                        WidgetStateProperty.all(const Color(0xff278d46)),
-                    value: _saveNew,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _saveNew = value;
-                      });
-                      _saveSettings();
-                    },
-                  ),
-                ),
-              ),
+              // ListTile(
+              //   dense: true,
+              //   visualDensity: VisualDensity.compact,
+              //   contentPadding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              //   title: const Text(
+              //     "Save & New",
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: Transform.scale(
+              //     scale: 0.75,
+              //     child: Switch(
+              //       inactiveThumbColor: const Color(0xff278d46),
+              //       activeTrackColor: const Color(0xff278d46),
+              //       trackOutlineColor:
+              //           WidgetStateProperty.all(const Color(0xff278d46)),
+              //       value: _saveNew,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           _saveNew = value;
+              //         });
+              //         _saveSettings();
+              //       },
+              //     ),
+              //   ),
+              // ),
 
               ///Save & A4
-              ListTile(
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                title: const Text(
-                  "Save & A4",
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    inactiveThumbColor: const Color(0xff278d46),
-                    activeTrackColor: const Color(0xff278d46),
-                    trackOutlineColor:
-                        WidgetStateProperty.all(const Color(0xff278d46)),
-                    value: _saveA4,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _saveA4 = value;
-                      });
-                      _saveSettings();
-                    },
-                  ),
-                ),
-              ),
+              // ListTile(
+              //   dense: true,
+              //   visualDensity: VisualDensity.compact,
+              //   contentPadding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              //   title: const Text(
+              //     "Save & A4",
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: Transform.scale(
+              //     scale: 0.75,
+              //     child: Switch(
+              //       inactiveThumbColor: const Color(0xff278d46),
+              //       activeTrackColor: const Color(0xff278d46),
+              //       trackOutlineColor:
+              //           WidgetStateProperty.all(const Color(0xff278d46)),
+              //       value: _saveA4,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           _saveA4 = value;
+              //         });
+              //         _saveSettings();
+              //       },
+              //     ),
+              //   ),
+              // ),
 
               ///Save & A5
-              ListTile(
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                title: const Text(
-                  "Save & A5",
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    inactiveThumbColor: const Color(0xff278d46),
-                    activeTrackColor: const Color(0xff278d46),
-                    trackOutlineColor:
-                        WidgetStateProperty.all(const Color(0xff278d46)),
-                    value: _saveA5,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _saveA5 = value;
-                      });
-                      _saveSettings();
-                    },
-                  ),
-                ),
-              ),
+              // ListTile(
+              //   dense: true,
+              //   visualDensity: VisualDensity.compact,
+              //   contentPadding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              //   title: const Text(
+              //     "Save & A5",
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: Transform.scale(
+              //     scale: 0.75,
+              //     child: Switch(
+              //       inactiveThumbColor: const Color(0xff278d46),
+              //       activeTrackColor: const Color(0xff278d46),
+              //       trackOutlineColor:
+              //           WidgetStateProperty.all(const Color(0xff278d46)),
+              //       value: _saveA5,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           _saveA5 = value;
+              //         });
+              //         _saveSettings();
+              //       },
+              //     ),
+              //   ),
+              // ),
 
               ///QR Coad Ganaret
-              ListTile(
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                title: const Text(
-                  "QR Coad Ganaret",
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    inactiveThumbColor: const Color(0xff278d46),
-                    activeTrackColor: const Color(0xff278d46),
-                    trackOutlineColor:
-                        WidgetStateProperty.all(const Color(0xff278d46)),
-                    value: _qrCodeGen,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _qrCodeGen = value;
-                      });
-                      _saveSettings();
-                    },
-                  ),
-                ),
-              ),
+              // ListTile(
+              //   dense: true,
+              //   visualDensity: VisualDensity.compact,
+              //   contentPadding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              //   title: const Text(
+              //     "QR Coad Ganaret",
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: Transform.scale(
+              //     scale: 0.75,
+              //     child: Switch(
+              //       inactiveThumbColor: const Color(0xff278d46),
+              //       activeTrackColor: const Color(0xff278d46),
+              //       trackOutlineColor:
+              //           WidgetStateProperty.all(const Color(0xff278d46)),
+              //       value: _qrCodeGen,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           _qrCodeGen = value;
+              //         });
+              //         _saveSettings();
+              //       },
+              //     ),
+              //   ),
+              // ),
 
               ///Share Button
-              ListTile(
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                title: const Text(
-                  "Share Button",
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    inactiveThumbColor: const Color(0xff278d46),
-                    activeTrackColor: const Color(0xff278d46),
-                    trackOutlineColor:
-                        WidgetStateProperty.all(const Color(0xff278d46)),
-                    value: _shareButton,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _shareButton = value;
-                      });
-                      _saveSettings();
-                    },
-                  ),
-                ),
-              ),
+              // ListTile(
+              //   dense: true,
+              //   visualDensity: VisualDensity.compact,
+              //   contentPadding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              //   title: const Text(
+              //     "Share Button",
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: Transform.scale(
+              //     scale: 0.75,
+              //     child: Switch(
+              //       inactiveThumbColor: const Color(0xff278d46),
+              //       activeTrackColor: const Color(0xff278d46),
+              //       trackOutlineColor:
+              //           WidgetStateProperty.all(const Color(0xff278d46)),
+              //       value: _shareButton,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           _shareButton = value;
+              //         });
+              //         _saveSettings();
+              //       },
+              //     ),
+              //   ),
+              // ),
 
               ///SMS send
-              ListTile(
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                title: const Text(
-                  "SMS send",
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    inactiveThumbColor: const Color(0xff278d46),
-                    activeTrackColor: const Color(0xff278d46),
-                    trackOutlineColor:
-                        WidgetStateProperty.all(const Color(0xff278d46)),
-                    value: _smsSend,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _smsSend = value;
-                      });
-                      _saveSettings();
-                    },
-                  ),
-                ),
-              ),
+              // ListTile(
+              //   dense: true,
+              //   visualDensity: VisualDensity.compact,
+              //   contentPadding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              //   title: const Text(
+              //     "SMS send",
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: Transform.scale(
+              //     scale: 0.75,
+              //     child: Switch(
+              //       inactiveThumbColor: const Color(0xff278d46),
+              //       activeTrackColor: const Color(0xff278d46),
+              //       trackOutlineColor:
+              //           WidgetStateProperty.all(const Color(0xff278d46)),
+              //       value: _smsSend,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           _smsSend = value;
+              //         });
+              //         _saveSettings();
+              //       },
+              //     ),
+              //   ),
+              // ),
 
               ///Masking/Company Name SMS Sent
-              ListTile(
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                title: const Text(
-                  "Masking/Company Name SMS Sent",
-                  style: TextStyle(fontSize: 14),
-                ),
-                trailing: Transform.scale(
-                  scale: 0.75,
-                  child: Switch(
-                    inactiveThumbColor: const Color(0xff278d46),
-                    activeTrackColor: const Color(0xff278d46),
-                    trackOutlineColor:
-                        WidgetStateProperty.all(const Color(0xff278d46)),
-                    value: _maskingCompanyNameSms,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _maskingCompanyNameSms = value;
-                      });
-                      _saveSettings();
-                    },
-                  ),
-                ),
-              ),
+              // ListTile(
+              //   dense: true,
+              //   visualDensity: VisualDensity.compact,
+              //   contentPadding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              //   title: const Text(
+              //     "Masking/Company Name SMS Sent",
+              //     style: TextStyle(fontSize: 14),
+              //   ),
+              //   trailing: Transform.scale(
+              //     scale: 0.75,
+              //     child: Switch(
+              //       inactiveThumbColor: const Color(0xff278d46),
+              //       activeTrackColor: const Color(0xff278d46),
+              //       trackOutlineColor:
+              //           WidgetStateProperty.all(const Color(0xff278d46)),
+              //       value: _maskingCompanyNameSms,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           _maskingCompanyNameSms = value;
+              //         });
+              //         _saveSettings();
+              //       },
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

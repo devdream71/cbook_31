@@ -70,31 +70,7 @@ class _ReceivedListState extends State<ReceivedList> {
     }
   }
 
-  // Add this method for edit/delete dialog (you'll need to implement this)
-  void editDeleteDiolog(BuildContext context, String voucherId) {
-    // Implement your edit/delete dialog here
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Options'),
-        content: const Text('What would you like to do?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Edit'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Delete'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-        ],
-      ),
-    );
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -320,9 +296,26 @@ class _ReceivedListState extends State<ReceivedList> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(_formatDate(voucher.voucherDate),
-                                                      style: ts), // Date
-                                                  Text(voucher.voucherNumber,
-                                                      style: ts), // Voucher Number
+                                                      style: ts),
+                                                      
+                                                       // Date
+                                                  // Text(voucher.voucherNumber,
+                                                  //     style: ts),
+
+                                                 Text(
+                                                    voucher.voucherNumber
+                                                                .length >
+                                                            12
+                                                        ? "${voucher.voucherNumber.substring(0, 10)}..."
+                                                        : voucher
+                                                            .voucherNumber,
+                                                    style: ts,
+                                                  ),      
+                                                      
+                                                      
+                                                      
+                                                      
+                                                       // Voucher Number
                                                   const SizedBox(height: 5),
                                                   Text(
                                                       voucher.totalAmount
@@ -513,9 +506,10 @@ class _ReceivedListState extends State<ReceivedList> {
               if (isDeleted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
+                    backgroundColor: AppColors.primaryColor,
                       content: Text(
                     'Received voucher deleted successfully!',
-                    style: TextStyle(color: colorScheme.primary),
+                    style: TextStyle(color: Colors.white),
                   )),
                 );
                 Navigator.of(context).pop(); // Close confirmation dialog

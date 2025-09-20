@@ -108,26 +108,26 @@ class UnitListViewState extends State<UnitListView> {
                           ),
                           child: ListTile(
                             contentPadding: const EdgeInsets.only(left: 16),
-                            leading: CircleAvatar(
-                              backgroundColor: AppColors.primaryColor,
-                              radius: 15,
-                              child: Text(
-                                "${index + 1}",
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14),
-                              ),
-                            ),
+                            // leading: CircleAvatar(
+                            //   backgroundColor: AppColors.primaryColor,
+                            //   radius: 15,
+                            //   child: Text(
+                            //     "${index + 1}",
+                            //     style: const TextStyle(
+                            //         color: Colors.white,
+                            //         fontWeight: FontWeight.bold,
+                            //         fontSize: 14),
+                            //   ),
+                            // ),
                             title: Text(
                               unit.name,
-                              style: const TextStyle(fontSize: 12),
+                              style:   TextStyle(fontSize: 16, fontWeight: FontWeight.bold) ,
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Symbol: ${unit.symbol}",
+                                  "${unit.symbol}",
                                   style: const TextStyle(fontSize: 12),
                                 ),
                               ],

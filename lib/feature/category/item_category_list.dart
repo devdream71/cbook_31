@@ -92,8 +92,10 @@ class ItemCategoryViewState extends State<ItemCategoryView> {
                           editDeleteDialog(context, categoryId.toString());
                         },
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 2.0),
+                          padding: const EdgeInsets.only(top: 0.0),
+                          
                           child: Card(
+                            
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(0),
                               side: BorderSide(color: Colors.grey.shade300),

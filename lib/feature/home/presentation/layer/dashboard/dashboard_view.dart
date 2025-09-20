@@ -278,7 +278,7 @@ class LayoutState extends State<Layout> {
                       width: 50, // Make sure width and height are equal
                       height: 50,
                       decoration: BoxDecoration(
-                        color: Colors.blueAccent,
+                        color: Color(0xff5156be),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
