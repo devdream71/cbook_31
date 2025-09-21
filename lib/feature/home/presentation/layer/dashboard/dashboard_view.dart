@@ -9,6 +9,7 @@ import 'package:cbook_dt/feature/account/ui/cash_in_hand/cash_in_hand.dart';
 import 'package:cbook_dt/feature/account/ui/expense/expense_list.dart';
 import 'package:cbook_dt/feature/account/ui/income/income_list.dart';
 import 'package:cbook_dt/feature/authentication/currency/provider/currency_controller.dart';
+import 'package:cbook_dt/feature/authentication/provider/login_provider.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/company_model.dart';
 import 'package:cbook_dt/feature/dashboard_report/model/sales_report_model_home.dart';
 import 'package:cbook_dt/feature/dashboard_report/provider/dashbord_report_provider.dart';
@@ -43,6 +44,7 @@ class DashboardViewState extends State<DashboardView> {
       providers: [
         ChangeNotifierProvider(create: (_) => DashboardController()),
         ChangeNotifierProvider(create: (_) => DashboardReportProvider()),
+        ChangeNotifierProvider(create: (_) => LoginProvider()),
       ],
       child: const Layout(),
     );
@@ -67,7 +69,11 @@ class LayoutState extends State<Layout> {
     final provider =
         Provider.of<DashboardReportProvider>(context, listen: false);
 
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+
     Future.microtask(() async {
+      await loginProvider.loadRegType();
+
       await provider.fetchCustomerTransaction();
       await provider.fetchSupplierTransaction();
       await provider.fetchCashInHandTransaction();
@@ -76,6 +82,9 @@ class LayoutState extends State<Layout> {
       await provider.fetchSalesLast30Days();
       await provider.fetchCompanyList();
       _loadUserIdAndFetchProfile();
+
+      final prefs = await SharedPreferences.getInstance();
+      final regType = prefs.getString('reg_type');
     });
 
     Future.microtask(() =>
@@ -98,6 +107,27 @@ class LayoutState extends State<Layout> {
       // Handle null userId
       debugPrint('User ID not found in SharedPreferences');
     }
+  }
+
+  // Helper method to build registration badge
+  Widget _buildRegistrationBadge(bool isPremium) {
+    return Container(
+      //color: Colors.red,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          isPremium
+              ? SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: Image.asset("assets/image/correct.png"))
+              : SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: Image.asset('assets/image/free.png')),
+        ],
+      ),
+    );
   }
 
   Future<String> _getCurrentCompanyName(String defaultCompanyName,
@@ -560,8 +590,8 @@ class LayoutState extends State<Layout> {
                                                                           'name']!,
                                                                       style:
                                                                           const TextStyle(
-                                                                        color:
-                                                                            Colors.white,
+                                                                        color: Colors
+                                                                            .white,
                                                                         fontSize:
                                                                             12,
                                                                         fontWeight:
@@ -570,32 +600,57 @@ class LayoutState extends State<Layout> {
                                                                             1.0, // ✅ Reduce line height
                                                                       ),
                                                                     ),
-                                                                    IconButton(
-                                                                      padding:
-                                                                          EdgeInsets.zero, // Remove default padding
-                                                                      constraints:
-                                                                          const BoxConstraints(), // Remove minimum size constraints
-                                                                      onPressed:
-                                                                          () {
-                                                                        _showCompanySwitchModal(
-                                                                            context,
-                                                                            dashboardProvider,
-                                                                            profileProvider);
+                                                                    Consumer<
+                                                                        LoginProvider>(
+                                                                      builder: (context,
+                                                                          loginProvider,
+                                                                          child) {
+                                                                        return Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.end,
+                                                                          children: [
+                                                                            // Company Info
+
+                                                                            _buildRegistrationBadge(loginProvider.isPremium),
+
+                                                                            // Registration Badge
+                                                                            // _buildRegistrationBadge(
+                                                                            //     loginProvider.isPremium),
+                                                                          ],
+                                                                        );
                                                                       },
-                                                                      icon:
-                                                                          const RotatedBox(
-                                                                        quarterTurns:
-                                                                            3,
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons.arrow_back_ios,
-                                                                          color:
-                                                                              Colors.white,
-                                                                          size:
-                                                                              16, // Smaller size for better alignment
-                                                                        ),
-                                                                      ),
                                                                     ),
+                                                                    // Container(
+                                                                    //   color: Colors
+                                                                    //       .red,
+                                                                    //   child:
+                                                                    //       IconButton(
+                                                                    //     padding:
+                                                                    //         EdgeInsets.zero, // Remove default padding
+                                                                    //     constraints:
+                                                                    //         const BoxConstraints(), // Remove minimum size constraints
+                                                                    //     onPressed:
+                                                                    //         () {
+                                                                    //       _showCompanySwitchModal(
+                                                                    //           context,
+                                                                    //           dashboardProvider,
+                                                                    //           profileProvider);
+                                                                    //     },
+                                                                    //     icon:
+                                                                    //         const RotatedBox(
+                                                                    //       quarterTurns:
+                                                                    //           3,
+                                                                    //       child:
+                                                                    //           Icon(
+                                                                    //         Icons.arrow_back_ios,
+                                                                    //         color:
+                                                                    //             Colors.white,
+                                                                    //         size:
+                                                                    //             16, // Smaller size for better alignment
+                                                                    //       ),
+                                                                    //     ),
+                                                                    //   ),
+                                                                    // ),
                                                                   ],
                                                                 ),
 
@@ -650,19 +705,103 @@ class LayoutState extends State<Layout> {
                               },
                             ),
 
-                            InkWell(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      const FeatureNotAvailableDialog(),
-                                );
+                           
+                            Row(
+                              children: [
+
+                                Consumer<ProfileProvider>(
+                              builder: (context, profileProvider, child) {
+                                if (profileProvider.isLoading) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                } else if (profileProvider.profile != null) {
+                                  final user = profileProvider.profile!;
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 0.0),
+                                    child: Consumer<DashboardReportProvider>(
+                                      builder:
+                                          (context, dashboardProvider, child) {
+                                        return FutureBuilder<
+                                            Map<String, String>>(
+                                          future: _getCurrentCompanyInfo(
+                                              user.companyName,
+                                              dashboardProvider),
+                                          builder: (context, snapshot) {
+                                            final companyInfo = snapshot.data ??
+                                                {
+                                                  'name': user.companyName,
+                                                  'role': "No Role"
+                                                };
+
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              // mainAxisSize: MainAxisSize
+                                              //     .min, // ✅ Minimize column height
+                                              children: [
+                                                // Company name row with dropdown
+                                                // Consumer<LoginProvider>(
+                                                //   builder: (context,
+                                                //       loginProvider,
+                                                //       child) {
+                                                //     return  SizedBox();
+                                                //   },
+                                                // ),
+                                                Container(
+                                                  child: IconButton(
+                                                    padding: EdgeInsets
+                                                        .zero, // Remove default padding
+                                                    constraints:
+                                                        const BoxConstraints(), // Remove minimum size constraints
+                                                    onPressed: () {
+                                                      _showCompanySwitchModal(
+                                                          context,
+                                                          dashboardProvider,
+                                                          profileProvider);
+                                                    },
+                                                    icon: const RotatedBox(
+                                                      quarterTurns: 3,
+                                                      child: Icon(
+                                                        Icons.arrow_back_ios,
+                                                        color: Colors.white,
+                                                        size:
+                                                            16, // Smaller size for better alignment
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }
+                                return const SizedBox.shrink();
                               },
-                              child: const Icon(
-                                Icons.notification_add,
-                                color: Colors.white,
+                            ),
+
+                            Container(
+                              child: InkWell(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const FeatureNotAvailableDialog(),
+                                  );
+                                },
+                                child: const Icon(
+                                  Icons.notification_add,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
+
+                              ],
+                            )
+                            
                             // You can add a button or search icon here
                           ],
                         ),

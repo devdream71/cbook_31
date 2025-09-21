@@ -23,6 +23,7 @@ class UserData {
   final dynamic name;
   final dynamic phone;
   final dynamic avatar;
+   final dynamic regtype;
   //final int companyID;
   final String ? companyName;
 
@@ -34,6 +35,7 @@ class UserData {
     required this.companyId,
     required this.name,
     required this.phone,
+    required this.regtype,
     //required this.companyID,
     this.companyName,
     
@@ -49,6 +51,7 @@ class UserData {
       id: json['id'],
       companyId : json['company_id'],
       name: json['name'],
+      regtype: json['reg_type'],
       phone: json['phone'],
       avatar: json['avatar'],
       companyName: json['company_name'],
